@@ -2,154 +2,154 @@
   "1440x900": {
     "homeLayout": {
       "mode": "exact-ranges",
-      "scrollHeight": 42647,
+      "scrollHeight": 42602,
       "domContainer": {
         "left": 0,
         "top": 6640.96875,
-        "bottom": 39896.21875,
+        "bottom": 39850.59375,
         "width": 1440,
-        "height": 33255.25
+        "height": 33209.625
       },
       "domImgIn": {
         "left": 0,
         "top": 7324.40625,
-        "bottom": 7818.21875,
-        "width": 669.59375,
-        "height": 493.8125
+        "bottom": 7772.59375,
+        "width": 597.59375,
+        "height": 448.1875
       },
       "domImgOut": {
         "left": 136.796875,
-        "top": 37981.390625,
-        "bottom": 38681.21875,
+        "top": 37935.765625,
+        "bottom": 38635.59375,
         "width": 1166.390625,
         "height": 699.828125
       },
       "endSection": {
         "left": 0,
-        "top": 39896.21875,
-        "bottom": 41741.21875,
+        "top": 39850.59375,
+        "bottom": 41695.59375,
         "width": 1440,
         "height": 1845
       },
       "footerSection": {
         "left": 0,
-        "top": 41741.21875,
-        "bottom": 42219.1875,
+        "top": 41695.59375,
+        "bottom": 42173.5625,
         "width": 1440,
         "height": 477.96875
       },
       "baseY": 6424.40625,
-      "totalPixelCount": 36694.78125,
+      "totalPixelCount": 36649.15625,
       "ranges": {
         "blackFrameShow": {
           "pixelFrom": 0,
-          "pixelCount": 696.90625,
-          "pixelTo": 696.90625,
+          "pixelCount": 674.09375,
+          "pixelTo": 674.09375,
           "scrollFrom": 6424.40625,
-          "scrollTo": 7121.3125
+          "scrollTo": 7098.5
         },
         "blackFrameIn": {
-          "pixelFrom": 696.90625,
-          "pixelCount": 1421.1107638888889,
-          "pixelTo": 2118.017013888889,
-          "scrollFrom": 7121.3125,
-          "scrollTo": 8542.42326388889
+          "pixelFrom": 674.09375,
+          "pixelCount": 1420.096875,
+          "pixelTo": 2094.190625,
+          "scrollFrom": 7098.5,
+          "scrollTo": 8518.596875
         },
         "blackTitle": {
-          "pixelFrom": 2118.017013888889,
-          "pixelCount": 7105.553819444444,
-          "pixelTo": 9223.570833333333,
-          "scrollFrom": 8542.42326388889,
-          "scrollTo": 15647.977083333335
+          "pixelFrom": 2094.190625,
+          "pixelCount": 7100.484375,
+          "pixelTo": 9194.675,
+          "scrollFrom": 8518.596875,
+          "scrollTo": 15619.08125
         },
         "blackTunnel": {
-          "pixelFrom": 9223.570833333333,
-          "pixelCount": 17053.329166666666,
-          "pixelTo": 26276.9,
-          "scrollFrom": 15647.977083333333,
-          "scrollTo": 32701.30625
+          "pixelFrom": 9194.675,
+          "pixelCount": 17041.1625,
+          "pixelTo": 26235.837499999998,
+          "scrollFrom": 15619.08125,
+          "scrollTo": 32660.243749999998
         },
         "whiteTunnel": {
-          "pixelFrom": 26276.9,
-          "pixelCount": 2842.2215277777777,
-          "pixelTo": 29119.12152777778,
-          "scrollFrom": 32701.30625,
-          "scrollTo": 35543.52777777778
+          "pixelFrom": 26235.837499999998,
+          "pixelCount": 2840.19375,
+          "pixelTo": 29076.031249999996,
+          "scrollFrom": 32660.243749999998,
+          "scrollTo": 35500.4375
         },
         "whiteFrameOut": {
-          "pixelFrom": 29119.12152777778,
-          "pixelCount": 1421.1107638888889,
-          "pixelTo": 30540.23229166667,
-          "scrollFrom": 35543.52777777778,
-          "scrollTo": 36964.63854166667
+          "pixelFrom": 29076.031249999996,
+          "pixelCount": 1420.096875,
+          "pixelTo": 30496.128124999996,
+          "scrollFrom": 35500.4375,
+          "scrollTo": 36920.534375
         },
         "whiteFrameBreak": {
-          "pixelFrom": 30540.23229166667,
-          "pixelCount": 2131.6661458333333,
-          "pixelTo": 32671.898437500004,
-          "scrollFrom": 36964.638541666674,
-          "scrollTo": 39096.30468750001
+          "pixelFrom": 30496.128124999996,
+          "pixelCount": 2130.1453125,
+          "pixelTo": 32626.273437499996,
+          "scrollFrom": 36920.534374999996,
+          "scrollTo": 39050.67968749999
         },
         "astronautDrop": {
-          "pixelFrom": 32671.898437500004,
+          "pixelFrom": 32626.273437499996,
           "pixelCount": 1699.9140625,
-          "pixelTo": 34371.8125,
-          "scrollFrom": 39096.3046875,
-          "scrollTo": 40796.21875
+          "pixelTo": 34326.1875,
+          "scrollFrom": 39050.6796875,
+          "scrollTo": 40750.59375
         },
         "astronautWait": {
-          "pixelFrom": 34371.8125,
+          "pixelFrom": 34326.1875,
           "pixelCount": 2322.96875,
-          "pixelTo": 36694.78125,
-          "scrollFrom": 39896.21875,
-          "scrollTo": 42219.1875
+          "pixelTo": 36649.15625,
+          "scrollFrom": 39850.59375,
+          "scrollTo": 42173.5625
         }
       }
     },
     "homeCaptures": [
       {
         "name": "home-01-tablet-entry",
-        "scrollY": 6926
+        "scrollY": 6910
       },
       {
         "name": "home-02-tablet-emerge-start",
-        "scrollY": 7434
+        "scrollY": 7411
       },
       {
         "name": "home-03-tablet-emerge-mid",
-        "scrollY": 8002
+        "scrollY": 7979
       },
       {
         "name": "home-04-title-portal",
-        "scrollY": 12450
+        "scrollY": 12424
       },
       {
         "name": "home-05-black-tunnel-early",
-        "scrollY": 20082
+        "scrollY": 20050
       },
       {
         "name": "home-06-black-tunnel-twist",
-        "scrollY": 27926
+        "scrollY": 27889
       },
       {
         "name": "home-07-white-blue-tunnel",
-        "scrollY": 33980
+        "scrollY": 33938
       },
       {
         "name": "home-08-desktop-frame-out",
-        "scrollY": 36652
+        "scrollY": 36608
       },
       {
         "name": "home-09-glass-break-drop",
-        "scrollY": 38344
+        "scrollY": 38299
       },
       {
         "name": "home-10-end-cta-wait",
-        "scrollY": 40036
+        "scrollY": 39990
       },
       {
         "name": "home-11-reverse-tablet-mid",
-        "scrollY": 8002
+        "scrollY": 7979
       }
     ],
     "aboutLayout": {
@@ -191,154 +191,154 @@
   "1024x768": {
     "homeLayout": {
       "mode": "exact-ranges",
-      "scrollHeight": 36008,
+      "scrollHeight": 35975,
       "domContainer": {
         "left": 0,
         "top": 5223.421875,
-        "bottom": 33533.390625,
+        "bottom": 33500.9375,
         "width": 1024,
-        "height": 28309.96875
+        "height": 28277.515625
       },
       "domImgIn": {
         "left": 0,
         "top": 5790.234375,
-        "bottom": 6141.390625,
-        "width": 476.15625,
-        "height": 351.15625
+        "bottom": 6108.9375,
+        "width": 424.953125,
+        "height": 318.703125
       },
       "domImgOut": {
         "left": 97.28125,
-        "top": 31998.9375,
-        "bottom": 32496.59375,
+        "top": 31966.484375,
+        "bottom": 32464.140625,
         "width": 829.4375,
         "height": 497.65625
       },
       "endSection": {
         "left": 0,
-        "top": 33533.390625,
-        "bottom": 35107.78125,
+        "top": 33500.9375,
+        "bottom": 35075.328125,
         "width": 1024,
         "height": 1574.390625
       },
       "footerSection": {
         "left": 0,
-        "top": 35107.78125,
-        "bottom": 35579.78125,
+        "top": 35075.328125,
+        "bottom": 35547.328125,
         "width": 1024,
         "height": 472
       },
       "baseY": 5022.234375,
-      "totalPixelCount": 31325.546875,
+      "totalPixelCount": 31293.09375,
       "ranges": {
         "blackFrameShow": {
           "pixelFrom": 0,
-          "pixelCount": 559.578125,
-          "pixelTo": 559.578125,
+          "pixelCount": 543.3515625,
+          "pixelTo": 543.3515625,
           "scrollFrom": 5022.234375,
-          "scrollTo": 5581.8125
+          "scrollTo": 5565.5859375
         },
         "blackFrameIn": {
-          "pixelFrom": 559.578125,
-          "pixelCount": 1214.1666666666667,
-          "pixelTo": 1773.7447916666667,
-          "scrollFrom": 5581.8125,
-          "scrollTo": 6795.979166666667
+          "pixelFrom": 543.3515625,
+          "pixelCount": 1213.4454861111112,
+          "pixelTo": 1756.7970486111112,
+          "scrollFrom": 5565.5859375,
+          "scrollTo": 6779.031423611112
         },
         "blackTitle": {
-          "pixelFrom": 1773.7447916666667,
-          "pixelCount": 6070.833333333333,
-          "pixelTo": 7844.578125,
-          "scrollFrom": 6795.979166666667,
-          "scrollTo": 12866.8125
+          "pixelFrom": 1756.7970486111112,
+          "pixelCount": 6067.227430555556,
+          "pixelTo": 7824.024479166666,
+          "scrollFrom": 6779.031423611112,
+          "scrollTo": 12846.258854166666
         },
         "blackTunnel": {
-          "pixelFrom": 7844.578125,
-          "pixelCount": 14570,
-          "pixelTo": 22414.578125,
-          "scrollFrom": 12866.8125,
-          "scrollTo": 27436.8125
+          "pixelFrom": 7824.024479166666,
+          "pixelCount": 14561.345833333333,
+          "pixelTo": 22385.3703125,
+          "scrollFrom": 12846.258854166666,
+          "scrollTo": 27407.6046875
         },
         "whiteTunnel": {
-          "pixelFrom": 22414.578125,
-          "pixelCount": 2428.3333333333335,
-          "pixelTo": 24842.911458333332,
-          "scrollFrom": 27436.8125,
-          "scrollTo": 29865.145833333332
+          "pixelFrom": 22385.3703125,
+          "pixelCount": 2426.8909722222224,
+          "pixelTo": 24812.261284722223,
+          "scrollFrom": 27407.6046875,
+          "scrollTo": 29834.495659722223
         },
         "whiteFrameOut": {
-          "pixelFrom": 24842.911458333332,
-          "pixelCount": 1214.1666666666667,
-          "pixelTo": 26057.078125,
-          "scrollFrom": 29865.145833333332,
-          "scrollTo": 31079.3125
+          "pixelFrom": 24812.261284722223,
+          "pixelCount": 1213.4454861111112,
+          "pixelTo": 26025.706770833334,
+          "scrollFrom": 29834.495659722223,
+          "scrollTo": 31047.941145833334
         },
         "whiteFrameBreak": {
-          "pixelFrom": 26057.078125,
-          "pixelCount": 1821.25,
-          "pixelTo": 27878.328125,
-          "scrollFrom": 31079.3125,
-          "scrollTo": 32900.5625
+          "pixelFrom": 26025.706770833334,
+          "pixelCount": 1820.1682291666666,
+          "pixelTo": 27845.875,
+          "scrollFrom": 31047.941145833334,
+          "scrollTo": 32868.109375
         },
         "astronautDrop": {
-          "pixelFrom": 27878.328125,
+          "pixelFrom": 27845.875,
           "pixelCount": 1400.828125,
-          "pixelTo": 29279.15625,
-          "scrollFrom": 32900.5625,
-          "scrollTo": 34301.390625
+          "pixelTo": 29246.703125,
+          "scrollFrom": 32868.109375,
+          "scrollTo": 34268.9375
         },
         "astronautWait": {
-          "pixelFrom": 29279.15625,
+          "pixelFrom": 29246.703125,
           "pixelCount": 2046.390625,
-          "pixelTo": 31325.546875,
-          "scrollFrom": 33533.390625,
-          "scrollTo": 35579.78125
+          "pixelTo": 31293.09375,
+          "scrollFrom": 33500.9375,
+          "scrollTo": 35547.328125
         }
       }
     },
     "homeCaptures": [
       {
         "name": "home-01-tablet-entry",
-        "scrollY": 5425
+        "scrollY": 5413
       },
       {
         "name": "home-02-tablet-emerge-start",
-        "scrollY": 5849
+        "scrollY": 5833
       },
       {
         "name": "home-03-tablet-emerge-mid",
-        "scrollY": 6335
+        "scrollY": 6318
       },
       {
         "name": "home-04-title-portal",
-        "scrollY": 10135
+        "scrollY": 10116
       },
       {
         "name": "home-05-black-tunnel-early",
-        "scrollY": 16655
+        "scrollY": 16632
       },
       {
         "name": "home-06-black-tunnel-twist",
-        "scrollY": 23357
+        "scrollY": 23330
       },
       {
         "name": "home-07-white-blue-tunnel",
-        "scrollY": 28530
+        "scrollY": 28500
       },
       {
         "name": "home-08-desktop-frame-out",
-        "scrollY": 30812
+        "scrollY": 30781
       },
       {
         "name": "home-09-glass-break-drop",
-        "scrollY": 32239
+        "scrollY": 32207
       },
       {
         "name": "home-10-end-cta-wait",
-        "scrollY": 33656
+        "scrollY": 33624
       },
       {
         "name": "home-11-reverse-tablet-mid",
-        "scrollY": 6335
+        "scrollY": 6318
       }
     ],
     "aboutLayout": {
@@ -380,154 +380,154 @@
   "390x844": {
     "homeLayout": {
       "mode": "exact-ranges",
-      "scrollHeight": 39620,
+      "scrollHeight": 39669,
       "domContainer": {
         "left": 0,
         "top": 6542.34375,
-        "bottom": 37551.9375,
+        "bottom": 37601.296875,
         "width": 390,
-        "height": 31009.59375
+        "height": 31058.953125
       },
       "domImgIn": {
         "left": 0,
-        "top": 7158.3125,
-        "bottom": 7445.9375,
+        "top": 7202.796875,
+        "bottom": 7495.296875,
         "width": 390,
-        "height": 287.625
+        "height": 292.5
       },
       "domImgOut": {
         "left": 13.65625,
-        "top": 36136,
-        "bottom": 36412.546875,
+        "top": 36185.359375,
+        "bottom": 36461.90625,
         "width": 362.6875,
         "height": 276.546875
       },
       "endSection": {
         "left": 0,
-        "top": 37551.9375,
-        "bottom": 38775.734375,
+        "top": 37601.296875,
+        "bottom": 38825.09375,
         "width": 390,
         "height": 1223.796875
       },
       "footerSection": {
         "left": 0,
-        "top": 38775.734375,
-        "bottom": 39503.734375,
+        "top": 38825.09375,
+        "bottom": 39553.09375,
         "width": 390,
         "height": 728
       },
-      "baseY": 6314.3125,
-      "totalPixelCount": 34033.421875,
+      "baseY": 6358.796875,
+      "totalPixelCount": 34038.296875,
       "ranges": {
         "blackFrameShow": {
           "pixelFrom": 0,
-          "pixelCount": 565.8125,
-          "pixelTo": 565.8125,
-          "scrollFrom": 6314.3125,
-          "scrollTo": 6880.125
+          "pixelCount": 568.25,
+          "pixelTo": 568.25,
+          "scrollFrom": 6358.796875,
+          "scrollTo": 6927.046875
         },
         "blackFrameIn": {
-          "pixelFrom": 565.8125,
-          "pixelCount": 1338.290625,
-          "pixelTo": 1904.103125,
-          "scrollFrom": 6880.125,
-          "scrollTo": 8218.415625
+          "pixelFrom": 568.25,
+          "pixelCount": 1338.3989583333334,
+          "pixelTo": 1906.6489583333334,
+          "scrollFrom": 6927.046875,
+          "scrollTo": 8265.445833333333
         },
         "blackTitle": {
-          "pixelFrom": 1904.103125,
-          "pixelCount": 6691.453125,
-          "pixelTo": 8595.55625,
-          "scrollFrom": 8218.415625,
-          "scrollTo": 14909.86875
+          "pixelFrom": 1906.6489583333334,
+          "pixelCount": 6691.994791666667,
+          "pixelTo": 8598.643750000001,
+          "scrollFrom": 8265.445833333333,
+          "scrollTo": 14957.440625
         },
         "blackTunnel": {
-          "pixelFrom": 8595.55625,
-          "pixelCount": 16059.4875,
-          "pixelTo": 24655.043749999997,
-          "scrollFrom": 14909.86875,
-          "scrollTo": 30969.356249999997
+          "pixelFrom": 8598.643750000001,
+          "pixelCount": 16060.7875,
+          "pixelTo": 24659.43125,
+          "scrollFrom": 14957.440625000001,
+          "scrollTo": 31018.228125
         },
         "whiteTunnel": {
-          "pixelFrom": 24655.043749999997,
-          "pixelCount": 2676.58125,
-          "pixelTo": 27331.624999999996,
-          "scrollFrom": 30969.356249999997,
-          "scrollTo": 33645.9375
+          "pixelFrom": 24659.43125,
+          "pixelCount": 2676.797916666667,
+          "pixelTo": 27336.229166666668,
+          "scrollFrom": 31018.228125,
+          "scrollTo": 33695.02604166667
         },
         "whiteFrameOut": {
-          "pixelFrom": 27331.624999999996,
-          "pixelCount": 1338.290625,
-          "pixelTo": 28669.915624999998,
-          "scrollFrom": 33645.9375,
-          "scrollTo": 34984.228125
+          "pixelFrom": 27336.229166666668,
+          "pixelCount": 1338.3989583333334,
+          "pixelTo": 28674.628125000003,
+          "scrollFrom": 33695.02604166667,
+          "scrollTo": 35033.425
         },
         "whiteFrameBreak": {
-          "pixelFrom": 28669.915624999998,
-          "pixelCount": 2007.4359375,
-          "pixelTo": 30677.351562499996,
-          "scrollFrom": 34984.228124999994,
-          "scrollTo": 36991.66406249999
+          "pixelFrom": 28674.628125000003,
+          "pixelCount": 2007.5984375,
+          "pixelTo": 30682.226562500004,
+          "scrollFrom": 35033.425,
+          "scrollTo": 37041.0234375
         },
         "astronautDrop": {
-          "pixelFrom": 30677.351562499996,
+          "pixelFrom": 30682.226562500004,
           "pixelCount": 1404.2734375,
-          "pixelTo": 32081.624999999996,
-          "scrollFrom": 36991.6640625,
-          "scrollTo": 38395.9375
+          "pixelTo": 32086.500000000004,
+          "scrollFrom": 37041.0234375,
+          "scrollTo": 38445.296875
         },
         "astronautWait": {
-          "pixelFrom": 32081.624999999996,
+          "pixelFrom": 32086.500000000004,
           "pixelCount": 1951.796875,
-          "pixelTo": 34033.421875,
-          "scrollFrom": 37551.9375,
-          "scrollTo": 39503.734375
+          "pixelTo": 34038.296875,
+          "scrollFrom": 37601.296875,
+          "scrollTo": 39553.09375
         }
       }
     },
     "homeCaptures": [
       {
         "name": "home-01-tablet-entry",
-        "scrollY": 6722
+        "scrollY": 6768
       },
       {
         "name": "home-02-tablet-emerge-start",
-        "scrollY": 7175
+        "scrollY": 7221
       },
       {
         "name": "home-03-tablet-emerge-mid",
-        "scrollY": 7710
+        "scrollY": 7757
       },
       {
         "name": "home-04-title-portal",
-        "scrollY": 11899
+        "scrollY": 11946
       },
       {
         "name": "home-05-black-tunnel-early",
-        "scrollY": 19085
+        "scrollY": 19133
       },
       {
         "name": "home-06-black-tunnel-twist",
-        "scrollY": 26473
+        "scrollY": 26521
       },
       {
         "name": "home-07-white-blue-tunnel",
-        "scrollY": 32174
+        "scrollY": 32223
       },
       {
         "name": "home-08-desktop-frame-out",
-        "scrollY": 34690
+        "scrollY": 34739
       },
       {
         "name": "home-09-glass-break-drop",
-        "scrollY": 36212
+        "scrollY": 36262
       },
       {
         "name": "home-10-end-cta-wait",
-        "scrollY": 37669
+        "scrollY": 37718
       },
       {
         "name": "home-11-reverse-tablet-mid",
-        "scrollY": 7710
+        "scrollY": 7757
       }
     ],
     "aboutLayout": {

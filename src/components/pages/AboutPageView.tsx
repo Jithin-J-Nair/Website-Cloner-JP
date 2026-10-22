@@ -247,9 +247,10 @@ function AboutWhoExperience({
         uniforms: {
           uTime: { value: 0 },
           uCompact: { value: 0 }, // 0 at hero close-up, 1 when pulled back above valley ('about-02')
+          uMobile: { value: 0 },
           uPointer: { value: new THREE.Vector3(0, 8.2, 0) },
           uPointerStrength: { value: 0 },
-          uCyanBoost: { value: 0.35 },
+          uCyanBoost: { value: 0.0 },
           uOpacity: { value: 1 },
         },
         transparent: true,
@@ -257,6 +258,7 @@ function AboutWhoExperience({
           attribute vec4 aSeed;
           uniform float uTime;
           uniform float uCompact;
+          uniform float uMobile;
           uniform vec3 uPointer;
           uniform float uPointerStrength;
           varying vec3 vNormalV;
@@ -276,27 +278,30 @@ function AboutWhoExperience({
             float phi = aSeed.z;
             float rnd = aSeed.w;
 
-            // Orbiting swirl around vortex center '(0, 8.35, 0)' + diagonal hero plume tail!
+            // Orbiting swirl around vortex center + diagonal hero plume tail ('about-01-hero-top')!
             float spinSpeed = (0.45 + (1.0 - radFrac) * 0.90);
             float ang = theta + uTime * spinSpeed * 0.45;
-            float baseR = mix(1.22, 1.38, uCompact) * radFrac;
+            float heroR = mix(1.92, 2.95, uMobile);
+            float baseR = mix(heroR, 1.34, uCompact) * radFrac;
 
             vec3 localPos = vec3(
               sin(phi) * cos(ang),
-              cos(phi) * 1.15,
+              cos(phi) * mix(1.18, 1.48, uMobile * (1.0 - uCompact)),
               sin(phi) * sin(ang)
             ) * baseR;
 
             // Diagonal upper-right to lower-left turbulent curl stream prominent in 'about-01-hero-top'
-            float tail = pow(radFrac, 1.35) * mix(1.0, 0.35, uCompact);
-            localPos.x += sin(ang * 2.0 + phi) * 0.52 * tail - tail * 0.48;
-            localPos.y += sin(ang * 1.5 - uTime * 0.35) * 0.55 * tail;
-            localPos.z += cos(ang * 2.2 + uTime * 0.25) * 0.38;
+            float tail = pow(radFrac, 1.25) * mix(1.0, 0.32, uCompact);
+            localPos.x += sin(ang * 2.0 + phi) * 0.72 * tail - tail * 0.62;
+            localPos.y += sin(ang * 1.5 - uTime * 0.35) * 0.74 * tail;
+            localPos.z += cos(ang * 2.2 + uTime * 0.25) * 0.44;
 
             // Turbulent curl displacement
-            localPos += sin(localPos.yzx * 2.1 + uTime * 0.75 + rnd * 6.28) * 0.18;
+            localPos += sin(localPos.yzx * 2.1 + uTime * 0.75 + rnd * 6.28) * 0.22;
 
-            vec3 worldCenter = vec3(-0.36 * (1.0 - uCompact), mix(9.02, 9.08, uCompact), 0.0) + localPos;
+            vec3 heroAnchor = vec3(mix(-0.52, -0.15, uMobile), mix(9.28, 8.85, uMobile), 0.0);
+            vec3 valleyAnchor = vec3(-0.65, 9.25, 0.0);
+            vec3 worldCenter = mix(heroAnchor, valleyAnchor, uCompact) + localPos;
 
             // Interactive 3D pointer repulsion swirl
             vec3 toPtr = worldCenter - uPointer;
@@ -387,20 +392,22 @@ function AboutWhoExperience({
           uniform float uOpacity;
           uniform float uCyanCore;
           void main() {
-            float xDist = abs(vUv.x - 0.5) * 2.0;
-            float beam = exp(-pow(xDist * 9.5, 2.0));
-            float wideHaze = exp(-pow(xDist * 3.2, 2.0)) * 0.16;
-            float vertFade = smoothstep(0.0, 0.14, vUv.y);
-            vec3 col = vec3(0.76, 0.81, 0.88) * (beam * 0.38 + wideHaze);
-            float vortexHotspot = exp(-pow((vUv.y - 0.44) * 6.5, 2.0)) * exp(-pow(xDist * 4.5, 2.0));
-            col += mix(vec3(0.75, 0.85, 0.95), vec3(0.05, 0.96, 1.0), uCyanCore) * vortexHotspot * 0.42;
+            float xDist = abs(vUv.x - 0.475) * 2.0;
+            float beam = exp(-pow(xDist * 11.5, 2.0));
+            // Atmospheric misty silver sky gradient across upper valley ('about-02-we-are-reveal'!)
+            float skyMist = smoothstep(0.28, 0.98, vUv.y) * 0.19;
+            float wideHaze = exp(-pow(xDist * 2.6, 2.0)) * 0.14;
+            float vertFade = smoothstep(0.0, 0.12, vUv.y);
+            vec3 col = vec3(0.74, 0.78, 0.85) * (beam * 0.36 + wideHaze + skyMist);
+            float vortexHotspot = exp(-pow((vUv.y - 0.46) * 6.5, 2.0)) * exp(-pow(xDist * 5.0, 2.0));
+            col += mix(vec3(0.78, 0.86, 0.94), vec3(0.08, 0.95, 1.0), uCyanCore) * vortexHotspot * 0.34;
             gl_FragColor = vec4(col, uOpacity * vertFade);
           }
         `,
       })
     );
-    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(15.5, 26.0)), godRayMat);
-    godRayPlane.position.set(0, 10.5, 0.2);
+    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 26.0)), godRayMat);
+    godRayPlane.position.set(0, 10.5, -2.5);
     scene.add(godRayPlane);
 
     // -------------------------------------------------------------------------
@@ -536,6 +543,7 @@ function AboutWhoExperience({
         uniforms: {
           uOpacity: { value: 0 },
           uTime: { value: 0 },
+          uTeamPhase: { value: 0 },
         },
         vertexShader: `
           varying vec3 vPosW;
@@ -548,14 +556,19 @@ function AboutWhoExperience({
         fragmentShader: `
           uniform float uOpacity;
           uniform float uTime;
+          uniform float uTeamPhase;
           varying vec3 vPosW;
           void main() {
             float wave = 0.55 + 0.45 * sin(vPosW.y * 2.4 - uTime * 1.4 + vPosW.x * 0.15);
             float distFade = 1.0 - smoothstep(10.0, 29.0, length(vPosW.xz - vec2(0.0, 4.0)));
-            // Bright ridge crests on left & right matching 'about-04-team-hologram.png'!
+            // In 'about-04-team-hologram', upper sky becomes pure deep '#000000' while lower-foreground ridges glow electric ice-blue!
+            float lowerBand = smoothstep(2.2, 8.8, vPosW.z);
+            float teamMask = mix(1.0, lowerBand, uTeamPhase);
             float ridgeGlow = smoothstep(-0.8, 3.2, vPosW.y) * 0.75 + 0.25;
-            vec3 col = mix(vec3(0.48, 0.56, 0.68), vec3(0.95, 0.98, 1.0), wave);
-            gl_FragColor = vec4(col, uOpacity * distFade * ridgeGlow * (0.45 + wave * 0.55));
+            vec3 baseCol = mix(vec3(0.48, 0.56, 0.68), vec3(0.95, 0.98, 1.0), wave);
+            vec3 causticCol = mix(vec3(0.42, 0.76, 1.0), vec3(0.92, 0.98, 1.0), pow(wave, 1.4)) * 1.28;
+            vec3 col = mix(baseCol, causticCol, uTeamPhase);
+            gl_FragColor = vec4(col, uOpacity * distFade * ridgeGlow * teamMask * (0.45 + wave * 0.55));
           }
         `,
       })
@@ -568,8 +581,9 @@ function AboutWhoExperience({
     // 4. Lone White Explorer / Astronaut Figure Standing on Valley Floor ('about-02')
     // -------------------------------------------------------------------------
     const explorerGroup = new THREE.Group();
-    const gy = terrainHeightAt(0, 0.6);
-    explorerGroup.position.set(0, gy + 0.92, 0.6);
+    const gy = terrainHeightAt(-0.85, -1.8);
+    explorerGroup.position.set(-0.85, gy + 0.58, -1.8);
+    explorerGroup.scale.setScalar(0.64);
     scene.add(explorerGroup);
 
     const explorerMat = track(
@@ -789,9 +803,10 @@ function AboutWhoExperience({
       if (sphereStorm.visible) {
         stormMat.uniforms.uTime.value = reducedMotion ? 0.5 : elapsedSec;
         stormMat.uniforms.uCompact.value = tPullback;
+        stormMat.uniforms.uMobile.value = isMobile ? 1.0 : 0.0;
         stormMat.uniforms.uPointer.value.copy(pointerWorld);
         stormMat.uniforms.uPointerStrength.value = pointerActive;
-        stormMat.uniforms.uCyanBoost.value = isMobile ? 0.92 : lerp(0.35, 0.88, tPullback);
+        stormMat.uniforms.uCyanBoost.value = isMobile ? 0.94 : lerp(0.0, 0.55, tPullback);
         stormMat.uniforms.uOpacity.value = stormVis;
       }
 
@@ -832,20 +847,21 @@ function AboutWhoExperience({
       const contourVis = smoothstep(3.75, 4.85, u);
       contourLines.visible = contourVis > 0.01;
       if (contourLines.visible) {
-        contourMat.uniforms.uOpacity.value = contourVis * lerp(0.42, 0.72, tTeamPhase);
+        contourMat.uniforms.uOpacity.value = contourVis * lerp(0.42, 1.95, tTeamPhase);
         contourMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
+        contourMat.uniforms.uTeamPhase.value = tTeamPhase;
       }
 
-      // 4. 8,192-Vertex 3D Team Portrait Point-Cloud ('about-04')
+      // 4. Subtle Lower-Pedestal Team Hologram Shimmer ('about-04' — upper sky kept pure deep `#000000`!)
       portraitPoints.visible = tTeamPhase > 0.02;
       if (portraitPoints.visible) {
-        portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.36;
+        portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.06;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
         portraitPoints.position.set(
-          camera.position.x + (isMobile ? -0.10 : -0.25),
-          camera.position.y - (isMobile ? 1.55 : 1.35),
-          camera.position.z - 5.6
+          camera.position.x + (isMobile ? -0.10 : -0.15),
+          camera.position.y - (isMobile ? 2.65 : 2.55),
+          camera.position.z - 5.8
         );
         portraitPoints.rotation.set(
           pointerNDC.y * -0.10,
@@ -1041,7 +1057,7 @@ function AboutWhoExperience({
           <span className="lusion-plus-cross" />
         </div>
 
-        {/* Layer 1: Monumental Solid + Sketch-Outlined `LUSION` Hero Wordmark (`about-01` & `about-02`) */}
+        {/* Layer 1: Monumental Double-Sketch `LUSION` Hero Wordmark (`about-01` & `about-02`) */}
         <div
           ref={heroWordmarkRef}
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-4 z-20 will-change-transform"
@@ -1054,10 +1070,12 @@ function AboutWhoExperience({
           >
             <text
               x="6"
-              y="258"
+              y="256"
               textLength="1388"
               lengthAdjust="spacingAndGlyphs"
-              fill="#ffffff"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="6.5"
               fontFamily="LusionSansCalibrated, system-ui, sans-serif"
               fontSize="306"
               fontWeight="400"
@@ -1071,7 +1089,7 @@ function AboutWhoExperience({
               lengthAdjust="spacingAndGlyphs"
               fill="none"
               stroke="rgba(255,255,255,0.85)"
-              strokeWidth="2.8"
+              strokeWidth="3.0"
               fontFamily="LusionSansCalibrated, system-ui, sans-serif"
               fontSize="306"
               fontWeight="400"
@@ -1126,13 +1144,13 @@ function AboutWhoExperience({
         >
           <p
             id="about-who-desc-top"
-            className="whitespace-pre-line font-sans text-[clamp(1.75rem,3.05vw,2.85rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            className="whitespace-pre-line font-sans text-[clamp(1.85rem,3.35vw,3.15rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
           >
             {"A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"}
           </p>
           <p
             id="about-who-desc-bottom"
-            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.65rem,2.85vw,2.65rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.7rem,2.95vw,2.75rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
           >
             {"working together to\nturn ambitious ideas into\nimmersive digital experiences."}
           </p>
@@ -1142,7 +1160,7 @@ function AboutWhoExperience({
         <div
           ref={teamOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-24 pb-8 min-[820px]:pt-40"
+          className="absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-16 pb-8 min-[820px]:pt-28"
         >
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
@@ -1213,13 +1231,13 @@ function AboutWhoExperience({
             </div>
           </div>
 
-          {/* Center Royal-Blue `#223aff` Interactive Specialist Advance Orb (`→` / `SWIPE TO CHANGE`) */}
-          <div className="flex items-center justify-center">
+          {/* Dead-Center Royal-Blue `#223aff` Interactive Specialist Advance Orb (`→` / `SWIPE TO CHANGE`) */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <button
               type="button"
               onClick={() => onStepMember(1)}
               aria-label="Next team member"
-              className="flex h-36 w-36 cursor-pointer items-center justify-center rounded-full bg-[#223aff] text-center font-sans text-xs font-medium uppercase tracking-[0.06em] text-white shadow-[0_14px_44px_rgba(34,58,255,0.5)] transition-transform duration-300 hover:scale-105 min-[820px]:h-28 min-[820px]:w-28"
+              className="pointer-events-auto flex h-36 w-36 cursor-pointer items-center justify-center rounded-full bg-[#223aff] text-center font-sans text-xs font-medium uppercase tracking-[0.06em] text-white shadow-[0_14px_44px_rgba(34,58,255,0.5)] transition-transform duration-300 hover:scale-105 min-[820px]:h-[154px] min-[820px]:w-[154px]"
             >
               <span className="hidden text-3xl font-light leading-none min-[820px]:inline">
                 &rarr;
@@ -1230,7 +1248,7 @@ function AboutWhoExperience({
             </button>
           </div>
 
-          {/* Bottom Specialist Bio Left + Pixelated Glitch Tile + Team Studio Copy Right */}
+          {/* Bottom Specialist Bio Left + Translucent Specialist Monogram + Studio Copy Right */}
           <div className="relative flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="flex items-center gap-2.5">
@@ -1252,21 +1270,12 @@ function AboutWhoExperience({
             </div>
 
             <div className="flex items-end gap-6">
-              {/* Subtle translucent square glitch mosaic matching `about-04-team-hologram.png` */}
-              <div
+              <span
                 aria-hidden="true"
-                className="grid h-16 w-16 grid-cols-3 grid-rows-3 opacity-80"
+                className="hidden select-none font-sans text-[112px] leading-[0.80] font-bold tracking-[-0.04em] text-white/55 min-[820px]:block"
               >
-                <span className="bg-white/25" />
-                <span className="bg-white/10" />
-                <span className="bg-white/30" />
-                <span className="bg-white/20" />
-                <span className="bg-transparent" />
-                <span className="bg-white/15" />
-                <span className="bg-white/35" />
-                <span className="bg-white/20" />
-                <span className="bg-white/10" />
-              </div>
+                {activeMember.name[0]}
+              </span>
 
               <p
                 id="about-who-team-desc-text"

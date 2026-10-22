@@ -163,56 +163,51 @@ function createVoronoiTunnelTexture(): THREE.CanvasTexture {
   };
 
   const clusters = [
-    [0.24, 0.22, 0.24, 7],
-    [0.76, 0.30, 0.20, 6],
-    [0.34, 0.68, 0.26, 8],
-    [0.80, 0.78, 0.21, 6],
-    [0.52, 0.46, 0.15, 5],
+    [0.24, 0.24, 0.19, 6],
+    [0.76, 0.34, 0.17, 5],
+    [0.32, 0.74, 0.20, 6],
   ];
   for (const [fx, fy, fr, lobes] of clusters) {
     drawCloudRing(fx * S, fy * S, fr * S, lobes, rnd() * Math.PI * 2);
   }
 
-  // Scattered crisp white Voronoi pebble islands matching `home-07`
-  for (let i = 0; i < 14; i++) {
-    const px = rnd() * S;
-    const py = rnd() * S;
-    const rx = 18 + rnd() * 34;
-    const ry = rx * (0.65 + rnd() * 0.5);
-    ctx.save();
-    ctx.translate(px, py);
-    ctx.rotate(rnd() * Math.PI);
-    ctx.fillStyle = "#e8eeff";
+  // Sparse crisp white graphic ring outlines (`O` loops visible on floor/ceiling in `home-07` & `home-08`)
+  ctx.lineWidth = S * 0.032;
+  ctx.strokeStyle = "#eef2ff";
+  for (const [rx, ry, rr] of [
+    [0.72, 0.78, 0.11],
+    [0.20, 0.56, 0.085],
+    [0.58, 0.16, 0.075],
+  ]) {
     ctx.beginPath();
-    ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-    ctx.fill();
-    if (i % 2 === 0) {
-      ctx.fillStyle = "#1933ff";
-      ctx.beginPath();
-      ctx.ellipse(0, 0, rx * 0.52, ry * 0.52, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
+    ctx.arc(rx * S, ry * S, rr * S, 0, Math.PI * 2);
+    ctx.stroke();
   }
 
-  // Brilliant pure-white glowing skylight portal openings (`home-07` & `home-08`)
-  for (const [gx, gy, grx, gry] of [
-    [0.28, 0.44, 92, 54],
-    [0.72, 0.60, 108, 62],
+  // Glowing pure-white arched portal doorway windows along corridor walls (`home-07` & `home-08`!)
+  for (const [gx, gy, gw, gh] of [
+    [0.14, 0.62, 0.085, 0.24],
+    [0.86, 0.62, 0.085, 0.24],
   ]) {
-    const glow = ctx.createRadialGradient(gx * S, gy * S, 8, gx * S, gy * S, grx * 1.9);
+    const glow = ctx.createRadialGradient(gx * S, gy * S, 6, gx * S, gy * S, gh * S * 1.15);
     glow.addColorStop(0, "rgba(255,255,255,1)");
-    glow.addColorStop(0.42, "rgba(235,245,255,0.95)");
-    glow.addColorStop(0.7, "rgba(85,135,255,0.55)");
+    glow.addColorStop(0.55, "rgba(190,220,255,0.65)");
     glow.addColorStop(1, "rgba(25,51,255,0)");
     ctx.fillStyle = glow;
     ctx.beginPath();
-    ctx.ellipse(gx * S, gy * S, grx * 1.9, gry * 1.9, 0, 0, Math.PI * 2);
+    ctx.ellipse(gx * S, gy * S, gw * S * 2.2, gh * S * 1.15, 0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "#ffffff";
+    const x0 = (gx - gw * 0.5) * S;
+    const y0 = (gy - gh * 0.5) * S;
+    const w0 = gw * S;
+    const h0 = gh * S;
     ctx.beginPath();
-    ctx.ellipse(gx * S, gy * S, grx, gry, -0.2, 0, Math.PI * 2);
+    ctx.arc(gx * S, y0 + w0 * 0.5, w0 * 0.5, Math.PI, 0);
+    ctx.lineTo(x0 + w0, y0 + h0);
+    ctx.lineTo(x0, y0 + h0);
+    ctx.closePath();
     ctx.fill();
   }
 
@@ -425,13 +420,13 @@ function buildAstronautRig(bumpTex: THREE.CanvasTexture, isClone = false): Astro
   });
 
   const visorMat = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color("#05070d"),
-    emissive: new THREE.Color("#0d2247"),
-    emissiveIntensity: 0.28,
-    roughness: 0.07,
-    metalness: 0.25,
+    color: new THREE.Color("#030508"),
+    emissive: new THREE.Color("#050912"),
+    emissiveIntensity: 0.08,
+    roughness: 0.09,
+    metalness: 0.35,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.05,
+    clearcoatRoughness: 0.06,
     reflectivity: 1.0,
   });
 
@@ -545,8 +540,8 @@ function buildAstronautRig(bumpTex: THREE.CanvasTexture, isClone = false): Astro
   });
 
   if (!isClone) {
-    const plumePlaneA = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.95, 8, 24), plumeMat);
-    plumePlaneA.position.y = 0.34;
+    const plumePlaneA = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 0.36, 8, 18), plumeMat);
+    plumePlaneA.position.y = 0.06;
     plumeGroup.add(plumePlaneA);
     const plumePlaneB = plumePlaneA.clone();
     plumePlaneB.rotation.y = Math.PI * 0.42;
@@ -653,42 +648,42 @@ interface PoseAngles {
 }
 
 const POSE_TABLET_FLOAT: PoseAngles = {
-  bodyRot: [-0.04, 0.03, 0],
-  headRot: [0.05, -0.03, 0],
-  shL: [-0.45, 0.18, -1.25],
-  elL: [-1.45, 0.25, 0.18],
-  shR: [-0.45, -0.18, 1.25],
-  elR: [-1.45, -0.25, -0.18],
-  hipL: [-0.18, 0, -0.10],
-  knL: 0.30,
-  hipR: [-0.12, 0, 0.10],
-  knR: 0.24,
+  bodyRot: [-0.03, 0.02, 0],
+  headRot: [0.04, -0.02, 0],
+  shL: [-0.15, 0.12, -1.18],
+  elL: [-0.32, 0.15, -1.15],
+  shR: [-0.15, -0.12, 1.18],
+  elR: [-0.32, -0.15, 1.15],
+  hipL: [-0.14, 0, -0.12],
+  knL: 0.22,
+  hipR: [-0.10, 0, 0.12],
+  knR: 0.18,
 };
 
 const POSE_TUNNEL_DIVE: PoseAngles = {
-  bodyRot: [0.52, -0.24, 0.18],
-  headRot: [-0.28, 0.10, 0],
-  shL: [-0.72, 0.20, -1.22],
-  elL: [-0.62, 0, 0.18],
-  shR: [-0.68, -0.20, 1.22],
-  elR: [-0.58, 0, -0.18],
-  hipL: [0.24, 0, -0.16],
-  knL: 0.52,
-  hipR: [-0.18, 0, 0.16],
-  knR: 0.65,
+  bodyRot: [0.48, -0.18, 0.12],
+  headRot: [-0.24, 0.08, 0],
+  shL: [-0.45, 0.18, -1.05],
+  elL: [-0.42, 0, -0.65],
+  shR: [-0.45, -0.18, 1.05],
+  elR: [-0.42, 0, 0.65],
+  hipL: [0.20, 0, -0.14],
+  knL: 0.45,
+  hipR: [-0.16, 0, 0.14],
+  knR: 0.55,
 };
 
 const POSE_BREAKOUT: PoseAngles = {
-  bodyRot: [-0.08, 0.02, 0.02],
-  headRot: [0.06, 0, 0],
-  shL: [-0.75, 0.16, -1.42],
-  elL: [-0.88, 0, 0.22],
-  shR: [-0.75, -0.16, 1.42],
-  elR: [-0.88, 0, -0.22],
-  hipL: [-0.16, 0, -0.10],
-  knL: 0.24,
-  hipR: [-0.48, 0, 0.12],
-  knR: 0.72,
+  bodyRot: [-0.04, 0.02, 0.0],
+  headRot: [0.04, 0, 0],
+  shL: [-0.18, 0.14, -1.24],
+  elL: [-0.34, 0.12, -1.18],
+  shR: [-0.18, -0.14, 1.24],
+  elR: [-0.34, -0.12, 1.18],
+  hipL: [-0.12, 0, -0.09],
+  knL: 0.18,
+  hipR: [-0.34, 0, 0.11],
+  knR: 0.54,
 };
 
 const POSE_STANDING_WAIT: PoseAngles = {
@@ -829,12 +824,12 @@ export function GoalTunnelSection() {
     const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 180);
     camera.position.set(0, 0, 5.2);
 
-    // Studio three-point EVA illumination + grazing corridor cyan/indigo rim lights
-    const ambient = new THREE.AmbientLight(0xd8e2ff, 0.72);
+    // Studio three-point EVA illumination giving sculptural grey-white cloth folds matching reference
+    const ambient = new THREE.AmbientLight(0xc8d2e6, 0.46);
     scene.add(ambient);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.35);
-    keyLight.position.set(-2.4, 3.8, 6.2);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.85);
+    keyLight.position.set(-2.4, 3.8, 5.6);
     scene.add(keyLight);
 
     const fillLight = new THREE.DirectionalLight(0x8fb6ff, 0.95);
@@ -932,7 +927,7 @@ export function GoalTunnelSection() {
     earthGroup.add(atmoHalo);
 
     // -------------------------------------------------------------------------
-    // 2. Dark Metallic 3D Greeble Tunnel (`blackTunnel`: `home-05` & `home-06`)
+    // 2. Square Architectural Steel Truss Corridor (`blackTunnel`: `home-05` & `home-06`)
     // -------------------------------------------------------------------------
     const blackTunnelGroup = new THREE.Group();
     blackTunnelGroup.visible = false;
@@ -940,64 +935,88 @@ export function GoalTunnelSection() {
 
     const greebleMat = track(
       new THREE.MeshStandardMaterial({
-        color: new THREE.Color("#2a3240"),
-        roughness: 0.20,
-        metalness: 0.72,
+        color: new THREE.Color("#9ba6b8"),
+        roughness: 0.26,
+        metalness: 0.78,
       })
     );
     const greebleBoxGeo = track(new THREE.BoxGeometry(1, 1, 1));
-    const PANEL_COUNT = 576;
+    // 28 square truss bays * 20 structural members per bay = 560 members cleanly spanning camera frustum!
+    const PANEL_COUNT = 560;
     const greeblePanels = new THREE.InstancedMesh(greebleBoxGeo, greebleMat, PANEL_COUNT);
     const dummy = new THREE.Object3D();
     const panelColor = new THREE.Color();
     for (let i = 0; i < PANEL_COUNT; i++) {
-      const ring = Math.floor(i / 24);
-      const slot = i % 24;
-      const side = Math.floor(slot / 6);
-      const along = ((slot % 6) - 2.5) * 0.92;
-      const halfSpan = 2.75;
-      const z = 1.5 - ring * 1.45;
-      let px = 0;
-      let py = 0;
-      let sx = 0.78;
-      let sy = 0.16 + ((i * 5) % 4) * 0.08;
-      if (side === 0) {
-        px = along;
-        py = halfSpan;
-      } else if (side === 1) {
-        px = along;
-        py = -halfSpan;
-      } else if (side === 2) {
-        px = -halfSpan;
-        py = along;
-        sx = 0.16 + ((i * 5) % 4) * 0.08;
-        sy = 0.78;
+      const bay = Math.floor(i / 20);
+      const part = i % 20;
+      const halfSpan = 1.42;
+      const baySpacing = 1.28;
+      const z = 3.8 - bay * baySpacing;
+      dummy.rotation.set(0, 0, 0);
+
+      if (part < 4) {
+        // 4 continuous longitudinal corner I-beam columns receding from viewport corners to center
+        const cx = part % 2 === 0 ? -halfSpan : halfSpan;
+        const cy = part < 2 ? halfSpan : -halfSpan;
+        dummy.position.set(cx, cy, z - baySpacing * 0.5);
+        dummy.scale.set(0.085, 0.085, baySpacing * 1.04);
+      } else if (part < 8) {
+        // 4 square cross-girder beams framing top, bottom, left, right walls
+        const side = part - 4;
+        if (side === 0) {
+          dummy.position.set(0, halfSpan, z);
+          dummy.scale.set(halfSpan * 2.04, 0.075, 0.075);
+        } else if (side === 1) {
+          dummy.position.set(0, -halfSpan, z);
+          dummy.scale.set(halfSpan * 2.04, 0.075, 0.075);
+        } else if (side === 2) {
+          dummy.position.set(-halfSpan, 0, z);
+          dummy.scale.set(0.075, halfSpan * 2.04, 0.075);
+        } else {
+          dummy.position.set(halfSpan, 0, z);
+          dummy.scale.set(0.075, halfSpan * 2.04, 0.075);
+        }
+      } else if (part < 16) {
+        // 8 diagonal X-brace truss struts across all 4 walls (prominent in `home-06-black-tunnel-twist`!)
+        const braceIdx = part - 8;
+        const wall = Math.floor(braceIdx / 2);
+        const dir = braceIdx % 2 === 0 ? 1 : -1;
+        const diagLen = Math.hypot(halfSpan * 2, baySpacing);
+        const ang = Math.atan2(baySpacing, halfSpan * 2) * dir;
+        if (wall === 0) {
+          dummy.position.set(0, halfSpan, z - baySpacing * 0.5);
+          dummy.rotation.set(0, ang, 0);
+          dummy.scale.set(diagLen, 0.042, 0.042);
+        } else if (wall === 1) {
+          dummy.position.set(0, -halfSpan, z - baySpacing * 0.5);
+          dummy.rotation.set(0, ang, 0);
+          dummy.scale.set(diagLen, 0.042, 0.042);
+        } else if (wall === 2) {
+          dummy.position.set(-halfSpan, 0, z - baySpacing * 0.5);
+          dummy.rotation.set(ang, 0, 0);
+          dummy.scale.set(0.042, diagLen, 0.042);
+        } else {
+          dummy.position.set(halfSpan, 0, z - baySpacing * 0.5);
+          dummy.rotation.set(ang, 0, 0);
+          dummy.scale.set(0.042, diagLen, 0.042);
+        }
       } else {
-        px = halfSpan;
-        py = along;
-        sx = 0.16 + ((i * 5) % 4) * 0.08;
-        sy = 0.78;
+        // 4 recessed wall greeble modules & glowing corner beacons (`home-05` cyan glints)
+        const cIdx = part - 16;
+        const gx = cIdx % 2 === 0 ? -halfSpan * 0.88 : halfSpan * 0.88;
+        const gy = cIdx < 2 ? halfSpan * 0.88 : -halfSpan * 0.88;
+        dummy.position.set(gx, gy, z - 0.25);
+        dummy.scale.set(0.18, 0.14, 0.22);
       }
-      const inset = ((i * 7) % 6) * 0.075;
-      dummy.position.set(
-        px * (1 - inset * 0.09),
-        py * (1 - inset * 0.09),
-        z + ((i % 3) - 1) * 0.12
-      );
-      dummy.rotation.set(0, 0, ((ring % 2) * 0.03));
-      dummy.scale.set(sx, sy, 1.15 + ((i * 3) % 4) * 0.22);
+
       dummy.updateMatrix();
       greeblePanels.setMatrixAt(i, dummy.matrix);
 
-      // Detailed metallic silver/cyan/slate specular variation matching `home-05-black-tunnel-early`!
-      const glint = i % 11 === 0 ? 1 : i % 17 === 0 ? 2 : 0;
-      if (glint === 1) {
-        panelColor.setRGB(0.62, 0.85, 0.95);
-      } else if (glint === 2) {
-        panelColor.setRGB(0.24, 0.56, 0.72);
+      if (part >= 16 && (bay + part) % 3 === 0) {
+        panelColor.setRGB(1.35, 1.85, 2.0);
       } else {
-        const g = 0.14 + ((i * 13) % 9) * 0.024;
-        panelColor.setRGB(g * 0.95, g * 1.02, g * 1.12);
+        const g = 0.42 + ((i * 13) % 7) * 0.055;
+        panelColor.setRGB(g * 0.96, g, g * 1.08);
       }
       greeblePanels.setColorAt(i, panelColor);
     }
@@ -1005,7 +1024,20 @@ export function GoalTunnelSection() {
     if (greeblePanels.instanceColor) greeblePanels.instanceColor.needsUpdate = true;
     blackTunnelGroup.add(greeblePanels);
 
-    // Chromatic lens dispersion halo ring framing the dark metallic corridor (`home-05`, `home-06`)
+    // Dynamic corridor lights: cool cyan-silver in `home-05` -> vivid magenta/violet/crimson in `home-06`!
+    const tunnelCoolLight = new THREE.PointLight(0xa5f3fc, 0, 26, 1.35);
+    tunnelCoolLight.position.set(0, 0.2, 1.2);
+    blackTunnelGroup.add(tunnelCoolLight);
+
+    const tunnelMagentaNear = new THREE.PointLight(0xff2a85, 0, 24, 1.25);
+    tunnelMagentaNear.position.set(-0.6, 0.4, 1.8);
+    blackTunnelGroup.add(tunnelMagentaNear);
+
+    const tunnelVioletMid = new THREE.PointLight(0xd946ef, 0, 32, 1.25);
+    tunnelVioletMid.position.set(0.6, -0.4, -7.5);
+    blackTunnelGroup.add(tunnelVioletMid);
+
+    // Subtle wide outer chromatic lens dispersion halo kissing outer screen edges (`home-05`, `home-06`)
     const portalRingMat = track(
       new THREE.ShaderMaterial({
         transparent: true,
@@ -1027,18 +1059,18 @@ export function GoalTunnelSection() {
           void main() {
             vec2 p = (vUv - 0.5) * 2.0;
             float r = length(p);
-            float ringR = exp(-pow((r - 0.72) * 19.0, 2.0));
-            float ringG = exp(-pow((r - 0.705) * 19.0, 2.0));
-            float ringB = exp(-pow((r - 0.69) * 19.0, 2.0));
-            vec3 col = vec3(ringR * 0.42, ringG * 0.36, ringB * 0.34);
+            float ringR = exp(-pow((r - 0.84) * 9.5, 2.0));
+            float ringG = exp(-pow((r - 0.815) * 9.5, 2.0));
+            float ringB = exp(-pow((r - 0.79) * 9.5, 2.0));
+            vec3 col = vec3(ringR * 0.20, ringG * 0.14, ringB * 0.16);
             float a = clamp(max(max(ringR, ringG), ringB), 0.0, 1.0) * uOpacity;
             gl_FragColor = vec4(col, a);
           }
         `,
       })
     );
-    const portalPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(5.2, 5.2)), portalRingMat);
-    portalPlane.position.set(0, 0, -2.2);
+    const portalPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(8.6, 8.6)), portalRingMat);
+    portalPlane.position.set(0, 0, -1.6);
     blackTunnelGroup.add(portalPlane);
 
     // -------------------------------------------------------------------------
@@ -1057,8 +1089,8 @@ export function GoalTunnelSection() {
     );
 
     const TUNNEL_SEG_LEN = 46;
-    const whiteBoxGeo = track(new THREE.BoxGeometry(6.8, 6.8, TUNNEL_SEG_LEN, 1, 1, 8));
-    // Scale lengthwise UVs so cloud-Voronoi shapes tile cleanly down the 46-unit square shaft
+    const whiteBoxGeo = track(new THREE.BoxGeometry(7.8, 5.2, TUNNEL_SEG_LEN, 1, 1, 8));
+    // Scale lengthwise UVs so cloud-Voronoi shapes tile cleanly down the flat-floor corridor
     const boxUv = whiteBoxGeo.attributes.uv as THREE.BufferAttribute;
     for (let i = 0; i < boxUv.count; i++) {
       // Faces 0..3 are left/right/top/bottom walls in Three.js BoxGeometry
@@ -1067,9 +1099,9 @@ export function GoalTunnelSection() {
         const u = boxUv.getX(i);
         const v = boxUv.getY(i);
         if (faceIdx < 2) {
-          boxUv.setXY(i, u * 3.4, v * 1.0);
+          boxUv.setXY(i, u * 1.35, v * 0.85);
         } else {
-          boxUv.setXY(i, u * 1.0, v * 3.4);
+          boxUv.setXY(i, u * 0.95, v * 1.35);
         }
       }
     }
@@ -1078,6 +1110,31 @@ export function GoalTunnelSection() {
     const whiteTunnelShaft = new THREE.Mesh(whiteBoxGeo, whiteTunnelWallMat);
     whiteTunnelShaft.position.set(0, 0, -TUNNEL_SEG_LEN * 0.46);
     whiteTunnelGroup.add(whiteTunnelShaft);
+
+    // Glowing pure-white arched doorway portals & royal-blue pilasters along LEFT & RIGHT corridor walls (`home-07`, `home-08`)
+    const archPortalMat = track(new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    const archPilasterMat = track(new THREE.MeshBasicMaterial({ color: 0x1638f0 }));
+    for (let i = 0; i < 6; i++) {
+      const zPos = 1.6 - i * 7.2;
+      for (const side of [-1, 1]) {
+        const portal = new THREE.Group();
+        const lower = new THREE.Mesh(track(new THREE.PlaneGeometry(2.3, 2.2)), archPortalMat);
+        lower.position.y = -1.35;
+        const archTop = new THREE.Mesh(
+          track(new THREE.CircleGeometry(1.15, 18, 0, Math.PI)),
+          archPortalMat
+        );
+        archTop.position.y = -0.25;
+        portal.add(lower, archTop);
+        portal.position.set(side * 3.84, 0, zPos);
+        portal.rotation.y = -side * (Math.PI / 2);
+        whiteTunnelGroup.add(portal);
+
+        const pilaster = new THREE.Mesh(track(new THREE.BoxGeometry(0.42, 5.2, 1.05)), archPilasterMat);
+        pilaster.position.set(side * 3.66, 0, zPos - 2.0);
+        whiteTunnelGroup.add(pilaster);
+      }
+    }
 
     // Glowing white end-portal cap deep inside the royal-blue shaft (`home-07`, `home-08`, `home-09`)
     const whiteEndGlowMat = track(
@@ -1427,12 +1484,12 @@ export function GoalTunnelSection() {
       }
       // `tTunnel`: 0..1 across deep tunnel journey (`home-04`..`home-07`)
       const tTunnel = clamp01((sy - m.tunnelStart) / m.tunnelSpan);
-      // `tOutPull`: 0 -> 1 as royal-blue tunnel shrinks into `#home-goal-image-out` desktop monitor (`home-08`)
-      const outPullStart = m.imgOutTop - H * 0.95;
-      const outPullEnd = m.imgOutTop - H * 0.08;
+      // `tOutPull`: 0 -> 1 as royal-blue tunnel shrinks into `#home-goal-image-out` monitor (`home-08`)
+      const outPullStart = m.imgOutTop - H * (W < 1200 ? 2.55 : 1.42);
+      const outPullEnd = m.imgOutTop - H * (W < 1200 ? 1.15 : 0.45);
       const tOutPull = smoothstep(outPullStart, outPullEnd, sy);
       // `tShatter`: 0 -> 1 across glass-break & foreground astronaut breakout (`home-09`..`home-10`)
-      const shatterStart = m.imgOutTop + H * 0.06;
+      const shatterStart = m.imgOutTop - H * 0.55;
       const shatterEnd = m.endTop;
       const tShatter = clamp01((sy - shatterStart) / Math.max(1, shatterEnd - shatterStart));
       // `tWait`: 0 -> 1 down `#end-section` (`home-10` -> footer)
@@ -1458,7 +1515,7 @@ export function GoalTunnelSection() {
       const minFullScale =
         (Math.hypot(W, H) / Math.max(1, Math.min(m.imgInWidth, m.imgInHeight))) * 1.24;
       const tabletScale = Math.pow(minFullScale, clamp01(tEmerge / 0.86));
-      const tabletRotRad = smoothstep(0.04, 0.85, tEmerge) * 0.39;
+      const tabletRotRad = smoothstep(0.04, 0.85, tEmerge) * 0.072;
       const tabletCenterX = lerp(inCenterX0, W * 0.44, emergeEase);
       const tabletCenterY = lerp(inCenterY0, H * 0.52, emergeEase);
 
@@ -1581,24 +1638,31 @@ export function GoalTunnelSection() {
         );
       }
 
-      // 2. Dark Metallic Greeble Corridor (`home-05`..`home-06`)
+      // 2. Square Architectural Steel Truss Corridor (`home-05`..`home-06`)
       const blackIn = smoothstep(0.20, 0.31, tTunnel);
       const blackOut = 1 - smoothstep(0.76, 0.84, tTunnel);
       const blackVis = blackIn * blackOut;
       blackTunnelGroup.visible = blackVis > 0.01;
       if (blackTunnelGroup.visible) {
-        const travel = ((tTunnel * 42) % 1.45);
+        const travel = (tTunnel * 42) % 1.28;
         blackTunnelGroup.position.set(0, 0, travel);
-        // Stereographic twist & roll rotation matching `home-06-black-tunnel-twist`!
-        const twistProg = smoothstep(0.46, 0.78, tTunnel);
+        // 45-degree diamond twist & magenta portal illumination matching `home-06-black-tunnel-twist`!
+        const twistProg = smoothstep(0.44, 0.72, tTunnel);
         blackTunnelGroup.rotation.set(
-          Math.sin(twistProg * Math.PI) * 0.14,
-          Math.sin(twistProg * Math.PI * 0.8) * 0.20,
-          twistProg * 1.18
+          Math.sin(twistProg * Math.PI) * 0.09,
+          Math.sin(twistProg * Math.PI * 0.8) * 0.12,
+          twistProg * (Math.PI * 0.26)
         );
+        tunnelCoolLight.intensity = blackVis * lerp(7.5, 1.8, twistProg);
+        tunnelMagentaNear.intensity = blackVis * twistProg * 14.5;
+        tunnelVioletMid.intensity = blackVis * twistProg * 16.0;
         portalRingMat.uniforms.uTime.value = elapsedSec;
         portalRingMat.uniforms.uOpacity.value = blackVis;
         portalPlane.position.z = -1.6;
+      } else {
+        tunnelCoolLight.intensity = 0;
+        tunnelMagentaNear.intensity = 0;
+        tunnelVioletMid.intensity = 0;
       }
 
       // 3. Royal-Blue & White Voronoi Square Tunnel (`home-07`, `home-08`, `home-09`)
@@ -1607,15 +1671,15 @@ export function GoalTunnelSection() {
       const whiteVis = whiteIn * whiteOut * (tWait > 0.001 ? 0 : 1);
       whiteTunnelGroup.visible = whiteVis > 0.01;
       if (whiteTunnelGroup.visible) {
-        voronoiTex.offset.y = -tTunnel * 3.8;
+        voronoiTex.offset.y = -tTunnel * 2.2;
         const monShrink =
-          tOutPull > 0.01 ? lerp(1.0, m.isMobile ? 0.56 : 0.65, smoothstep(0.0, 0.86, tOutPull)) : 1.0;
+          tOutPull > 0.01 ? lerp(1.0, m.isMobile ? 0.44 : 0.65, smoothstep(0.0, 0.86, tOutPull)) : 1.0;
         const wideAspect =
-          tOutPull > 0.01 ? lerp(1.0, m.isMobile ? 1.28 : 1.68, smoothstep(0.0, 0.86, tOutPull)) : 1.0;
+          tOutPull > 0.01 ? lerp(1.0, m.isMobile ? 1.24 : 1.50, smoothstep(0.0, 0.86, tOutPull)) : 1.0;
         const monRoll =
           tOutPull > 0.01
-            ? lerp(0.68, 0.0, smoothstep(0.0, 0.72, tOutPull))
-            : lerp(0.55, 0.82, smoothstep(0.76, 1.0, tTunnel));
+            ? lerp(-0.05, 0.0, smoothstep(0.0, 0.72, tOutPull))
+            : lerp(0.06, -0.05, smoothstep(0.76, 1.0, tTunnel));
         const tunnelShiftY =
           tShatter > 0.001 ? ((H * 0.5 - outBaseY) / H) * 5.2 : 0;
         whiteTunnelGroup.scale.set(monShrink * wideAspect, monShrink, monShrink);
@@ -1692,57 +1756,56 @@ export function GoalTunnelSection() {
 
       if (tTunnel <= 0.001) {
         // Stage 1–2 (`home-01` -> `home-03` & reverse `home-11`):
-        // Inside tablet screen -> waist-up EVA framing in `home-01` zooming cleanly to left-center `home-03`!
+        // Locked 1:1 to reference bottom-left EVA position & height (`ax = -0.34, ay = -0.62, az = 0.42`)!
         pose = POSE_TABLET_FLOAT;
-        ax = lerp(0.02, m.isMobile ? -0.18 : -0.68, smoothstep(0.25, 0.88, tEmerge));
-        ay = lerp(-0.66, -0.56, smoothstep(0.15, 0.88, tEmerge));
-        az = lerp(3.45, 2.75, smoothstep(0.10, 0.90, tEmerge));
-        worldSpinZ = lerp(0, -0.32, smoothstep(0.25, 0.88, tEmerge));
-        mainAstro.visorMat.emissive.setHex(0x164488);
-        mainAstro.visorMat.emissiveIntensity = lerp(0.55, 0.16, tEmerge);
+        ax = lerp(-0.04, m.isMobile ? 0.0 : -0.36, smoothstep(0.20, 0.88, tEmerge));
+        ay = lerp(-0.62, m.isMobile ? -0.58 : -0.62, smoothstep(0.15, 0.88, tEmerge));
+        az = lerp(0.55, 0.42, smoothstep(0.08, 0.90, tEmerge));
+        worldSpinZ = 0;
+        mainAstro.visorMat.emissive.setHex(0x06101f);
+        mainAstro.visorMat.emissiveIntensity = 0.08;
         mainAstro.plumeGroup.visible = false;
       } else if (tOutPull <= 0.001) {
-        // Stage 3–5 (`home-04` -> `home-05` -> `home-06` -> `home-07`):
-        // Continuous freefall through title portal, black greeble tunnel (with upside-down roll in `home-06`),
-        // and deep royal-blue/white Voronoi tunnel (`home-07`)!
-        const toDive = smoothstep(0.0, 0.16, tTunnel);
+        // Stage 3–5 (`home-04` 3/4 profile turn -> `home-05` shaft dive -> `home-06` twist -> `home-07` royal-blue):
+        const toDive = smoothstep(0.0, 0.22, tTunnel);
         pose = blendPose(POSE_TABLET_FLOAT, POSE_TUNNEL_DIVE, toDive);
 
         const intoWhite = smoothstep(0.75, 0.92, tTunnel);
         ax = lerp(
-          lerp(m.isMobile ? -0.15 : -0.55, 0.02, smoothstep(0.0, 0.28, tTunnel)),
-          0.16,
+          lerp(m.isMobile ? -0.10 : -0.32, 0.0, smoothstep(0.08, 0.30, tTunnel)),
+          -0.28,
           intoWhite
         );
-        ay = lerp(-0.32, 0.02, smoothstep(0.15, 0.35, tTunnel));
-        // Dives smoothly down the corridor axis in `home-05`, `home-06`, and `home-07` just like reference!
-        az = lerp(2.25, -4.4, smoothstep(0.16, 0.42, tTunnel));
-        worldSpinZ = lerp(-0.30, Math.PI * 1.0, smoothstep(0.24, 0.46, tTunnel));
-        worldSpinY = Math.sin(tTunnel * Math.PI * 1.5) * 0.24;
+        ay = lerp(-0.66, -0.06, smoothstep(0.12, 0.34, tTunnel));
+        az = lerp(1.18, -2.35, smoothstep(0.16, 0.42, tTunnel));
+        worldSpinZ = lerp(0.0, Math.PI * 1.0, smoothstep(0.24, 0.46, tTunnel));
+        const profileTurn =
+          smoothstep(0.02, 0.13, tTunnel) * (1 - smoothstep(0.20, 0.34, tTunnel));
+        worldSpinY = profileTurn * 1.15 + Math.sin(tTunnel * Math.PI * 1.5) * 0.14;
 
-        mainAstro.visorMat.emissive.setHex(intoWhite > 0.5 ? 0x1d4ed8 : 0x0f2942);
-        mainAstro.visorMat.emissiveIntensity = lerp(0.18, 0.42, intoWhite);
+        mainAstro.visorMat.emissive.setHex(intoWhite > 0.5 ? 0x102a7a : 0x06101f);
+        mainAstro.visorMat.emissiveIntensity = lerp(0.08, 0.24, intoWhite);
         mainAstro.plumeGroup.visible = false;
       } else if (tWait <= 0.001) {
-        // Stage 6 (`home-08` desktop pullback -> `home-09` glass-shatter foreground breakout!):
-        const burst = smoothstep(0.12, 0.56, tShatter);
+        // Stage 6 (`home-08` mid-corridor astronaut -> `home-09` full-height foreground glass-shatter breakout!):
+        const burst = smoothstep(0.08, 0.46, tShatter);
         const settleStand = smoothstep(0.62, 1.0, tShatter);
         pose = blendPose(
           blendPose(POSE_TUNNEL_DIVE, POSE_BREAKOUT, burst),
           POSE_STANDING_WAIT,
           settleStand
         );
-        ax = 0;
-        ay = lerp(0.12, m.isMobile ? -0.10 : -0.44, settleStand);
-        az = lerp(-2.2, m.isMobile ? 0.55 : 2.18, burst);
-        worldSpinZ = lerp(0.35, 0, burst);
-        mainAstro.visorMat.emissive.setHex(0x0b1636);
-        mainAstro.visorMat.emissiveIntensity = 0.22;
+        ax = lerp(-0.26, 0, burst);
+        ay = lerp(-0.08, m.isMobile ? -0.08 : -0.34, lerp(burst * 0.45, 1.0, settleStand));
+        az = lerp(-2.15, m.isMobile ? 1.05 : 2.75, burst);
+        az = lerp(az, m.isMobile ? 0.45 : 2.18, settleStand);
+        worldSpinZ = lerp(0.12, 0, burst);
+        mainAstro.visorMat.emissive.setHex(0x060d20);
+        mainAstro.visorMat.emissiveIntensity = 0.08;
 
-        // Chromatic helmet plume ignites during breakout (`home-09`) and persists into `home-10`!
         mainAstro.plumeGroup.visible = burst > 0.15;
         mainAstro.plumeMat.uniforms.uTime.value = elapsedSec;
-        mainAstro.plumeMat.uniforms.uOpacity.value = burst * 0.92;
+        mainAstro.plumeMat.uniforms.uOpacity.value = burst * 0.52;
       } else {
         // Stage 7 (`home-10`: standing centered in `#end-section`, scrolling smoothly up as user continues!)
         pose = POSE_STANDING_WAIT;
@@ -1750,11 +1813,11 @@ export function GoalTunnelSection() {
         const scrollUpWorld = Math.max(0, tWait - 0.05) * (m.isMobile ? 4.2 : 6.4);
         ay = (m.isMobile ? 0.06 : -0.44) + scrollUpWorld;
         az = m.isMobile ? 0.45 : 2.18;
-        mainAstro.visorMat.emissive.setHex(0x09122b);
-        mainAstro.visorMat.emissiveIntensity = 0.18;
+        mainAstro.visorMat.emissive.setHex(0x060d20);
+        mainAstro.visorMat.emissiveIntensity = 0.08;
         mainAstro.plumeGroup.visible = true;
         mainAstro.plumeMat.uniforms.uTime.value = elapsedSec;
-        mainAstro.plumeMat.uniforms.uOpacity.value = 0.88;
+        mainAstro.plumeMat.uniforms.uOpacity.value = 0.45;
       }
 
       // Subtle bounded idle breathing ONLY outside strict tablet clip so forward/reverse is 100% drift-free
@@ -1934,11 +1997,11 @@ export function GoalTunnelSection() {
 
           {/* Responsive Two-Column Row:
               - Mobile (<820px): Copy paragraphs FIRST, then full-width Tablet Bezel below (`390x844/home-01`)
-              - Desktop (>=820px): Left Tablet Bezel (`53%`) + Right Two Paragraphs (`40%`) (`1440x900/home-01`) */}
-          <div className="mt-10 min-[820px]:mt-14 flex flex-col min-[820px]:flex-row-reverse min-[820px]:items-end min-[820px]:justify-between gap-10 min-[820px]:gap-8">
+              - Desktop (>=820px): Left Tablet Bezel (`41%`) + Right Two Paragraphs (`38%`) (`1440x900/home-01`) */}
+          <div className="mt-10 min-[820px]:mt-14 flex flex-col min-[820px]:flex-row-reverse min-[820px]:items-center min-[820px]:justify-between gap-10 min-[820px]:gap-10">
             <div
               id="home-goal-texts"
-              className="w-full min-[820px]:w-[40.5%] min-[820px]:pb-10 space-y-6 font-sans text-[clamp(0.95rem,1.08vw,1.08rem)] font-normal leading-[1.45] text-[#151821]"
+              className="w-full min-[820px]:w-[39%] min-[820px]:mr-[6vw] space-y-6 font-sans text-[clamp(1.0rem,1.22vw,1.16rem)] font-normal leading-[1.38] text-[#151821]"
             >
               {LUSION_HOME.goal.paragraphs.map((para, idx) => (
                 <p key={idx} className="home-goal-texts-paragraph">
@@ -1951,7 +2014,7 @@ export function GoalTunnelSection() {
             <div
               ref={imgInRef}
               id="home-goal-image-in"
-              className="relative w-full min-[820px]:w-[46.5%] aspect-[4/2.95] rounded-[24px] bg-[#07090e]"
+              className="relative w-full min-[820px]:w-[41.5%] aspect-[4/3] rounded-[24px] bg-[#07090e]"
             >
               {/* Graceful Reduced-Motion / Non-WebGL Fallback Poster */}
               <div
@@ -1970,12 +2033,16 @@ export function GoalTunnelSection() {
 
       {/* =======================================================================
           Part B: Deep 3D Tunnel Scroll Track + Exit Monitor Anchor (`#home-goal-image-out`)
+          Top 240vh stays `#f0f1fa` so `home-02` expanding tablet sits cleanly on lavender before space!
           ======================================================================= */}
       <div
         ref={tunnelRef}
         id="home-goal-tunnel"
-        className="relative w-full bg-[#000000]"
-        style={{ height: "3550vh" }}
+        className="relative w-full"
+        style={{
+          height: "3550vh",
+          background: "linear-gradient(to bottom, #f0f1fa 0vh, #f0f1fa 240vh, #000000 240vh, #000000 100%)",
+        }}
       >
         {/* Exit Desktop Display Anchor positioned near bottom of `#home-goal` (`home-08`, `home-09`) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-[135vh] flex flex-col items-center justify-center">
