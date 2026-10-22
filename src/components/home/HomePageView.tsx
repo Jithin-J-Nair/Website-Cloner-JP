@@ -232,7 +232,7 @@ export function HomePageView() {
          ===================================================================== */}
       <section
         id="home-reel"
-        className="section relative overflow-hidden grid grid-cols-6 gap-x-[var(--grid-gap)] px-[var(--base-padding-x)] pt-16 pb-20 text-[clamp(0.875rem,1vw,2rem)] min-[813px]:grid-cols-12 min-[813px]:pt-24 min-[813px]:pb-32"
+        className="section relative grid grid-cols-6 gap-x-[var(--grid-gap)] overflow-hidden px-[var(--base-padding-x)] pt-8 pb-20 text-[clamp(0.875rem,1vw,2rem)] min-[813px]:grid-cols-12 min-[813px]:pt-24 min-[813px]:pb-32"
       >
         {/* Bold Cobalt Ribbon Arc (`line_reel`) connecting hero into `#home-reel-thumb` */}
         <svg
@@ -267,16 +267,16 @@ export function HomePageView() {
         {/* Display Eyebrow Heading (`#home-reel-title`) */}
         <h2
           id="home-reel-title"
-          className="relative z-10 col-span-6 mt-[0.15em] mb-[0.55em] -ml-[0.03em] font-sans text-[14.2vw] leading-[0.98] font-normal tracking-[-0.025em] text-[#000000] max-[812px]:max-w-[7.2ch] max-[480px]:text-[19.2vw] min-[813px]:col-span-12 min-[813px]:mb-[0.38em] min-[813px]:text-[10vw]"
+          className="relative z-10 col-span-6 mt-[0.1em] mb-[0.52em] -ml-[0.03em] font-sans text-[17.6vw] leading-[1.03] font-normal tracking-[-0.025em] text-[#000000] min-[813px]:col-span-12 min-[813px]:mt-[0.15em] min-[813px]:mb-[0.38em] min-[813px]:text-[10vw] min-[813px]:leading-[0.98]"
         >
           <span id="home-reel-title-inner" className="inline-block">
             <span
               id="home-reel-title-line-1"
-              className="block min-[813px]:pl-[calc(var(--grid-space)*0.92+var(--grid-gap))]"
+              className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*0.92+var(--grid-gap))]"
             >
               {LUSION_HOME.reel.eyebrowLine1}
             </span>
-            <span id="home-reel-title-line-2" className="block">
+            <span id="home-reel-title-line-2" className="block max-[812px]:max-w-[8.8ch]">
               {LUSION_HOME.reel.eyebrowLine2}
             </span>
           </span>
@@ -504,29 +504,9 @@ export function HomePageView() {
           ))}
         </div>
 
-        {/* Centered Archive CTA (`#home-featured-cta` -> `/projects`) + Sculptural Cyan Loop (`ref-05-featured-cta`) */}
-        <div className="relative col-span-6 mt-12 mb-6 flex justify-center min-[813px]:col-span-12 min-[813px]:mt-10 min-[813px]:min-h-[260px] min-[813px]:items-center">
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 1440 420"
-            fill="none"
-            className="pointer-events-none absolute inset-x-0 -top-24 -z-0 h-[420px] w-full max-[812px]:hidden"
-          >
-            <path
-              d="M 1480 42 C 1220 52, 960 -18, 660 22 C 380 62, 340 290, 620 375 C 810 430, 985 385, 1018 300"
-              stroke="url(#lusionLineGoal)"
-              strokeWidth="40"
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="lusionLineGoal" x1="1460" y1="40" x2="480" y2="380" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#1bd5f5" />
-                <stop offset="52%" stopColor="#43f5ee" />
-                <stop offset="100%" stopColor="#65fbf2" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="relative z-10 min-[813px]:rotate-[4deg]">
+      {/* Centered Archive CTA (`#home-featured-cta` -> `/projects`) */}
+        <div className="relative col-span-6 mt-12 mb-4 flex justify-center min-[813px]:col-span-12 min-[813px]:mt-20 min-[813px]:mb-8">
+          <div className="relative z-10">
             <LusionExpandingCta
               id="home-featured-cta"
               dotId="home-featured-cta-dot"

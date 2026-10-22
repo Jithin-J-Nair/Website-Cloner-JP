@@ -125,11 +125,21 @@ function AstronautCosmosCanvas({
         ctx.restore();
       }
 
-      // 3. Shaded 3D White EVA Space Astronaut (`ref-07` soft blur -> `ref-08` crisp focus)
-      const astroPresence = Math.min(1, Math.max(0, (p - 0.24) / 0.22));
+      // 3. Shaded 3D White EVA Space Astronaut (`ref-07` close-up on mobile -> `ref-08` crisp focus)
+      const astroPresence = Math.min(1, Math.max(0, (p - 0.24) / 0.16));
       if (astroPresence > 0.02) {
         const bobY = reducedMotion ? 0 : Math.sin(phase) * (h * 0.008);
-        const motionPasses = p < 0.56 && !reducedMotion ? 5 : 1;
+        const motionPasses = !isMobile && p < 0.56 && !reducedMotion ? 5 : 1;
+
+        // Subtle upper-edge atmospheric studio haze on mobile Stage 1 (`ref-07--390x844.png`)
+        if (isMobile && p < 0.62) {
+          const topMistAlpha = (1 - Math.max(0, (p - 0.46) / 0.16)) * 0.24;
+          const topMist = ctx.createLinearGradient(0, 0, 0, h * 0.24);
+          topMist.addColorStop(0, `rgba(196, 202, 218, ${topMistAlpha.toFixed(3)})`);
+          topMist.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = topMist;
+          ctx.fillRect(0, 0, w, h * 0.24);
+        }
 
         for (let pass = 0; pass < motionPasses; pass += 1) {
           const offsetPass =
@@ -139,32 +149,83 @@ function AstronautCosmosCanvas({
             motionPasses === 1 ? astroPresence : (astroPresence / motionPasses) * 1.45;
 
           if (isMobile) {
-            // Compact zero-G floating EVA figure (`ref-08--390x844.png`)
-            const cx = w * 0.49 + offsetPass;
-            const cy = h * 0.585 + bobY;
-            const sc = w * 0.195;
+            // Smooth camera pull-back from foreground portrait (`p <= 0.56`, `ref-07--390x844.png`)
+            // to compact zero-G floating EVA figure (`p >= 0.72`, `ref-08--390x844.png`)
+            const zoomOut = Math.min(1, Math.max(0, (p - 0.56) / 0.16));
+            if (zoomOut > 0.85) {
+              const cx = w * 0.49 + offsetPass;
+              const cy = h * 0.585 + bobY;
+              const sc = w * 0.195;
 
-            // Legs
-            drawShadedCapsule(cx - sc * 0.2, cy + sc * 0.22, cx - sc * 0.26, cy + sc * 0.78, sc * 0.13, sc * 0.095);
-            drawShadedCapsule(cx + sc * 0.18, cy + sc * 0.22, cx + sc * 0.28, cy + sc * 0.76, sc * 0.13, sc * 0.095);
-            // Outstretched arms
-            drawShadedCapsule(cx - sc * 0.28, cy - sc * 0.18, cx - sc * 0.68, cy - sc * 0.12, sc * 0.11, sc * 0.085);
-            drawShadedCapsule(cx + sc * 0.28, cy - sc * 0.18, cx + sc * 0.64, cy - sc * 0.10, sc * 0.11, sc * 0.085);
-            // Torso + PLSS Backpack
-            drawShadedCapsule(cx, cy - sc * 0.2, cx, cy + sc * 0.2, sc * 0.27, sc * 0.23, 0.98);
-            ctx.fillStyle = "rgb(232,235,242)";
-            ctx.beginPath();
-            ctx.roundRect(cx - sc * 0.2, cy - sc * 0.28, sc * 0.4, sc * 0.44, sc * 0.08);
-            ctx.fill();
-            // Helmet
-            const hg = ctx.createRadialGradient(cx - sc * 0.06, cy - sc * 0.48, sc * 0.04, cx, cy - sc * 0.42, sc * 0.2);
-            hg.addColorStop(0, "#ffffff");
-            hg.addColorStop(0.7, "#cfd4df");
-            hg.addColorStop(1, "#7b8190");
-            ctx.beginPath();
-            ctx.arc(cx, cy - sc * 0.42, sc * 0.19, 0, Math.PI * 2);
-            ctx.fillStyle = hg;
-            ctx.fill();
+              drawShadedCapsule(cx - sc * 0.2, cy + sc * 0.22, cx - sc * 0.26, cy + sc * 0.78, sc * 0.13, sc * 0.095);
+              drawShadedCapsule(cx + sc * 0.18, cy + sc * 0.22, cx + sc * 0.28, cy + sc * 0.76, sc * 0.13, sc * 0.095);
+              drawShadedCapsule(cx - sc * 0.28, cy - sc * 0.18, cx - sc * 0.68, cy - sc * 0.12, sc * 0.11, sc * 0.085);
+              drawShadedCapsule(cx + sc * 0.28, cy - sc * 0.18, cx + sc * 0.64, cy - sc * 0.10, sc * 0.11, sc * 0.085);
+              drawShadedCapsule(cx, cy - sc * 0.2, cx, cy + sc * 0.2, sc * 0.27, sc * 0.23, 0.98);
+              ctx.fillStyle = "rgb(232,235,242)";
+              ctx.beginPath();
+              ctx.roundRect(cx - sc * 0.2, cy - sc * 0.28, sc * 0.4, sc * 0.44, sc * 0.08);
+              ctx.fill();
+              const hg = ctx.createRadialGradient(cx - sc * 0.06, cy - sc * 0.48, sc * 0.04, cx, cy - sc * 0.42, sc * 0.2);
+              hg.addColorStop(0, "#ffffff");
+              hg.addColorStop(0.7, "#cfd4df");
+              hg.addColorStop(1, "#7b8190");
+              ctx.beginPath();
+              ctx.arc(cx, cy - sc * 0.42, sc * 0.19, 0, Math.PI * 2);
+              ctx.fillStyle = hg;
+              ctx.fill();
+            } else {
+              // Heroic foreground close-up EVA Astronaut (`ref-07--390x844.png`)
+              const cx = w * 0.485 + offsetPass;
+              const headY = h * (0.525 + zoomOut * 0.05) + bobY;
+              const sc = h * (0.355 * (1 - zoomOut) + 0.095 * zoomOut);
+
+              ctx.fillStyle = "#b5bcc8";
+              ctx.beginPath();
+              ctx.roundRect(cx - sc * 0.46, headY + sc * 0.16, sc * 0.92, sc * 0.62, sc * 0.1);
+              ctx.fill();
+
+              // Outstretched sleeves extending to left/right viewport edges (`x = 0..w`)
+              drawShadedCapsule(cx - sc * 0.36, headY + sc * 0.44, -w * 0.08, headY + sc * 0.40, sc * 0.18, sc * 0.15);
+              drawShadedCapsule(cx + sc * 0.36, headY + sc * 0.44, w * 1.08, headY + sc * 0.40, sc * 0.18, sc * 0.15);
+
+              // Full-width white EVA suit torso & hips filling lower screen (`y = 60%..100%`)
+              drawShadedCapsule(cx, headY + sc * 0.44, cx, headY + sc * 1.08, sc * 0.44, sc * 0.39);
+              drawShadedCapsule(cx - sc * 0.2, headY + sc * 1.06, cx - sc * 0.26, h + sc * 0.22, sc * 0.23, sc * 0.2);
+              drawShadedCapsule(cx + sc * 0.2, headY + sc * 1.06, cx + sc * 0.26, h + sc * 0.22, sc * 0.23, sc * 0.2);
+
+              // Black harness straps & hip ports (`ref-07--390x844.png`)
+              ctx.fillStyle = "#17191e";
+              ctx.fillRect(cx - sc * 0.32, headY + sc * 0.28, sc * 0.06, sc * 0.22);
+              ctx.fillRect(cx + sc * 0.26, headY + sc * 0.28, sc * 0.06, sc * 0.22);
+              ctx.beginPath();
+              ctx.arc(cx - sc * 0.18, headY + sc * 1.04, sc * 0.068, 0, Math.PI * 2);
+              ctx.arc(cx + sc * 0.18, headY + sc * 1.04, sc * 0.068, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Spherical EVA Helmet + Dark Obsidian Mirror Visor
+              const helmetR = sc * 0.33;
+              const helmGrad = ctx.createRadialGradient(
+                cx - helmetR * 0.22,
+                headY - helmetR * 0.34,
+                helmetR * 0.08,
+                cx,
+                headY,
+                helmetR
+              );
+              helmGrad.addColorStop(0, "#ffffff");
+              helmGrad.addColorStop(0.7, "#d9dfe8");
+              helmGrad.addColorStop(1, "#858c99");
+              ctx.beginPath();
+              ctx.arc(cx, headY, helmetR, 0, Math.PI * 2);
+              ctx.fillStyle = helmGrad;
+              ctx.fill();
+
+              ctx.fillStyle = "#08090c";
+              ctx.beginPath();
+              ctx.ellipse(cx, headY + helmetR * 0.06, helmetR * 0.78, helmetR * 0.62, 0, 0, Math.PI * 2);
+              ctx.fill();
+            }
           } else {
             // Heroic foreground EVA Astronaut facing camera with mirror visor + star flare (`ref-08--1440x900.png`)
             const cx = w * 0.485 + offsetPass;

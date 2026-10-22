@@ -101,7 +101,17 @@ const AUDIT_STOPS = [
   { id: "01-home-hero", route: "/", selector: "#home-hero", extraRatio: 0, headerOffset: 0, refKind: "phase-c", refBase: "ref-01-hero" },
   { id: "02-home-reel-intro", route: "/", selector: "#home-reel", extraRatio: 0, headerOffset: 44, refKind: "phase-c", refBase: "ref-02-reel-intro" },
   { id: "03-home-reel-stage", route: "/", selector: "#home-reel-container", extraRatio: 0, headerOffset: 90, refKind: "phase-c", refBase: "ref-03-reel-stage" },
-  { id: "05-home-featured-cta", route: "/", selector: "#home-featured-cta", extraRatio: 0, headerOffset: 70, refKind: "phase-c", refBase: "ref-05-featured-cta" },
+  {
+    id: "05-home-featured-cta",
+    route: "/",
+    selector: ".project-item[data-project-slug='everswap']",
+    mobileSelector: "#home-featured-cta",
+    extraRatio: 0,
+    headerOffset: 175,
+    mobileHeaderOffset: 542,
+    refKind: "phase-c",
+    refBase: "ref-05-featured-cta",
+  },
   { id: "07-home-goal-stage1", route: "/", selector: "#home-goal", extraRatio: 0.44, headerOffset: 0, refKind: "phase-c", refBase: "ref-07-goal-stage1-dark" },
   { id: "08-home-goal-stage2", route: "/", selector: "#home-goal", extraRatio: 0.78, headerOffset: 0, refKind: "phase-c", refBase: "ref-08-goal-stage2-white" },
   { id: "09-home-footer-portal", route: "/", selector: "#footer-section", extraRatio: 0.08, headerOffset: 0, refKind: "phase-b-4", refBase: "04-footer-and-portal" },
@@ -172,9 +182,22 @@ try {
       for (const stop of AUDIT_STOPS) {
         if (currentRoute !== stop.route) {
           await page.goto(`${RECON_URL}${stop.route}`, { waitUntil: "domcontentloaded", timeout: 45_000 });
-          await page.waitForTimeout(stop.route === "/" ? 1100 : 500);
+          await page.evaluate(() => document.fonts.ready);
+          await page
+            .waitForFunction(() => !document.getElementById("preloader"), { timeout: 6_000 })
+            .catch(() => {});
+          await page.waitForTimeout(stop.route === "/" ? 650 : 400);
           currentRoute = stop.route;
         }
+
+        const effectiveSelector =
+          vp.width <= 812 && typeof stop.mobileSelector === "string"
+            ? stop.mobileSelector
+            : stop.selector;
+        const effectiveHeaderOffset =
+          vp.width <= 812 && typeof stop.mobileHeaderOffset === "number"
+            ? stop.mobileHeaderOffset
+            : stop.headerOffset;
 
         await page.evaluate(
           ({ selector, extraRatio, headerOffset }) => {
@@ -188,7 +211,7 @@ try {
                 : window.scrollY + rect.top + el.scrollHeight * extraRatio - headerOffset;
             window.scrollTo({ top: Math.max(0, Math.min(maxScroll, targetY)), behavior: "instant" });
           },
-          { selector: stop.selector, extraRatio: stop.extraRatio, headerOffset: stop.headerOffset }
+          { selector: effectiveSelector, extraRatio: stop.extraRatio, headerOffset: effectiveHeaderOffset }
         );
         await page.waitForTimeout(260);
         await snapPng(cdp, path.join(CAP_DIR, `${stop.id}--${vp.name}.png`));
@@ -233,17 +256,19 @@ try {
             if (refKind === "phase-c") {
               ctxA.drawImage(refImg, 0, 0, w, h);
             } else if (refKind === "phase-a-3") {
-              // 3 horizontal panels with small header strip on top: crop panel 1 proportionally
-              const panelW = refImg.width / 3;
-              const panelH = panelW * (h / w);
-              const sy = Math.max(0, refImg.height - panelH);
-              ctxA.drawImage(refImg, 0, sy, panelW - 4, panelH, 0, 0, w, h);
+              // Exact Phase A 3-panel layout (`1412x328` @ 0.32x desktop, `872x646` @ 0.72x mobile)
+              const sx = 8;
+              const sy = w > 800 ? 32 : 31;
+              const sw = w > 800 ? 461 : 281;
+              const sh = w > 800 ? 288 : 608;
+              ctxA.drawImage(refImg, sx, sy, sw, sh, 0, 0, w, h);
             } else if (refKind === "phase-b-4") {
-              // 4 horizontal panels: panel 4 is `REFERENCE (lusion.co)` on far right
-              const panelW = refImg.width / 4;
-              const panelH = panelW * (h / w);
-              const sy = Math.max(0, refImg.height - panelH);
-              ctxA.drawImage(refImg, panelW * 3 + 3, sy, panelW - 4, panelH, 0, 0, w, h);
+              // Exact Phase B 4-panel layout (`1650x304` @ 0.28x desktop, `1210x681` @ 0.75x mobile, panel 4)
+              const sx = w > 800 ? 1239 : 909;
+              const sy = w > 800 ? 44 : 40;
+              const sw = w > 800 ? 403 : 293;
+              const sh = w > 800 ? 252 : 633;
+              ctxA.drawImage(refImg, sx, sy, sw, sh, 0, 0, w, h);
             }
 
             const offB = document.createElement("canvas");

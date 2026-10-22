@@ -234,7 +234,7 @@ function buildBespokeCardScene(projectId: string, w: number, h: number, title: s
     </svg>`;
   }
 
-  if (projectId === "zeroswap") {
+  if (projectId === "everswap") {
     // Periwinkle-violet 3D studio figures in volumetric mist
     const figs = [0.29, 0.47, 0.64]
       .map(
@@ -277,6 +277,39 @@ function buildBespokeCardScene(projectId: string, w: number, h: number, title: s
       <polygon points="${w * 0.34},${h * 0.68} ${w * 0.96},${h * 0.68} ${w * 1.0},${h * 1.0} ${w * 0.24},${h * 1.0}" fill="#581b22"/>
       <polygon points="${w * 0.25},${h * 0.48} ${w * 0.31},${h * 0.56} ${w * 0.26},${h * 0.67} ${w * 0.21},${h * 0.58}" fill="#a982e8"/>
       <polygon points="${w * 0.86},${h * 0.26} ${w * 0.93},${h * 0.34} ${w * 0.88},${h * 0.46} ${w * 0.81},${h * 0.36}" fill="#b794f4"/>
+    </svg>`;
+  }
+
+  if (projectId === "choo_choo_world") {
+    // Clean-room sunlit pastel meadow + elevated polychrome 3D coaster spline
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+      <title>${title}</title>
+      <defs>
+        <linearGradient id="ccSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b9d6ff"/>
+          <stop offset="42%" stop-color="#d8e9ff"/>
+          <stop offset="43%" stop-color="#86e38b"/>
+          <stop offset="100%" stop-color="#6fd477"/>
+        </linearGradient>
+      </defs>
+      <rect width="${w}" height="${h}" fill="url(#ccSky)"/>
+      <circle cx="${Math.round(w * 0.48)}" cy="${Math.round(h * 0.36)}" r="${Math.round(h * 0.24)}" fill="#77da80"/>
+      <circle cx="${Math.round(w * 0.68)}" cy="${Math.round(h * 0.34)}" r="${Math.round(h * 0.28)}" fill="#69cc73"/>
+      <path d="M 0 ${h * 0.62} C ${w * 0.28} ${h * 0.56}, ${w * 0.44} ${h * 0.92}, ${w} ${h * 0.80}" fill="none" stroke="#f2d55c" stroke-width="${Math.round(h * 0.055)}" stroke-linecap="round"/>
+      <path d="M ${w * 0.14} ${h * 0.36} C ${w * 0.36} ${h * 0.22}, ${w * 0.64} ${h * 0.48}, ${w * 0.92} ${h * 0.30}" fill="none" stroke="#8574f2" stroke-width="${Math.round(h * 0.05)}" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  if (projectId === "soda_experience") {
+    // Clean-room abstract crimson studio backdrop + dark calligraphic ribbons + warm central glass column (zero trademarks)
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+      <title>${title}</title>
+      <rect width="${w}" height="${h}" fill="#ee1d24"/>
+      <path d="M ${-w * 0.05} ${h * 0.66} C ${w * 0.08} ${h * 0.28}, ${w * 0.24} ${h * 0.78}, ${w * 0.34} ${h * 0.44}" fill="none" stroke="#0b090a" stroke-width="${Math.round(h * 0.11)}" stroke-linecap="round"/>
+      <path d="M ${w * 0.68} ${h * 0.64} C ${w * 0.80} ${h * 0.26}, ${w * 0.92} ${h * 0.76}, ${w * 1.05} ${h * 0.40}" fill="none" stroke="#0b090a" stroke-width="${Math.round(h * 0.11)}" stroke-linecap="round"/>
+      <rect x="${Math.round(w * 0.33)}" y="0" width="${Math.round(w * 0.34)}" height="${h}" fill="#c8b398"/>
+      <rect x="${Math.round(w * 0.36)}" y="${Math.round(h * 0.16)}" width="${Math.round(w * 0.12)}" height="${Math.round(h * 0.68)}" rx="22" fill="#4f3328"/>
+      <polygon points="${w * 0.50},${h * 0.34} ${w * 0.64},${h * 0.34} ${w * 0.61},${h * 0.82} ${w * 0.53},${h * 0.82}" fill="#5b3d30"/>
     </svg>`;
   }
 
@@ -364,8 +397,8 @@ export function synthesizeCleanAssetSvg(relPath: string): SynthesizedMediaResult
     <title>${title}</title>
     <defs>
       <radialGradient id="glowA" cx="${((cx1 / width) * 100).toFixed(1)}%" cy="${((cy1 / height) * 100).toFixed(1)}%" r="62%">
-        <stop offset="0%" stop-color="${accent}" stop-opacity="0.62"/>
-        <stop offset="55%" stop-color="${accent}" stop-opacity="0.18"/>
+        <stop offset="0%" stop-color="${accent}" stop-opacity="${isCardPlate ? "0.52" : "0.22"}"/>
+        <stop offset="55%" stop-color="${accent}" stop-opacity="${isCardPlate ? "0.15" : "0.06"}"/>
         <stop offset="100%" stop-color="${bg}" stop-opacity="0"/>
       </radialGradient>
       <radialGradient id="glowB" cx="${((cx2 / width) * 100).toFixed(1)}%" cy="${((cy2 / height) * 100).toFixed(1)}%" r="48%">

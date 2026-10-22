@@ -1,0 +1,209 @@
+{
+  "label": "latest",
+  "generatedAt": "2026-10-22T08:22:02.797Z",
+  "meanMae": 34.31,
+  "meanPsnrDb": 11.86,
+  "meanSsim": 0.5413,
+  "stops": [
+    {
+      "stop": "01-home-hero",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 44.46,
+      "rmse": 79.92,
+      "psnrDb": 10.08,
+      "ssim": 0.579,
+      "pctPixelsOver24": 41.25
+    },
+    {
+      "stop": "02-home-reel-intro",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 34.02,
+      "rmse": 80.26,
+      "psnrDb": 10.04,
+      "ssim": 0.7085,
+      "pctPixelsOver24": 25.61
+    },
+    {
+      "stop": "03-home-reel-stage",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 25.88,
+      "rmse": 45.5,
+      "psnrDb": 14.97,
+      "ssim": 0.8095,
+      "pctPixelsOver24": 30.13
+    },
+    {
+      "stop": "05-home-featured-cta",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 37.02,
+      "rmse": 69.94,
+      "psnrDb": 11.24,
+      "ssim": 0.6651,
+      "pctPixelsOver24": 34.98
+    },
+    {
+      "stop": "07-home-goal-stage1",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 16.58,
+      "rmse": 45.08,
+      "psnrDb": 15.05,
+      "ssim": 0.611,
+      "pctPixelsOver24": 14.15
+    },
+    {
+      "stop": "08-home-goal-stage2",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 18.56,
+      "rmse": 36.85,
+      "psnrDb": 16.8,
+      "ssim": 0.375,
+      "pctPixelsOver24": 20.83
+    },
+    {
+      "stop": "09-home-footer-portal",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 46.43,
+      "rmse": 100.13,
+      "psnrDb": 8.12,
+      "ssim": 0.7181,
+      "pctPixelsOver24": 23.05
+    },
+    {
+      "stop": "10-about-hero",
+      "route": "/about",
+      "viewport": "1440x900",
+      "mae": 40.84,
+      "rmse": 76.18,
+      "psnrDb": 10.49,
+      "ssim": 0.2162,
+      "pctPixelsOver24": 34.62
+    },
+    {
+      "stop": "11-projects-archive",
+      "route": "/projects",
+      "viewport": "1440x900",
+      "mae": 39.72,
+      "rmse": 75.97,
+      "psnrDb": 10.52,
+      "ssim": 0.6626,
+      "pctPixelsOver24": 38.82
+    },
+    {
+      "stop": "12-project-oryzo-ai",
+      "route": "/projects/oryzo_ai",
+      "viewport": "1440x900",
+      "mae": 22.84,
+      "rmse": 53.67,
+      "psnrDb": 13.54,
+      "ssim": 0.7161,
+      "pctPixelsOver24": 20.28
+    },
+    {
+      "stop": "01-home-hero",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 53.82,
+      "rmse": 88.26,
+      "psnrDb": 9.22,
+      "ssim": 0.4094,
+      "pctPixelsOver24": 55.79
+    },
+    {
+      "stop": "02-home-reel-intro",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 32.08,
+      "rmse": 75.07,
+      "psnrDb": 10.62,
+      "ssim": 0.6015,
+      "pctPixelsOver24": 24.67
+    },
+    {
+      "stop": "03-home-reel-stage",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 39.11,
+      "rmse": 69.66,
+      "psnrDb": 11.27,
+      "ssim": 0.726,
+      "pctPixelsOver24": 49.18
+    },
+    {
+      "stop": "05-home-featured-cta",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 28.52,
+      "rmse": 65.87,
+      "psnrDb": 11.76,
+      "ssim": 0.6156,
+      "pctPixelsOver24": 26.85
+    },
+    {
+      "stop": "07-home-goal-stage1",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 33.57,
+      "rmse": 61.31,
+      "psnrDb": 12.38,
+      "ssim": 0.3347,
+      "pctPixelsOver24": 29.7
+    },
+    {
+      "stop": "08-home-goal-stage2",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 29.97,
+      "rmse": 49.48,
+      "psnrDb": 14.24,
+      "ssim": 0.2127,
+      "pctPixelsOver24": 27.85
+    },
+    {
+      "stop": "09-home-footer-portal",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 23.53,
+      "rmse": 64.41,
+      "psnrDb": 11.95,
+      "ssim": 0.6657,
+      "pctPixelsOver24": 14.52
+    },
+    {
+      "stop": "10-about-hero",
+      "route": "/about",
+      "viewport": "390x844",
+      "mae": 42.62,
+      "rmse": 61.91,
+      "psnrDb": 12.3,
+      "ssim": 0.283,
+      "pctPixelsOver24": 55.7
+    },
+    {
+      "stop": "11-projects-archive",
+      "route": "/projects",
+      "viewport": "390x844",
+      "mae": 50.55,
+      "rmse": 81.24,
+      "psnrDb": 9.94,
+      "ssim": 0.4233,
+      "pctPixelsOver24": 53.65
+    },
+    {
+      "stop": "12-project-oryzo-ai",
+      "route": "/projects/oryzo_ai",
+      "viewport": "390x844",
+      "mae": 25.99,
+      "rmse": 59.84,
+      "psnrDb": 12.59,
+      "ssim": 0.4921,
+      "pctPixelsOver24": 21.42
+    }
+  ]
+}

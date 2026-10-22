@@ -229,32 +229,36 @@ export function ProceduralReelStream({
           ctx.fill();
         }
       } else {
-        // Case-study & modal high-contrast studio motion stream
+        // Solid obsidian studio base before translucent radial key light (prevents rAF alpha accumulation)
+        ctx.fillStyle = "#090809";
+        ctx.fillRect(0, 0, w, h);
+
         const bgGrad = ctx.createRadialGradient(
-          w * (0.42 + Math.sin(t * 0.45) * 0.14),
-          h * (0.44 + Math.cos(t * 0.35) * 0.12),
-          w * 0.05,
+          w * (0.46 + Math.sin(t * 0.45) * 0.1),
+          h * (0.48 + Math.cos(t * 0.35) * 0.08),
+          w * 0.04,
           w * 0.5,
           h * 0.5,
           Math.max(w, h) * 0.78
         );
-        bgGrad.addColorStop(0, `${accentColor}44`);
-        bgGrad.addColorStop(0.55, "#101522");
-        bgGrad.addColorStop(1, "#07090f");
+        bgGrad.addColorStop(0, `${accentColor}22`);
+        bgGrad.addColorStop(0.58, "rgba(13, 12, 13, 0.5)");
+        bgGrad.addColorStop(1, "rgba(6, 6, 8, 0)");
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, w, h);
 
         for (let band = 0; band < 3; band += 1) {
           ctx.beginPath();
-          const amp = h * (0.14 - band * 0.03);
+          const amp = h * (0.11 - band * 0.025);
           const freq = 0.0038 + band * 0.0011;
           for (let x = 0; x <= w; x += 12) {
-            const y = h * 0.5 + Math.sin(x * freq + t * (1.1 + band * 0.35) + band) * amp;
+            const y = h * 0.52 + Math.sin(x * freq + t * (1.1 + band * 0.35) + band) * amp;
             if (x === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
           }
-          ctx.strokeStyle = band === 0 ? accentColor : band === 1 ? "#c1ff00" : "rgba(255,255,255,0.45)";
-          ctx.lineWidth = band === 0 ? minDim * 0.026 : minDim * 0.008;
+          ctx.strokeStyle =
+            band === 0 ? `${accentColor}66` : band === 1 ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.14)";
+          ctx.lineWidth = band === 0 ? minDim * 0.012 : minDim * 0.004;
           ctx.stroke();
         }
 
