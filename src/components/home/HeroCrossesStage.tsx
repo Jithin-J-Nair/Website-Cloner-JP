@@ -312,8 +312,8 @@ function HollowCrossCluster({
     const activeBodies = bodiesRef.current;
 
     const aspect = size.width / Math.max(1, size.height);
-    const targetZ = aspect < 0.85 ? 14.2 : 10.6;
-    const targetX = aspect < 0.85 ? 0.0 : 0.42;
+    const targetZ = aspect < 0.85 ? 11.4 : 8.45;
+    const targetX = aspect < 0.85 ? 0.0 : 0.08;
     const cam = state.camera as THREE.PerspectiveCamera;
     if (
       Math.abs(cam.position.z - targetZ) > 0.01 ||

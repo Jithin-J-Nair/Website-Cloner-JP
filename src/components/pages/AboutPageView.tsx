@@ -64,25 +64,36 @@ function AboutHeroParticleCanvas({ reducedMotion }: { reducedMotion: boolean }) 
 
       const w = canvas.width;
       const h = canvas.height;
+      const isMobile = w < 900;
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, w, h);
 
-      // Soft volumetric studio backlight
-      const glow = ctx.createRadialGradient(
-        w * 0.52,
-        h * 0.40,
-        w * 0.02,
-        w * 0.52,
-        h * 0.42,
-        Math.max(w, h) * 0.56
-      );
-      glow.addColorStop(0, "rgba(182, 195, 224, 0.24)");
-      glow.addColorStop(0.45, "rgba(62, 74, 102, 0.12)");
-      glow.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, w, h);
+      // Volumetric silver-pearl studio mist billows (`ref-10-about-hero--1440x900` & `390x844`)
+      const mistPuffs = isMobile
+        ? [
+            [0.34, 0.16, 0.48, 0.42],
+            [0.68, 0.12, 0.44, 0.34],
+            [0.24, 0.36, 0.42, 0.36],
+            [0.62, 0.44, 0.46, 0.34],
+            [0.72, 0.62, 0.36, 0.28],
+          ]
+        : [
+            [0.36, 0.14, 0.24, 0.42],
+            [0.44, 0.32, 0.26, 0.36],
+            [0.24, 0.28, 0.20, 0.30],
+            [0.42, 0.48, 0.20, 0.28],
+          ];
+      for (const [mx, my, mr, ma] of mistPuffs) {
+        const rr = Math.max(w, h) * mr;
+        const g = ctx.createRadialGradient(w * mx, h * my, rr * 0.06, w * mx, h * my, rr);
+        g.addColorStop(0, `rgba(214, 224, 238, ${ma})`);
+        g.addColorStop(0.45, `rgba(148, 162, 184, ${(ma * 0.52).toFixed(3)})`);
+        g.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+      }
 
-      const scale = Math.min(w, h) * 0.68;
+      const scale = Math.min(w, h) * (isMobile ? 0.92 : 0.72);
       const px = pointerRef.current.active ? pointerRef.current.x * 0.18 : 0;
       const py = pointerRef.current.active ? pointerRef.current.y * 0.14 : 0;
 
@@ -90,14 +101,14 @@ function AboutHeroParticleCanvas({ reducedMotion }: { reducedMotion: boolean }) 
         const p = pts[i];
         const driftX = Math.sin(t + p.phase) * 0.035 + px * (0.4 + p.bz);
         const driftY = Math.cos(t * 0.85 + p.phase * 1.2) * 0.035 + py * (0.4 + p.bz);
-        const z = 1.65 + p.bz * 0.65 + Math.sin(t * 0.5 + p.phase) * 0.12;
-        const sx = w * 0.53 + ((p.bx + driftX) / z) * scale * 1.45;
-        const sy = h * 0.41 + ((p.by + driftY) / z) * scale * 1.28;
-        const r = Math.max(0.8, (p.size / z) * (w > 900 ? 1.5 : 1.15));
+        const z = 1.45 + p.bz * 0.65 + Math.sin(t * 0.5 + p.phase) * 0.12;
+        const sx = w * (isMobile ? 0.50 : 0.37) + ((p.bx + driftX) / z) * scale * (isMobile ? 1.35 : 0.92);
+        const sy = h * (isMobile ? 0.34 : 0.30) + ((p.by + driftY) / z) * scale * (isMobile ? 1.55 : 1.05);
+        const r = Math.max(1.1, (p.size / z) * (isMobile ? 1.85 : 2.15));
 
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(226, 232, 245, ${Math.min(0.95, p.alpha / z).toFixed(3)})`;
+        ctx.fillStyle = `rgba(232, 238, 248, ${Math.min(0.95, (p.alpha * 1.18) / z).toFixed(3)})`;
         ctx.fill();
       }
 
@@ -299,36 +310,19 @@ export function AboutPageView() {
               Lusion — {LUSION_ABOUT.who.leftLines.join(" ")} {LUSION_ABOUT.who.rightHeadline}
             </h1>
             <svg
-              viewBox="0 0 1380 265"
+              viewBox="0 0 1400 315"
               fill="none"
               aria-hidden="true"
-              className="block h-auto w-full select-none"
+              className="-mx-2 block h-auto w-[calc(100%+1rem)] select-none md:-mx-6 md:w-[calc(100%+3rem)]"
             >
               <text
                 x="4"
-                y="240"
-                textLength="1372"
+                y="286"
+                textLength="1392"
                 lengthAdjust="spacingAndGlyphs"
-                fill="none"
-                stroke="#ffffff"
-                strokeWidth="12"
-                strokeLinejoin="round"
+                fill="#ffffff"
                 fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-                fontSize="286"
-                fontWeight="400"
-              >
-                LUSION
-              </text>
-              <text
-                x="4"
-                y="240"
-                textLength="1372"
-                lengthAdjust="spacingAndGlyphs"
-                fill="none"
-                stroke="#000000"
-                strokeWidth="4"
-                fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-                fontSize="286"
+                fontSize="338"
                 fontWeight="400"
               >
                 LUSION

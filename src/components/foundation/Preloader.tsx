@@ -49,7 +49,7 @@ export function Preloader() {
     }
 
     const start = performance.now();
-    const duration = 900;
+    const duration = 460;
     let raf = 0;
 
     const tick = (now: number) => {
@@ -59,7 +59,7 @@ export function Preloader() {
       if (t < 1) {
         raf = window.requestAnimationFrame(tick);
       } else {
-        window.setTimeout(finishBoot, 120);
+        window.setTimeout(finishBoot, 60);
       }
     };
 

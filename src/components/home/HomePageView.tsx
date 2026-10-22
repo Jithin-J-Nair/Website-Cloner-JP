@@ -172,12 +172,12 @@ export function HomePageView() {
       <section
         id="home-hero"
         ref={heroSectionRef}
-        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+3.4rem)] pb-[calc(var(--base-padding-y)*1.35)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*10.5)] min-[813px]:pb-[var(--base-padding-y)]"
+        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+2.9rem)] pb-[calc(var(--base-padding-y)*1.25)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*8.8)] min-[813px]:pb-[var(--base-padding-y)]"
       >
         {/* Reference Headline (`#home-hero-title`: cols 4..8 desktop, cols 1..6 mobile) */}
         <h1
           id="home-hero-title"
-          className="relative col-span-6 m-0 h-fit font-sans text-[6.1vw] leading-[1.1] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[7vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.45vw]"
+          className="relative col-span-6 m-0 h-fit font-sans text-[5.9vw] leading-[1.09] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[6.8vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.25vw]"
         >
           {heroWords.map((word, idx) => (
             <React.Fragment key={idx}>
@@ -239,7 +239,7 @@ export function HomePageView() {
           aria-hidden="true"
           viewBox="0 0 1440 900"
           fill="none"
-          className="pointer-events-none absolute top-0 left-0 z-0 h-full w-full max-[812px]:hidden"
+          className="pointer-events-none absolute top-0 left-0 z-0 h-[760px] w-full max-[812px]:hidden"
         >
           <path
             d="M -20 95 C 145 145, 250 320, 268 565"
@@ -345,7 +345,7 @@ export function HomePageView() {
         <div
           id="home-reel-container"
           ref={reelContainerRef}
-          className="relative z-10 col-span-6 mt-2 min-[813px]:col-span-12 min-[813px]:mt-6"
+          className="relative z-10 col-span-6 mt-2 min-[813px]:col-span-12 min-[813px]:mt-8 min-[813px]:px-4 min-[813px]:pt-16"
         >
           <div id="home-reel-container-inner" className="relative w-full">
             <div
@@ -353,20 +353,13 @@ export function HomePageView() {
               style={{ transform: `scale(${effectiveReelScale.toFixed(4)})` }}
               className="relative w-full origin-center transition-transform duration-150 will-change-transform"
             >
-              {/* Top `+` Crosshair Frame Decoration (Desktop) + `▶▶▶ PLAY REEL` Ticker (Mobile) */}
+              {/* Top `▶▶▶ PLAY REEL` Ticker on Mobile (`ref-03-reel-stage--390x844.png`) */}
               <div
                 id="home-reel-video-container-decoration"
                 aria-hidden="true"
-                className="pointer-events-none mb-3 flex w-full items-center justify-between text-black/85"
+                className="pointer-events-none mb-2.5 flex w-full items-center justify-between text-black min-[813px]:hidden"
               >
-                <div id="home-reel-video-container-top" className="flex w-full justify-between max-[812px]:hidden">
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                </div>
-                <div className="flex w-full items-center justify-between overflow-hidden py-1 font-sans text-[13px] font-medium tracking-[0.04em] text-[#000000] uppercase min-[813px]:hidden">
+                <div className="flex w-full items-center justify-between overflow-hidden py-1 font-sans text-[13px] font-medium tracking-[0.04em] text-[#000000] uppercase">
                   <span className="inline-flex items-center gap-2">
                     <span aria-hidden="true" className="tracking-[-0.1em]">&#9658;&#9658;&#9658;</span>
                     <span>PLAY REEL</span>
@@ -378,10 +371,10 @@ export function HomePageView() {
                 </div>
               </div>
 
-              {/* Rounded Interactive Reel Viewport */}
+              {/* Rounded Interactive Reel Viewport (`aspect-[1.85/1]` desktop matching `ref-03-reel-stage`) */}
               <div
                 onClick={handleOpenReel}
-                className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#0d1018] shadow-[0_28px_70px_rgba(12,18,42,0.16)] min-[813px]:aspect-[2/1]"
+                className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#7ca6ff] shadow-[0_24px_64px_rgba(12,18,42,0.12)] min-[813px]:aspect-[1.85/1]"
               >
                 {reelVideoAvailable ? (
                   <video
@@ -394,32 +387,32 @@ export function HomePageView() {
                     playsInline
                     preload="auto"
                     onError={() => setReelVideoFailed(true)}
-                    className="h-full w-full object-cover opacity-92 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
+                    className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
                   />
                 ) : (
                   <ProceduralReelStream variant="stage" />
                 )}
 
-                {/* Subtle dark vignette for high-contrast `PLAY REEL` legibility */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/15 to-black/30"
-                />
-
-                {/* Split `PLAY REEL` Display Overlay (`#home-reel-video-placeholder` + `#home-reel-video-title`) */}
+                {/* Monumental Split `PLAY REEL` Display Overlay (`ref-03-reel-stage--1440x900.png`) */}
                 <div
                   id="home-reel-video-placeholder"
                   className="pointer-events-none absolute inset-0 flex items-center justify-center"
                 >
                   <div
                     id="home-reel-video-title"
-                    style={{ gap: `${effectiveReelGapEm.toFixed(2)}em` }}
-                    className="flex items-center font-sans text-[clamp(2.2rem,4.6vw,5.1rem)] leading-none font-normal tracking-[-0.02em] text-white/95 uppercase select-none max-[812px]:hidden"
+                    style={{ gap: `${Math.max(1.95, effectiveReelGapEm).toFixed(2)}em` }}
+                    className="flex items-center font-sans text-[clamp(3.2rem,7.5vw,6.9rem)] leading-none font-normal tracking-[-0.015em] text-white uppercase drop-shadow-[0_2px_18px_rgba(20,32,68,0.16)] select-none max-[812px]:hidden"
                   >
                     <span>Play</span>
                     <span>Reel</span>
                   </div>
                 </div>
+
+                {/* Mobile Vertical Center Guide Ticks (`ref-03-reel-stage--390x844.png`) */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 left-1/2 h-28 w-[2px] -translate-x-1/2 -translate-y-1/2 bg-white/95 min-[813px]:hidden"
+                />
 
                 {/* Centered Pill Play Button (`#home-reel-video-watch-btn`) */}
                 <button
@@ -430,7 +423,7 @@ export function HomePageView() {
                     e.stopPropagation();
                     handleOpenReel();
                   }}
-                  className="group/btn absolute top-1/2 left-1/2 z-10 flex h-[4.4rem] w-[7.2rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center overflow-hidden rounded-full shadow-[0_12px_32px_rgba(0,0,0,0.28)] focus-visible:outline-2 focus-visible:outline-white md:h-[5.4rem] md:w-[8.8rem]"
+                  className="group/btn absolute top-1/2 left-1/2 z-10 flex h-[4.6rem] w-[7.4rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center overflow-hidden rounded-full shadow-[0_12px_32px_rgba(12,20,48,0.18)] focus-visible:outline-2 focus-visible:outline-white md:h-[5.5rem] md:w-[8.8rem]"
                 >
                   <span
                     id="home-reel-video-watch-btn-base"
@@ -457,16 +450,9 @@ export function HomePageView() {
               <div
                 id="home-reel-video-container-bottom"
                 aria-hidden="true"
-                className="pointer-events-none mt-3 flex w-full items-center justify-between text-black/85"
+                className="pointer-events-none mt-2.5 flex w-full items-center justify-between text-black min-[813px]:hidden"
               >
-                <div className="flex w-full justify-between max-[812px]:hidden">
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                  <span className="lusion-plus-cross" />
-                </div>
-                <div className="flex w-full items-center justify-between overflow-hidden py-1 font-sans text-[13px] font-medium tracking-[0.04em] text-[#000000] uppercase min-[813px]:hidden">
+                <div className="flex w-full items-center justify-between overflow-hidden py-1 font-sans text-[13px] font-medium tracking-[0.04em] text-[#000000] uppercase">
                   <span className="inline-flex items-center gap-2">
                     <span aria-hidden="true" className="tracking-[-0.1em]">&#9658;&#9658;&#9658;</span>
                     <span>PLAY REEL</span>
@@ -518,29 +504,29 @@ export function HomePageView() {
           ))}
         </div>
 
-        {/* Centered Archive CTA (`#home-featured-cta` -> `/projects`) + Cyan `line_goal` S-Curve Ribbon */}
-        <div className="relative col-span-6 mt-14 mb-8 flex justify-center min-[813px]:col-span-12 min-[813px]:mt-[calc(var(--vh,1vh)*11)]">
+        {/* Centered Archive CTA (`#home-featured-cta` -> `/projects`) + Sculptural Cyan Loop (`ref-05-featured-cta`) */}
+        <div className="relative col-span-6 mt-12 mb-6 flex justify-center min-[813px]:col-span-12 min-[813px]:mt-10 min-[813px]:min-h-[260px] min-[813px]:items-center">
           <svg
             aria-hidden="true"
             viewBox="0 0 1440 420"
             fill="none"
-            className="pointer-events-none absolute -top-24 left-1/2 -z-0 h-[360px] w-[1440px] -translate-x-1/2 md:-top-28 md:h-[460px]"
+            className="pointer-events-none absolute inset-x-0 -top-24 -z-0 h-[420px] w-full max-[812px]:hidden"
           >
             <path
-              d="M 1520 18 C 1180 -10, 930 145, 760 220 C 590 295, 585 390, 910 412"
+              d="M 1480 42 C 1220 52, 960 -18, 660 22 C 380 62, 340 290, 620 375 C 810 430, 985 385, 1018 300"
               stroke="url(#lusionLineGoal)"
-              strokeWidth="26"
+              strokeWidth="40"
               strokeLinecap="round"
             />
             <defs>
-              <linearGradient id="lusionLineGoal" x1="1520" y1="18" x2="620" y2="412" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#1de5ff" />
-                <stop offset="55%" stopColor="#26f2e0" />
-                <stop offset="100%" stopColor="#1a2ffb" />
+              <linearGradient id="lusionLineGoal" x1="1460" y1="40" x2="480" y2="380" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#1bd5f5" />
+                <stop offset="52%" stopColor="#43f5ee" />
+                <stop offset="100%" stopColor="#65fbf2" />
               </linearGradient>
             </defs>
           </svg>
-          <div className="relative z-10">
+          <div className="relative z-10 min-[813px]:rotate-[4deg]">
             <LusionExpandingCta
               id="home-featured-cta"
               dotId="home-featured-cta-dot"

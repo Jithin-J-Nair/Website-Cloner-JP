@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-10-22T05:29:28.239Z",
+  "generatedAt": "2026-10-22T06:20:41.739Z",
   "cleanProductionMode": true,
   "viewports": {
     "1440x900": {
       "webglMetrics": {
         "found": true,
         "width": 1296,
-        "height": 581,
+        "height": 607,
         "cssWidth": 1296,
-        "cssHeight": 582
+        "cssHeight": 607
       },
       "routeTitles": {
         "/about": "Lusion - About Us",
@@ -25,9 +25,9 @@
       "webglMetrics": {
         "found": true,
         "width": 360,
-        "height": 656,
+        "height": 669,
         "cssWidth": 360,
-        "cssHeight": 656
+        "cssHeight": 669
       },
       "routeTitles": {
         "/about": "Lusion - About Us",

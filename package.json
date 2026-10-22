@@ -18,7 +18,8 @@
     "check": "npm run lint && npm run typecheck && npm run build",
     "test:assets": "node scripts/test-asset-route.mjs",
     "qa": "node scripts/qa-verify.mjs",
-    "validate:browser": "node scripts/phase-c-home-validate.mjs"
+    "validate:browser": "node scripts/phase-c-home-validate.mjs",
+    "audit:phase-e": "node scripts/phase-e-audit.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

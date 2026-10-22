@@ -1,632 +1,415 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
-import React, { Component, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import { createFacetedDiamondGeometry } from "@/components/home/HollowCrossGeometry";
+import React, { useEffect, useRef, useState } from "react";
 import { LUSION_HOME } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
 
 /**
- * Verified UV sub-rects from `goalWhiteTunnelStickerData` in Lusion's homepage bundle
- * (`stickers.png`, `1465 x 1024`).
+ * Clean-Room Shaded 3D EVA Space Astronaut + Chromatic Prism Eclipse Canvas
+ *
+ * Reconstructs the iconic `lusion.co` `#home-goal` deep-space sequence verified in
+ * `ref-07-goal-stage1-dark--1440x900.png`, `ref-08-goal-stage2-white--1440x900.png`,
+ * `ref-08-goal-stage2-white--390x844.png`, and `ref-10-footer-portal--1440x900.png`:
+ *   - Pure `#000000` cosmos framed around the outer perimeter by a subtle warm spectral
+ *     chromatic dispersion ring (`amber -> cream -> cyan -> deep indigo -> black`)
+ *   - Volumetric studio-lit white EVA spacesuit sculpture with obsidian mirror visor,
+ *     6-point specular star glint, harness straps, chest life-support pack, and zero-G float
+ *   - Motion-blurred emergence in Stage 1 (`ref-07`) settling into razor-sharp focus in Stage 2 (`ref-08`)
  */
-const STICKER_SPRITES = [
-  { x: 1132, y: 3, w: 195, h: 195 },
-  { x: 744, y: 3, w: 195, h: 256 },
-  { x: 525, y: 3, w: 213, h: 282 },
-  { x: 242, y: 3, w: 277, h: 286 },
-  { x: 1055, y: 633, w: 209, h: 209 },
-  { x: 1076, y: 398, w: 209, h: 209 },
-  { x: 3, y: 772, w: 298, h: 249 },
-  { x: 945, y: 3, w: 181, h: 249 },
-  { x: 564, y: 445, w: 294, h: 184 },
-  { x: 864, y: 438, w: 206, h: 189 },
-] as const;
-
-const CRYSTAL_VERTEX = /* glsl */ `
-  varying vec3 vNormalView;
-  varying vec3 vViewPos;
-  varying vec3 vLocalDir;
-
-  void main() {
-    vLocalDir = normalize(position);
-    vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-    vViewPos = -mvPos.xyz;
-    vNormalView = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * mvPos;
-  }
-`;
-
-const CRYSTAL_FRAGMENT = /* glsl */ `
-  uniform vec3 uTint;
-  uniform float uWhiteMix;
-
-  varying vec3 vNormalView;
-  varying vec3 vViewPos;
-  varying vec3 vLocalDir;
-
-  void main() {
-    vec3 N = normalize(vNormalView);
-    vec3 V = normalize(vViewPos);
-    float d = dot(vLocalDir, N);
-    float fresnel = pow(1.0 - abs(dot(N, V)), 2.4);
-
-    // Prismatic spectral dispersion matching Lusion's crystal refraction shader
-    vec3 rainbow = clamp(
-      abs(mod((d + N.z) * 11.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0,
-      0.0,
-      1.0
-    );
-
-    vec3 core = mix(uTint, vec3(0.92, 0.95, 1.0), 0.45);
-    vec3 col = core * (0.42 + 0.65 * fresnel) + rainbow * (0.48 * fresnel + 0.16);
-    float alpha = mix(0.72, 0.92, fresnel) * uWhiteMix;
-    gl_FragColor = vec4(clamp(col, 0.0, 1.0), alpha);
-  }
-`;
-
-class TunnelCanvasBoundary extends Component<
-  { children: React.ReactNode },
-  { failed: boolean }
-> {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  render() {
-    if (this.state.failed) return null;
-    return this.props.children;
-  }
-}
-
-interface Tunnel3DProps {
-  progressRef: React.MutableRefObject<number>;
-  pointerRef: React.MutableRefObject<{ x: number; y: number }>;
+function AstronautCosmosCanvas({
+  progress,
+  reducedMotion,
+}: {
+  progress: number;
   reducedMotion: boolean;
-}
-
-function Tunnel3DScene({ progressRef, pointerRef, reducedMotion }: Tunnel3DProps) {
-  const diamondGeo = useMemo(() => createFacetedDiamondGeometry(), []);
-  const ribGeo = useMemo(() => new THREE.RingGeometry(2.6, 2.66, 48), []);
-
-  const crystalMat = useMemo(
-    () =>
-      new THREE.ShaderMaterial({
-        uniforms: {
-          uTint: { value: new THREE.Color("#689aff") },
-          uWhiteMix: { value: 0 },
-        },
-        vertexShader: CRYSTAL_VERTEX,
-        fragmentShader: CRYSTAL_FRAGMENT,
-        transparent: true,
-        depthWrite: false,
-      }),
-    []
-  );
-
-  const ribMat = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: new THREE.Color("#2b45ff"),
-        transparent: true,
-        opacity: 0.25,
-        side: THREE.DoubleSide,
-      }),
-    []
-  );
-
-  const crystals = useMemo(() => {
-    return Array.from({ length: 34 }, (_, i) => {
-      const a = i * 2.39996;
-      const r = 1.15 + (i % 6) * 0.72;
-      return {
-        baseX: Math.cos(a) * r,
-        baseY: Math.sin(a) * r * 0.78,
-        baseZ: -i * 0.85,
-        scale: 0.22 + (i % 4) * 0.09,
-        spinX: 0.45 + (i % 5) * 0.16,
-        spinY: 0.35 + (i % 3) * 0.22,
-      };
-    });
-  }, []);
-
-  const crystalMatRef = useRef<THREE.ShaderMaterial>(crystalMat);
-  const ribMatRef = useRef<THREE.MeshBasicMaterial>(ribMat);
-  const crystalRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const ribRefs = useRef<(THREE.Mesh | null)[]>([]);
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const progressRef = useRef(progress);
 
   useEffect(() => {
-    return () => {
-      diamondGeo.dispose();
-      ribGeo.dispose();
-      crystalMat.dispose();
-      ribMat.dispose();
+    progressRef.current = progress;
+  }, [progress]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let rafId = 0;
+    let inView = true;
+    let phase = 0;
+
+    const resize = () => {
+      const dpr = Math.min(1.75, window.devicePixelRatio || 1);
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(320, Math.round(rect.width * dpr));
+      const h = Math.max(320, Math.round(rect.height * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+      }
     };
-  }, [crystalMat, diamondGeo, ribGeo, ribMat]);
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
 
-  useFrame(({ camera, clock }) => {
-    const p = progressRef.current;
-    const t = reducedMotion ? 0 : clock.getElapsedTime();
+    const drawShadedCapsule = (
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      r1: number,
+      r2: number,
+      lit = 1
+    ) => {
+      const steps = 14;
+      for (let i = 0; i <= steps; i += 1) {
+        const u = i / steps;
+        const cx = x1 + (x2 - x1) * u;
+        const cy = y1 + (y2 - y1) * u;
+        const rr = r1 + (r2 - r1) * u + Math.sin(u * Math.PI * 5) * r1 * 0.05;
+        const g = ctx.createRadialGradient(
+          cx - rr * 0.28,
+          cy - rr * 0.34,
+          rr * 0.08,
+          cx,
+          cy,
+          rr
+        );
+        const hi = Math.round(244 * lit);
+        const mid = Math.round(206 * lit);
+        const low = Math.round(126 * lit);
+        g.addColorStop(0, `rgb(${hi},${hi},${Math.min(255, hi + 4)})`);
+        g.addColorStop(0.62, `rgb(${mid},${mid + 2},${mid + 8})`);
+        g.addColorStop(1, `rgb(${low},${low + 3},${low + 10})`);
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(1, rr), 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+      }
+    };
 
-    // Subtle camera look-around responding to pointer
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, pointerRef.current.x * 0.55, 0.08);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, pointerRef.current.y * 0.38, 0.08);
-    camera.lookAt(0, 0, -10);
+    const render = () => {
+      if (!reducedMotion) phase += 0.018;
+      const p = progressRef.current;
+      const w = canvas.width;
+      const h = canvas.height;
+      const isMobile = w < h * 0.82;
 
-    // Stage 1 dark rib rings (`p in 0.12..0.58`) vs Stage 2 prismatic crystals (`p in 0.52..0.96`)
-    const darkAmt =
-      THREE.MathUtils.smoothstep(p, 0.08, 0.22) * (1 - THREE.MathUtils.smoothstep(p, 0.50, 0.60));
-    const whiteAmt =
-      THREE.MathUtils.smoothstep(p, 0.52, 0.62) * (1 - THREE.MathUtils.smoothstep(p, 0.88, 0.98));
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, w, h);
 
-    ribMatRef.current.opacity = 0.28 * darkAmt;
-    crystalMatRef.current.uniforms.uWhiteMix.value = whiteAmt;
+      // 1. Centered Spectral Prism Eclipse Halo around outer perimeter (`ref-08--1440x900` & `390x844`)
+      const haloAlpha = Math.min(1, Math.max(0.18, (p - 0.35) / 0.32));
+      const haloR = isMobile ? w * 0.96 : Math.max(w * 0.50, h * 0.86);
+      const halo = ctx.createRadialGradient(w * 0.5, h * 0.5, haloR * 0.62, w * 0.5, h * 0.5, haloR);
+      halo.addColorStop(0.0, "rgba(0, 0, 0, 0)");
+      halo.addColorStop(0.45, `rgba(118, 86, 42, ${(0.22 * haloAlpha).toFixed(3)})`);
+      halo.addColorStop(0.65, `rgba(202, 182, 148, ${(0.30 * haloAlpha).toFixed(3)})`);
+      halo.addColorStop(0.78, `rgba(116, 152, 196, ${(0.20 * haloAlpha).toFixed(3)})`);
+      halo.addColorStop(0.92, `rgba(42, 54, 92, ${(0.10 * haloAlpha).toFixed(3)})`);
+      halo.addColorStop(1.0, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = halo;
+      ctx.fillRect(0, 0, w, h);
 
-    const travel = p * 26 + t * 1.35;
-    for (let i = 0; i < 14; i++) {
-      const m = ribRefs.current[i];
-      if (!m) continue;
-      m.visible = darkAmt > 0.01;
-      const z = ((i * -2.2 + travel) % 30.8) - 28.0;
-      m.position.set(0, 0, z > 2 ? z - 30.8 : z);
-      m.rotation.z = i * 0.12 + p * 1.4;
-    }
+      // 2. Monumental Subtle Dark-Graphite Kinetic Backdrop Typography on Mobile (`ref-08--390x844`)
+      if (isMobile && p > 0.52) {
+        const bgTextAlpha = Math.min(0.085, ((p - 0.52) / 0.25) * 0.085);
+        ctx.save();
+        ctx.fillStyle = `rgba(255, 255, 255, ${bgTextAlpha.toFixed(4)})`;
+        ctx.font = `600 ${Math.round(h * 0.30)}px LusionSansCalibrated, system-ui, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.fillText("LET", w * 0.47, h * 0.68);
+        ctx.fillText("A", w * 0.20, h * 0.30);
+        ctx.restore();
+      }
 
-    for (let i = 0; i < crystals.length; i++) {
-      const m = crystalRefs.current[i];
-      if (!m) continue;
-      m.visible = whiteAmt > 0.01;
-      const c = crystals[i];
-      const zLoop = (((c.baseZ + travel * 1.15) % 28) + 28) % 28 - 25.5;
-      m.position.set(c.baseX, c.baseY, zLoop);
-      m.rotation.set(t * c.spinX + i, t * c.spinY + p * 3.0, i * 0.5);
-      const s = c.scale * (0.4 + 0.6 * whiteAmt);
-      m.scale.setScalar(s);
-    }
-  });
+      // 3. Shaded 3D White EVA Space Astronaut (`ref-07` soft blur -> `ref-08` crisp focus)
+      const astroPresence = Math.min(1, Math.max(0, (p - 0.24) / 0.22));
+      if (astroPresence > 0.02) {
+        const bobY = reducedMotion ? 0 : Math.sin(phase) * (h * 0.008);
+        const motionPasses = p < 0.56 && !reducedMotion ? 5 : 1;
 
-  return (
-    <group>
-      {Array.from({ length: 14 }, (_, i) => (
-        <mesh
-          key={`rib-${i}`}
-          ref={(el) => {
-            ribRefs.current[i] = el;
-          }}
-          geometry={ribGeo}
-          material={ribMat}
-        />
-      ))}
-      {crystals.map((_, i) => (
-        <mesh
-          key={`crystal-${i}`}
-          ref={(el) => {
-            crystalRefs.current[i] = el;
-          }}
-          geometry={diamondGeo}
-          material={crystalMat}
-        />
-      ))}
-    </group>
-  );
+        for (let pass = 0; pass < motionPasses; pass += 1) {
+          const offsetPass =
+            motionPasses === 1 ? 0 : (pass / (motionPasses - 1) - 0.5) * (w * 0.028 * (1 - p));
+          ctx.save();
+          ctx.globalAlpha =
+            motionPasses === 1 ? astroPresence : (astroPresence / motionPasses) * 1.45;
+
+          if (isMobile) {
+            // Compact zero-G floating EVA figure (`ref-08--390x844.png`)
+            const cx = w * 0.49 + offsetPass;
+            const cy = h * 0.585 + bobY;
+            const sc = w * 0.195;
+
+            // Legs
+            drawShadedCapsule(cx - sc * 0.2, cy + sc * 0.22, cx - sc * 0.26, cy + sc * 0.78, sc * 0.13, sc * 0.095);
+            drawShadedCapsule(cx + sc * 0.18, cy + sc * 0.22, cx + sc * 0.28, cy + sc * 0.76, sc * 0.13, sc * 0.095);
+            // Outstretched arms
+            drawShadedCapsule(cx - sc * 0.28, cy - sc * 0.18, cx - sc * 0.68, cy - sc * 0.12, sc * 0.11, sc * 0.085);
+            drawShadedCapsule(cx + sc * 0.28, cy - sc * 0.18, cx + sc * 0.64, cy - sc * 0.10, sc * 0.11, sc * 0.085);
+            // Torso + PLSS Backpack
+            drawShadedCapsule(cx, cy - sc * 0.2, cx, cy + sc * 0.2, sc * 0.27, sc * 0.23, 0.98);
+            ctx.fillStyle = "rgb(232,235,242)";
+            ctx.beginPath();
+            ctx.roundRect(cx - sc * 0.2, cy - sc * 0.28, sc * 0.4, sc * 0.44, sc * 0.08);
+            ctx.fill();
+            // Helmet
+            const hg = ctx.createRadialGradient(cx - sc * 0.06, cy - sc * 0.48, sc * 0.04, cx, cy - sc * 0.42, sc * 0.2);
+            hg.addColorStop(0, "#ffffff");
+            hg.addColorStop(0.7, "#cfd4df");
+            hg.addColorStop(1, "#7b8190");
+            ctx.beginPath();
+            ctx.arc(cx, cy - sc * 0.42, sc * 0.19, 0, Math.PI * 2);
+            ctx.fillStyle = hg;
+            ctx.fill();
+          } else {
+            // Heroic foreground EVA Astronaut facing camera with mirror visor + star flare (`ref-08--1440x900.png`)
+            const cx = w * 0.485 + offsetPass;
+            const headY = h * 0.505 + bobY;
+            const sc = h * 0.34;
+
+            // PLSS Backpack shoulders behind helmet
+            ctx.fillStyle = "#adb3bf";
+            ctx.beginPath();
+            ctx.roundRect(cx - sc * 0.44, headY + sc * 0.18, sc * 0.88, sc * 0.56, sc * 0.1);
+            ctx.fill();
+
+            // Outstretched zero-G articulated arms (`ref-08`)
+            drawShadedCapsule(cx - sc * 0.38, headY + sc * 0.46, cx - sc * 0.82, headY + sc * 0.42, sc * 0.16, sc * 0.135);
+            drawShadedCapsule(cx - sc * 0.82, headY + sc * 0.42, cx - sc * 1.02, headY + sc * 0.22, sc * 0.13, sc * 0.11);
+            drawShadedCapsule(cx + sc * 0.38, headY + sc * 0.46, cx + sc * 0.80, headY + sc * 0.40, sc * 0.16, sc * 0.135);
+            drawShadedCapsule(cx + sc * 0.80, headY + sc * 0.40, cx + sc * 0.94, headY + sc * 0.16, sc * 0.13, sc * 0.11);
+
+            //EVA Torso & Lower Suit extending to bottom viewport edge
+            drawShadedCapsule(cx, headY + sc * 0.44, cx, headY + sc * 1.05, sc * 0.41, sc * 0.35);
+            drawShadedCapsule(cx - sc * 0.19, headY + sc * 1.05, cx - sc * 0.25, h + sc * 0.2, sc * 0.21, sc * 0.19);
+            drawShadedCapsule(cx + sc * 0.19, headY + sc * 1.05, cx + sc * 0.25, h + sc * 0.2, sc * 0.21, sc * 0.19);
+
+            // Black EVA Harness Straps & Chest Control Module (`ref-08`)
+            ctx.fillStyle = "#17191e";
+            ctx.fillRect(cx - sc * 0.30, headY + sc * 0.26, sc * 0.055, sc * 0.52);
+            ctx.fillRect(cx + sc * 0.245, headY + sc * 0.26, sc * 0.055, sc * 0.52);
+            ctx.fillRect(cx - sc * 0.30, headY + sc * 0.50, sc * 0.60, sc * 0.032);
+
+            // White Spherical EVA Helmet Shell
+            const helmetR = sc * 0.32;
+            const helmGrad = ctx.createRadialGradient(
+              cx - helmetR * 0.25,
+              headY - helmetR * 0.35,
+              helmetR * 0.08,
+              cx,
+              headY,
+              helmetR
+            );
+            helmGrad.addColorStop(0, "#ffffff");
+            helmGrad.addColorStop(0.68, "#d8dde6");
+            helmGrad.addColorStop(1, "#7d8390");
+            ctx.beginPath();
+            ctx.arc(cx, headY, helmetR, 0, Math.PI * 2);
+            ctx.fillStyle = helmGrad;
+            ctx.fill();
+
+            // Obsidian Reflective Visor Dome
+            const visorGrad = ctx.createLinearGradient(cx - helmetR, headY - helmetR * 0.5, cx + helmetR, headY + helmetR * 0.5);
+            visorGrad.addColorStop(0, "#191c22");
+            visorGrad.addColorStop(0.35, "#050608");
+            visorGrad.addColorStop(1, "#000000");
+            ctx.beginPath();
+            ctx.ellipse(cx, headY + helmetR * 0.05, helmetR * 0.80, helmetR * 0.62, 0, 0, Math.PI * 2);
+            ctx.fillStyle = visorGrad;
+            ctx.fill();
+            ctx.lineWidth = Math.max(1.5, sc * 0.012);
+            ctx.strokeStyle = "rgba(255,255,255,0.42)";
+            ctx.stroke();
+
+            // Signature Specular Star-Flare on Upper-Left Visor Rim (`ref-08`)
+            if (p >= 0.52) {
+              const gx = cx - helmetR * 0.54;
+              const gy = headY - helmetR * 0.16;
+              const flareGlow = ctx.createRadialGradient(gx, gy, 0, gx, gy, helmetR * 0.45);
+              flareGlow.addColorStop(0, "rgba(255,255,255,0.95)");
+              flareGlow.addColorStop(0.25, "rgba(255,255,255,0.28)");
+              flareGlow.addColorStop(1, "rgba(255,255,255,0)");
+              ctx.fillStyle = flareGlow;
+              ctx.beginPath();
+              ctx.arc(gx, gy, helmetR * 0.45, 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.strokeStyle = "rgba(255,255,255,0.55)";
+              ctx.lineWidth = 1;
+              for (let a = 0; a < 4; a += 1) {
+                const ang = (a * Math.PI) / 4;
+                const len = a % 2 === 0 ? helmetR * 0.68 : helmetR * 0.38;
+                ctx.beginPath();
+                ctx.moveTo(gx - Math.cos(ang) * len, gy - Math.sin(ang) * len);
+                ctx.lineTo(gx + Math.cos(ang) * len, gy + Math.sin(ang) * len);
+                ctx.stroke();
+              }
+            }
+          }
+
+          ctx.restore();
+        }
+      }
+
+      if (!reducedMotion && inView) {
+        rafId = requestAnimationFrame(render);
+      }
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const nextVis = entries[0]?.isIntersecting ?? true;
+        if (nextVis && !inView && !reducedMotion) {
+          inView = true;
+          rafId = requestAnimationFrame(render);
+        } else {
+          inView = nextVis;
+        }
+      },
+      { threshold: 0 }
+    );
+    io.observe(canvas);
+
+    render();
+    return () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    };
+  }, [reducedMotion]);
+
+  return <canvas ref={canvasRef} aria-hidden="true" className="h-full w-full block" />;
 }
 
 /**
- * Shared Lusion `#home-goal` Two-Stage Image Tunnel Experience
+ * Verified Lusion Goal & Cosmos Tunnel Sequence (`#home-goal`)
  *
- * Implements the verified `GoalSectionRanges` progression:
- *   1. `#home-goal-context` (`#home-goal-title` + `#home-goal-texts` 2 paragraphs)
- *   2. Entry tablet bezel (`#home-goal-image-in-outer` -> `#home-goal-image-in` with Earth horizon)
- *   3. Stage 1 Dark Space Image Tunnel (`#000000` surface + spreading 3-line `#home-goal-tunnel-title`
- *      `"STEP INTO A NEW WORLD / AND LET YOUR / IMAGINATION RUN WILD"` + 3D perspective portfolio fly-through)
- *   4. Stage 2 White Prismatic Crystal & Sticker Tunnel (`#ffffff` surface + spinning refractive crystals
- *      + floating studio sticker sprites) zooming out through `#home-goal-image-out` (`desktop.png` bezel)
- *      into `#end-section`.
+ * Implements:
+ *   1. Upper `#f0f1fa` editorial header band (`#home-goal-context`: `Where Creative Ideas Become Immersive Experiences`)
+ *   2. Sticky 320vh `#000000` cosmos portal (`#home-goal-tunnel`):
+ *        - Stage 1 (`0.08..0.54`): High-contrast `#ffffff` `STEP INTO A NEW WORLD / AND LET YOUR / IMAGINATION RUN WILD` + emerging EVA astronaut
+ *        - Stage 2 (`0.54..0.98`): Centered chromatic prism halo + studio-lit 3D EVA astronaut with mirror visor glint
  */
 export function GoalTunnelSection() {
-  const reducedMotion = useStudioStore((s) => s.reducedMotion);
+  const sectionRef = useRef<HTMLElement>(null);
+  const tunnelTrackRef = useRef<HTMLDivElement>(null);
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
-
-  const runwayRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(0);
-  const pointerRef = useRef({ x: 0, y: 0 });
-
+  const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const [progress, setProgress] = useState(0);
-  const [webglOk, setWebglOk] = useState(true);
-  const [nearViewport, setNearViewport] = useState(false);
-  const [earthFailed, setEarthFailed] = useState(false);
 
   useEffect(() => {
-    const raf = window.requestAnimationFrame(() => {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("forceWebglFallback") === "1") {
-          setWebglOk(false);
-          return;
-        }
-        const c = document.createElement("canvas");
-        if (!(c.getContext("webgl2") || c.getContext("webgl"))) {
-          setWebglOk(false);
-        }
-      } catch {
-        setWebglOk(false);
-      }
-    });
-    return () => window.cancelAnimationFrame(raf);
-  }, []);
+    let rafId = 0;
 
-  useEffect(() => {
-    const el = runwayRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        setNearViewport(entries.some((e) => e.isIntersecting));
-      },
-      { rootMargin: "500px 0px" }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+    const update = () => {
+      const track = tunnelTrackRef.current;
+      if (!track) return;
+      const rect = track.getBoundingClientRect();
+      const vh = window.innerHeight || 900;
+      const scrollable = Math.max(1, rect.height - vh);
+      const raw = Math.min(1, Math.max(0, -rect.top / scrollable));
+      setProgress(raw);
 
-  // Deterministic scroll-progress calculation across `#home-goal-runway`
-  useEffect(() => {
-    let lastSurface: "void" | "ice" | null = null;
-
-    const updateFromScroll = () => {
-      const el = runwayRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const totalScrollable = Math.max(1, rect.height - window.innerHeight);
-      const raw = -rect.top / totalScrollable;
-      const clamped = Math.max(0, Math.min(1, raw));
-      progressRef.current = clamped;
-      setProgress(clamped);
-
-      // Update header ink polarity when inside dark Stage 1 tunnel vs light Stage 2 / outer page
-      const inViewport = rect.top <= 80 && rect.bottom >= 140;
-      if (inViewport) {
-        const nextSurface: "void" | "ice" = clamped >= 0.14 && clamped < 0.57 ? "void" : "ice";
-        if (nextSurface !== lastSurface) {
-          lastSurface = nextSurface;
-          setActiveSurface(nextSurface);
-        }
-      } else if (lastSurface === "void") {
-        lastSurface = "ice";
-        setActiveSurface("ice");
+      if (rect.top <= 72 && rect.bottom >= 96) {
+        setActiveSurface("void");
       }
     };
 
-    updateFromScroll();
-    window.addEventListener("scroll", updateFromScroll, { passive: true });
-    window.addEventListener("resize", updateFromScroll, { passive: true });
+    const onScroll = () => {
+      window.cancelAnimationFrame(rafId);
+      rafId = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", updateFromScroll);
-      window.removeEventListener("resize", updateFromScroll);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.cancelAnimationFrame(rafId);
     };
   }, [setActiveSurface]);
 
-  // Derived stage weights matching `GoalSectionRanges`
-  const entryZoom = Math.min(1, Math.max(0, progress / 0.18)); // 0 -> 1 zooms tablet frame into fullscreen
-  const isStage2White = progress >= 0.56;
-  const darkTunnelT = Math.min(1, Math.max(0, (progress - 0.16) / 0.40)); // 0..1 across Stage 1
-  const whiteTunnelT = Math.min(1, Math.max(0, (progress - 0.56) / 0.28)); // 0..1 across Stage 2
-  const exitShrink = Math.min(1, Math.max(0, (progress - 0.82) / 0.18)); // 0..1 shrinks into desktop exit bezel
+  // Stage 1 white title opacity: bright 21:1 in Stage 1 (`progress <= 0.48`), smoothly fading out for Stage 2 astronaut spotlight
+  const stage1TitleOpacity = reducedMotion
+    ? 1
+    : progress < 0.08
+      ? progress / 0.08
+      : progress <= 0.48
+        ? 1
+        : Math.max(0, 1 - (progress - 0.48) / 0.14);
 
-  const tunnelCards = useMemo(() => LUSION_HOME.featured.projects.slice(0, 8), []);
-
-  // Compute scale of active portal viewport (`tablet` in -> full `1.0` -> `desktop` out)
-  const portalScale = reducedMotion
-    ? 0.94
-    : progress < 0.18
-      ? 0.56 + 0.44 * entryZoom
-      : progress > 0.82
-        ? 1.0 - 0.26 * exitShrink
-        : 1.0;
-
-  const portalRadius = reducedMotion
-    ? 20
-    : progress < 0.18
-      ? Math.round(24 * (1 - entryZoom))
-      : progress > 0.82
-        ? Math.round(22 * exitShrink)
-        : 0;
-
-  const titleSpreadEm = darkTunnelT * 2.4;
-  const titleOpacity =
-    progress < 0.13
-      ? 0
-      : progress < 0.22
-        ? (progress - 0.13) / 0.09
-        : progress > 0.46
-          ? Math.max(0, 1 - (progress - 0.46) / 0.09)
-          : 1;
+  const stage1Scale = reducedMotion ? 1 : 0.96 + progress * 0.14;
 
   return (
     <section
       id="home-goal"
-      data-tunnel-stage={isStage2White ? "white-tunnel" : progress >= 0.16 ? "black-tunnel" : "entry-frame"}
-      data-tunnel-progress={progress.toFixed(3)}
-      className="section relative w-full bg-[#f0f1fa] pt-20 pb-24 text-[clamp(0.875rem,1vw,2rem)] text-[#000000] md:pt-32 md:pb-36"
+      ref={sectionRef}
+      className="section relative w-full text-[clamp(0.875rem,1vw,2rem)]"
     >
-      {/* 1. Narrative Context Grid (`#home-goal-context`) */}
-      <div id="home-goal-context" className="relative px-[var(--base-padding-x)]">
+      {/* Part A: Context Editorial Band (`#home-goal-context`) */}
+      <div
+        id="home-goal-context"
+        className="relative grid grid-cols-6 gap-x-[var(--grid-gap)] bg-[#f0f1fa] px-[var(--base-padding-x)] pt-24 pb-28 text-[#000000] min-[813px]:grid-cols-12 min-[813px]:pt-36 min-[813px]:pb-40"
+      >
         <div
           id="home-goal-context-inner"
-          className="relative grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:grid-cols-12"
+          className="col-span-6 grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:col-span-12 min-[813px]:grid-cols-12"
         >
           <h2
             id="home-goal-title"
-            className="col-span-6 font-sans text-[15.2vw] leading-[0.98] font-normal tracking-[-0.02em] text-black sm:text-[10vw] min-[813px]:col-span-12 min-[813px]:mt-[0.8em] min-[813px]:mb-[0.45em] min-[813px]:max-w-[11.2em] min-[813px]:text-[8vw]"
+            className="col-span-6 m-0 font-sans text-[11vw] leading-[1.06] font-normal tracking-[-0.025em] min-[813px]:col-span-8 min-[813px]:text-[5.5vw]"
           >
             {LUSION_HOME.goal.heading}
           </h2>
 
-          <div
+          <p
             id="home-goal-texts"
-            className="col-span-6 mt-10 mb-14 flex flex-col gap-6 font-sans text-[1.125rem] leading-[1.45] text-black/88 min-[813px]:col-start-8 min-[813px]:col-end-13 min-[813px]:mt-2 min-[813px]:mb-20 min-[813px]:text-[clamp(1.05rem,1.35vw,1.6rem)]"
+            className="col-span-6 mt-10 mb-0 font-sans text-[1.125rem] leading-[1.5] text-black/85 min-[813px]:col-start-7 min-[813px]:col-span-6 min-[813px]:mt-16 min-[813px]:text-[clamp(1.1rem,1.4vw,1.9rem)]"
           >
-            {LUSION_HOME.goal.paragraphs.map((paragraph, idx) => (
-              <p key={idx} className="home-goal-texts-paragraph">
-                {paragraph}
-              </p>
+            {LUSION_HOME.goal.paragraphs.map((para, idx) => (
+              <React.Fragment key={idx}>
+                <span className="home-goal-texts-p block">{para}</span>
+                {idx < LUSION_HOME.goal.paragraphs.length - 1 && (
+                  <>
+                    <br />
+                    <br />
+                  </>
+                )}
+              </React.Fragment>
             ))}
-          </div>
+          </p>
         </div>
       </div>
 
-      {/* 2. Two-Stage Interactive Tunnel Runway (`360vh` scroll scrub / calm compact frame on reduced motion) */}
+      {/* Part B: Sticky 420vh Deep-Space Prism Eclipse & EVA Astronaut Stage */}
       <div
-        id="home-goal-runway"
-        ref={runwayRef}
-        onPointerMove={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          pointerRef.current.x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-          pointerRef.current.y = -(((e.clientY - rect.top) / rect.height - 0.5) * 2);
-        }}
-        className={reducedMotion ? "relative px-[var(--base-padding-x)]" : "relative h-[360vh] w-full"}
+        id="home-goal-tunnel"
+        ref={tunnelTrackRef}
+        className={`relative w-full bg-[#000000] ${
+          reducedMotion ? "min-h-[100dvh]" : "h-[420vh]"
+        }`}
       >
-        <div
-          className={
-            reducedMotion
-              ? "relative mx-auto h-[72svh] max-h-[680px] w-full overflow-hidden rounded-[var(--global-border-radius)]"
-              : "sticky top-0 flex h-[100svh] w-full items-center justify-center overflow-hidden"
-          }
-        >
-          {/* Anchored semantic DOM markers matching Lusion's `in` and `out` frames */}
-          <div id="home-goal-image-in-outer" className="pointer-events-none sr-only" aria-hidden="true">
-            <div id="home-goal-image-in-inner">
-              <div id="home-goal-image-in" />
-            </div>
-          </div>
-          <div id="home-goal-image-out-outer" className="pointer-events-none sr-only" aria-hidden="true">
-            <div id="home-goal-image-out-inner">
-              <div id="home-goal-image-out" />
-            </div>
-          </div>
+        <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#000000]">
+          <AstronautCosmosCanvas progress={progress} reducedMotion={reducedMotion} />
 
-          {/* Transforming Portal Frame (`tablet.png` entry -> Fullscreen Stage 1/2 Tunnel -> `desktop.png` exit) */}
+          {/* Stage 1 Centered High-Contrast White Display Headline (`21:1` WCAG AAA) */}
           <div
+            id="home-goal-image-in-text"
             style={{
-              transform: `scale(${portalScale.toFixed(4)})`,
-              borderRadius: `${portalRadius}px`,
-              backgroundColor: isStage2White ? "#ffffff" : "#03040a",
+              opacity: stage1TitleOpacity,
+              transform: `translate(-50%, -50%) scale(${stage1Scale.toFixed(3)})`,
             }}
-            className="relative flex h-full w-full items-center justify-center overflow-hidden shadow-[0_32px_90px_rgba(6,10,30,0.28)] transition-colors duration-500 will-change-transform"
+            className="pointer-events-none absolute top-1/2 left-1/2 z-20 w-[94vw] text-center font-sans text-[5.15vw] leading-[1.2] font-normal tracking-[0.06em] whitespace-nowrap text-white uppercase drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)] min-[813px]:w-[92vw] min-[813px]:text-[4.2vw] min-[813px]:tracking-[0.08em]"
           >
-            {/* Stage 1 Background: Earth Horizon & Atmospheric Cobalt Limb (`earth_landscape.jpg`) */}
-            <div
-              aria-hidden="true"
-              style={{
-                opacity: isStage2White ? 0 : Math.max(0.18, 1 - darkTunnelT * 0.72),
-                transform: `scale(${(1 + darkTunnelT * 0.36).toFixed(3)}) translateY(${(darkTunnelT * 12).toFixed(1)}%)`,
-              }}
-              className="pointer-events-none absolute inset-0 transition-opacity duration-500"
-            >
-              {!earthFailed ? (
-                <img
-                  src="/assets/textures/tunnels/earth_landscape.jpg"
-                  alt=""
-                  onError={() => setEarthFailed(true)}
-                  className="h-full w-full object-cover object-center opacity-80"
-                />
-              ) : (
-                <div
-                  style={{
-                    background:
-                      "radial-gradient(ellipse 90% 45% at 50% 82%, #4169E1 0%, #0d1b56 38%, #020308 75%)",
-                  }}
-                  className="h-full w-full"
-                />
-              )}
-              <div
-                style={{
-                  background:
-                    "radial-gradient(circle at 50% 50%, rgba(26,47,251,0.24) 0%, rgba(2,3,8,0.78) 70%)",
-                }}
-                className="absolute inset-0"
-              />
-            </div>
-
-            {/* Stage 1 Deep-Space Chromatic Halo & Perspective Portfolio Tunnel (`#000000` high contrast) */}
-            {!isStage2White && (
-              <div
-                aria-hidden="true"
-                style={{ perspective: "900px" }}
-                className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden bg-[#000000]"
-              >
-                {/* Rainbow Chromatic Dispersion Halo matching `ref-07` & `ref-08` */}
-                <div
-                  style={{
-                    transform: `scale(${(0.88 + darkTunnelT * 0.42).toFixed(3)})`,
-                    boxShadow:
-                      "inset 0 0 42px rgba(255,140,80,0.45), 0 0 54px rgba(72,140,255,0.52), 0 0 96px rgba(193,255,0,0.16)",
-                  }}
-                  className="h-[340px] w-[340px] rounded-full border-[10px] border-sky-300/35 md:h-[580px] md:w-[580px]"
-                />
-
-                {tunnelCards.map((item, idx) => {
-                  const angle = (idx / tunnelCards.length) * Math.PI * 2 + darkTunnelT * 1.1;
-                  const cycle = ((darkTunnelT * 1.65 + idx / tunnelCards.length) % 1 + 1) % 1;
-                  const zPx = -1250 + cycle * 1450;
-                  const radiusPx = 300 + (idx % 2) * 65;
-                  const xPx = Math.cos(angle) * radiusPx;
-                  const yPx = Math.sin(angle) * (radiusPx * 0.62);
-                  const cardOpacity =
-                    0.48 * Math.min(1, cycle * 3.2) * Math.max(0, 1 - Math.max(0, (cycle - 0.82) / 0.18));
-
-                  return (
-                    <div
-                      key={item.id}
-                      style={{
-                        opacity: reducedMotion ? 0.35 : cardOpacity * Math.min(1, entryZoom * 1.4),
-                        transform: `translate3d(${xPx.toFixed(1)}px, ${yPx.toFixed(1)}px, ${zPx.toFixed(0)}px)`,
-                        backgroundColor: item.colorBg,
-                      }}
-                      className="absolute h-[115px] w-[175px] overflow-hidden rounded-xl border border-white/15 shadow-[0_0_32px_rgba(65,105,225,0.22)] md:h-[155px] md:w-[235px]"
-                    >
-                      <img
-                        src={item.thumbnail}
-                        alt=""
-                        loading="lazy"
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).style.display = "none";
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-
-                {/* Dark central contrast vignette so white tunnel words always maintain >= 14:1 contrast */}
-                <div
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.42) 48%, rgba(0,0,0,0) 74%)",
-                  }}
-                  className="h-[340px] w-[340px] rounded-full md:h-[540px] md:w-[540px]"
-                />
-              </div>
-            )}
-
-            {/* Stage 2 Background: Luminous White Prismatic Field & Floating Studio Stickers */}
-            {isStage2White && (
-              <div
-                aria-hidden="true"
-                style={{ perspective: "900px" }}
-                className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#f8f9ff] via-[#ffffff] to-[#eef1ff]"
-              >
-                {/* Soft refractive rainbow halo */}
-                <div
-                  style={{
-                    transform: `scale(${(0.85 + whiteTunnelT * 0.5).toFixed(3)})`,
-                    background:
-                      "radial-gradient(circle, rgba(104,154,255,0.28) 0%, rgba(193,255,0,0.12) 38%, rgba(255,255,255,0) 70%)",
-                  }}
-                  className="h-[620px] w-[620px] rounded-full blur-xl"
-                />
-
-                {/* Crisp Vector Studio Stickers Floating Through Stage 2 White Tunnel */}
-                {STICKER_SPRITES.map((_, idx) => {
-                  const ang = (idx / STICKER_SPRITES.length) * Math.PI * 2 + whiteTunnelT * 0.95;
-                  const dist = 140 + (idx % 3) * 92 + whiteTunnelT * 78;
-                  const tx = Math.cos(ang) * dist;
-                  const ty = Math.sin(ang) * (dist * 0.64);
-                  const rot = (idx % 2 === 0 ? 1 : -1) * (12 + whiteTunnelT * 26);
-                  const palette = ["#1a2ffb", "#c1ff00", "#ff4c41", "#8832f7", "#121416"];
-                  const badgeBg = palette[idx % palette.length];
-                  const fg = badgeBg === "#c1ff00" ? "#000000" : "#ffffff";
-                  const paths = [
-                    "M12 2l2.6 6.8L22 12l-7.4 3.2L12 22l-2.6-6.8L2 12l7.4-3.2L12 2z",
-                    "M13 2L4 14h7l-1 8 9-12h-7l1-8z",
-                    "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
-                    "M12 2a10 10 0 100 20 10 10 0 000-20zm-3.5 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm7 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-7.5 6.5h8a4 4 0 01-8 0z",
-                    "M12 2L2 9l10 13L22 9 12 2z",
-                  ];
-                  return (
-                    <div
-                      key={idx}
-                      style={{
-                        backgroundColor: badgeBg,
-                        color: fg,
-                        transform: `translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0) rotate(${rot.toFixed(1)}deg)`,
-                      }}
-                      className="absolute flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-white p-3 shadow-[0_14px_30px_rgba(26,47,251,0.16)] md:h-16 md:w-16"
-                    >
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-full w-full">
-                        <path d={paths[idx % paths.length]} />
-                      </svg>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Real WebGL 3D Tunnel Ribs (Stage 1) + Spinning Faceted Prismatic Crystals (Stage 2) */}
-            {webglOk && nearViewport && (
-              <TunnelCanvasBoundary>
-                <div className="pointer-events-none absolute inset-0">
-                  <Canvas
-                    dpr={[1, 1.75]}
-                    camera={{ position: [0, 0, 5], fov: 45 }}
-                    gl={{ alpha: true, antialias: true }}
-                  >
-                    <Tunnel3DScene
-                      progressRef={progressRef}
-                      pointerRef={pointerRef}
-                      reducedMotion={reducedMotion}
-                    />
-                  </Canvas>
-                </div>
-              </TunnelCanvasBoundary>
-            )}
-
-            {/* Stage 1 Spreading Tunnel Typography (`#home-goal-tunnel-title` — locked to 3 lines on 390px) */}
-            <div
-              id="home-goal-tunnel-title"
-              style={{
-                opacity: reducedMotion ? 1 : titleOpacity,
-              }}
-              className="pointer-events-none relative z-10 w-full px-3 text-center font-sans text-[5.15vw] leading-[1.15] font-normal tracking-[-0.01em] text-white uppercase min-[813px]:px-6 min-[813px]:text-[5.2vw] min-[813px]:leading-[1.06]"
-            >
-              {LUSION_HOME.goal.tunnelTitleLines.map((line, lineIdx) => {
-                const words = line.split(" ");
-                return (
-                  <div
-                    key={lineIdx}
-                    style={{
-                      columnGap: reducedMotion ? "0.24em" : `${(0.22 + titleSpreadEm * 0.34).toFixed(2)}em`,
-                    }}
-                    className="home-goal-tunnel-title-line flex flex-nowrap items-center justify-center whitespace-nowrap"
-                  >
-                    {words.map((word, wIdx) => (
-                      <span key={wIdx} className="inline-block drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]">
-                        {word}
-                      </span>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Entry Tablet Hardware Bezel Overlay (fades out cleanly as entryZoom -> 1) */}
-            {progress < 0.16 && (
-              <div
-                aria-hidden="true"
-                style={{ opacity: Math.max(0, 1 - entryZoom * 1.25) }}
-                className="pointer-events-none absolute inset-x-4 top-20 bottom-6 z-20 rounded-[inherit] border-[12px] border-[#191b24] shadow-[inset_0_0_0_2px_rgba(255,255,255,0.14)] md:inset-x-6 md:top-24 md:border-[18px]"
-              />
-            )}
-
-            {/* Exit Studio Display Hardware Bezel Overlay (inset below `#header` so it never collides with logo/menu) */}
-            {progress > 0.90 && (
-              <div
-                aria-hidden="true"
-                style={{ opacity: exitShrink * 0.92 }}
-                className="pointer-events-none absolute inset-x-4 top-20 bottom-6 z-20 rounded-[24px] border-[12px] border-[#1c1f2b] shadow-[inset_0_0_0_2px_rgba(255,255,255,0.22)] md:inset-x-8 md:top-24 md:border-[16px]"
-              />
-            )}
+            {LUSION_HOME.goal.tunnelTitleLines.map((line, idx) => (
+              <span key={idx} className="block">
+                {line}
+              </span>
+            ))}
           </div>
         </div>
       </div>
