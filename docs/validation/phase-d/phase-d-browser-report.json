@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-10-22T05:29:28.239Z",
+  "cleanProductionMode": true,
+  "viewports": {
+    "1440x900": {
+      "webglMetrics": {
+        "found": true,
+        "width": 1296,
+        "height": 581,
+        "cssWidth": 1296,
+        "cssHeight": 582
+      },
+      "routeTitles": {
+        "/about": "Lusion - About Us",
+        "/projects": "Lusion - Our Projects",
+        "/projects/oryzo_ai": "Lusion - Oryzo AI",
+        "/projects/porsche_dream_machine": "Lusion - Porsche: Dream Machine",
+        "/projects/spaace": "Lusion - Spaace - NFT Marketplace"
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "badResponses": []
+    },
+    "390x844": {
+      "webglMetrics": {
+        "found": true,
+        "width": 360,
+        "height": 656,
+        "cssWidth": 360,
+        "cssHeight": 656
+      },
+      "routeTitles": {
+        "/about": "Lusion - About Us",
+        "/projects": "Lusion - Our Projects",
+        "/projects/oryzo_ai": "Lusion - Oryzo AI",
+        "/projects/porsche_dream_machine": "Lusion - Porsche: Dream Machine",
+        "/projects/spaace": "Lusion - Spaace - NFT Marketplace"
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "badResponses": []
+    }
+  },
+  "modalAccessibility": {
+    "initialFocusId": "video-overlay__mobile-close-btn",
+    "allTabsTrappedInsideModal": true,
+    "shiftTabInsideModal": true,
+    "closedOnEscape": true,
+    "restoredFocusTag": "BUTTON",
+    "tabSequence": [
+      {
+        "tag": "BUTTON",
+        "id": "video-overlay__play-btn",
+        "insideModal": true
+      },
+      {
+        "tag": "DIV",
+        "id": "video-overlay__progress-container",
+        "insideModal": true
+      },
+      {
+        "tag": "BUTTON",
+        "id": "video-overlay__mute-btn",
+        "insideModal": true
+      },
+      {
+        "tag": "BUTTON",
+        "id": "video-overlay__mobile-close-btn",
+        "insideModal": true
+      },
+      {
+        "tag": "BUTTON",
+        "id": "video-overlay__play-btn",
+        "insideModal": true
+      }
+    ]
+  },
+  "totals": {
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "http4xxOr5xxAssets": 0,
+    "failures": []
+  }
+}
