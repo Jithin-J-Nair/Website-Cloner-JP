@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { HeroCrossesStage } from "@/components/home/HeroCrossesStage";
 import { FeaturedProjectCard } from "@/components/home/FeaturedProjectCard";
@@ -86,12 +86,9 @@ export function HomePageView() {
 
   const [isMobileReel, setIsMobileReel] = useState(false);
   const [reelVideoFailed, setReelVideoFailed] = useState(false);
-  const localMediaEnabled = useSyncExternalStore(
-    () => () => {},
-    () => new URLSearchParams(window.location.search).get("localMedia") === "1",
-    () => false
-  );
-  const reelVideoAvailable = localMediaEnabled && !reelVideoFailed;
+  // Enable real self-hosted showreel `.mp4` stream from `media-bundle/` by default,
+  // preserving `<ProceduralReelStream />` strictly as an automatic `onError` fallback.
+  const reelVideoAvailable = !reelVideoFailed;
   const [reelScale, setReelScale] = useState(0.9);
   const [reelWordGapEm, setReelWordGapEm] = useState(1.8);
 
@@ -374,7 +371,7 @@ export function HomePageView() {
               {/* Rounded Interactive Reel Viewport (`aspect-[1.85/1]` desktop matching `ref-03-reel-stage`) */}
               <div
                 onClick={handleOpenReel}
-                className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#7ca6ff] shadow-[0_24px_64px_rgba(12,18,42,0.12)] min-[813px]:aspect-[1.85/1]"
+                className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#0b0d14] shadow-[0_24px_64px_rgba(12,18,42,0.18)] min-[813px]:aspect-[1.85/1]"
               >
                 {reelVideoAvailable ? (
                   <video
@@ -525,9 +522,9 @@ export function HomePageView() {
       <GoalTunnelSection />
 
       {/* =====================================================================
-          5. CLOSING CTA SECTION (`#end-section`)
+          5. CLOSING CTA SECTION (`#home-contact-cta` following `#end-section` waving astronaut)
          ===================================================================== */}
-      <ContactCtaSection />
+      <ContactCtaSection sectionId="home-contact-cta" />
 
       {/* =====================================================================
           6 & 7. STUDIO FOOTER (`#footer-section`) & PORTAL (`#scroll-nav-section`)

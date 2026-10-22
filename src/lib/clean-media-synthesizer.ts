@@ -137,9 +137,8 @@ const APPROVED_SYNTHETIC_PATHS: Map<
   return map;
 })();
 
-export function isApprovedCatalogAsset(relPath: string): boolean {
-  if (APPROVED_SYNTHETIC_PATHS.has(relPath)) return true;
-  const staticApproved = new Set([
+const BUNDLED_MANIFEST_PATHS: Set<string> = (() => {
+  const set = new Set<string>([
     "textures/reel/desktop.mp4",
     "textures/reel/mobile.mp4",
     "textures/LDR_RGB1_0.png",
@@ -156,7 +155,32 @@ export function isApprovedCatalogAsset(relPath: string): boolean {
     "fonts/capability-icons/strategy.svg",
     "fonts/capability-icons/tech.svg",
   ]);
-  return staticApproved.has(relPath);
+  try {
+    // Load verified manifest index from self-contained `media-bundle/BUNDLE_INDEX.json` at server startup
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fsNode = require("node:fs") as typeof import("node:fs");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pathNode = require("node:path") as typeof import("node:path");
+    const idxPath = pathNode.resolve(process.cwd(), "media-bundle", "BUNDLE_INDEX.json");
+    if (fsNode.existsSync(idxPath)) {
+      const parsed = JSON.parse(fsNode.readFileSync(idxPath, "utf8")) as {
+        files?: Array<{ rel: string }>;
+      };
+      for (const entry of parsed.files || []) {
+        if (entry?.rel && !entry.rel.startsWith("fonts/")) {
+          set.add(entry.rel);
+        }
+      }
+    }
+  } catch {
+    // Safe fallback when imported in client context
+  }
+  return set;
+})();
+
+export function isApprovedCatalogAsset(relPath: string): boolean {
+  if (APPROVED_SYNTHETIC_PATHS.has(relPath)) return true;
+  return BUNDLED_MANIFEST_PATHS.has(relPath);
 }
 
 /**

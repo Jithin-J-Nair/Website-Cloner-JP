@@ -400,7 +400,7 @@ export function StudioHud() {
             {activeProjectTheme && (
               <div
                 id="header-center"
-                className="min-[813px]:fixed min-[813px]:top-[var(--base-padding-y)] min-[813px]:left-[54%]"
+                className="min-[813px]:fixed min-[813px]:top-[var(--base-padding-y)] min-[813px]:left-[46%]"
               >
                 <button
                   id="header-center-project-back-btn"

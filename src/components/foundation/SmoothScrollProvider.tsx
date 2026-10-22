@@ -49,6 +49,25 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       touchMultiplier: 1.4,
     });
     lenisRef.current = lenis;
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
+    // Preserve programmatic `window.scrollTo(...)` jumps without Lenis snapping back to old targetScroll
+    let syncingProgrammatic = false;
+    const onNativeJump = () => {
+      if (syncingProgrammatic || lenis.isScrolling) return;
+      const nativeY = window.scrollY;
+      if (Math.abs(nativeY - lenis.animatedScroll) > 2) {
+        syncingProgrammatic = true;
+        lenis.resize();
+        lenis.scrollTo(nativeY, { immediate: true });
+        STAGE_TELEMETRY.scrollY = nativeY;
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        STAGE_TELEMETRY.scrollProgress = nativeY / maxScroll;
+        ScrollTrigger.update();
+        syncingProgrammatic = false;
+      }
+    };
+    window.addEventListener("scroll", onNativeJump, { passive: true });
 
     lenis.on("scroll", ({ scroll, progress, velocity }: { scroll: number; progress: number; velocity: number }) => {
       STAGE_TELEMETRY.scrollY = scroll;
@@ -65,9 +84,11 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     gsap.ticker.lagSmoothing(0);
 
     return () => {
+      window.removeEventListener("scroll", onNativeJump);
       gsap.ticker.remove(updateLenis);
       lenis.destroy();
       lenisRef.current = null;
+      delete (window as unknown as { __lenis?: Lenis }).__lenis;
     };
   }, [reducedMotion]);
 

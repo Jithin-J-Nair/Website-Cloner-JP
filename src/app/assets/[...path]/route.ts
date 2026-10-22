@@ -11,6 +11,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const PUBLIC_ASSETS_ROOT = path.resolve(process.cwd(), "public", "assets");
+const BUNDLED_MEDIA_ROOT = path.resolve(process.cwd(), "media-bundle");
 
 const SAFE_MIME_BY_EXT: Readonly<Record<string, string>> = {
   ".webp": "image/webp",
@@ -22,6 +23,7 @@ const SAFE_MIME_BY_EXT: Readonly<Record<string, string>> = {
   ".webm": "video/webm",
   ".ogg": "audio/ogg",
   ".mp3": "audio/mpeg",
+  ".buf": "application/octet-stream",
   ".woff": "font/woff",
   ".woff2": "font/woff2",
 };
@@ -42,6 +44,7 @@ const OPEN_LICENSE_FONTS_ALLOWLIST = new Set([
 const BASE_SECURITY_HEADERS: Readonly<Record<string, string>> = {
   "X-Content-Type-Options": "nosniff",
   "Cross-Origin-Resource-Policy": "same-origin",
+  "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
 };
 
 const SVG_SECURITY_HEADERS: Readonly<Record<string, string>> = {
@@ -179,29 +182,20 @@ async function resolveSafeFileInRoot(
   return { status: "found", realFile: realTarget, size: stat.size };
 }
 
-function createNodeFileStream(filePath: string, opts?: { start: number; end: number }): ReadableStream<Uint8Array> {
-  let nodeStream: fs.ReadStream | null = null;
-  return new ReadableStream<Uint8Array>({
-    start(controller) {
-      nodeStream = fs.createReadStream(filePath, opts);
-      nodeStream.on("data", (chunk: Buffer | string) => {
-        const buf = typeof chunk === "string" ? Buffer.from(chunk) : chunk;
-        controller.enqueue(new Uint8Array(buf));
-      });
-      nodeStream.on("end", () => {
-        controller.close();
-      });
-      nodeStream.on("error", (err) => {
-        controller.error(err);
-      });
-    },
-    cancel() {
-      if (nodeStream) {
-        nodeStream.destroy();
-        nodeStream = null;
-      }
-    },
-  });
+async function readFileSliceBuffer(filePath: string, start: number, length: number): Promise<Buffer> {
+  const fh = await fsp.open(filePath, "r");
+  try {
+    const out = Buffer.allocUnsafe(length);
+    let offset = 0;
+    while (offset < length) {
+      const { bytesRead } = await fh.read(out, offset, length - offset, start + offset);
+      if (bytesRead <= 0) break;
+      offset += bytesRead;
+    }
+    return offset === length ? out : out.subarray(0, offset);
+  } finally {
+    await fh.close();
+  }
 }
 
 /**
@@ -265,7 +259,7 @@ async function resolveAssetPayload(
     };
   }
 
-  // 2. Optional opt-in local inspection directory (ONLY when explicitly enabled by operator)
+  // 2. Optional opt-in local inspection directory (isolated mode used by security test suite)
   const allowLocalInspection = process.env.LUSION_ALLOW_LOCAL_INSPECTION_ASSETS === "1";
   const localInspectionDir = process.env.LUSION_LOCAL_REF_ASSETS;
   if (allowLocalInspection && localInspectionDir) {
@@ -278,6 +272,20 @@ async function resolveAssetPayload(
         kind: "file",
         realFile: localLookup.realFile,
         size: localLookup.size,
+        mime: checked.mime,
+      };
+    }
+  } else {
+    // 2b. Self-contained repository `media-bundle/` directory (zero `/tmp` dependency; commercial fonts excluded)
+    const bundledLookup = await resolveSafeFileInRoot(BUNDLED_MEDIA_ROOT, checked.relPath);
+    if (bundledLookup.status === "escape") {
+      return { kind: "error", status: 403, message: "Symlink escape forbidden" };
+    }
+    if (bundledLookup.status === "found") {
+      return {
+        kind: "file",
+        realFile: bundledLookup.realFile,
+        size: bundledLookup.size,
         mime: checked.mime,
       };
     }
@@ -368,7 +376,8 @@ export async function GET(
       });
     }
 
-    return new NextResponse(createNodeFileStream(resolved.realFile, { start, end }), {
+    const slice = await readFileSliceBuffer(resolved.realFile, start, chunkLength);
+    return new NextResponse(new Uint8Array(slice), {
       status: 206,
       headers,
     });
@@ -387,7 +396,8 @@ export async function GET(
     });
   }
 
-  return new NextResponse(createNodeFileStream(resolved.realFile), {
+  const fullBuf = await fsp.readFile(resolved.realFile);
+  return new NextResponse(new Uint8Array(fullBuf), {
     status: 200,
     headers,
   });

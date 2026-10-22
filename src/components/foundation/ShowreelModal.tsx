@@ -28,11 +28,7 @@ function VideoOverlaySession({
   const [isMobileViewport, setIsMobileViewport] = useState(
     () => typeof window !== "undefined" && window.innerWidth <= 812
   );
-  const [useExternalMp4, setUseExternalMp4] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).get("localMedia") === "1"
-  );
+  const [useExternalMp4, setUseExternalMp4] = useState(true);
   const [cursorPos, setCursorPos] = useState({ x: -200, y: -200, visible: false });
 
   useEffect(() => {

@@ -22,3 +22,10 @@ This directory (`public/assets/`) stages local verification and open-license typ
    - **Important Legal Limitation:** Public HTTP accessibility does **not** grant an open-source or commercial reuse license. All rights in Lusion's studio assets, client portfolio footage, third-party trademarks, and team member likenesses remain the property of Lusion Ltd and their respective rightsholders. These files are staged solely for local, non-affiliated technical inspection and visual validation.
 
 See `docs/asset-manifest.md` and `docs/asset-manifest.json` for per-file SHA-256 checksums, dimensions, SSIM/PSNR scores, and individual license classifications.
+
+## Phase G Self-Contained Repository Bundle (`media-bundle/`)
+
+- **Location & Footprint:** `media-bundle/` (`567` files, `37.41 MB` total, indexed in `media-bundle/BUNDLE_INDEX.json`) is packaged directly inside the repository and copied into `.next/standalone/media-bundle/` at build time (`zero` runtime `/tmp` dependency).
+- **Delivery & Security:** Served strictly via `src/app/assets/[...path]/route.ts` with `Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; sandbox`, `X-Content-Type-Options: nosniff`, `Cross-Origin-Resource-Policy: same-origin`, symlink-escape canonicalization, and `HTTP 206 Partial Content` byte-range support when `LUSION_ALLOW_LOCAL_INSPECTION_ASSETS !== "1"`.
+- **Clean-Room & Font Compliance Preserved:** `0` commercial font binaries (`Aeonik*`, `LusionMono*`) exist anywhere in `public/assets/` or `media-bundle/`; all commercial font paths continue returning `HTTP 403`. `models/about/sphere_l.buf` duplicates `models/about/sphere_m.buf` where the upstream capture omitted `sphere_l.buf`.
+

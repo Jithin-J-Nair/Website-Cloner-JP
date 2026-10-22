@@ -3,7 +3,7 @@
 - **Machine-readable manifest:** `docs/asset-manifest.json` (**588** individually traced records with SHA-256 checksums)
 - **Reference capture source:** `quangminh1212/Design_Lusion.co` (*captured 23 September 2026 from public `https://lusion.co/` responses*)
 - **Active font policy:** **Font Option 2 — Strict Licensing Compliance** (`0` commercial/proprietary font binaries in repository)
-- **Total staged size in `public/assets/`:** **94.51 MB** (well below Arena's `128 MB` workspace artifact ceiling)
+- **Total staged size in `public/assets/` + `media-bundle/`:** **`0.33 MB` (`public/assets/`) + `37.41 MB` (`media-bundle/`, `567` files indexed in `media-bundle/BUNDLE_INDEX.json`) = `37.74 MB`** (well below Arena's `128 MB` workspace artifact ceiling, with zero `/tmp` dependency)
 
 ---
 

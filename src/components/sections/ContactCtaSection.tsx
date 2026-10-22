@@ -12,7 +12,7 @@ import { LUSION_GLOBAL_CHROME } from "@/data/reference";
  * `"Let's work / together!"`, 5 architectural `+` crosshairs, 3 horizontal geometric
  * decoration bars, and the floating white `#end-bottom` `"CONTINUE TO SCROLL"` pill).
  */
-export function ContactCtaSection() {
+export function ContactCtaSection({ sectionId = "end-section" }: { sectionId?: string } = {}) {
   const [copiedNotice, setCopiedNotice] = useState(false);
 
   const handleEmailTrigger = () => {
@@ -28,7 +28,7 @@ export function ContactCtaSection() {
 
   return (
     <SurfaceSection
-      id="end-section"
+      id={sectionId}
       surface="cobalt"
       webglMode="contact-beacon"
       className="relative overflow-hidden py-0"

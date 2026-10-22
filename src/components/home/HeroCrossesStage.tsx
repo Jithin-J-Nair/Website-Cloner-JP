@@ -4,6 +4,7 @@ import React, { Component, useCallback, useEffect, useMemo, useRef, useState } f
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { createHollowCrossGeometry } from "@/components/home/HollowCrossGeometry";
+import { loadBufGeometry } from "@/lib/lusion-buf-loader";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
@@ -134,7 +135,32 @@ function HollowCrossCluster({
 }: PhysicsSceneProps) {
   const { camera, gl, size } = useThree();
   const isCompact = size.width < 680;
-  const geometry = useMemo(() => createHollowCrossGeometry(isCompact ? 30 : 38), [isCompact]);
+  const fallbackGeometry = useMemo(() => createHollowCrossGeometry(isCompact ? 30 : 38), [isCompact]);
+  const [bufGeometry, setBufGeometry] = useState<THREE.BufferGeometry | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadBufGeometry("/assets/models/home/cross.buf")
+      .then((res) => {
+        if (!alive) return;
+        const g = res.geometry;
+        g.computeBoundingSphere();
+        const r = g.boundingSphere?.radius || 1;
+        if (Math.abs(r - 1.0) > 0.02) {
+          g.scale(1.0 / r, 1.0 / r, 1.0 / r);
+          g.computeVertexNormals();
+        }
+        setBufGeometry(g);
+      })
+      .catch(() => {
+        // Retain procedural `createHollowCrossGeometry` cleanly if asset test isolate blocks `/assets`
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const geometry = bufGeometry ?? fallbackGeometry;
 
   // 22 sculpted crosses (`6` accent cobalt + `8` white + `8` obsidian black) matching Lusion's ratio
   const initialBodies = useMemo<CrossBodySpec[]>(() => {
