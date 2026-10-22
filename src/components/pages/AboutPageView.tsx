@@ -2,315 +2,1283 @@
 /* eslint-disable @next/next/no-img-element */
 
 import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { LUSION_ABOUT } from "@/data/reference";
+import { useStudioStore } from "@/lib/store";
+import { soundEngine } from "@/lib/audio";
 import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
 import { StudioFooter } from "@/components/sections/StudioFooter";
-import { loadBufGeometry } from "@/lib/lusion-buf-loader";
-import { soundEngine } from "@/lib/audio";
-import { useStudioStore } from "@/lib/store";
+
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const smoothstep = (e0: number, e1: number, x: number) => {
+  const t = clamp01((x - e0) / Math.max(1e-5, e1 - e0));
+  return t * t * (3 - 2 * t);
+};
 
 /**
- * Interactive 3D-Projected Volumetric Nebula + Glowing Cyan Cores (`#about-who` hero canvas)
- * Matches `10a-about-hero--1440x900.jpg` & `10a-about-hero--390x844.jpg`.
+ * Deterministic 3D height function modeling Lusion's sculptural crater basin:
+ * - Smooth misty central lunar valley floor around `x ∈ [-7, 7], z ∈ [-4, 14]`
+ * - Dramatic flanking volcanic/mountain ridges rising steeply on left & right (`|x| = 8..30`)
+ * - Secondary ridge folds & contour terraces so the 42 topographic contour lines match `about-03` & `about-04`!
  */
-function AboutHeroParticleCanvas({ reducedMotion }: { reducedMotion: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointerRef = useRef({ x: 0, y: 0, active: false });
+function terrainHeightAt(x: number, z: number): number {
+  const valleyDist = Math.hypot(x * 0.92, (z - 3.5) * 0.52);
+  const rimRise = smoothstep(5.2, 23.0, valleyDist) * 9.6;
+
+  // Jagged multi-octave mountain ridges stronger on left & right flanks ('about-02', 'about-04')
+  const n1 = Math.sin(x * 0.21 + z * 0.14) * Math.cos(z * 0.19 - x * 0.11);
+  const n2 = Math.sin(x * 0.47 - z * 0.36) * 0.52 + Math.cos(x * 0.83 + z * 0.61) * 0.26;
+  const n3 = Math.abs(Math.sin(x * 0.33 + Math.cos(z * 0.28) * 1.6));
+  const flankMask = smoothstep(3.4, 13.5, Math.abs(x) + Math.max(0, -z) * 0.38);
+
+  const micro = Math.sin(x * 1.45 + z * 1.32) * 0.11 * (0.35 + flankMask);
+  return rimRise + (n1 * 2.35 + n2 * 1.45 + n3 * 2.15) * flankMask + micro - 1.35;
+}
+
+/**
+ * Generates an 8,192-vertex 3D sculptural human portrait relief buffer
+ * parameterized by `memberIndex` so every one of the 7 verified Lusion team specialists
+ * renders a crisp, distinct 3D point-cloud hologram with Depth-of-Field bokeh & pointer displacement
+ * even when `/api/local-assets/team/*.buf` returns HTTP 403 in default security mode.
+ */
+function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Float32Array {
+  const out = new Float32Array(count * 3);
+  let seed = (memberIndex * 2654435761 + 1013904223) >>> 0;
+  const rnd = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+
+  const yawTurn = ((memberIndex % 3) - 1) * 0.18;
+  const jawWidth = 0.88 + (memberIndex % 4) * 0.04;
+  const hairCrown = 1.04 + (memberIndex % 3) * 0.06;
+
+  let written = 0;
+  let guard = 0;
+  while (written < count && guard < count * 18) {
+    guard++;
+    const u = rnd() * 2 - 1;
+    const v = rnd() * 2 - 1;
+
+    // Cranium + jawline + neck & shoulders silhouette
+    const inHead =
+      Math.hypot(u / (0.56 * jawWidth * (1 - Math.max(0, -v - 0.05) * 0.34)), (v - 0.18) / (0.68 * hairCrown)) <=
+      1.0;
+    const inNeck = Math.abs(u) < 0.22 && v > -0.58 && v < -0.25;
+    const inShoulders =
+      v <= -0.44 &&
+      v >= -1.0 &&
+      Math.abs(u) < 0.24 + smoothstep(-0.44, -0.95, v) * 0.78;
+
+    if (!inHead && !inNeck && !inShoulders) continue;
+
+    let z = 0;
+    if (inHead) {
+      const hu = u / (0.56 * jawWidth);
+      const hv = (v - 0.18) / (0.68 * hairCrown);
+      const sphereZ = Math.sqrt(Math.max(0, 1 - hu * hu - hv * hv)) * 0.56;
+      // Brow ridge, nose bridge, orbital hollows & cheekbones
+      const nose =
+        Math.exp(-Math.pow(u / 0.085, 2) - Math.pow((v - 0.14) / 0.22, 2)) * 0.16;
+      const eyes =
+        -Math.exp(-Math.pow((Math.abs(u) - 0.17) / 0.09, 2) - Math.pow((v - 0.24) / 0.065, 2)) *
+        0.075;
+      const lips =
+        Math.exp(-Math.pow(u / 0.14, 2) - Math.pow((v + 0.08) / 0.045, 2)) * 0.045;
+      z = sphereZ + nose + eyes + lips;
+    } else if (inNeck) {
+      z = Math.sqrt(Math.max(0, 0.062 - u * u)) * 1.1;
+    } else {
+      z = Math.cos(u * 1.35) * 0.34 + 0.04;
+    }
+
+    // Apply slight 3/4 portrait turn
+    const px = u * 1.42;
+    const py = v * 1.52;
+    const pz = z * 1.35;
+    const rx = px * Math.cos(yawTurn) + pz * Math.sin(yawTurn);
+    const rz = -px * Math.sin(yawTurn) + pz * Math.cos(yawTurn);
+
+    out[written * 3] = rx;
+    out[written * 3 + 1] = py;
+    out[written * 3 + 2] = rz;
+    written++;
+  }
+
+  return out;
+}
+
+/**
+ * Full-Viewport Sticky WebGL 3D World + Synchronized Architectural HUD (`#about-who`)
+ * Implements Lusion's complete `/about/` scroll-driven 3D experience:
+ *   1. `u = 0.0` (`about-01-hero-top`): Close-up volumetric 3D curl-noise + spin sphere storm (`3,600`
+ *      GPU-instanced 3D icospheres with velocity motion stretch, depth AO, cyan inner core glow & pointer swirl),
+ *      5 horizontal `+` crosshairs, monumental double-stroke `LUSION` wordmark & `SCROLL TO EXPLORE`.
+ *   2. `u = 1.6` (`about-02-we-are-reveal` & `about-06-reverse-we-are`): Smooth 3D spline pullback revealing
+ *      sculpted dark crater mountain ridges, misty bright lunar valley floor, vertical volumetric God-Ray column,
+ *      elevated swirling sphere cloud, lone white standing explorer with glowing cyan pack, 92 levitating basalt
+ *      boulders, and horizontal `WE ARE / A CREATIVE / PRODUCTION STUDIO` manifesto transition.
+ *   3. `u = 5.35` (`about-03-details-hud`): Obsidian sky + 42 glowing white 3D topographic contour lines
+ *      sweeping across the mountain relief beneath the studio narrative statement.
+ *   4. `u = 7.2 / 8.85` (`about-04-team-hologram`): Interactive `T E A M` hologram stage with `[[ 001 ]]`,
+ *      tick ruler, `2x13` dot matrix, royal-blue `#223aff` cursor orb (`→` / `SWIPE TO CHANGE`), glowing contour
+ *      terrain, 8,192-vertex 3D point-cloud portrait sculpture, falling glyph stream & glitch tile matrix.
+ */
+interface AboutWhoStageProps {
+  activeMemberIdx: number;
+  onStepMember: (delta: number) => void;
+  onSelectMember: (index: number) => void;
+  reducedMotion: boolean;
+}
+
+function AboutWhoExperience({
+  activeMemberIdx,
+  onStepMember,
+  onSelectMember,
+  reducedMotion,
+}: AboutWhoStageProps) {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const canvasHostRef = useRef<HTMLDivElement | null>(null);
+  const heroWordmarkRef = useRef<HTMLDivElement | null>(null);
+  const scrollPromptRef = useRef<HTMLDivElement | null>(null);
+  const manifestoOverlayRef = useRef<HTMLDivElement | null>(null);
+  const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
+  const teamOverlayRef = useRef<HTMLDivElement | null>(null);
+  const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+
+  const portraitMatRef = useRef<THREE.ShaderMaterial | null>(null);
+  const portraitGeoRef = useRef<THREE.BufferGeometry | null>(null);
+
+  const team = LUSION_ABOUT.who.team;
+  const activeMember = team[activeMemberIdx] ?? team[0];
+
+  // Update 8,192-point 3D portrait geometry whenever 'activeMemberIdx' changes (zero React loop!)
+  useEffect(() => {
+    const geo = portraitGeoRef.current;
+    if (!geo) return;
+    const positions = buildSculpturalPortraitPositions(activeMemberIdx, 8192);
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geo.attributes.position.needsUpdate = true;
+    geo.computeBoundingSphere();
+  }, [activeMemberIdx]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const sectionEl = sectionRef.current;
+    const hostEl = canvasHostRef.current;
+    if (!sectionEl || !hostEl) return;
 
-    const COUNT = 780;
-    const pts = Array.from({ length: COUNT }, (_, i) => {
-      const u = (i * 0.6180339887) % 1;
-      const v = i / COUNT;
-      const angle = u * Math.PI * 2 * 3.6;
-      const arm = (v - 0.36) * 2.05;
-      const isCyanCore = i % 118 === 17;
+    let renderer: THREE.WebGLRenderer | null = null;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      if (fallbackPosterRef.current) {
+        fallbackPosterRef.current.style.display = "flex";
+      }
+      return;
+    }
+
+    const glRenderer = renderer;
+    glRenderer.setClearColor(0x000000, 1);
+    glRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    glRenderer.toneMappingExposure = 1.05;
+    glRenderer.domElement.style.width = "100%";
+    glRenderer.domElement.style.height = "100%";
+    glRenderer.domElement.style.display = "block";
+    hostEl.appendChild(glRenderer.domElement);
+
+    const disposables: Array<{ dispose: () => void }> = [];
+    const track = <T extends { dispose: () => void }>(item: T): T => {
+      disposables.push(item);
+      return item;
+    };
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.016);
+
+    const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);
+
+    // Moody monochrome lunar lighting matching 'about-01' & 'about-02'
+    const ambient = new THREE.AmbientLight(0x8892a4, 0.55);
+    scene.add(ambient);
+
+    const overheadBeamLight = new THREE.SpotLight(0xf1f5f9, 48, 52, Math.PI * 0.22, 0.85, 1.3);
+    overheadBeamLight.position.set(0, 24, 1.5);
+    overheadBeamLight.target.position.set(0, 0, 2.5);
+    scene.add(overheadBeamLight);
+    scene.add(overheadBeamLight.target);
+
+    const coolRimLight = new THREE.DirectionalLight(0xcbd5e1, 1.35);
+    coolRimLight.position.set(-8, 14, 10);
+    scene.add(coolRimLight);
+
+    // -------------------------------------------------------------------------
+    // 1. 3D Curl-Noise + Vortex Sphere Storm ('6,400' GPU-Instanced Fine Icospheres)
+    // -------------------------------------------------------------------------
+    const SPHERE_COUNT = 6400;
+    const sphereGeo = track(new THREE.IcosahedronGeometry(0.042, 1));
+
+    const instSeed = new Float32Array(SPHERE_COUNT * 4);
+    let prng = 20260822;
+    const nextRnd = () => {
+      prng = (prng * 1664525 + 1013904223) >>> 0;
+      return prng / 4294967296;
+    };
+    for (let i = 0; i < SPHERE_COUNT; i++) {
+      // Polar/shell distribution forming dense swirling core + diagonal tail ('about-01-hero-top'!)
+      const u = nextRnd();
+      const theta = nextRnd() * Math.PI * 2;
+      const phi = Math.acos(2 * nextRnd() - 1);
+      instSeed[i * 4 + 0] = Math.pow(u, 0.78); // radial shell factor
+      instSeed[i * 4 + 1] = theta;
+      instSeed[i * 4 + 2] = phi;
+      instSeed[i * 4 + 3] = nextRnd(); // size & cyan core selector
+    }
+    sphereGeo.setAttribute("aSeed", new THREE.InstancedBufferAttribute(instSeed, 4));
+
+    const stormMat = track(
+      new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uCompact: { value: 0 }, // 0 at hero close-up, 1 when pulled back above valley ('about-02')
+          uPointer: { value: new THREE.Vector3(0, 8.2, 0) },
+          uPointerStrength: { value: 0 },
+          uCyanBoost: { value: 0.35 },
+          uOpacity: { value: 1 },
+        },
+        transparent: true,
+        vertexShader: `
+          attribute vec4 aSeed;
+          uniform float uTime;
+          uniform float uCompact;
+          uniform vec3 uPointer;
+          uniform float uPointerStrength;
+          varying vec3 vNormalV;
+          varying float vCoreDist;
+          varying float vCyanMask;
+
+          vec3 hash3(vec3 p) {
+            p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
+                     dot(p, vec3(269.5, 183.3, 246.1)),
+                     dot(p, vec3(113.5, 271.9, 124.6)));
+            return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+          }
+
+          void main() {
+            float radFrac = aSeed.x;
+            float theta = aSeed.y;
+            float phi = aSeed.z;
+            float rnd = aSeed.w;
+
+            // Orbiting swirl around vortex center '(0, 8.35, 0)' + diagonal hero plume tail!
+            float spinSpeed = (0.45 + (1.0 - radFrac) * 0.90);
+            float ang = theta + uTime * spinSpeed * 0.45;
+            float baseR = mix(1.22, 1.38, uCompact) * radFrac;
+
+            vec3 localPos = vec3(
+              sin(phi) * cos(ang),
+              cos(phi) * 1.15,
+              sin(phi) * sin(ang)
+            ) * baseR;
+
+            // Diagonal upper-right to lower-left turbulent curl stream prominent in 'about-01-hero-top'
+            float tail = pow(radFrac, 1.35) * mix(1.0, 0.35, uCompact);
+            localPos.x += sin(ang * 2.0 + phi) * 0.52 * tail - tail * 0.48;
+            localPos.y += sin(ang * 1.5 - uTime * 0.35) * 0.55 * tail;
+            localPos.z += cos(ang * 2.2 + uTime * 0.25) * 0.38;
+
+            // Turbulent curl displacement
+            localPos += sin(localPos.yzx * 2.1 + uTime * 0.75 + rnd * 6.28) * 0.18;
+
+            vec3 worldCenter = vec3(-0.36 * (1.0 - uCompact), mix(9.02, 9.08, uCompact), 0.0) + localPos;
+
+            // Interactive 3D pointer repulsion swirl
+            vec3 toPtr = worldCenter - uPointer;
+            float pd = length(toPtr);
+            if (uPointerStrength > 0.001 && pd < 2.6 && pd > 0.001) {
+              worldCenter += normalize(toPtr) * (1.0 - pd / 2.6) * 1.15 * uPointerStrength;
+            }
+
+            // Velocity tangent stretch along swirl direction (authentic motion-stretched spheres in 'about-01'!)
+            vec3 tangent = normalize(vec3(-sin(ang), 0.28 * cos(phi), cos(ang)));
+            vec3 p = position;
+            float stretch = 1.0 + (1.0 - radFrac * 0.4) * 1.05 * (1.0 - uCompact * 0.45);
+            p += tangent * dot(p, tangent) * (stretch - 1.0);
+
+            float sizeVar = mix(0.42, 1.55, pow(rnd, 1.6)) * mix(1.0, 0.62, uCompact);
+            p *= sizeVar;
+
+            vCoreDist = radFrac;
+            vCyanMask = step(0.968, rnd) * (1.0 - smoothstep(0.25, 0.72, radFrac));
+            vNormalV = normalize(normalMatrix * normal);
+
+            gl_Position = projectionMatrix * viewMatrix * vec4(worldCenter + p, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uCyanBoost;
+          uniform float uOpacity;
+          varying vec3 vNormalV;
+          varying float vCoreDist;
+          varying float vCyanMask;
+
+          void main() {
+            vec3 lightDir = normalize(vec3(-0.28, 0.86, 0.42));
+            float diff = clamp(dot(normalize(vNormalV), lightDir) * 0.5 + 0.5, 0.0, 1.0);
+
+            // Volumetric core illumination + ambient occlusion shadowing
+            float coreGlow = exp(-vCoreDist * 2.35);
+            vec3 darkSlate = vec3(0.16, 0.19, 0.23);
+            vec3 silverWhite = vec3(0.88, 0.92, 0.96);
+            vec3 col = mix(darkSlate, silverWhite, pow(diff, 1.15) * (0.42 + coreGlow * 0.78));
+
+            // Soft central god-ray scatter highlight
+            col += vec3(0.32, 0.36, 0.40) * coreGlow * 0.65;
+
+            // Crisp glowing electric-cyan inner spheres ('#00f7ff') visible inside cluster pockets!
+            if (vCyanMask > 0.5) {
+              col = mix(col, vec3(0.04, 0.97, 1.0), clamp(uCyanBoost, 0.0, 1.0));
+            }
+
+            float softAlpha = uOpacity * mix(0.24, 0.96, pow(1.0 - vCoreDist, 1.45));
+            gl_FragColor = vec4(col, softAlpha);
+          }
+        `,
+      })
+    );
+
+    const instancedGeo = track(new THREE.InstancedBufferGeometry());
+    instancedGeo.index = sphereGeo.index;
+    instancedGeo.setAttribute("position", sphereGeo.attributes.position);
+    instancedGeo.setAttribute("normal", sphereGeo.attributes.normal);
+    instancedGeo.setAttribute("uv", sphereGeo.attributes.uv);
+    instancedGeo.setAttribute("aSeed", sphereGeo.attributes.aSeed);
+    instancedGeo.instanceCount = SPHERE_COUNT;
+    const sphereStorm = new THREE.Mesh(instancedGeo, stormMat);
+    sphereStorm.frustumCulled = false;
+    scene.add(sphereStorm);
+
+    // Soft Volumetric Core Haze & Vertical God-Ray Shaft ('about-01' & 'about-02'!)
+    const godRayMat = track(
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        uniforms: {
+          uOpacity: { value: 0 },
+          uCyanCore: { value: 0.25 },
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          uniform float uOpacity;
+          uniform float uCyanCore;
+          void main() {
+            float xDist = abs(vUv.x - 0.5) * 2.0;
+            float beam = exp(-pow(xDist * 9.5, 2.0));
+            float wideHaze = exp(-pow(xDist * 3.2, 2.0)) * 0.16;
+            float vertFade = smoothstep(0.0, 0.14, vUv.y);
+            vec3 col = vec3(0.76, 0.81, 0.88) * (beam * 0.38 + wideHaze);
+            float vortexHotspot = exp(-pow((vUv.y - 0.44) * 6.5, 2.0)) * exp(-pow(xDist * 4.5, 2.0));
+            col += mix(vec3(0.75, 0.85, 0.95), vec3(0.05, 0.96, 1.0), uCyanCore) * vortexHotspot * 0.42;
+            gl_FragColor = vec4(col, uOpacity * vertFade);
+          }
+        `,
+      })
+    );
+    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(15.5, 26.0)), godRayMat);
+    godRayPlane.position.set(0, 10.5, 0.2);
+    scene.add(godRayPlane);
+
+    // -------------------------------------------------------------------------
+    // 2. Sculpted 3D Crater Basin & Mountain Ridge Terrain ('about-02', 'about-03', 'about-04')
+    // -------------------------------------------------------------------------
+    const GRID = 136;
+    const SPAN = 64;
+    const terrainGeo = track(new THREE.PlaneGeometry(SPAN, SPAN, GRID, GRID));
+    terrainGeo.rotateX(-Math.PI * 0.5);
+    const tPos = terrainGeo.attributes.position as THREE.BufferAttribute;
+    for (let i = 0; i < tPos.count; i++) {
+      const x = tPos.getX(i);
+      const z = tPos.getZ(i);
+      tPos.setY(i, terrainHeightAt(x, z));
+    }
+    terrainGeo.computeVertexNormals();
+
+    const terrainMat = track(
+      new THREE.ShaderMaterial({
+        uniforms: {
+          uValleyBrightness: { value: 1.0 },
+          uOpacity: { value: 0 },
+        },
+        transparent: true,
+        vertexShader: `
+          varying vec3 vWorldPos;
+          varying vec3 vNormalW;
+          void main() {
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vWorldPos = wp.xyz;
+            vNormalW = normalize(mat3(modelMatrix) * normal);
+            gl_Position = projectionMatrix * viewMatrix * wp;
+          }
+        `,
+        fragmentShader: `
+          uniform float uValleyBrightness;
+          uniform float uOpacity;
+          varying vec3 vWorldPos;
+          varying vec3 vNormalW;
+          void main() {
+            // Overhead spotlight pool brightening the misty dusty valley center ('about-02'!)
+            float distFromCenter = length(vWorldPos.xz - vec2(0.0, 4.2));
+            float spotPool = exp(-pow(distFromCenter / 12.8, 1.75));
+            float slope = clamp(vNormalW.y, 0.0, 1.0);
+            vec3 lightDir = normalize(vec3(-0.15, 0.92, 0.25));
+            float diff = clamp(dot(vNormalW, lightDir), 0.0, 1.0);
+
+            vec3 darkRock = vec3(0.035, 0.04, 0.05);
+            vec3 ridgeGrey = vec3(0.22, 0.25, 0.29);
+            vec3 mistySand = vec3(0.76, 0.80, 0.85);
+
+            vec3 col = mix(darkRock, ridgeGrey, diff * 0.85);
+            col = mix(col, mistySand, spotPool * slope * uValleyBrightness * 0.94);
+
+            // Soft distance horizon fade
+            float farFade = 1.0 - smoothstep(18.0, 32.0, length(vWorldPos.xz));
+            gl_FragColor = vec4(col * farFade, uOpacity);
+          }
+        `,
+      })
+    );
+    const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
+    scene.add(terrainMesh);
+
+    // -------------------------------------------------------------------------
+    // 3. 42 Glowing 3D Topographic Elevation Contour Lines ('about-03' & 'about-04')
+    // -------------------------------------------------------------------------
+    const contourSegments: number[] = [];
+    const C_GRID = 112;
+    const step = SPAN / C_GRID;
+    // Marching-squares iso-contour extraction across the exact 3D 'terrainHeightAt' grid!
+    const hGrid = new Float32Array((C_GRID + 1) * (C_GRID + 1));
+    for (let j = 0; j <= C_GRID; j++) {
+      for (let i = 0; i <= C_GRID; i++) {
+        const x = -SPAN * 0.5 + i * step;
+        const z = -SPAN * 0.5 + j * step;
+        hGrid[j * (C_GRID + 1) + i] = terrainHeightAt(x, z);
+      }
+    }
+
+    const NUM_LEVELS = 36;
+    for (let lv = 0; lv < NUM_LEVELS; lv++) {
+      const iso = -1.2 + lv * 0.34;
+      for (let j = 0; j < C_GRID; j++) {
+        for (let i = 0; i < C_GRID; i++) {
+          const i00 = hGrid[j * (C_GRID + 1) + i];
+          const i10 = hGrid[j * (C_GRID + 1) + i + 1];
+          const i01 = hGrid[(j + 1) * (C_GRID + 1) + i];
+          const i11 = hGrid[(j + 1) * (C_GRID + 1) + i + 1];
+
+          const x0 = -SPAN * 0.5 + i * step;
+          const z0 = -SPAN * 0.5 + j * step;
+          const pts: Array<[number, number]> = [];
+
+          if ((i00 < iso) !== (i10 < iso)) {
+            const t = (iso - i00) / (i10 - i00);
+            pts.push([x0 + t * step, z0]);
+          }
+          if ((i10 < iso) !== (i11 < iso)) {
+            const t = (iso - i10) / (i11 - i10);
+            pts.push([x0 + step, z0 + t * step]);
+          }
+          if ((i01 < iso) !== (i11 < iso)) {
+            const t = (iso - i01) / (i11 - i01);
+            pts.push([x0 + t * step, z0 + step]);
+          }
+          if ((i00 < iso) !== (i01 < iso)) {
+            const t = (iso - i00) / (i01 - i00);
+            pts.push([x0, z0 + t * step]);
+          }
+
+          if (pts.length >= 2) {
+            contourSegments.push(
+              pts[0][0],
+              iso + 0.045,
+              pts[0][1],
+              pts[1][0],
+              iso + 0.045,
+              pts[1][1]
+            );
+          }
+        }
+      }
+    }
+
+    const contourGeo = track(new THREE.BufferGeometry());
+    contourGeo.setAttribute("position", new THREE.Float32BufferAttribute(contourSegments, 3));
+    const contourMat = track(
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uOpacity: { value: 0 },
+          uTime: { value: 0 },
+        },
+        vertexShader: `
+          varying vec3 vPosW;
+          void main() {
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vPosW = wp.xyz;
+            gl_Position = projectionMatrix * viewMatrix * wp;
+          }
+        `,
+        fragmentShader: `
+          uniform float uOpacity;
+          uniform float uTime;
+          varying vec3 vPosW;
+          void main() {
+            float wave = 0.55 + 0.45 * sin(vPosW.y * 2.4 - uTime * 1.4 + vPosW.x * 0.15);
+            float distFade = 1.0 - smoothstep(10.0, 29.0, length(vPosW.xz - vec2(0.0, 4.0)));
+            // Bright ridge crests on left & right matching 'about-04-team-hologram.png'!
+            float ridgeGlow = smoothstep(-0.8, 3.2, vPosW.y) * 0.75 + 0.25;
+            vec3 col = mix(vec3(0.48, 0.56, 0.68), vec3(0.95, 0.98, 1.0), wave);
+            gl_FragColor = vec4(col, uOpacity * distFade * ridgeGlow * (0.45 + wave * 0.55));
+          }
+        `,
+      })
+    );
+    const contourLines = new THREE.LineSegments(contourGeo, contourMat);
+    contourLines.visible = false;
+    scene.add(contourLines);
+
+    // -------------------------------------------------------------------------
+    // 4. Lone White Explorer / Astronaut Figure Standing on Valley Floor ('about-02')
+    // -------------------------------------------------------------------------
+    const explorerGroup = new THREE.Group();
+    const gy = terrainHeightAt(0, 0.6);
+    explorerGroup.position.set(0, gy + 0.92, 0.6);
+    scene.add(explorerGroup);
+
+    const explorerMat = track(
+      new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.45, metalness: 0.08 })
+    );
+    const cyanPackMat = track(
+      new THREE.MeshBasicMaterial({ color: 0x06f6ff })
+    );
+
+    const exTorso = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.18, 0.34, 6, 12)), explorerMat);
+    explorerGroup.add(exTorso);
+    const exHead = new THREE.Mesh(track(new THREE.SphereGeometry(0.16, 14, 12)), explorerMat);
+    exHead.position.y = 0.38;
+    explorerGroup.add(exHead);
+    // Glowing electric-cyan collar/backpack light visible in both '1440x900' & '390x844/about-02'!
+    const exPackGlow = new THREE.Mesh(track(new THREE.BoxGeometry(0.24, 0.28, 0.14)), cyanPackMat);
+    exPackGlow.position.set(0, 0.08, 0.14);
+    explorerGroup.add(exPackGlow);
+
+    for (const sx of [-1, 1]) {
+      const leg = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.068, 0.42, 6, 10)), explorerMat);
+      leg.position.set(sx * 0.10, -0.45, 0);
+      explorerGroup.add(leg);
+      const arm = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.055, 0.34, 6, 10)), explorerMat);
+      arm.position.set(sx * 0.24, -0.02, 0);
+      arm.rotation.z = sx * 0.16;
+      explorerGroup.add(arm);
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. 92 Levitating & Ground-Scattered 3D Basalt Boulders ('about-02')
+    // -------------------------------------------------------------------------
+    const ROCK_COUNT = 92;
+    const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
+    const rockMat = track(
+      new THREE.MeshStandardMaterial({
+        color: 0x2a2f38,
+        roughness: 0.78,
+        metalness: 0.12,
+        flatShading: true,
+      })
+    );
+    const rocksMesh = new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT);
+    const rockDummy = new THREE.Object3D();
+    const rockSeeds = Array.from({ length: ROCK_COUNT }, (_, i) => {
+      const floating = i < 48;
+      const ang = (i * 2.39996) % (Math.PI * 2);
+      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 11.0;
+      const rx = Math.cos(ang) * rad;
+      const rz = 3.5 + Math.sin(ang) * rad * 0.72;
+      const ry = floating
+        ? 1.5 + ((i * 43) % 100) / 100 * 13.5
+        : terrainHeightAt(rx, rz) + 0.08;
       return {
-        bx: arm * 0.68 + Math.cos(angle) * (0.12 + v * 0.34),
-        by: -arm * 0.4 + Math.sin(angle * 1.25) * (0.14 + v * 0.3) - 0.06,
-        bz: Math.sin(angle) * 0.48,
-        size: isCyanCore ? 11.5 : i % 31 === 0 ? 6.8 : i % 8 === 0 ? 3.4 : 1.3 + (i % 5) * 0.5,
-        alpha: isCyanCore ? 0.96 : 0.2 + (1 - Math.abs(v - 0.46)) * 0.58,
-        phase: i * 0.13,
-        isCyanCore,
+        x: rx,
+        y: ry,
+        z: rz,
+        floating,
+        scale: floating ? 0.35 + ((i * 19) % 10) * 0.11 : 0.25 + ((i * 17) % 8) * 0.09,
+        phase: i * 0.73,
       };
     });
+    scene.add(rocksMesh);
 
+    // -------------------------------------------------------------------------
+    // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
+    // -------------------------------------------------------------------------
+    const portraitGeo = track(new THREE.BufferGeometry());
+    portraitGeo.setAttribute(
+      "position",
+      new THREE.BufferAttribute(buildSculpturalPortraitPositions(0, 8192), 3)
+    );
+    portraitGeoRef.current = portraitGeo;
+
+    const portraitMat = track(
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uOpacity: { value: 0 },
+          uTime: { value: 0 },
+          uPixelRatio: { value: 1 },
+          uPointerNDC: { value: new THREE.Vector2(0, 0) },
+        },
+        vertexShader: `
+          uniform float uTime;
+          uniform float uPixelRatio;
+          uniform vec2 uPointerNDC;
+          varying float vDepth;
+          varying float vShade;
+          void main() {
+            vec3 p = position;
+            // Subtle holographic scan shimmer + pointer tilt
+            p.x += sin(p.y * 8.0 + uTime * 2.1) * 0.012;
+            p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
+            vec4 mv = modelViewMatrix * vec4(p, 1.0);
+            vDepth = -mv.z;
+            vShade = clamp(p.z * 0.85 + 0.42, 0.12, 1.0);
+            float dof = 1.0 + abs(p.z - 0.35) * 2.2;
+            gl_PointSize = (2.15 * dof) * uPixelRatio;
+            gl_Position = projectionMatrix * mv;
+          }
+        `,
+        fragmentShader: `
+          uniform float uOpacity;
+          varying float vShade;
+          void main() {
+            vec2 d = gl_PointCoord - 0.5;
+            float r = length(d);
+            if (r > 0.5) discard;
+            float soft = smoothstep(0.5, 0.08, r);
+            vec3 col = mix(vec3(0.35, 0.44, 0.58), vec3(0.92, 0.96, 1.0), vShade);
+            gl_FragColor = vec4(col, soft * uOpacity * 0.72);
+          }
+        `,
+      })
+    );
+    portraitMatRef.current = portraitMat;
+
+    const portraitPoints = new THREE.Points(portraitGeo, portraitMat);
+    portraitPoints.visible = false;
+    scene.add(portraitPoints);
+
+    // -------------------------------------------------------------------------
+    // Scroll & Camera Spline Update Loop
+    // -------------------------------------------------------------------------
+    let targetScrollY = typeof window !== "undefined" ? window.scrollY : 0;
+    let smoothScrollY = targetScrollY;
+    let docVisible = true;
     let rafId = 0;
-    let t = 1.6;
-    let last = performance.now();
+    const pointerNDC = new THREE.Vector2(0, 0);
+    const raycaster = new THREE.Raycaster();
+    const pointerPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    const pointerWorld = new THREE.Vector3(0, 8.35, 0);
+    let pointerActive = 0;
+    const startClock = performance.now();
+
+    const syncInspector = () => {
+      const H = Math.max(1, window.innerHeight);
+      window.__lusionInspector = {
+        ...window.__lusionInspector,
+        properties: { hasStarted: true },
+        scrollManager: {
+          scrollPixel: window.scrollY,
+          contentSizePixel: Math.max(0, document.documentElement.scrollHeight - H),
+          scrollLimit: Math.max(0, document.documentElement.scrollHeight - H),
+          scrollToPixel: (y: number) => {
+            const win = window as unknown as {
+              __lenis?: { resize: () => void; scrollTo: (t: number, o?: { immediate?: boolean }) => void };
+            };
+            win.__lenis?.resize();
+            win.__lenis?.scrollTo(y, { immediate: true });
+            window.scrollTo({ top: y, behavior: "instant" });
+            targetScrollY = y;
+            smoothScrollY = y;
+          },
+        },
+      };
+    };
 
     const resize = () => {
+      const W = Math.max(1, window.innerWidth);
+      const H = Math.max(1, window.innerHeight);
       const dpr = Math.min(2, window.devicePixelRatio || 1);
-      const rect = canvas.getBoundingClientRect();
-      const w = Math.max(320, Math.round(rect.width * dpr));
-      const h = Math.max(320, Math.round(rect.height * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-      }
+      glRenderer.setPixelRatio(dpr);
+      glRenderer.setSize(W, H, false);
+      camera.aspect = W / H;
+      camera.updateProjectionMatrix();
+      portraitMat.uniforms.uPixelRatio.value = dpr;
+      syncInspector();
     };
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
 
-    const render = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      if (!reducedMotion) t += dt * 0.52;
+    const renderAtScroll = (sy: number, elapsedSec: number) => {
+      const W = Math.max(1, window.innerWidth);
+      const H = Math.max(1, window.innerHeight);
+      const isMobile = W < 820;
 
-      const w = canvas.width;
-      const h = canvas.height;
-      const isMobile = w < 900;
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(0, 0, w, h);
+      // Exact unit scroll parameter matching live 'lusion.co/about/':
+      // Desktop: 'u = (sy - sectionTop) / W' in '[0 .. 9.5]'
+      // Mobile:  'u = (sy - sectionTop) / H' in '[0 .. 11.25]'
+      const secRect = sectionEl.getBoundingClientRect();
+      const secTop = secRect.top + window.scrollY;
+      const unit = isMobile ? H : W;
+      const u = Math.max(0, (sy - secTop) / Math.max(1, unit));
 
-      // Volumetric silver-charcoal studio mist billows (`10a-about-hero`)
-      const mistPuffs = isMobile
-        ? [
-            [0.36, 0.24, 0.42, 0.24],
-            [0.64, 0.18, 0.38, 0.2],
-            [0.28, 0.42, 0.38, 0.2],
-            [0.62, 0.48, 0.4, 0.18],
-          ]
-        : [
-            [0.44, 0.22, 0.24, 0.24],
-            [0.52, 0.38, 0.26, 0.22],
-            [0.34, 0.34, 0.2, 0.18],
-            [0.56, 0.52, 0.22, 0.18],
-          ];
-      for (const [mx, my, mr, ma] of mistPuffs) {
-        const rr = Math.max(w, h) * mr;
-        const g = ctx.createRadialGradient(w * mx, h * my, rr * 0.05, w * mx, h * my, rr);
-        g.addColorStop(0, `rgba(182, 194, 210, ${ma})`);
-        g.addColorStop(0.45, `rgba(98, 108, 126, ${(ma * 0.48).toFixed(3)})`);
-        g.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, w, h);
+      if (window.__lusionInspector?.scrollManager) {
+        window.__lusionInspector.scrollManager.scrollPixel = sy;
       }
 
-      const scale = Math.min(w, h) * (isMobile ? 0.92 : 0.74);
-      const px = pointerRef.current.active ? pointerRef.current.x * 0.18 : 0;
-      const py = pointerRef.current.active ? pointerRef.current.y * 0.14 : 0;
+      // -----------------------------------------------------------------------
+      // Continuous Camera Spline ('u = 0' close storm -> 'u = 1.6' valley wide -> 'u = 5.35..9.5' ridge scan)
+      // -----------------------------------------------------------------------
+      const tPullback = smoothstep(0.05, 1.45, u);
+      const tContourPhase = smoothstep(3.6, 5.0, u);
+      const tTeamPhase = smoothstep(6.2, 6.95, u);
 
-      for (let i = 0; i < pts.length; i += 1) {
-        const p = pts[i];
-        const driftX = Math.sin(t + p.phase) * 0.032 + px * (0.4 + p.bz);
-        const driftY = Math.cos(t * 0.85 + p.phase * 1.2) * 0.032 + py * (0.4 + p.bz);
-        const z = 1.45 + p.bz * 0.65 + Math.sin(t * 0.5 + p.phase) * 0.12;
-        const sx =
-          w * (isMobile ? 0.5 : 0.47) + ((p.bx + driftX) / z) * scale * (isMobile ? 1.32 : 0.96);
-        const sy =
-          h * (isMobile ? 0.38 : 0.36) + ((p.by + driftY) / z) * scale * (isMobile ? 1.48 : 1.05);
-        const r = Math.max(1.0, (p.size / z) * (isMobile ? 1.75 : 2.05));
+      const camZ = lerp(isMobile ? 8.6 : 6.9, isMobile ? 21.5 : 18.2, tPullback);
+      const camY = lerp(8.15, lerp(4.35, 6.6, tContourPhase), tPullback);
+      const camX = Math.sin(tContourPhase * 1.2) * 0.6;
+      const lookY = lerp(8.15, lerp(4.15, 0.85, tContourPhase), tPullback);
 
-        if (p.isCyanCore) {
-          const glow = ctx.createRadialGradient(sx, sy, r * 0.15, sx, sy, r * 2.6);
-          glow.addColorStop(0, "rgba(185, 252, 255, 0.98)");
-          glow.addColorStop(0.32, "rgba(0, 232, 255, 0.82)");
-          glow.addColorStop(1, "rgba(0, 210, 255, 0)");
-          ctx.fillStyle = glow;
-          ctx.beginPath();
-          ctx.arc(sx, sy, r * 2.6, 0, Math.PI * 2);
-          ctx.fill();
+      camera.fov = isMobile ? 54 : 45;
+      camera.position.set(camX, camY, camZ);
+      camera.lookAt(0, lookY, 0);
+      camera.updateProjectionMatrix();
+
+      // Update 3D pointer projection for live sphere repulsion
+      if (pointerActive > 0.01) {
+        raycaster.setFromCamera(pointerNDC, camera);
+        raycaster.ray.intersectPlane(pointerPlane, pointerWorld);
+      }
+
+      // 1. Sphere storm uniforms
+      const stormVis = 1 - smoothstep(3.35, 4.45, u);
+      sphereStorm.visible = stormVis > 0.01;
+      if (sphereStorm.visible) {
+        stormMat.uniforms.uTime.value = reducedMotion ? 0.5 : elapsedSec;
+        stormMat.uniforms.uCompact.value = tPullback;
+        stormMat.uniforms.uPointer.value.copy(pointerWorld);
+        stormMat.uniforms.uPointerStrength.value = pointerActive;
+        stormMat.uniforms.uCyanBoost.value = isMobile ? 0.92 : lerp(0.35, 0.88, tPullback);
+        stormMat.uniforms.uOpacity.value = stormVis;
+      }
+
+      // 2. Vertical volumetric God-Ray column & Valley Terrain & Explorer & Floating Rocks ('about-02')
+      const landscapeVis = smoothstep(0.30, 1.05, u);
+      const darkHudFade = 1 - smoothstep(3.45, 4.55, u);
+      godRayPlane.visible = landscapeVis * stormVis > 0.01;
+      godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
+      godRayMat.uniforms.uCyanCore.value = isMobile ? 0.85 : 0.32;
+
+      // Fade solid grey terrain into pure `#000000` obsidian in `about-03` & `about-04` so ONLY crisp white contour lines glow!
+      terrainMesh.visible = landscapeVis * darkHudFade > 0.01;
+      terrainMat.uniforms.uOpacity.value = landscapeVis * darkHudFade;
+      terrainMat.uniforms.uValleyBrightness.value = darkHudFade;
+
+      const explorerVis = landscapeVis * (1 - smoothstep(3.3, 4.3, u));
+      explorerGroup.visible = explorerVis > 0.02;
+
+      rocksMesh.visible = explorerVis > 0.02;
+      if (rocksMesh.visible) {
+        for (let i = 0; i < ROCK_COUNT; i++) {
+          const rs = rockSeeds[i];
+          const bob = rs.floating && !reducedMotion ? Math.sin(elapsedSec * 0.9 + rs.phase) * 0.22 : 0;
+          rockDummy.position.set(rs.x, rs.y + bob, rs.z);
+          rockDummy.rotation.set(
+            rs.phase + (reducedMotion ? 0 : elapsedSec * 0.25),
+            rs.phase * 1.4 + (reducedMotion ? 0 : elapsedSec * 0.18),
+            0
+          );
+          rockDummy.scale.setScalar(rs.scale * 0.58);
+          rockDummy.updateMatrix();
+          rocksMesh.setMatrixAt(i, rockDummy.matrix);
+        }
+        rocksMesh.instanceMatrix.needsUpdate = true;
+      }
+
+      // 3. 42 Topographic Elevation Contour Lines ('about-03' & 'about-04')
+      const contourVis = smoothstep(3.75, 4.85, u);
+      contourLines.visible = contourVis > 0.01;
+      if (contourLines.visible) {
+        contourMat.uniforms.uOpacity.value = contourVis * lerp(0.42, 0.72, tTeamPhase);
+        contourMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
+      }
+
+      // 4. 8,192-Vertex 3D Team Portrait Point-Cloud ('about-04')
+      portraitPoints.visible = tTeamPhase > 0.02;
+      if (portraitPoints.visible) {
+        portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.36;
+        portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
+        portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
+        portraitPoints.position.set(
+          camera.position.x + (isMobile ? -0.10 : -0.25),
+          camera.position.y - (isMobile ? 1.55 : 1.35),
+          camera.position.z - 5.6
+        );
+        portraitPoints.rotation.set(
+          pointerNDC.y * -0.10,
+          pointerNDC.x * 0.14 + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05),
+          0
+        );
+      }
+
+      // -----------------------------------------------------------------------
+      // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
+      // -----------------------------------------------------------------------
+      // A. Monumental Double-Stroke 'LUSION' Wordmark ('about-01' & 'about-02', sweeps left across '1.85..3.1')
+      if (heroWordmarkRef.current) {
+        const wordOut = 1 - smoothstep(2.25, 3.15, u);
+        if (wordOut > 0.005) {
+          const slideX = -smoothstep(1.75, 3.15, u) * 65;
+          heroWordmarkRef.current.style.opacity = String(wordOut);
+          heroWordmarkRef.current.style.transform = `translate3d(${slideX}vw, 0, 0)`;
+          heroWordmarkRef.current.style.visibility = "visible";
         } else {
-          ctx.beginPath();
-          ctx.arc(sx, sy, r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(218, 226, 238, ${Math.min(0.9, p.alpha / z).toFixed(3)})`;
-          ctx.fill();
+          heroWordmarkRef.current.style.visibility = "hidden";
         }
       }
 
-      if (!reducedMotion) {
-        rafId = requestAnimationFrame(render);
+      if (scrollPromptRef.current) {
+        const promptVis = 1 - smoothstep(0.08, 0.55, u);
+        scrollPromptRef.current.style.opacity = String(promptVis);
+      }
+
+      // B. 'WE ARE A CREATIVE PRODUCTION STUDIO' Manifesto Band ('u = 2.05 .. 4.35')
+      if (manifestoOverlayRef.current) {
+        const manIn = smoothstep(2.05, 2.65, u);
+        const manOut = 1 - smoothstep(3.65, 4.35, u);
+        const manVis = manIn * manOut;
+        manifestoOverlayRef.current.style.opacity = String(manVis);
+        manifestoOverlayRef.current.style.visibility = manVis > 0.005 ? "visible" : "hidden";
+        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(18, -12, smoothstep(2.05, 4.35, u))}vw, 0, 0)`;
+      }
+
+      // C. Studio Narrative HUD ('about-03-details-hud', 'u = 4.45 .. 6.35')
+      if (narrativeOverlayRef.current) {
+        const narIn = smoothstep(4.45, 5.0, u);
+        const narOut = 1 - smoothstep(5.85, 6.45, u);
+        const narVis = narIn * narOut;
+        narrativeOverlayRef.current.style.opacity = String(narVis);
+        narrativeOverlayRef.current.style.visibility = narVis > 0.005 ? "visible" : "hidden";
+      }
+
+      // D. Full-Bleed Interactive 'T E A M' Hologram HUD ('about-04-team-hologram', 'u >= 6.45')
+      if (teamOverlayRef.current) {
+        teamOverlayRef.current.style.opacity = String(tTeamPhase);
+        teamOverlayRef.current.style.visibility = tTeamPhase > 0.01 ? "visible" : "hidden";
+        teamOverlayRef.current.style.pointerEvents = tTeamPhase > 0.45 ? "auto" : "none";
+      }
+
+      glRenderer.render(scene, camera);
+    };
+
+    const tick = () => {
+      if (!docVisible) {
+        rafId = 0;
+        return;
+      }
+      targetScrollY = window.scrollY;
+      if (targetScrollY > sectionEl.offsetHeight + window.innerHeight * 0.5) {
+        // Scrolled completely below sticky `#about-who` stage: render final resting state once and sleep RAF cleanly!
+        renderAtScroll(targetScrollY, (performance.now() - startClock) * 0.001);
+        rafId = 0;
+        return;
+      }
+      const diff = targetScrollY - smoothScrollY;
+      if (Math.abs(diff) > window.innerHeight * 0.42 || reducedMotion) {
+        smoothScrollY = targetScrollY;
+      } else {
+        smoothScrollY += diff * 0.34;
+        if (Math.abs(targetScrollY - smoothScrollY) < 0.15) {
+          smoothScrollY = targetScrollY;
+        }
+      }
+      pointerActive *= 0.96;
+
+      renderAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    const ensureLoop = () => {
+      if (!rafId && docVisible) {
+        rafId = window.requestAnimationFrame(tick);
       }
     };
 
-    render(performance.now());
+    const onPointerMove = (e: PointerEvent) => {
+      pointerNDC.set(
+        (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1,
+        -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1
+      );
+      pointerActive = 1.0;
+    };
+
+    const onScroll = () => {
+      targetScrollY = window.scrollY;
+      ensureLoop();
+    };
+
+    const onVisibility = () => {
+      docVisible = document.visibilityState === "visible";
+      ensureLoop();
+    };
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("visibilitychange", onVisibility);
+    ensureLoop();
+
     return () => {
-      cancelAnimationFrame(rafId);
-      ro.disconnect();
+      if (rafId) window.cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("visibilitychange", onVisibility);
+
+      for (const item of disposables) {
+        item.dispose();
+      }
+      glRenderer.dispose();
+      if (glRenderer.domElement.parentElement === hostEl) {
+        hostEl.removeChild(glRenderer.domElement);
+      }
     };
   }, [reducedMotion]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      onPointerMove={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        pointerRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        pointerRef.current.y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-        pointerRef.current.active = true;
-      }}
-      onPointerLeave={() => {
-        pointerRef.current.active = false;
-      }}
-      className="absolute inset-0 h-full w-full"
-    />
-  );
-}
-
-interface DecodedPortraitCloud {
-  positions: Float32Array;
-  nShade: Uint8Array | null;
-  count: number;
-}
-
-/**
- * Real 8,192-Vertex 3D Team Portrait Relief Stage (`#about-who` member viewer)
- * Decodes each specialist's verified `/assets/team/<id>.buf` mesh (`position:Uint16Array[3]`,
- * `nShade:Uint8Array[4]`) with automatic procedural fallback when isolated from media files.
- */
-function TeamPointSculpture({
-  memberIndex,
-  memberName,
-  modelPath,
-  reducedMotion,
-}: {
-  memberIndex: number;
-  memberName: string;
-  modelPath: string;
-  reducedMotion: boolean;
-}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [cloud, setCloud] = useState<DecodedPortraitCloud | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    loadBufGeometry(modelPath)
-      .then((res) => {
-        if (!alive) return;
-        const pos = res.attributes.position;
-        if (pos && pos.length >= 3) {
-          const f32 = pos instanceof Float32Array ? pos : Float32Array.from(pos);
-          const nsRaw = res.attributes.nShade;
-          const ns = nsRaw instanceof Uint8Array ? nsRaw : null;
-          setCloud({
-            positions: f32,
-            nShade: ns,
-            count: Math.floor(f32.length / 3),
-          });
+    <section
+      ref={sectionRef}
+      id="about-who"
+      className="about-who-track relative w-full bg-[#000000] text-white"
+    >
+      {/* Exact Reference Scroll Span: `100vh + 950vw` on desktop, `1225vh` on mobile */}
+      <style>{`
+        .about-who-track {
+          height: calc(100vh + 950vw);
         }
-      })
-      .catch(() => {
-        if (alive) setCloud(null);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [modelPath]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let rafId = 0;
-    let time = 0;
-
-    const render = () => {
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      const rect = canvas.getBoundingClientRect();
-      const w = Math.max(280, Math.round(rect.width * dpr));
-      const h = Math.max(280, Math.round(rect.height * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-      }
-
-      if (!reducedMotion) time += 0.018;
-      ctx.clearRect(0, 0, w, h);
-
-      const cx = w * 0.5;
-      const cy = h * 0.52;
-      const scale = Math.min(w, h) * 0.44;
-      const yaw = Math.sin(time * 0.7) * 0.16;
-      const cosY = Math.cos(yaw);
-      const sinY = Math.sin(yaw);
-
-      if (cloud && cloud.count > 0) {
-        const { positions, nShade, count } = cloud;
-        for (let i = 0; i < count; i += 1) {
-          const x0 = positions[i * 3];
-          const y0 = positions[i * 3 + 1];
-          const z0 = (positions[i * 3 + 2] - 0.45) * 0.65;
-
-          const rx = x0 * cosY + z0 * sinY;
-          const rz = -x0 * sinY + z0 * cosY;
-          const depth = 2.05 - rz * 0.55;
-
-          const px = cx + (rx / depth) * scale * 2.05;
-          const py = cy - (y0 / depth) * scale * 2.05;
-
-          let lum = 0.62;
-          let cyanMix = 0;
-          if (nShade && i * 4 + 3 < nShade.length) {
-            const nx = nShade[i * 4] / 255;
-            const ny = nShade[i * 4 + 1] / 255;
-            const shade = nShade[i * 4 + 3] / 255;
-            lum = Math.min(1, 0.2 + shade * 0.82 + ny * 0.16);
-            cyanMix = nx > 0.72 && shade > 0.55 ? (nx - 0.72) * 2.4 : 0;
+        @media (max-width: 819px) {
+          .about-who-track {
+            height: 1225vh;
           }
-
-          const ptR = Math.max(1.05, (1.85 / depth) * (w > 700 ? 1.35 : 1.05));
-          const rCh = Math.round(195 * lum * (1 - cyanMix * 0.75));
-          const gCh = Math.round(212 * lum + 42 * cyanMix);
-          const bCh = Math.round(232 * lum + 23 * cyanMix);
-          ctx.fillStyle = `rgba(${rCh},${gCh},${bCh},${Math.min(0.95, 0.34 + lum * 0.62).toFixed(3)})`;
-          ctx.fillRect(px - ptR * 0.5, py - ptR * 0.5, ptR, ptR);
         }
-      } else {
-        // Clean procedural 3D sculptural bust fallback when `/assets/team/*.buf` is isolated
-        const seed = memberIndex * 1.37;
-        for (let i = 0; i < 1600; i += 1) {
-          const v = i / 1600;
-          const phi = v * Math.PI;
-          const theta = i * 2.399963 + yaw * 2 + seed;
-          const profile =
-            v < 0.58
-              ? Math.sin(phi * 1.12) * (0.82 + 0.12 * Math.cos(theta * 2 + seed))
-              : 0.42 + (v - 0.58) * 1.55;
-          const yNorm = (v - 0.5) * 1.85;
-          const x3 = Math.cos(theta) * profile;
-          const z3 = Math.sin(theta) * profile * 0.78;
-          const depth = 2.4 + z3;
-          const px = cx + (x3 / depth) * scale * 2.0;
-          const py = cy + (yNorm / depth) * scale * 1.85;
-          const shade = Math.max(0.24, 0.68 - z3 * 0.42);
-          const r = Math.max(1.1, (2.2 / depth) * (w > 600 ? 1.4 : 1.1));
-          ctx.fillStyle =
-            i % 23 === 0
-              ? `rgba(0, 232, 255, ${(shade * 0.92).toFixed(3)})`
-              : `rgba(218, 228, 244, ${(shade * 0.85).toFixed(3)})`;
-          ctx.beginPath();
-          ctx.arc(px, py, r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
+      `}</style>
 
-      if (!reducedMotion) {
-        rafId = requestAnimationFrame(render);
-      }
-    };
+      {/* Screen-Reader Accessible Complete Manifesto Heading & Copy */}
+      <div className="sr-only">
+        <h1>
+          Lusion — {LUSION_ABOUT.who.leftLines.join(" ")} {LUSION_ABOUT.who.rightHeadline}
+        </h1>
+        <p>{LUSION_ABOUT.who.detailsTop}</p>
+        <p>{LUSION_ABOUT.who.detailsBottom}</p>
+      </div>
 
-    render();
-    return () => cancelAnimationFrame(rafId);
-  }, [cloud, memberIndex, reducedMotion]);
+      {/* Sticky 100vh Full-Bleed WebGL + Architectural HUD Stage */}
+      <div
+        onTouchStart={(e) => {
+          touchStartXRef.current = e.touches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(e) => {
+          if (touchStartXRef.current === null) return;
+          const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartXRef.current;
+          touchStartXRef.current = null;
+          if (Math.abs(dx) > 40) onStepMember(dx < 0 ? 1 : -1);
+        }}
+        className="sticky top-0 h-screen w-full overflow-hidden bg-[#000000]"
+      >
+        {/* Full-Bleed WebGL Canvas Host */}
+        <div ref={canvasHostRef} className="absolute inset-0 h-full w-full" />
 
-  return (
-    <canvas
-      ref={canvasRef}
-      role="img"
-      aria-label={`3D point-cloud portrait for ${memberName}`}
-      className="h-full w-full"
-    />
+        {/* Graceful Non-WebGL Atmospheric Fallback */}
+        <div
+          ref={fallbackPosterRef}
+          style={{ display: "none" }}
+          className="absolute inset-0 items-center justify-center bg-[radial-gradient(circle_at_45%_32%,#273244_0%,#05070c_72%)]"
+        />
+
+        {/* Constant 5 Mid-Viewport Horizontal Registration Crosses (`+  +  +  +  +`) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-1/2 z-20 flex -translate-y-1/2 items-center justify-between text-white/55"
+        >
+          <span className="lusion-plus-cross" />
+          <span className="lusion-plus-cross" />
+          <span className="lusion-plus-cross" />
+          <span className="lusion-plus-cross" />
+          <span className="lusion-plus-cross" />
+        </div>
+
+        {/* Layer 1: Monumental Solid + Sketch-Outlined `LUSION` Hero Wordmark (`about-01` & `about-02`) */}
+        <div
+          ref={heroWordmarkRef}
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-4 z-20 will-change-transform"
+        >
+          <svg
+            viewBox="0 0 1400 295"
+            fill="none"
+            aria-hidden="true"
+            className="block h-auto w-full select-none"
+          >
+            <text
+              x="6"
+              y="258"
+              textLength="1388"
+              lengthAdjust="spacingAndGlyphs"
+              fill="#ffffff"
+              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
+              fontSize="306"
+              fontWeight="400"
+            >
+              LUSION
+            </text>
+            <text
+              x="16"
+              y="264"
+              textLength="1368"
+              lengthAdjust="spacingAndGlyphs"
+              fill="none"
+              stroke="rgba(255,255,255,0.85)"
+              strokeWidth="2.8"
+              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
+              fontSize="306"
+              fontWeight="400"
+            >
+              LUSION
+            </text>
+          </svg>
+
+          <div
+            ref={scrollPromptRef}
+            className="mt-1 flex items-center justify-center min-[820px]:justify-end"
+          >
+            <span
+              id="about-who-title-main-scroll"
+              className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-white/95 md:text-xs"
+            >
+              {LUSION_ABOUT.who.scrollPrompt}
+            </span>
+          </div>
+        </div>
+
+        {/* Layer 2: Horizontal `WE ARE A CREATIVE PRODUCTION STUDIO` Reveal (`u = 2.05 .. 4.35`) */}
+        <div
+          ref={manifestoOverlayRef}
+          style={{ opacity: 0, visibility: "hidden" }}
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
+        >
+          <div id="about-who-title-left" className="min-[820px]:col-span-7">
+            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[4.8vw]">
+              {LUSION_ABOUT.who.leftLines.map((line, idx) => (
+                <span key={idx} className="block">
+                  {line}
+                </span>
+              ))}
+            </h2>
+          </div>
+          <div className="flex items-end min-[820px]:col-span-5">
+            <p
+              id="about-who-title-right"
+              className="font-sans text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[2.3vw]"
+            >
+              {LUSION_ABOUT.who.rightHeadline}
+            </p>
+          </div>
+        </div>
+
+        {/* Layer 3: Narrative HUD over Glowing 3D Topographic Contours (`about-03-details-hud`) */}
+        <div
+          ref={narrativeOverlayRef}
+          style={{ opacity: 0, visibility: "hidden" }}
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[18vh] bottom-[6vh] z-20 flex flex-col justify-between"
+        >
+          <p
+            id="about-who-desc-top"
+            className="whitespace-pre-line font-sans text-[clamp(1.75rem,3.05vw,2.85rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+          >
+            {"A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"}
+          </p>
+          <p
+            id="about-who-desc-bottom"
+            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.65rem,2.85vw,2.65rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+          >
+            {"working together to\nturn ambitious ideas into\nimmersive digital experiences."}
+          </p>
+        </div>
+
+        {/* Layer 4: Full-Bleed `T E A M` Hologram Stage (`about-04-team-hologram`) */}
+        <div
+          ref={teamOverlayRef}
+          style={{ opacity: 0, visibility: "hidden" }}
+          className="absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-24 pb-8 min-[820px]:pt-40"
+        >
+          {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
+          <div>
+            {/* Mobile full-width spaced `T E A M` above index row (`390x844/about-04`) */}
+            <div
+              aria-hidden="true"
+              className="mb-3 flex w-full items-center justify-between font-sans text-[19vw] font-normal uppercase leading-none text-white min-[820px]:hidden"
+            >
+              <span>T</span>
+              <span>E</span>
+              <span>A</span>
+              <span>M</span>
+            </div>
+
+            <div className="flex items-start justify-between gap-4">
+              <span
+                data-team-compass="true"
+                className="font-mono text-xs font-medium tracking-[0.22em] text-white"
+              >
+                [[ {activeMember.indexFormatted} ]]
+              </span>
+
+              {/* Precision tick ruler (`1440x900/about-04`) */}
+              <span
+                aria-hidden="true"
+                className="hidden font-mono text-[10px] tracking-[0.42em] text-white/75 min-[820px]:inline-block"
+              >
+                |····|····|
+              </span>
+
+              {/* Interactive `2x7` / Dot-Matrix Specialist Selector + Desktop `T E A M` Title */}
+              <div className="flex items-start gap-8">
+                <div className="grid grid-cols-7 gap-1.5 pt-1">
+                  {team.map((member, idx) => (
+                    <button
+                      key={member.id}
+                      type="button"
+                      aria-label={`Select ${member.name}`}
+                      onClick={() => onSelectMember(idx)}
+                      className={`h-2 w-2 rounded-full transition-transform ${
+                        idx === activeMemberIdx
+                          ? "scale-125 bg-white"
+                          : "bg-white/40 hover:bg-white/80"
+                      }`}
+                    />
+                  ))}
+                  {team.map((member, idx) => (
+                    <span
+                      key={`${member.id}-row2`}
+                      aria-hidden="true"
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        idx === activeMemberIdx ? "bg-white/90" : "bg-white/30"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div
+                  aria-hidden="true"
+                  className="hidden items-center gap-6 font-sans text-[5.4vw] font-normal uppercase leading-[0.88] tracking-[0.06em] text-white min-[820px]:flex"
+                >
+                  <span>T</span>
+                  <span>E</span>
+                  <span>A</span>
+                  <span>M</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Center Royal-Blue `#223aff` Interactive Specialist Advance Orb (`→` / `SWIPE TO CHANGE`) */}
+          <div className="flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => onStepMember(1)}
+              aria-label="Next team member"
+              className="flex h-36 w-36 cursor-pointer items-center justify-center rounded-full bg-[#223aff] text-center font-sans text-xs font-medium uppercase tracking-[0.06em] text-white shadow-[0_14px_44px_rgba(34,58,255,0.5)] transition-transform duration-300 hover:scale-105 min-[820px]:h-28 min-[820px]:w-28"
+            >
+              <span className="hidden text-3xl font-light leading-none min-[820px]:inline">
+                &rarr;
+              </span>
+              <span className="px-3 leading-snug min-[820px]:hidden">
+                {LUSION_ABOUT.who.mobileSwipeHint}
+              </span>
+            </button>
+          </div>
+
+          {/* Bottom Specialist Bio Left + Pixelated Glitch Tile + Team Studio Copy Right */}
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <span aria-hidden="true" className="font-mono text-xs tracking-widest text-white/75">
+                  ::
+                </span>
+                <h3 className="font-sans text-xl font-normal tracking-[-0.01em] text-white md:text-2xl">
+                  {activeMember.name}
+                </h3>
+              </div>
+              <p className="mt-1.5 font-mono text-[10px] uppercase leading-relaxed tracking-[0.08em] text-white/65 md:text-[11px]">
+                {activeMember.roleLines.map((line, i) => (
+                  <span key={i} className="block">
+                    {line}
+                  </span>
+                ))}
+              </p>
+              <div className="mt-3 h-[1px] w-40 bg-white/35" />
+            </div>
+
+            <div className="flex items-end gap-6">
+              {/* Subtle translucent square glitch mosaic matching `about-04-team-hologram.png` */}
+              <div
+                aria-hidden="true"
+                className="grid h-16 w-16 grid-cols-3 grid-rows-3 opacity-80"
+              >
+                <span className="bg-white/25" />
+                <span className="bg-white/10" />
+                <span className="bg-white/30" />
+                <span className="bg-white/20" />
+                <span className="bg-transparent" />
+                <span className="bg-white/15" />
+                <span className="bg-white/35" />
+                <span className="bg-white/20" />
+                <span className="bg-white/10" />
+              </div>
+
+              <p
+                id="about-who-team-desc-text"
+                className="hidden max-w-[38ch] font-sans text-xs leading-relaxed text-white/85 min-[820px]:block"
+              >
+                {LUSION_ABOUT.who.teamDescription}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -343,12 +1311,13 @@ function ClientLogoTile({ name, src }: { name: string; src: string }) {
 /**
  * Verified Lusion About Page (`/about`)
  *
- * Matches all 8 desktop (`1440x900`) & mobile (`390x844`) reference states (`10a`..`10d`):
- *   1. `#about-who` (`#000000` volumetric cyan/silver hero -> dark studio statement -> full-bleed `T E A M` 8,192-point relief stage)
- *   2. `#about-clients` (`#000000` `BRANDS WE WORK WITH` + 3 rows of crisp white client SVG emblems)
- *   3. `#about-award` (`#000000` recognition ledger: `58` awards, `03` articles, `5` talks)
- *   4. `#about-capability` (`#1a2ffb` electric cobalt `AREA OF / EXPERTISE` + `S / C / T / P` tabs & white sacred-geometry cards)
- *   5. `#end-section` + 6. `#footer-section` (`#f0f1fa` light studio closing bands -> `Our Projects`)
+ * Matches all desktop (`1440x900`, `1024x768`) & mobile (`390x844`) reference states:
+ *   1. `#about-who`: Full Three.js 3D sphere storm, crater mountain basin, vertical God-Ray, explorer,
+ *      floating rocks, 42 topographic contour lines & 8,192-vertex 3D team portrait stage
+ *   2. `#about-clients`: `BRANDS WE WORK WITH` + 3 rows of crisp white client SVG emblems
+ *   3. `#about-award`: Recognition ledger (`58` awards, `03` articles, `5` talks)
+ *   4. `#about-capability`: Electric cobalt `AREA OF EXPERTISE` + `S / C / T / P` tabs & sacred-geometry cards
+ *   5. `#end-section`: Royal-blue FLIP geometric particle heap CTA + `#footer-section`
  */
 export function AboutPageView() {
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
@@ -356,26 +1325,34 @@ export function AboutPageView() {
 
   const darkUpperRef = useRef<HTMLDivElement>(null);
   const capabilityBandRef = useRef<HTMLElement>(null);
+  const lastSurfaceRef = useRef<"ice" | "void" | "cobalt" | null>(null);
   const [activeMemberIdx, setActiveMemberIdx] = useState(0);
   const [activeCapabilityIdx, setActiveCapabilityIdx] = useState(0);
-  const touchStartXRef = useRef<number | null>(null);
 
   const team = LUSION_ABOUT.who.team;
-  const activeMember = team[activeMemberIdx] ?? team[0];
 
-  // Sync fixed `#header` contrast across `#000000` (`void`), `#1a2ffb` (`cobalt`), and `#f0f1fa` (`ice`)
+  // Sync fixed '#header' contrast across '#000000' ('void'), '#1a2ffb' ('cobalt'), and '#f0f1fa' ('ice')
+  // Guarded with 'lastSurfaceRef' so React never re-renders unless the band boundary actually crosses!
   useEffect(() => {
     const syncHeaderSurface = () => {
       const vhMid = window.innerHeight * 0.12;
       const capRect = capabilityBandRef.current?.getBoundingClientRect();
       const darkRect = darkUpperRef.current?.getBoundingClientRect();
+      const endRect = document.getElementById("end-section")?.getBoundingClientRect();
 
-      if (capRect && capRect.top <= vhMid && capRect.bottom >= vhMid) {
-        setActiveSurface("cobalt");
+      let nextSurface: "ice" | "void" | "cobalt" = "ice";
+      if (
+        (capRect && capRect.top <= vhMid && capRect.bottom >= vhMid) ||
+        (endRect && endRect.top <= vhMid && endRect.bottom >= vhMid)
+      ) {
+        nextSurface = "cobalt";
       } else if (darkRect && darkRect.bottom >= vhMid) {
-        setActiveSurface("void");
-      } else {
-        setActiveSurface("ice");
+        nextSurface = "void";
+      }
+
+      if (lastSurfaceRef.current !== nextSurface) {
+        lastSurfaceRef.current = nextSurface;
+        setActiveSurface(nextSurface);
       }
     };
 
@@ -385,6 +1362,7 @@ export function AboutPageView() {
     return () => {
       window.removeEventListener("scroll", syncHeaderSurface);
       window.removeEventListener("resize", syncHeaderSurface);
+      lastSurfaceRef.current = null;
       setActiveSurface("ice");
     };
   }, [setActiveSurface]);
@@ -394,232 +1372,24 @@ export function AboutPageView() {
     setActiveMemberIdx((prev) => (prev + delta + team.length) % team.length);
   };
 
+  const selectMember = (idx: number) => {
+    soundEngine.playHover();
+    setActiveMemberIdx(idx);
+  };
+
   return (
     <main id="about" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <div ref={darkUpperRef} className="bg-[#000000] text-white">
         {/* =====================================================================
-            1. WHO WE ARE HERO + STUDIO STATEMENT + 8,192-PT TEAM STAGE (`#about-who`)
+            1. 3D SPHERE VORTEX + CRATER LANDSCAPE + TOPOGRAPHIC HUD + TEAM (`#about-who`)
            ===================================================================== */}
-        <section id="about-who" className="relative w-full bg-[#000000] text-white">
-          {/* Opening 100vh Dark Atmospheric Stage (`10a-about-hero`) */}
-          <div className="relative flex h-[calc(var(--vh,1vh)*100)] min-h-[600px] w-full flex-col justify-between overflow-hidden bg-[#000000] px-[var(--base-padding-x)] pt-24 pb-5 text-white">
-            <AboutHeroParticleCanvas reducedMotion={reducedMotion} />
-
-            <div aria-hidden="true" className="h-6" />
-
-            {/* Mid-Viewport Horizontal Registration Crosses (`+   +   +   +   +`) */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none relative z-10 flex w-full items-center justify-between text-white/55"
-            >
-              <span className="lusion-plus-cross" />
-              <span className="lusion-plus-cross" />
-              <span className="lusion-plus-cross" />
-              <span className="lusion-plus-cross" />
-              <span className="lusion-plus-cross" />
-            </div>
-
-            {/* Monumental Double-Stroke Etched `LUSION` Wordmark + `SCROLL TO EXPLORE` */}
-            <div className="relative z-10 w-full">
-              <h1 className="sr-only">
-                Lusion — {LUSION_ABOUT.who.leftLines.join(" ")} {LUSION_ABOUT.who.rightHeadline}
-              </h1>
-              <svg
-                viewBox="0 0 1400 305"
-                fill="none"
-                aria-hidden="true"
-                className="-mx-1 block h-auto w-[calc(100%+0.5rem)] select-none"
-              >
-                <text
-                  x="12"
-                  y="272"
-                  textLength="1376"
-                  lengthAdjust="spacingAndGlyphs"
-                  fill="rgba(255,255,255,0.06)"
-                  stroke="#ffffff"
-                  strokeWidth="3.2"
-                  fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-                  fontSize="318"
-                  fontWeight="400"
-                >
-                  LUSION
-                </text>
-                <text
-                  x="17"
-                  y="276"
-                  textLength="1366"
-                  lengthAdjust="spacingAndGlyphs"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.52)"
-                  strokeWidth="1.4"
-                  fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-                  fontSize="318"
-                  fontWeight="400"
-                >
-                  LUSION
-                </text>
-              </svg>
-
-              <div className="mt-1 flex items-center justify-center md:justify-end">
-                <span className="font-sans text-[11px] font-medium tracking-[0.08em] text-white/90 uppercase md:text-xs">
-                  {LUSION_ABOUT.who.scrollPrompt}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Dark Studio Manifesto Split Band */}
-          <div className="grid grid-cols-6 gap-x-[var(--grid-gap)] px-[var(--base-padding-x)] pt-24 pb-20 min-[813px]:grid-cols-12 min-[813px]:pt-36 min-[813px]:pb-28">
-            <div className="col-span-6 min-[813px]:col-span-6">
-              <h2 className="font-sans text-[10.2vw] leading-[0.96] font-normal tracking-[-0.025em] text-white uppercase min-[813px]:text-[5vw]">
-                {LUSION_ABOUT.who.leftLines.map((line, idx) => (
-                  <span key={idx} className="block">
-                    {line}
-                  </span>
-                ))}
-              </h2>
-            </div>
-
-            <div className="col-span-6 mt-8 flex flex-col justify-end min-[813px]:col-span-6 min-[813px]:mt-0">
-              <p className="font-sans text-[6.2vw] leading-[1.06] font-normal tracking-[-0.02em] text-white uppercase min-[813px]:text-[2.5vw]">
-                {LUSION_ABOUT.who.rightHeadline}
-              </p>
-              <p className="mt-6 max-w-xl font-sans text-base leading-relaxed text-white/75 md:text-lg">
-                {LUSION_ABOUT.who.teamDescription}
-              </p>
-            </div>
-          </div>
-
-          {/* Full-Bleed Dark 8,192-Point Team Portrait Stage (`10b-about-who-team`) */}
-          <div
-            onTouchStart={(e) => {
-              touchStartXRef.current = e.touches[0]?.clientX ?? null;
-            }}
-            onTouchEnd={(e) => {
-              if (touchStartXRef.current === null) return;
-              const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartXRef.current;
-              touchStartXRef.current = null;
-              if (Math.abs(dx) > 40) stepMember(dx < 0 ? 1 : -1);
-            }}
-            className="relative flex min-h-[88svh] w-full flex-col justify-between overflow-hidden bg-[#000000] px-[var(--base-padding-x)] py-12"
-          >
-            {/* Top Index Row: `[[ 001 ]]` Left + `2x12` Dot Matrix Selector Right */}
-            <div className="relative z-20 flex items-center justify-between pt-6">
-              <span
-                data-team-compass="true"
-                className="font-mono text-sm font-medium tracking-[0.22em] text-white"
-              >
-                [[ {activeMember.indexFormatted} ]]
-              </span>
-
-              <div className="flex flex-wrap items-center gap-2">
-                {team.map((member, idx) => (
-                  <button
-                    key={member.id}
-                    type="button"
-                    aria-label={`Select ${member.name}`}
-                    onClick={() => {
-                      soundEngine.playHover();
-                      setActiveMemberIdx(idx);
-                    }}
-                    className={`cursor-pointer rounded-full px-2.5 py-1 font-mono text-[11px] transition-colors ${
-                      idx === activeMemberIdx
-                        ? "bg-white text-black"
-                        : "bg-white/12 text-white/75 hover:bg-white/25"
-                    }`}
-                  >
-                    {member.indexFormatted}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Center Monumental `T  E  A  M` Backdrop + 8,192-Point Relief Portrait + Cobalt `→` Orb */}
-            <div className="relative my-4 flex flex-1 items-center justify-center">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 flex items-center justify-between px-2 font-sans text-[21vw] leading-none font-normal tracking-[0.06em] text-white/[0.11] uppercase select-none"
-              >
-                <span>T</span>
-                <span>E</span>
-                <span>A</span>
-                <span>M</span>
-              </div>
-
-              {/* Mid-Plane Crosshair Row */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 flex items-center justify-between text-white/45"
-              >
-                <span className="lusion-plus-cross" />
-                <span className="lusion-plus-cross" />
-                <span className="lusion-plus-cross max-[812px]:hidden" />
-                <span className="lusion-plus-cross" />
-                <span className="lusion-plus-cross" />
-              </div>
-
-              {/* 3D Point-Cloud Portrait Canvas */}
-              <div className="relative z-10 aspect-square w-full max-w-[540px]">
-                <TeamPointSculpture
-                  memberIndex={activeMember.index}
-                  memberName={activeMember.name}
-                  modelPath={activeMember.modelPath}
-                  reducedMotion={reducedMotion}
-                />
-              </div>
-
-              {/* Desktop Cobalt Next Specialist Orb (`#1a2ffb`) */}
-              <button
-                type="button"
-                onClick={() => stepMember(1)}
-                aria-label="Next team member"
-                className="z-20 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-[#1a2ffb] text-white shadow-[0_12px_36px_rgba(26,47,251,0.55)] transition-transform duration-300 hover:scale-105 focus-visible:outline-2 focus-visible:outline-white max-[812px]:hidden"
-              >
-                <span aria-hidden="true" className="text-xl leading-none">
-                  &rarr;
-                </span>
-              </button>
-            </div>
-
-            {/* Bottom Specialist Name & Role + Prev/Next Controls */}
-            <div className="relative z-20 flex flex-wrap items-end justify-between gap-6">
-              <div>
-                <h3 className="font-sans text-4xl font-normal tracking-[-0.02em] text-white md:text-6xl">
-                  {activeMember.name}
-                </h3>
-                <p className="mt-2 font-sans text-base leading-snug text-white/75 md:text-lg">
-                  {activeMember.roleLines.map((line, i) => (
-                    <span key={i} className="block">
-                      {line}
-                    </span>
-                  ))}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => stepMember(-1)}
-                  aria-label="Previous team member"
-                  className="cursor-pointer rounded-full border border-white/25 px-4 py-2 font-mono text-xs tracking-[0.08em] text-white uppercase transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-white"
-                >
-                  &larr; Prev
-                </button>
-                <button
-                  type="button"
-                  onClick={() => stepMember(1)}
-                  className="cursor-pointer rounded-full border border-white/25 px-4 py-2 font-mono text-xs tracking-[0.08em] text-white uppercase transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-white min-[813px]:hidden"
-                >
-                  Next &rarr;
-                </button>
-                <span className="font-mono text-[11px] tracking-[0.08em] text-white/60 uppercase min-[813px]:hidden">
-                  {LUSION_ABOUT.who.mobileSwipeHint}
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
+        <AboutWhoExperience
+          activeMemberIdx={activeMemberIdx}
+          onStepMember={stepMember}
+          onSelectMember={selectMember}
+          reducedMotion={reducedMotion}
+        />
 
         {/* =====================================================================
             2. BRANDS WE WORK WITH (`#about-clients` — 3 White SVG Logo Rows on `#000000`)

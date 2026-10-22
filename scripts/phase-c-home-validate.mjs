@@ -266,7 +266,7 @@ try {
 
         await snapPng(cdp, path.join(OUT_DIR, `home-showreel-modal--${vp.name}.png`));
         await page.keyboard.press("Escape");
-        await page.waitForTimeout(300);
+        await page.waitForSelector("#video-overlay", { state: "detached", timeout: 2500 }).catch(() => {});
 
         const afterEscape = await page.evaluate(() => {
           const el = document.getElementById("video-overlay");

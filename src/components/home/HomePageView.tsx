@@ -522,9 +522,9 @@ export function HomePageView() {
       <GoalTunnelSection />
 
       {/* =====================================================================
-          5. CLOSING CTA SECTION (`#home-contact-cta` following `#end-section` waving astronaut)
-         ===================================================================== */}
-      <ContactCtaSection sectionId="home-contact-cta" />
+          5. CLOSING END-SECTION CTA (`#end-section` — space backdrop + astronaut wait + CTA)
+          ===================================================================== */}
+      <ContactCtaSection theme="home-dark" />
 
       {/* =====================================================================
           6 & 7. STUDIO FOOTER (`#footer-section`) & PORTAL (`#scroll-nav-section`)

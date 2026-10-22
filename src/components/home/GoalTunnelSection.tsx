@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { LUSION_HOME } from "@/data/reference";
-import { loadLusionBuf, type ParsedBufData } from "@/lib/lusion-buf-loader";
 import { useStudioStore } from "@/lib/store";
 
 declare global {
@@ -18,1147 +17,2050 @@ declare global {
       };
       homeGoalSectionRanges?: {
         baseY: number;
-        items: Record<string, { id: string; pixelFrom: number; pixelCount: number; pixelTo: number }>;
+        totalPixelCount: number;
+        items: Record<
+          string,
+          { id: string; pixelFrom: number; pixelCount: number; pixelTo: number }
+        >;
       };
     };
   }
 }
 
-const BONE_COUNT = 53;
-const STICKER_ATLAS_W = 1465;
-const STICKER_ATLAS_H = 1024;
-const STICKER_RECTS = [
-  { x: 1132, y: 3, w: 195, h: 195 },
-  { x: 744, y: 3, w: 195, h: 256 },
-  { x: 525, y: 3, w: 213, h: 282 },
-  { x: 242, y: 3, w: 277, h: 286 },
-  { x: 1055, y: 633, w: 209, h: 209 },
-  { x: 1076, y: 398, w: 209, h: 209 },
-  { x: 3, y: 772, w: 298, h: 249 },
-  { x: 945, y: 3, w: 181, h: 249 },
-  { x: 1291, y: 389, w: 160, h: 197 },
-  { x: 1055, y: 848, w: 83, h: 122 },
-  { x: 1132, y: 204, w: 167, h: 179 },
-  { x: 1270, y: 828, w: 192, h: 193 },
-  { x: 780, y: 265, w: 182, h: 167 },
-  { x: 564, y: 445, w: 294, h: 184 },
-  { x: 307, y: 683, w: 205, h: 334 },
-  { x: 864, y: 438, w: 206, h: 189 },
-  { x: 968, y: 258, w: 149, h: 134 },
-  { x: 734, y: 635, w: 165, h: 382 },
-  { x: 605, y: 291, w: 169, h: 141 },
-  { x: 302, y: 445, w: 256, h: 232 },
-  { x: 518, y: 683, w: 210, h: 266 },
-  { x: 242, y: 295, w: 357, h: 144 },
-  { x: 3, y: 3, w: 233, h: 469 },
-  { x: 905, y: 633, w: 144, h: 340 },
-  { x: 1270, y: 613, w: 187, h: 209 },
-  { x: 3, y: 478, w: 293, h: 288 },
-];
-
-// Decompiled dual-quaternion 53-bone GPU vertex skinning shader from `_astro/hoisted.CUO_IjfL.js`
-const ASTRONAUT_VERTEX_GLSL = /* glsl */ `
-  uniform sampler2D u_animationPositionTexture;
-  uniform sampler2D u_animationOrientTexture;
-  uniform vec2 u_animationTextureSize;
-  uniform vec3 u_frameFromToBlend;
-  uniform vec3 u_instancePos;
-  uniform vec4 u_instanceOrient;
-
-  attribute vec2 boneIndices;
-  attribute vec2 boneWeights;
-  attribute vec4 tangent;
-  attribute float ao;
-
-  varying vec3 v_worldPosition;
-  varying vec4 v_worldTangent;
-  varying vec3 v_worldNormal;
-  varying vec2 v_uv;
-  varying float v_ao;
-
-  vec3 qrotate(vec4 q, vec3 v) {
-    return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
-  }
-
-  void computeBonePair(inout vec3 pos, inout vec3 nor, inout vec3 tang, vec4 uvBone12) {
-    vec3 bonePos1 = texture2D(u_animationPositionTexture, uvBone12.xy).xyz;
-    vec3 bonePos2 = texture2D(u_animationPositionTexture, uvBone12.zw).xyz;
-    vec4 boneOrient1 = texture2D(u_animationOrientTexture, uvBone12.xy);
-    vec4 boneOrient2 = texture2D(u_animationOrientTexture, uvBone12.zw);
-    pos = (qrotate(boneOrient1, pos) + bonePos1) * boneWeights.x +
-          (qrotate(boneOrient2, pos) + bonePos2) * boneWeights.y;
-    nor = normalize(qrotate(boneOrient1, nor) * boneWeights.x + qrotate(boneOrient2, nor) * boneWeights.y);
-    tang = normalize(qrotate(boneOrient1, tang) * boneWeights.x + qrotate(boneOrient2, tang) * boneWeights.y);
-  }
-
-  void main() {
-    v_ao = ao;
-    vec4 dataOffset = boneIndices.xyxy + u_frameFromToBlend.xxyy * float(${BONE_COUNT}) + 0.5;
-    vec4 fromUvsBone12 = vec4(
-      floor(mod(dataOffset.xy, u_animationTextureSize.x)) + 0.5,
-      floor(dataOffset.xy / u_animationTextureSize.x) + 0.5
-    ).xzyw / u_animationTextureSize.xyxy;
-    vec4 toUvsBone12 = vec4(
-      floor(mod(dataOffset.zw, u_animationTextureSize.x)) + 0.5,
-      floor(dataOffset.zw / u_animationTextureSize.x) + 0.5
-    ).xzyw / u_animationTextureSize.xyxy;
-
-    vec3 fromPos = position;
-    vec3 fromNor = normal;
-    vec3 fromTang = tangent.xyz;
-    computeBonePair(fromPos, fromNor, fromTang, fromUvsBone12);
-
-    vec3 toPos = position;
-    vec3 toNor = normal;
-    vec3 toTang = tangent.xyz;
-    computeBonePair(toPos, toNor, toTang, toUvsBone12);
-
-    vec3 pos = mix(fromPos, toPos, u_frameFromToBlend.z);
-    vec3 nor = normalize(mix(fromNor, toNor, u_frameFromToBlend.z));
-    vec3 tang = normalize(mix(fromTang, toTang, u_frameFromToBlend.z));
-
-    pos = qrotate(u_instanceOrient, pos) + u_instancePos;
-    nor = normalize(qrotate(u_instanceOrient, nor));
-    tang = normalize(qrotate(u_instanceOrient, tang));
-
-    vec4 worldPos = modelMatrix * vec4(pos, 1.0);
-    v_worldPosition = worldPos.xyz;
-    v_worldNormal = normalize(mat3(modelMatrix) * nor);
-    v_worldTangent = vec4(normalize(mat3(modelMatrix) * tang), tangent.w);
-    v_uv = uv;
-    gl_Position = projectionMatrix * viewMatrix * worldPos;
-  }
-`;
-
-// Decompiled physically-based EVA suit / helmet / obsidian reflective visor shader
-const ASTRONAUT_FRAGMENT_GLSL = /* glsl */ `
-  precision highp float;
-
-  uniform sampler2D u_baseTexture;
-  uniform sampler2D u_armTexture;
-  uniform sampler2D u_norTexture;
-  uniform sampler2D u_matcapTexture;
-  uniform sampler2D u_envTexture;
-  uniform vec3 u_sunPosition;
-  uniform vec3 u_ambientColor;
-  uniform float u_isGlass;
-  uniform float u_isClone;
-  uniform float u_cloneAlpha;
-  uniform float u_tunnelGlow;
-  uniform float u_opacity;
-
-  varying vec3 v_worldPosition;
-  varying vec4 v_worldTangent;
-  varying vec3 v_worldNormal;
-  varying vec2 v_uv;
-  varying float v_ao;
-
-  float saturateVal(float v) { return clamp(v, 0.0, 1.0); }
-  float linearStep(float e0, float e1, float x) { return clamp((x - e0) / (e1 - e0), 0.0, 1.0); }
-
-  void main() {
-    vec3 N = normalize(v_worldNormal);
-    vec3 T = normalize(v_worldTangent.xyz);
-    vec3 B = normalize(cross(N, T)) * (-v_worldTangent.w);
-    T = normalize(cross(B, N));
-    vec3 nTex = texture2D(u_norTexture, v_uv).xyz * 2.0 - 1.0;
-    N = normalize(nTex.x * T + nTex.y * B + nTex.z * N);
-
-    vec4 arm = texture2D(u_armTexture, v_uv);
-    vec3 baseCol = texture2D(u_baseTexture, v_uv).rgb;
-    float ao = clamp(v_ao * (0.35 + 0.65 * arm.r), 0.0, 1.0);
-    float roughness = clamp(arm.g, 0.04, 1.0);
-    float metalness = clamp(arm.b, 0.0, 1.0);
-
-    vec3 V = normalize(cameraPosition - v_worldPosition);
-    float NdV = clamp(abs(dot(N, V)), 0.001, 1.0);
-    float fresnel = pow(1.0 - NdV, 4.5);
-
-    if (u_isClone > 0.5) {
-      vec3 rimCol = mix(vec3(0.95, 0.14, 0.22), vec3(0.12, 0.78, 1.0), fresnel);
-      float lum = (0.25 + 1.55 * fresnel) * ao * u_cloneAlpha;
-      gl_FragColor = vec4(rimCol * lum, clamp(lum, 0.0, 0.85));
-      return;
-    }
-
-    if (u_isGlass > 0.5) {
-      // Curved obsidian reflective EVA visor with sharp studio key-light glint (ref-08, 07--390x844)
-      vec3 keyLight = normalize(vec3(-0.62, 0.42, 0.88));
-      vec3 H = normalize(V + keyLight);
-      float specCore = pow(max(dot(N, H), 0.0), 420.0);
-      float specHalo = pow(max(dot(N, H), 0.0), 26.0);
-      vec3 R = reflect(-V, N);
-      vec2 envUv = clamp(vec2(R.x, R.y) * 0.35 + 0.5, 0.0, 1.0);
-      vec3 envRefl = texture2D(u_envTexture, envUv).rgb * 0.10;
-      vec3 rim = vec3(0.72, 0.80, 0.94) * fresnel * 0.42;
-      vec3 tunnelTint = mix(vec3(0.0), vec3(0.85, 0.20, 0.68), u_tunnelGlow) * fresnel * 0.85;
-      vec3 visorColor = vec3(0.012, 0.014, 0.019) + envRefl + rim + tunnelTint +
-                        vec3(1.0) * (specCore * 2.4 + specHalo * 0.22);
-      gl_FragColor = vec4(visorColor, u_opacity);
-      return;
-    }
-
-    // Studio key + cool space fill + matcap sculptural fold shading from Lusion fragBlack / fragWhite
-    vec3 L = normalize(u_sunPosition - v_worldPosition);
-    float sunNdL = saturateVal(dot(N, L));
-    vec3 L2 = normalize(vec3(14.0, 10.0, 26.0) - v_worldPosition);
-    float fillNdL = saturateVal(dot(N, L2));
-
-    vec3 viewRight = normalize(vec3(V.z, 0.0, -V.x));
-    vec3 viewUp = cross(V, viewRight);
-    vec2 matUv = clamp(vec2(dot(viewRight, N), dot(viewUp, N)) * 0.49 + 0.5, 0.0, 1.0);
-    float matcapShade = 0.52 + 0.48 * (1.0 - texture2D(u_matcapTexture, matUv).r);
-    float zShade = linearStep(-0.30, 1.15, N.z) * (0.62 + 0.38 * ao);
-
-    float albedoScalar = dot(baseCol, vec3(0.3333));
-    float darkDetailMask = smoothstep(0.06, 0.34, albedoScalar) * (1.0 - metalness * 0.72);
-
-    vec3 litSuit = baseCol * (matcapShade * 0.94 + zShade * 0.78);
-    litSuit *= mix(vec3(0.72, 0.77, 0.85), vec3(1.18, 1.19, 1.22), sunNdL * 0.68 + fillNdL * 0.48);
-    litSuit *= (0.55 + 0.45 * ao);
-    litSuit *= mix(0.20, 1.08, darkDetailMask);
-
-    // Subtle specular sheen on buckles, rings & suit creases
-    vec3 H = normalize(V + L);
-    float spec = pow(max(dot(N, H), 0.0), mix(18.0, 96.0, 1.0 - roughness));
-    litSuit += vec3(0.85, 0.90, 1.0) * spec * (0.10 + 0.55 * metalness);
-    litSuit += u_ambientColor * fresnel * 0.26;
-    litSuit += mix(vec3(0.85, 0.10, 0.16), vec3(0.16, 0.75, 1.0), N.x * 0.5 + 0.5) * u_tunnelGlow * (0.35 + fresnel * 0.9);
-
-    gl_FragColor = vec4(clamp(litSuit, 0.0, 1.0), u_opacity);
-  }
-`;
-
-// Eager singleton cache so all `.buf` & PBR textures download immediately when `/` mounts
-interface AstronautAssetBundle {
-  parts: Record<"helmet" | "helmet_glass" | "glove_shoes" | "wearpack", ParsedBufData>;
-  inAnim: ParsedBufData;
-  outAnim: ParsedBufData;
-  animPosTex: THREE.DataTexture;
-  animOrientTex: THREE.DataTexture;
-  animTexSize: THREE.Vector2;
-  textures: Record<string, THREE.Texture>;
+interface GoalLayoutMetrics {
+  goalTop: number;
+  goalHeight: number;
+  imgInLeft: number;
+  imgInTop: number;
+  imgInWidth: number;
+  imgInHeight: number;
+  imgInStart: number;
+  imgInSpan: number;
+  imgInEnd: number;
+  tunnelStart: number;
+  tunnelEnd: number;
+  tunnelSpan: number;
+  imgOutLeft: number;
+  imgOutTop: number;
+  imgOutWidth: number;
+  imgOutHeight: number;
+  endTop: number;
+  endHeight: number;
+  viewportW: number;
+  viewportH: number;
+  isMobile: boolean;
 }
 
-let bundlePromise: Promise<AstronautAssetBundle> | null = null;
-
-function loadAstronautBundle(): Promise<AstronautAssetBundle> {
-  if (bundlePromise) return bundlePromise;
-
-  const texLoader = new THREE.TextureLoader();
-  const loadTex = (url: string, srgb = false) =>
-    new Promise<THREE.Texture>((resolve) => {
-      texLoader.load(
-        url,
-        (t) => {
-          t.wrapS = THREE.RepeatWrapping;
-          t.wrapT = THREE.RepeatWrapping;
-          if (srgb) t.colorSpace = THREE.SRGBColorSpace;
-          t.needsUpdate = true;
-          resolve(t);
-        },
-        undefined,
-        () => {
-          const fallback = new THREE.DataTexture(new Uint8Array([220, 224, 232, 255]), 1, 1);
-          fallback.needsUpdate = true;
-          resolve(fallback);
-        }
-      );
-    });
-
-  bundlePromise = Promise.all([
-    loadLusionBuf("/assets/models/tunnels/astronaut_helmet.buf"),
-    loadLusionBuf("/assets/models/tunnels/astronaut_helmet_glass.buf"),
-    loadLusionBuf("/assets/models/tunnels/astronaut_glove_shoes.buf"),
-    loadLusionBuf("/assets/models/tunnels/astronaut_wearpack.buf"),
-    loadLusionBuf("/assets/models/tunnels/astronaut_animations.buf"),
-    loadLusionBuf("/assets/models/tunnels/astronaut_in_animation.buf"),
-    loadLusionBuf("/assets/models/tunnels/astronaut_out_animation.buf"),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_helmet_base.webp", true),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_helmet_arm.webp"),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_helmet_nor.webp"),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_glove_shoes_base.webp", true),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_glove_shoes_arm.webp"),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_glove_shoes_nor.webp"),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_wearpack_base.webp", true),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_wearpack_arm.webp"),
-    loadTex("/assets/textures/tunnels/astronaut/astronaut_wearpack_nor.webp"),
-    loadTex("/assets/textures/tunnels/white_matcap.jpg"),
-    loadTex("/assets/textures/tunnels/earth.webp", true),
-    loadTex("/assets/textures/tunnels/stickers.png", true),
-  ]).then(
-    ([
-      helmet,
-      helmet_glass,
-      glove_shoes,
-      wearpack,
-      animBuf,
-      inAnim,
-      outAnim,
-      helmet_base,
-      helmet_arm,
-      helmet_nor,
-      glove_shoes_base,
-      glove_shoes_arm,
-      glove_shoes_nor,
-      wearpack_base,
-      wearpack_arm,
-      wearpack_nor,
-      matcap,
-      earth,
-      stickers,
-    ]) => {
-      const posArr = animBuf.attributes.position as Float32Array;
-      const oriArr = animBuf.attributes.orient as Float32Array;
-      const totalEntries = posArr.length / 3;
-      const texW = Math.ceil(Math.sqrt(totalEntries));
-      const texH = Math.ceil(totalEntries / texW);
-      const paddedLen = texW * texH * 4;
-      const posRgba = new Float32Array(paddedLen);
-      const oriRgba = new Float32Array(paddedLen);
-
-      for (let i = 0, p3 = 0, p4 = 0; i < totalEntries; i += 1, p3 += 3, p4 += 4) {
-        posRgba[p4] = posArr[p3];
-        posRgba[p4 + 1] = posArr[p3 + 1];
-        posRgba[p4 + 2] = posArr[p3 + 2];
-        posRgba[p4 + 3] = 1;
-        oriRgba[p4] = oriArr[p4];
-        oriRgba[p4 + 1] = oriArr[p4 + 1];
-        oriRgba[p4 + 2] = oriArr[p4 + 2];
-        oriRgba[p4 + 3] = oriArr[p4 + 3];
-      }
-
-      const animPosTex = new THREE.DataTexture(posRgba, texW, texH, THREE.RGBAFormat, THREE.FloatType);
-      animPosTex.minFilter = THREE.NearestFilter;
-      animPosTex.magFilter = THREE.NearestFilter;
-      animPosTex.generateMipmaps = false;
-      animPosTex.flipY = false;
-      animPosTex.needsUpdate = true;
-
-      const animOrientTex = new THREE.DataTexture(oriRgba, texW, texH, THREE.RGBAFormat, THREE.FloatType);
-      animOrientTex.minFilter = THREE.NearestFilter;
-      animOrientTex.magFilter = THREE.NearestFilter;
-      animOrientTex.generateMipmaps = false;
-      animOrientTex.flipY = false;
-      animOrientTex.needsUpdate = true;
-
-      stickers.wrapS = THREE.ClampToEdgeWrapping;
-      stickers.wrapT = THREE.ClampToEdgeWrapping;
-
-      return {
-        parts: { helmet, helmet_glass, glove_shoes, wearpack },
-        inAnim,
-        outAnim,
-        animPosTex,
-        animOrientTex,
-        animTexSize: new THREE.Vector2(texW, texH),
-        textures: {
-          helmet_base,
-          helmet_arm,
-          helmet_nor,
-          glove_shoes_base,
-          glove_shoes_arm,
-          glove_shoes_nor,
-          wearpack_base,
-          wearpack_arm,
-          wearpack_nor,
-          matcap,
-          earth,
-          stickers,
-        },
-      };
-    }
-  );
-
-  return bundlePromise;
+interface AstronautRig {
+  root: THREE.Group;
+  bodyPivot: THREE.Group;
+  headGroup: THREE.Group;
+  visorMesh: THREE.Mesh;
+  visorMat: THREE.MeshPhysicalMaterial;
+  suitMat: THREE.MeshStandardMaterial;
+  harnessMat: THREE.MeshStandardMaterial;
+  plumeGroup: THREE.Group;
+  plumeMat: THREE.ShaderMaterial;
+  shoulderL: THREE.Group;
+  elbowL: THREE.Group;
+  shoulderR: THREE.Group;
+  elbowR: THREE.Group;
+  hipL: THREE.Group;
+  kneeL: THREE.Group;
+  hipR: THREE.Group;
+  kneeR: THREE.Group;
 }
 
-function sampleSplineTransform(
-  spline: ParsedBufData,
-  frameFloat: number,
-  outPos: THREE.Vector3,
-  outQuat: THREE.Quaternion
-) {
-  const posArr = spline.attributes.position as Float32Array;
-  const oriArr = spline.attributes.orient as Float32Array;
-  const maxIdx = Math.max(0, spline.header.vertexCount - 1);
-  const clamped = Math.max(0, Math.min(maxIdx, frameFloat));
-  const i0 = Math.floor(clamped);
-  const i1 = Math.min(maxIdx, i0 + 1);
-  const t = clamped - i0;
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const smoothstep = (e0: number, e1: number, x: number) => {
+  const t = clamp01((x - e0) / Math.max(1e-5, e1 - e0));
+  return t * t * (3 - 2 * t);
+};
 
-  const p0 = new THREE.Vector3(posArr[i0 * 3], posArr[i0 * 3 + 1], posArr[i0 * 3 + 2]);
-  const p1 = new THREE.Vector3(posArr[i1 * 3], posArr[i1 * 3 + 1], posArr[i1 * 3 + 2]);
-  outPos.copy(p0).lerp(p1, t);
+/**
+ * High-resolution procedural organic cloud-Voronoi wall texture matching
+ * `lusion.co` `whiteTunnel` (`#1a32ff` royal cobalt blue & sculpted `#f2f5ff` matte white cutouts
+ * with glowing portal openings along the square tunnel walls).
+ */
+function createVoronoiTunnelTexture(): THREE.CanvasTexture {
+  const S = 1024;
+  const canvas = document.createElement("canvas");
+  canvas.width = S;
+  canvas.height = S;
+  const ctx = canvas.getContext("2d")!;
 
-  const q0 = new THREE.Quaternion(oriArr[i0 * 4], oriArr[i0 * 4 + 1], oriArr[i0 * 4 + 2], oriArr[i0 * 4 + 3]);
-  const q1 = new THREE.Quaternion(oriArr[i1 * 4], oriArr[i1 * 4 + 1], oriArr[i1 * 4 + 2], oriArr[i1 * 4 + 3]);
-  outQuat.copy(q0).slerp(q1, t);
+  // Base royal cobalt blue matching reference `home-07-white-blue-tunnel.png`
+  const grad = ctx.createLinearGradient(0, 0, S, S);
+  grad.addColorStop(0, "#1933ff");
+  grad.addColorStop(0.5, "#152bf2");
+  grad.addColorStop(1, "#1e3bff");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, S, S);
+
+  // Subtle architectural panel seam lines along tunnel axis
+  ctx.strokeStyle = "rgba(8, 16, 115, 0.36)";
+  ctx.lineWidth = 3;
+  for (const xFrac of [0.24, 0.52, 0.78]) {
+    ctx.beginPath();
+    ctx.moveTo(S * xFrac, 0);
+    ctx.lineTo(S * xFrac, S);
+    ctx.stroke();
+  }
+
+  // Deterministic PRNG for organic scalloped cloud-Voronoi rings (`home-07`, `home-08`)
+  let seed = 918273;
+  const rnd = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+
+  const drawCloudRing = (cx: number, cy: number, baseR: number, lobes: number, rotOff: number) => {
+    // Soft ambient shadow bevel under white sculpted relief
+    ctx.save();
+    ctx.translate(cx + 6, cy + 8);
+    ctx.fillStyle = "rgba(8, 18, 130, 0.42)";
+    ctx.beginPath();
+    for (let i = 0; i < lobes; i++) {
+      const a = rotOff + (i / lobes) * Math.PI * 2;
+      const lr = baseR * (0.42 + 0.16 * Math.sin(i * 2.1));
+      const px = Math.cos(a) * baseR * 0.74;
+      const py = Math.sin(a) * baseR * 0.74;
+      ctx.moveTo(px + lr, py);
+      ctx.arc(px, py, lr, 0, Math.PI * 2);
+    }
+    ctx.fill();
+    ctx.restore();
+
+    // Outer sculpted off-white cloud band (`#dce4ff` -> `#f4f6ff`)
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.fillStyle = "#e6ecff";
+    ctx.beginPath();
+    for (let i = 0; i < lobes; i++) {
+      const a = rotOff + (i / lobes) * Math.PI * 2;
+      const lr = baseR * (0.44 + 0.16 * Math.sin(i * 2.1));
+      const px = Math.cos(a) * baseR * 0.74;
+      const py = Math.sin(a) * baseR * 0.74;
+      ctx.moveTo(px + lr, py);
+      ctx.arc(px, py, lr, 0, Math.PI * 2);
+    }
+    ctx.fill();
+
+    // Inner royal-blue cutout hollow creating the authentic figure-8 / cloud contour rings!
+    ctx.fillStyle = "#1933ff";
+    ctx.beginPath();
+    for (let i = 0; i < lobes; i++) {
+      const a = rotOff + (i / lobes) * Math.PI * 2;
+      const lr = baseR * (0.27 + 0.11 * Math.sin(i * 2.1));
+      const px = Math.cos(a) * baseR * 0.56;
+      const py = Math.sin(a) * baseR * 0.56;
+      ctx.moveTo(px + lr, py);
+      ctx.arc(px, py, lr, 0, Math.PI * 2);
+    }
+    ctx.fill();
+    ctx.restore();
+  };
+
+  const clusters = [
+    [0.24, 0.22, 0.24, 7],
+    [0.76, 0.30, 0.20, 6],
+    [0.34, 0.68, 0.26, 8],
+    [0.80, 0.78, 0.21, 6],
+    [0.52, 0.46, 0.15, 5],
+  ];
+  for (const [fx, fy, fr, lobes] of clusters) {
+    drawCloudRing(fx * S, fy * S, fr * S, lobes, rnd() * Math.PI * 2);
+  }
+
+  // Scattered crisp white Voronoi pebble islands matching `home-07`
+  for (let i = 0; i < 14; i++) {
+    const px = rnd() * S;
+    const py = rnd() * S;
+    const rx = 18 + rnd() * 34;
+    const ry = rx * (0.65 + rnd() * 0.5);
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(rnd() * Math.PI);
+    ctx.fillStyle = "#e8eeff";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+    if (i % 2 === 0) {
+      ctx.fillStyle = "#1933ff";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx * 0.52, ry * 0.52, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // Brilliant pure-white glowing skylight portal openings (`home-07` & `home-08`)
+  for (const [gx, gy, grx, gry] of [
+    [0.28, 0.44, 92, 54],
+    [0.72, 0.60, 108, 62],
+  ]) {
+    const glow = ctx.createRadialGradient(gx * S, gy * S, 8, gx * S, gy * S, grx * 1.9);
+    glow.addColorStop(0, "rgba(255,255,255,1)");
+    glow.addColorStop(0.42, "rgba(235,245,255,0.95)");
+    glow.addColorStop(0.7, "rgba(85,135,255,0.55)");
+    glow.addColorStop(1, "rgba(25,51,255,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.ellipse(gx * S, gy * S, grx * 1.9, gry * 1.9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.ellipse(gx * S, gy * S, grx, gry, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
 /**
- * Full-Viewport Real-Time Three.js WebGL Stage (`GoalTunnels` + `GoalTunnelAstronauts`):
- *  - Stage 1 (`blackTitle`, `u = 0.00..0.28`): Deep space + chromatic halo + 9,515-vertex 53-bone skinned 3D EVA astronaut
- *  - Stage 2 (`blackTunnel`, `u = 0.28..0.41`): Red/cyan 3D sci-fi box-frame greeble tunnel + receding astronaut + 4 ghost clones
- *  - Stage 3 (`phase-e 07` emergence `u = 0.41..0.49`): Close-up zero-G 3D EVA astronaut emerging into focus
- *  - Stage 4 (`whiteTunnel`, `u = 0.49..0.66`): Glowing magenta/pink/cyan 3D crystalline energy vortex
- *  - Stage 5 (`astronautDrop` / `phase-e 08`, `u = 0.66..0.86`): Razor-sharp close-up 3D EVA astronaut with obsidian visor star glint
- *  - Stage 6 (`astronautWait`, `u = 0.86..1.00`): Standing & waving full-body 3D EVA astronaut (`frames 140..287`) + 26 floating `stickers.png` + 3D chrome spheres
+ * Procedural EVA spacesuit fabric weave + seam normal/bump texture
+ * giving realistic quilted pressure-suit folds under directional studio lighting.
  */
-function GoalTunnelWebGLCanvas({
-  progress,
-  reducedMotion,
-}: {
-  progress: number;
-  reducedMotion: boolean;
-}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(progress);
+function createSuitFabricBumpTexture(): THREE.CanvasTexture {
+  const S = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = S;
+  canvas.height = S;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#808080";
+  ctx.fillRect(0, 0, S, S);
+
+  // Horizontal pressure-suit quilting ribs + subtle ripstop weave
+  for (let y = 0; y < S; y += 2) {
+    const rib = Math.sin((y / S) * Math.PI * 18) * 34;
+    const fine = (y % 4 === 0 ? 8 : -8);
+    const v = Math.max(0, Math.min(255, Math.round(128 + rib + fine)));
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
+    ctx.fillRect(0, y, S, 2);
+  }
+  ctx.strokeStyle = "rgba(60,60,60,0.55)";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(S * 0.25, 0, S * 0.5, S);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  return tex;
+}
+
+/**
+ * Procedural pop-art sticker badges matching `home-10-end-cta-wait.png`
+ * (lime ghost/slime, slice of pizza, stacked double eyeballs, pink lollipop, green UFO saucer).
+ */
+function createStickerTexture(kind: number): THREE.CanvasTexture {
+  const S = 192;
+  const canvas = document.createElement("canvas");
+  canvas.width = S;
+  canvas.height = S;
+  const ctx = canvas.getContext("2d")!;
+  ctx.clearRect(0, 0, S, S);
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+
+  const strokeWhiteBorder = (drawFn: () => void) => {
+    ctx.save();
+    drawFn();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 13;
+    ctx.stroke();
+    drawFn();
+    ctx.strokeStyle = "#0b0d14";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  if (kind === 0) {
+    // Lime green slime smiley badge (`home-10` bottom-left)
+    const path = () => {
+      ctx.beginPath();
+      ctx.arc(88, 96, 48, 0.35, Math.PI * 1.85);
+      ctx.quadraticCurveTo(156, 78, 152, 92);
+      ctx.quadraticCurveTo(132, 98, 158, 112);
+      ctx.quadraticCurveTo(128, 118, 146, 132);
+      ctx.closePath();
+    };
+    strokeWhiteBorder(path);
+    path();
+    ctx.fillStyle = "#b8f218";
+    ctx.fill();
+    ctx.fillStyle = "#0b0d14";
+    ctx.beginPath();
+    ctx.ellipse(72, 86, 6, 10, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(98, 96, 6, 10, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (kind === 1) {
+    // Crisp red pizza slice (`home-10` lower-left)
+    const path = () => {
+      ctx.beginPath();
+      ctx.moveTo(64, 42);
+      ctx.quadraticCurveTo(112, 34, 134, 62);
+      ctx.lineTo(92, 154);
+      ctx.closePath();
+    };
+    strokeWhiteBorder(path);
+    path();
+    ctx.fillStyle = "#e6392f";
+    ctx.fill();
+    ctx.fillStyle = "#f4a259";
+    ctx.beginPath();
+    ctx.ellipse(99, 52, 36, 11, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#2ec44d";
+    ctx.beginPath();
+    ctx.arc(95, 92, 9, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (kind === 2) {
+    // Double cartoon eyeballs (`home-10` lower-left-center)
+    const path = () => {
+      ctx.beginPath();
+      ctx.arc(86, 78, 28, 0, Math.PI * 2);
+      ctx.moveTo(128, 112);
+      ctx.arc(100, 112, 28, 0, Math.PI * 2);
+    };
+    strokeWhiteBorder(path);
+    ctx.fillStyle = "#f8fafc";
+    ctx.beginPath();
+    ctx.arc(86, 78, 26, 0, Math.PI * 2);
+    ctx.arc(100, 112, 26, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#38bdf8";
+    ctx.beginPath();
+    ctx.arc(94, 78, 11, 0, Math.PI * 2);
+    ctx.arc(108, 112, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#0b0d14";
+    ctx.beginPath();
+    ctx.arc(96, 78, 5, 0, Math.PI * 2);
+    ctx.arc(110, 112, 5, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (kind === 3) {
+    // Pink swirl lollipop (`home-10` lower-right)
+    const path = () => {
+      ctx.beginPath();
+      ctx.moveTo(72, 42);
+      ctx.lineTo(106, 110);
+      ctx.moveTo(140, 126);
+      ctx.arc(112, 126, 28, 0, Math.PI * 2);
+    };
+    strokeWhiteBorder(path);
+    ctx.strokeStyle = "#f1f5f9";
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.moveTo(72, 42);
+    ctx.lineTo(106, 110);
+    ctx.stroke();
+    ctx.fillStyle = "#f43f6e";
+    ctx.beginPath();
+    ctx.arc(112, 126, 26, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    // Neon green & coral mini planet/bell (`home-10` far right)
+    const path = () => {
+      ctx.beginPath();
+      ctx.arc(96, 108, 26, 0, Math.PI * 2);
+      ctx.moveTo(130, 82);
+      ctx.ellipse(96, 82, 34, 13, -0.25, 0, Math.PI * 2);
+    };
+    strokeWhiteBorder(path);
+    ctx.fillStyle = "#ef4444";
+    ctx.beginPath();
+    ctx.arc(96, 108, 24, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#4ade80";
+    ctx.beginPath();
+    ctx.ellipse(96, 82, 32, 11, -0.25, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Builds the detailed, articulated 3D EVA Astronaut rig matching `lusion.co`:
+ * - Rounded white composite helmet + wide curved dark reflective visor + Earth reflection sheen
+ * - Quilted matte-white pressure torso + off-white PLSS backpack + off-white chest/hip harness straps
+ * - Distinct dark circular chest ports + waist belt buckle + thigh cargo pockets (`home-01`, `home-10`)
+ * - Articulated multi-segment shoulders, elbows, gloved hands, hips, knees, cargo shins, and boots
+ * - Chromatic blue-violet flame/teardrop plume above the helmet (`home-09`, `home-10`)
+ */
+function buildAstronautRig(bumpTex: THREE.CanvasTexture, isClone = false): AstronautRig {
+  const root = new THREE.Group();
+  const bodyPivot = new THREE.Group();
+  root.add(bodyPivot);
+
+  const suitMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color("#eef2fa"),
+    roughness: 0.56,
+    metalness: 0.06,
+    bumpMap: bumpTex,
+    bumpScale: 0.018,
+  });
+
+  // Explicit off-white composite straps & trim (NEVER flat pure black straps!)
+  const harnessMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color("#cfd6e3"),
+    roughness: 0.44,
+    metalness: 0.14,
+  });
+
+  const darkAccentMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color("#141821"),
+    roughness: 0.35,
+    metalness: 0.45,
+  });
+
+  const visorMat = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color("#05070d"),
+    emissive: new THREE.Color("#0d2247"),
+    emissiveIntensity: 0.28,
+    roughness: 0.07,
+    metalness: 0.25,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    reflectivity: 1.0,
+  });
+
+  // 1. Torso & pelvis (athletic NASA/SpaceX EVA pressure suit silhouette matching `home-10`)
+  const chest = new THREE.Mesh(new THREE.CapsuleGeometry(0.215, 0.30, 12, 24), suitMat);
+  chest.position.set(0, 0.19, 0);
+  chest.scale.set(1.04, 1.0, 0.80);
+  bodyPivot.add(chest);
+
+  const pelvis = new THREE.Mesh(new THREE.SphereGeometry(0.205, 20, 16), suitMat);
+  pelvis.position.set(0, -0.08, 0);
+  pelvis.scale.set(0.98, 0.82, 0.78);
+  bodyPivot.add(pelvis);
+
+  // Off-white PLSS Life Support Backpack
+  const backpack = new THREE.Mesh(new THREE.BoxGeometry(0.39, 0.56, 0.22), harnessMat);
+  backpack.position.set(0, 0.22, -0.20);
+  bodyPivot.add(backpack);
+
+  // Off-white shoulder/chest/groin harness straps + buckle + 2 dark circular chest ports (`home-10`!)
+  for (const sx of [-1, 1]) {
+    const strap = new THREE.Mesh(new THREE.TorusGeometry(0.195, 0.018, 8, 24, Math.PI * 1.15), harnessMat);
+    strap.position.set(sx * 0.105, 0.22, 0.02);
+    strap.rotation.y = Math.PI * 0.5;
+    strap.rotation.x = sx * 0.14;
+    bodyPivot.add(strap);
+
+    const legLoop = new THREE.Mesh(new THREE.TorusGeometry(0.135, 0.015, 8, 20, Math.PI), harnessMat);
+    legLoop.position.set(sx * 0.082, -0.09, 0.075);
+    legLoop.rotation.z = Math.PI;
+    bodyPivot.add(legLoop);
+
+    // Distinct dark circular EVA valve ports on lower chest (`home-01`, `home-03`, `home-10`)
+    const valve = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.024, 16), darkAccentMat);
+    valve.rotation.x = Math.PI * 0.5;
+    valve.position.set(sx * 0.092, 0.055, 0.176);
+    bodyPivot.add(valve);
+  }
+
+  const chestCrossStrap = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.030, 0.035), harnessMat);
+  chestCrossStrap.position.set(0, 0.32, 0.175);
+  bodyPivot.add(chestCrossStrap);
+
+  const waistBelt = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.036, 24), harnessMat);
+  waistBelt.scale.set(1.02, 1, 0.80);
+  waistBelt.position.set(0, -0.04, 0);
+  bodyPivot.add(waistBelt);
+
+  // 2. Helmet + wide curved front-facing (`+Z`!) glossy dark visor
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 0.51, 0.01);
+  bodyPivot.add(headGroup);
+
+  const neckRing = new THREE.Mesh(new THREE.TorusGeometry(0.135, 0.024, 10, 24), harnessMat);
+  neckRing.rotation.x = Math.PI * 0.5;
+  neckRing.position.set(0, -0.075, 0);
+  headGroup.add(neckRing);
+
+  const helmetShell = new THREE.Mesh(new THREE.SphereGeometry(0.195, 28, 24), suitMat);
+  helmetShell.scale.set(0.95, 1.02, 1.03);
+  headGroup.add(helmetShell);
+
+  // In Three.js SphereGeometry, `phi = Math.PI * 0.5` points straight toward `+Z` (the viewer)!
+  const visorMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.184, 28, 22, Math.PI * 0.5 - Math.PI * 0.37, Math.PI * 0.74, Math.PI * 0.25, Math.PI * 0.44),
+    visorMat
+  );
+  visorMesh.position.set(0, 0.005, 0.026);
+  headGroup.add(visorMesh);
+
+  // Chromatic blue/violet teardrop energy plume above helmet (`home-09`, `home-10`)
+  const plumeGroup = new THREE.Group();
+  plumeGroup.position.set(0, 0.42, 0.02);
+  plumeGroup.visible = false;
+  headGroup.add(plumeGroup);
+
+  const plumeMat = new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+    uniforms: {
+      uTime: { value: 0 },
+      uOpacity: { value: 0 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      uniform float uTime;
+      void main() {
+        vUv = uv;
+        vec3 p = position;
+        float taper = pow(1.0 - uv.y, 0.65);
+        p.x *= taper;
+        p.x += sin(uv.y * 7.0 - uTime * 3.2) * 0.035 * uv.y;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec2 vUv;
+      uniform float uOpacity;
+      void main() {
+        float cx = abs(vUv.x - 0.5) * 2.0;
+        float core = smoothstep(1.0, 0.08, cx) * smoothstep(1.0, 0.06, vUv.y);
+        float rim = smoothstep(0.95, 0.55, cx) * (1.0 - smoothstep(0.55, 0.15, cx));
+        vec3 col = mix(vec3(0.06, 0.28, 1.0), vec3(0.65, 0.85, 1.0), core);
+        col += vec3(0.85, 0.35, 0.12) * rim * 0.45;
+        float a = (core * 0.92 + rim * 0.35) * uOpacity * smoothstep(0.0, 0.14, vUv.y);
+        gl_FragColor = vec4(col, a);
+      }
+    `,
+  });
+
+  if (!isClone) {
+    const plumePlaneA = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.95, 8, 24), plumeMat);
+    plumePlaneA.position.y = 0.34;
+    plumeGroup.add(plumePlaneA);
+    const plumePlaneB = plumePlaneA.clone();
+    plumePlaneB.rotation.y = Math.PI * 0.42;
+    plumeGroup.add(plumePlaneB);
+  }
+
+  // Helper to construct articulated limbs with pressure-suit cuffs & pockets
+  const makeArm = (side: -1 | 1) => {
+    const shoulder = new THREE.Group();
+    shoulder.position.set(side * 0.245, 0.34, 0);
+    bodyPivot.add(shoulder);
+
+    const upper = new THREE.Mesh(new THREE.CapsuleGeometry(0.068, 0.21, 8, 16), suitMat);
+    upper.position.set(0, -0.125, 0);
+    shoulder.add(upper);
+
+    const elbow = new THREE.Group();
+    elbow.position.set(0, -0.255, 0);
+    shoulder.add(elbow);
+
+    const fore = new THREE.Mesh(new THREE.CapsuleGeometry(0.062, 0.20, 8, 16), suitMat);
+    fore.position.set(0, -0.115, 0);
+    elbow.add(fore);
+
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.058, 0.013, 8, 16), harnessMat);
+    cuff.rotation.x = Math.PI * 0.5;
+    cuff.position.set(0, -0.22, 0);
+    elbow.add(cuff);
+
+    const glove = new THREE.Mesh(new THREE.SphereGeometry(0.058, 14, 12), suitMat);
+    glove.scale.set(0.84, 1.25, 0.68);
+    glove.position.set(0, -0.275, 0.01);
+    elbow.add(glove);
+
+    return { shoulder, elbow };
+  };
+
+  const makeLeg = (side: -1 | 1) => {
+    const hip = new THREE.Group();
+    hip.position.set(side * 0.112, -0.16, 0);
+    bodyPivot.add(hip);
+
+    const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.088, 0.29, 8, 16), suitMat);
+    thigh.position.set(0, -0.185, 0);
+    hip.add(thigh);
+
+    // Sculpted thigh cargo pocket visible in `home-10-end-cta-wait.png`
+    const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.165, 0.042), harnessMat);
+    pocket.position.set(side * 0.012, -0.185, 0.082);
+    hip.add(pocket);
+
+    const knee = new THREE.Group();
+    knee.position.set(0, -0.375, 0);
+    hip.add(knee);
+
+    const shin = new THREE.Mesh(new THREE.CapsuleGeometry(0.076, 0.30, 8, 16), suitMat);
+    shin.position.set(0, -0.185, 0);
+    knee.add(shin);
+
+    const boot = new THREE.Mesh(new THREE.BoxGeometry(0.115, 0.10, 0.21), harnessMat);
+    boot.position.set(0, -0.385, 0.04);
+    knee.add(boot);
+
+    return { hip, knee };
+  };
+
+  const armL = makeArm(-1);
+  const armR = makeArm(1);
+  const legL = makeLeg(-1);
+  const legR = makeLeg(1);
+
+  return {
+    root,
+    bodyPivot,
+    headGroup,
+    visorMesh,
+    visorMat,
+    suitMat,
+    harnessMat,
+    plumeGroup,
+    plumeMat,
+    shoulderL: armL.shoulder,
+    elbowL: armL.elbow,
+    shoulderR: armR.shoulder,
+    elbowR: armR.elbow,
+    hipL: legL.hip,
+    kneeL: legL.knee,
+    hipR: legR.hip,
+    kneeR: legR.knee,
+  };
+}
+
+interface PoseAngles {
+  bodyRot: [number, number, number];
+  headRot: [number, number, number];
+  shL: [number, number, number];
+  elL: [number, number, number];
+  shR: [number, number, number];
+  elR: [number, number, number];
+  hipL: [number, number, number];
+  knL: number;
+  hipR: [number, number, number];
+  knR: number;
+}
+
+const POSE_TABLET_FLOAT: PoseAngles = {
+  bodyRot: [-0.04, 0.03, 0],
+  headRot: [0.05, -0.03, 0],
+  shL: [-0.45, 0.18, -1.25],
+  elL: [-1.45, 0.25, 0.18],
+  shR: [-0.45, -0.18, 1.25],
+  elR: [-1.45, -0.25, -0.18],
+  hipL: [-0.18, 0, -0.10],
+  knL: 0.30,
+  hipR: [-0.12, 0, 0.10],
+  knR: 0.24,
+};
+
+const POSE_TUNNEL_DIVE: PoseAngles = {
+  bodyRot: [0.52, -0.24, 0.18],
+  headRot: [-0.28, 0.10, 0],
+  shL: [-0.72, 0.20, -1.22],
+  elL: [-0.62, 0, 0.18],
+  shR: [-0.68, -0.20, 1.22],
+  elR: [-0.58, 0, -0.18],
+  hipL: [0.24, 0, -0.16],
+  knL: 0.52,
+  hipR: [-0.18, 0, 0.16],
+  knR: 0.65,
+};
+
+const POSE_BREAKOUT: PoseAngles = {
+  bodyRot: [-0.08, 0.02, 0.02],
+  headRot: [0.06, 0, 0],
+  shL: [-0.75, 0.16, -1.42],
+  elL: [-0.88, 0, 0.22],
+  shR: [-0.75, -0.16, 1.42],
+  elR: [-0.88, 0, -0.22],
+  hipL: [-0.16, 0, -0.10],
+  knL: 0.24,
+  hipR: [-0.48, 0, 0.12],
+  knR: 0.72,
+};
+
+const POSE_STANDING_WAIT: PoseAngles = {
+  bodyRot: [0, 0, 0],
+  headRot: [0.02, 0, 0],
+  shL: [-0.04, 0, -0.14],
+  elL: [-0.10, 0, 0.04],
+  shR: [-0.04, 0, 0.14],
+  elR: [-0.10, 0, -0.04],
+  hipL: [-0.02, 0, -0.05],
+  knL: 0.04,
+  hipR: [-0.02, 0, 0.05],
+  knR: 0.04,
+};
+
+function blendPose(a: PoseAngles, b: PoseAngles, t: number): PoseAngles {
+  const v3 = (p: [number, number, number], q: [number, number, number]): [number, number, number] => [
+    lerp(p[0], q[0], t),
+    lerp(p[1], q[1], t),
+    lerp(p[2], q[2], t),
+  ];
+  return {
+    bodyRot: v3(a.bodyRot, b.bodyRot),
+    headRot: v3(a.headRot, b.headRot),
+    shL: v3(a.shL, b.shL),
+    elL: v3(a.elL, b.elL),
+    shR: v3(a.shR, b.shR),
+    elR: v3(a.elR, b.elR),
+    hipL: v3(a.hipL, b.hipL),
+    knL: lerp(a.knL, b.knL, t),
+    hipR: v3(a.hipR, b.hipR),
+    knR: lerp(a.knR, b.knR, t),
+  };
+}
+
+function applyPose(rig: AstronautRig, p: PoseAngles) {
+  rig.bodyPivot.rotation.set(p.bodyRot[0], p.bodyRot[1], p.bodyRot[2]);
+  rig.headGroup.rotation.set(p.headRot[0], p.headRot[1], p.headRot[2]);
+  rig.shoulderL.rotation.set(p.shL[0], p.shL[1], p.shL[2]);
+  rig.elbowL.rotation.set(p.elL[0], p.elL[1], p.elL[2]);
+  rig.shoulderR.rotation.set(p.shR[0], p.shR[1], p.shR[2]);
+  rig.elbowR.rotation.set(p.elR[0], p.elR[1], p.elR[2]);
+  rig.hipL.rotation.set(p.hipL[0], p.hipL[1], p.hipL[2]);
+  rig.kneeL.rotation.set(p.knL, 0, 0);
+  rig.hipR.rotation.set(p.hipR[0], p.hipR[1], p.hipR[2]);
+  rig.kneeR.rotation.set(p.knR, 0, 0);
+}
+
+/**
+ * Verified Lusion Goal & Continuous 3D EVA Astronaut Scroll Experience (`#home-goal`)
+ * Single continuous spatial & scroll timeline from:
+ *   1. `#home-goal-context` editorial + physical left iPad bezel (`#home-goal-image-in`) with inner-screen clip
+ *   2. Continuous monotonic tablet zoom & `+0.38 rad` tilt into full-bleed space
+ *   3. `"STEP INTO A NEW WORLD / AND LET YOUR / IMAGINATION RUN WILD"` 3D portal zoom
+ *   4. Dark metallic 3D greeble corridor + prismatic dispersion portal + 4 astronaut clones + roll twist
+ *   5. Royal-blue (`#1933ff`) & sculpted white (`#e8eeff`) organic Voronoi cloud-cutout square tunnel
+ *   6. Pullback into desktop display (`#home-goal-image-out`) + 3D chromatic glass shatter + foreground breakout
+ *   7. Seamless handoff into `#end-section` standing center astronaut + diamonds + pop-art stickers + CTA
+ */
+export function GoalTunnelSection() {
+  const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
+  const lastSurfaceDarkRef = useRef(false);
+  const goalRef = useRef<HTMLElement | null>(null);
+  const imgInRef = useRef<HTMLDivElement | null>(null);
+  const tunnelRef = useRef<HTMLDivElement | null>(null);
+  const imgOutRef = useRef<HTMLDivElement | null>(null);
+
+  const stageOverlayRef = useRef<HTMLDivElement | null>(null);
+  const backdropGlowRef = useRef<HTMLDivElement | null>(null);
+  const tabletBezelRef = useRef<HTMLDivElement | null>(null);
+  const monitorBezelRef = useRef<HTMLDivElement | null>(null);
+  const tunnelTitleWrapRef = useRef<HTMLDivElement | null>(null);
+  const canvasHostRef = useRef<HTMLDivElement | null>(null);
+  const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    progressRef.current = progress;
-  }, [progress]);
+    const goalEl = goalRef.current;
+    const imgInEl = imgInRef.current;
+    const tunnelEl = tunnelRef.current;
+    const imgOutEl = imgOutRef.current;
+    const overlayEl = stageOverlayRef.current;
+    const backdropEl = backdropGlowRef.current;
+    const tabletBezelEl = tabletBezelRef.current;
+    const monitorBezelEl = monitorBezelRef.current;
+    const titleWrapEl = tunnelTitleWrapRef.current;
+    const hostEl = canvasHostRef.current;
 
-  useEffect(() => {
-    const host = containerRef.current;
-    if (!host) return;
+    if (
+      !goalEl ||
+      !imgInEl ||
+      !tunnelEl ||
+      !imgOutEl ||
+      !overlayEl ||
+      !backdropEl ||
+      !tabletBezelEl ||
+      !monitorBezelEl ||
+      !titleWrapEl ||
+      !hostEl
+    ) {
+      return;
+    }
 
-    // Kick off eager load immediately upon `/` mount
-    const readyPromise = loadAstronautBundle();
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: false,
-      powerPreference: "high-performance",
-      preserveDrawingBuffer: true,
-    });
-    renderer.setPixelRatio(Math.min(1.75, window.devicePixelRatio || 1));
-    renderer.setClearColor(0x000000, 1);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.domElement.style.width = "100%";
-    renderer.domElement.style.height = "100%";
-    renderer.domElement.style.display = "block";
-    renderer.domElement.setAttribute("aria-hidden", "true");
-    host.appendChild(renderer.domElement);
+    let renderer: THREE.WebGLRenderer | null = null;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      if (fallbackPosterRef.current) {
+        fallbackPosterRef.current.style.display = "flex";
+      }
+      return;
+    }
+
+    const glRenderer = renderer;
+    glRenderer.setClearColor(0x000000, 0);
+    glRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    glRenderer.toneMappingExposure = 1.06;
+    glRenderer.domElement.style.width = "100%";
+    glRenderer.domElement.style.height = "100%";
+    glRenderer.domElement.style.display = "block";
+    hostEl.appendChild(glRenderer.domElement);
+
+    const disposables: Array<{ dispose: () => void }> = [];
+    const track = <T extends { dispose: () => void }>(item: T): T => {
+      disposables.push(item);
+      return item;
+    };
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.4, 220);
-    camera.position.set(0, 0, 25);
-    camera.lookAt(0, 0, 24);
+    const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 180);
+    camera.position.set(0, 0, 5.2);
 
-    // 1. Background Chromatic Prism Eclipse & Energy Vortex Fullscreen Quad
-    const backdropUniforms = {
-      u_time: { value: 0 },
-      u_aspect: { value: 1.6 },
-      u_haloAlpha: { value: 0.85 },
-      u_blackTunnelAmt: { value: 0 },
-      u_vortexAmt: { value: 0 },
-    };
-    const backdropMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 2),
+    // Studio three-point EVA illumination + grazing corridor cyan/indigo rim lights
+    const ambient = new THREE.AmbientLight(0xd8e2ff, 0.72);
+    scene.add(ambient);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.35);
+    keyLight.position.set(-2.4, 3.8, 6.2);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0x8fb6ff, 0.95);
+    fillLight.position.set(3.2, -1.6, 4.0);
+    scene.add(fillLight);
+
+    const tunnelRimLight = new THREE.PointLight(0x3b82f6, 3.2, 28, 1.4);
+    tunnelRimLight.position.set(0, 0.5, -6);
+    scene.add(tunnelRimLight);
+
+    // -------------------------------------------------------------------------
+    // 1. Curved Blue Earth Horizon Group (active inside Tablet Entry screen)
+    // -------------------------------------------------------------------------
+    const earthGroup = new THREE.Group();
+    scene.add(earthGroup);
+
+    const earthMat = track(
       new THREE.ShaderMaterial({
-        depthTest: false,
-        depthWrite: false,
-        uniforms: backdropUniforms,
-        vertexShader: /* glsl */ `
+        uniforms: {
+          uOpacity: { value: 1 },
+        },
+        vertexShader: `
+          varying vec3 vNormalW;
+          varying vec3 vPosW;
           varying vec2 vUv;
           void main() {
             vUv = uv;
-            gl_Position = vec4(position.xy, 0.9999, 1.0);
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vPosW = wp.xyz;
+            vNormalW = normalize(mat3(modelMatrix) * normal);
+            gl_Position = projectionMatrix * viewMatrix * wp;
           }
         `,
-        fragmentShader: /* glsl */ `
-          precision highp float;
+        fragmentShader: `
+          varying vec3 vNormalW;
+          varying vec3 vPosW;
           varying vec2 vUv;
-          uniform float u_time;
-          uniform float u_aspect;
-          uniform float u_haloAlpha;
-          uniform float u_blackTunnelAmt;
-          uniform float u_vortexAmt;
-
-          float hash21(vec2 p) {
-            p = fract(p * vec2(123.34, 456.21));
-            p += dot(p, p + 45.32);
-            return fract(p.x * p.y);
+          uniform float uOpacity;
+          float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+          float noise(vec2 p) {
+            vec2 i = floor(p); vec2 f = fract(p);
+            f = f * f * (3.0 - 2.0 * f);
+            return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                       mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
           }
-
           void main() {
-            vec2 centered = (vUv - 0.5) * vec2(u_aspect, 1.0);
-            float r = length(centered);
-            float ang = atan(centered.y, centered.x);
+            vec3 V = normalize(cameraPosition - vPosW);
+            float ndv = clamp(dot(normalize(vNormalW), V), 0.0, 1.0);
+            float rim = pow(1.0 - ndv, 2.2);
+            float clouds = smoothstep(0.42, 0.78, noise(vUv * vec2(18.0, 10.0) + noise(vUv * 36.0) * 0.55));
+            vec3 ocean = mix(vec3(0.02, 0.14, 0.48), vec3(0.08, 0.42, 0.96), ndv * 0.8 + 0.2);
+            vec3 surface = mix(ocean, vec3(0.86, 0.93, 1.0), clouds * 0.72);
+            vec3 atmo = vec3(0.32, 0.74, 1.0) * rim * 2.15;
+            vec3 finalCol = surface + atmo;
+            gl_FragColor = vec4(finalCol, uOpacity);
+          }
+        `,
+        transparent: true,
+      })
+    );
 
-            // Warm amber -> cream -> cool cyan chromatic dispersion eclipse ring (ref-08, 07, 07--390x844)
-            float ringBase = u_aspect > 1.0 ? 0.62 : 0.42;
-            float ringR = exp(-pow((r - ringBase * 0.96) / 0.14, 2.0));
-            float ringG = exp(-pow((r - ringBase * 1.02) / 0.15, 2.0));
-            float ringB = exp(-pow((r - ringBase * 1.09) / 0.17, 2.0));
-            vec3 col = vec3(ringR * 0.19, ringG * 0.155, ringB * 0.185) * u_haloAlpha;
+    const earthGeo = track(new THREE.SphereGeometry(5.2, 64, 48));
+    const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+    earthMesh.position.set(-1.75, -6.45, -1.8);
+    earthGroup.add(earthMesh);
 
-            // Stage 2 (07b-home-goal-mid): Deep red/crimson + cyan rectangular sci-fi greeble tunnel perspective
-            if (u_blackTunnelAmt > 0.001) {
-              float boxDist = max(abs(centered.x / max(0.65, u_aspect * 0.62)), abs(centered.y / 0.62));
-              float depthZ = 1.0 / max(0.06, boxDist);
-              float gridZ = abs(fract(depthZ * 0.85 - u_time * 0.55) - 0.5);
-              float gridA = abs(fract(ang * 3.183) - 0.5);
-              float ribs = smoothstep(0.16, 0.0, gridZ) + smoothstep(0.10, 0.0, gridA) * 0.65;
-              float sideTint = smoothstep(-0.35, 0.35, centered.x);
-              vec3 sciCol = mix(vec3(0.76, 0.05, 0.08), vec3(0.05, 0.62, 0.78), sideTint * 0.55 + 0.15);
-              vec3 tunnelGlow = sciCol * ribs * smoothstep(0.06, 0.85, boxDist) * 0.95;
-              tunnelGlow += vec3(0.32, 0.03, 0.05) * exp(-boxDist * 1.6);
-              col = mix(col, tunnelGlow, u_blackTunnelAmt);
-            }
-
-            // Stage 4 (08-home-goal-stage2): Glowing magenta/pink/cyan crystalline cylindrical vortex (08--1440x900)
-            if (u_vortexAmt > 0.001) {
-              float rr = max(0.02, r);
-              float invR = 1.15 / (rr + 0.10);
-              float spokes1 = pow(abs(sin(ang * 9.0 + sin(invR * 0.8 - u_time * 1.4))), 6.0);
-              float spokes2 = pow(abs(cos(ang * 14.0 - invR * 0.55 + u_time * 1.1)), 8.0);
-              float rings = pow(abs(sin(invR * 2.2 - u_time * 2.4)), 4.0);
-              float core = exp(-rr * 4.2) * 1.35 + exp(-pow((rr - 0.24) / 0.13, 2.0)) * 0.55;
-              float shards = (spokes1 * 0.75 + spokes2 * 0.65) * (0.45 + rings * 0.85) * smoothstep(0.03, 0.42, rr);
-              vec3 cPink = vec3(1.0, 0.30, 0.74);
-              vec3 cCyan = vec3(0.42, 0.72, 1.0);
-              vec3 vortexCol = mix(cPink, cCyan, 0.5 + 0.5 * sin(ang * 3.0 + rr * 5.0));
-              vec3 finalVortex = vortexCol * (shards * 1.25 + rings * 0.28) + vec3(1.0, 0.88, 0.98) * core;
-              col = mix(col, clamp(finalVortex, 0.0, 1.0), u_vortexAmt);
-            }
-
-            gl_FragColor = vec4(col, 1.0);
+    const atmoHaloMat = track(
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: { uOpacity: { value: 1 } },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          uniform float uOpacity;
+          void main() {
+            vec2 d = (vUv - vec2(0.5, 0.08)) * vec2(1.0, 2.8);
+            float r = length(d);
+            float band = exp(-pow((r - 0.50) * 11.5, 2.0));
+            vec3 col = mix(vec3(0.08, 0.48, 1.0), vec3(0.82, 0.97, 1.0), band);
+            gl_FragColor = vec4(col, band * 0.95 * uOpacity);
           }
         `,
       })
     );
-    backdropMesh.renderOrder = -100;
-    backdropMesh.frustumCulled = false;
-    scene.add(backdropMesh);
+    const atmoHalo = new THREE.Mesh(track(new THREE.PlaneGeometry(12.5, 3.8)), atmoHaloMat);
+    atmoHalo.position.set(-1.65, -1.55, -2.2);
+    earthGroup.add(atmoHalo);
 
-    // 2. 3D Sci-Fi Tunnel Wire Ribs (`07b` & `08`)
-    const tunnelGroup = new THREE.Group();
-    const ribGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(5.6, 5.6, 1.8));
-    const ribMats: THREE.LineBasicMaterial[] = [];
-    for (let i = 0; i < 12; i += 1) {
-      const mat = new THREE.LineBasicMaterial({
-        color: i % 3 === 0 ? 0x16b8df : 0xd61a2c,
+    // -------------------------------------------------------------------------
+    // 2. Dark Metallic 3D Greeble Tunnel (`blackTunnel`: `home-05` & `home-06`)
+    // -------------------------------------------------------------------------
+    const blackTunnelGroup = new THREE.Group();
+    blackTunnelGroup.visible = false;
+    scene.add(blackTunnelGroup);
+
+    const greebleMat = track(
+      new THREE.MeshStandardMaterial({
+        color: new THREE.Color("#2a3240"),
+        roughness: 0.20,
+        metalness: 0.72,
+      })
+    );
+    const greebleBoxGeo = track(new THREE.BoxGeometry(1, 1, 1));
+    const PANEL_COUNT = 576;
+    const greeblePanels = new THREE.InstancedMesh(greebleBoxGeo, greebleMat, PANEL_COUNT);
+    const dummy = new THREE.Object3D();
+    const panelColor = new THREE.Color();
+    for (let i = 0; i < PANEL_COUNT; i++) {
+      const ring = Math.floor(i / 24);
+      const slot = i % 24;
+      const side = Math.floor(slot / 6);
+      const along = ((slot % 6) - 2.5) * 0.92;
+      const halfSpan = 2.75;
+      const z = 1.5 - ring * 1.45;
+      let px = 0;
+      let py = 0;
+      let sx = 0.78;
+      let sy = 0.16 + ((i * 5) % 4) * 0.08;
+      if (side === 0) {
+        px = along;
+        py = halfSpan;
+      } else if (side === 1) {
+        px = along;
+        py = -halfSpan;
+      } else if (side === 2) {
+        px = -halfSpan;
+        py = along;
+        sx = 0.16 + ((i * 5) % 4) * 0.08;
+        sy = 0.78;
+      } else {
+        px = halfSpan;
+        py = along;
+        sx = 0.16 + ((i * 5) % 4) * 0.08;
+        sy = 0.78;
+      }
+      const inset = ((i * 7) % 6) * 0.075;
+      dummy.position.set(
+        px * (1 - inset * 0.09),
+        py * (1 - inset * 0.09),
+        z + ((i % 3) - 1) * 0.12
+      );
+      dummy.rotation.set(0, 0, ((ring % 2) * 0.03));
+      dummy.scale.set(sx, sy, 1.15 + ((i * 3) % 4) * 0.22);
+      dummy.updateMatrix();
+      greeblePanels.setMatrixAt(i, dummy.matrix);
+
+      // Detailed metallic silver/cyan/slate specular variation matching `home-05-black-tunnel-early`!
+      const glint = i % 11 === 0 ? 1 : i % 17 === 0 ? 2 : 0;
+      if (glint === 1) {
+        panelColor.setRGB(0.62, 0.85, 0.95);
+      } else if (glint === 2) {
+        panelColor.setRGB(0.24, 0.56, 0.72);
+      } else {
+        const g = 0.14 + ((i * 13) % 9) * 0.024;
+        panelColor.setRGB(g * 0.95, g * 1.02, g * 1.12);
+      }
+      greeblePanels.setColorAt(i, panelColor);
+    }
+    greeblePanels.instanceMatrix.needsUpdate = true;
+    if (greeblePanels.instanceColor) greeblePanels.instanceColor.needsUpdate = true;
+    blackTunnelGroup.add(greeblePanels);
+
+    // Chromatic lens dispersion halo ring framing the dark metallic corridor (`home-05`, `home-06`)
+    const portalRingMat = track(
+      new THREE.ShaderMaterial({
         transparent: true,
-        opacity: 0,
-      });
-      ribMats.push(mat);
-      const seg = new THREE.LineSegments(ribGeo, mat);
-      seg.position.z = 23 - i * 1.9;
-      seg.rotation.z = (i % 2 === 0 ? 1 : -1) * 0.08 * i;
-      tunnelGroup.add(seg);
-    }
-    scene.add(tunnelGroup);
-
-    // 3. Real 53-Bone GPU-Skinned 3D EVA Astronaut + 4 Ghost Clones + Floating Stickers & Chrome Spheres
-    const astronautGroup = new THREE.Group();
-    scene.add(astronautGroup);
-
-    const mainUniformsList: Record<string, THREE.IUniform>[] = [];
-    const cloneGroups: Array<{ group: THREE.Group; uniformsList: Record<string, THREE.IUniform>[] }> = [];
-    let stickerMesh: THREE.Mesh<THREE.InstancedBufferGeometry, THREE.ShaderMaterial> | null = null;
-    const chromeGroup = new THREE.Group();
-    scene.add(chromeGroup);
-    chromeGroup.visible = false;
-
-    const sphereGeo = new THREE.SphereGeometry(0.19, 20, 16);
-    const chromeMat = new THREE.MeshStandardMaterial({
-      color: 0xd8e4ff,
-      metalness: 0.92,
-      roughness: 0.14,
-    });
-    const chromeSpheres: THREE.Mesh[] = [];
-    for (let i = 0; i < 18; i += 1) {
-      const sp = new THREE.Mesh(sphereGeo, chromeMat);
-      const a = (i / 18) * Math.PI * 2;
-      const rad = 1.15 + (i % 4) * 0.55;
-      sp.position.set(Math.cos(a) * rad * 1.45, Math.sin(a * 1.7) * 1.35, 21.2 + (i % 5) * 0.45);
-      sp.scale.setScalar(0.55 + (i % 3) * 0.32);
-      chromeGroup.add(sp);
-      chromeSpheres.push(sp);
-    }
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    keyLight.position.set(-6, 8, 28);
-    scene.add(keyLight);
-    const rimLight = new THREE.PointLight(0x689aff, 3.0, 20);
-    rimLight.position.set(4, -2, 26);
-    scene.add(rimLight);
-
-    let bundleRef: AstronautAssetBundle | null = null;
-    let disposed = false;
-
-    const resize = () => {
-      const rect = host.getBoundingClientRect();
-      const w = Math.max(320, Math.round(rect.width || window.innerWidth));
-      const h = Math.max(320, Math.round(rect.height || window.innerHeight));
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.fov = w < h * 0.85 ? 50 : 45;
-      camera.updateProjectionMatrix();
-      backdropUniforms.u_aspect.value = w / h;
-    };
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(host);
-
-    const posTmp = new THREE.Vector3();
-    const quatTmp = new THREE.Quaternion();
-    const startClock = performance.now();
-
-    const drawFrame = () => {
-      const elapsed = reducedMotion ? 1.2 : (performance.now() - startClock) * 0.001;
-      const p = progressRef.current;
-      const isMobile = camera.aspect < 0.85;
-
-      backdropUniforms.u_time.value = elapsed;
-
-      // Smooth multi-stage envelope across `p in [0..1]`
-      const blackTunnelAmt =
-        p >= 0.27 && p <= 0.42
-          ? Math.min(1, Math.min((p - 0.27) / 0.04, (0.42 - p) / 0.04))
-          : 0;
-      const vortexAmt =
-        p >= 0.49 && p <= 0.65
-          ? Math.min(1, Math.min((p - 0.49) / 0.04, (0.65 - p) / 0.04))
-          : 0;
-      const waitAmt = p >= 0.86 ? Math.min(1, (p - 0.86) / 0.05) : 0;
-
-      backdropUniforms.u_blackTunnelAmt.value = blackTunnelAmt;
-      backdropUniforms.u_vortexAmt.value = vortexAmt;
-      backdropUniforms.u_haloAlpha.value = (1 - vortexAmt) * (1 - waitAmt * 0.85) * 0.92;
-
-      // Update 3D sci-fi wire ribs
-      tunnelGroup.visible = blackTunnelAmt > 0.01 || vortexAmt > 0.01;
-      for (let i = 0; i < ribMats.length; i += 1) {
-        ribMats[i].opacity = blackTunnelAmt * 0.55 + vortexAmt * 0.35;
-        ribMats[i].color.setHex(
-          vortexAmt > 0.3 ? (i % 2 === 0 ? 0xff49b8 : 0x5cc4ff) : i % 3 === 0 ? 0x16b8df : 0xd61a2c
-        );
-      }
-
-      if (bundleRef) {
-        let animFrame = 18;
-        let astroOpacity = 1;
-
-        if (p < 0.28) {
-          // Stage 1 (`07-home-goal-stage1`):
-          // Mobile: heroic close-up chest-up astronaut facing camera (`inAnim[1]`, `07--390x844.jpg`)
-          // Desktop: astronaut turning slightly right behind "STEP INTO A NEW WORLD..." (`inAnim[17]`, `07--1440x900.jpg`)
-          const subT = Math.min(1, Math.max(0, p / 0.28));
-          const splineFrame = isMobile ? 1.5 + subT * 5.0 : 12.0 + subT * 10.0;
-          sampleSplineTransform(bundleRef.inAnim, splineFrame, posTmp, quatTmp);
-          if (isMobile) {
-            posTmp.set(0.02, -0.86, 23.08);
-          } else {
-            posTmp.x -= 0.14;
-            posTmp.y += 0.06;
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        uniforms: { uTime: { value: 0 }, uOpacity: { value: 1 } },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
-          animFrame = (elapsed * 24) % 89;
-        } else if (p < 0.42) {
-          // Stage 2 (`07b-home-goal-mid`): Flying deeper into red/cyan greeble tunnel (`z ~ 16.5`) + 4 clones
-          sampleSplineTransform(bundleRef.inAnim, 58, posTmp, quatTmp);
-          animFrame = (elapsed * 36) % 89;
-        } else if (p < 0.49) {
-          // Stage 3 (`phase-e 07` @ `0.44`): Close-up zero-G astronaut emerging toward camera
-          sampleSplineTransform(bundleRef.inAnim, 2.0, posTmp, quatTmp);
-          posTmp.set(-0.04, -0.78, 22.92);
-          animFrame = 12;
-        } else if (p < 0.65) {
-          // Stage 4 (`08-home-goal-stage2`): Magenta/cyan energy vortex climax (astronaut recessed inside core)
-          sampleSplineTransform(bundleRef.outAnim, 10, posTmp, quatTmp);
-          astroOpacity = 0.22;
-          animFrame = (elapsed * 40) % 89;
-        } else if (p < 0.86) {
-          // Stage 5 (`08b` & `phase-e 08` @ `0.78`): Razor-sharp close-up 3D EVA astronaut (`ref-08--1440x900.png`)
-          sampleSplineTransform(bundleRef.inAnim, 0, posTmp, quatTmp);
-          if (isMobile) {
-            posTmp.set(-0.02, -0.58, 22.15);
-          } else {
-            posTmp.set(-0.02, -0.76, 22.96);
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          uniform float uTime;
+          uniform float uOpacity;
+          void main() {
+            vec2 p = (vUv - 0.5) * 2.0;
+            float r = length(p);
+            float ringR = exp(-pow((r - 0.72) * 19.0, 2.0));
+            float ringG = exp(-pow((r - 0.705) * 19.0, 2.0));
+            float ringB = exp(-pow((r - 0.69) * 19.0, 2.0));
+            vec3 col = vec3(ringR * 0.42, ringG * 0.36, ringB * 0.34);
+            float a = clamp(max(max(ringR, ringG), ringB), 0.0, 1.0) * uOpacity;
+            gl_FragColor = vec4(col, a);
           }
-          animFrame = 8 + (reducedMotion ? 0 : Math.sin(elapsed * 0.9) * 3.0 + 3.0);
+        `,
+      })
+    );
+    const portalPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(5.2, 5.2)), portalRingMat);
+    portalPlane.position.set(0, 0, -2.2);
+    blackTunnelGroup.add(portalPlane);
+
+    // -------------------------------------------------------------------------
+    // 3. Royal-Blue & Sculpted White Voronoi Square Tunnel (`home-07`, `home-08`, `home-09`)
+    // -------------------------------------------------------------------------
+    const whiteTunnelGroup = new THREE.Group();
+    whiteTunnelGroup.visible = false;
+    scene.add(whiteTunnelGroup);
+
+    const voronoiTex = track(createVoronoiTunnelTexture());
+    const whiteTunnelWallMat = track(
+      new THREE.MeshBasicMaterial({
+        map: voronoiTex,
+        side: THREE.BackSide,
+      })
+    );
+
+    const TUNNEL_SEG_LEN = 46;
+    const whiteBoxGeo = track(new THREE.BoxGeometry(6.8, 6.8, TUNNEL_SEG_LEN, 1, 1, 8));
+    // Scale lengthwise UVs so cloud-Voronoi shapes tile cleanly down the 46-unit square shaft
+    const boxUv = whiteBoxGeo.attributes.uv as THREE.BufferAttribute;
+    for (let i = 0; i < boxUv.count; i++) {
+      // Faces 0..3 are left/right/top/bottom walls in Three.js BoxGeometry
+      const faceIdx = Math.floor(i / 4);
+      if (faceIdx < 4) {
+        const u = boxUv.getX(i);
+        const v = boxUv.getY(i);
+        if (faceIdx < 2) {
+          boxUv.setXY(i, u * 3.4, v * 1.0);
         } else {
-          // Stage 6 (`09a-home-end-cta` @ `astronautWait`): Full-body standing & waving right hand (`frames 140..287`)
-          sampleSplineTransform(bundleRef.outAnim, 99, posTmp, quatTmp);
-          posTmp.set(-0.26, -0.70, 22.15);
-          if (isMobile) posTmp.set(0.0, -0.74, 21.65);
-          // Frame ~198 in `astronaut_animations.buf` (`140..287`) raises the right arm high in greeting wave!
-          animFrame = 196 + (reducedMotion ? 0 : Math.sin(elapsed * 2.2) * 14);
-        }
-
-        const f0 = Math.floor(animFrame);
-        const f1 = Math.min(287, f0 + 1);
-        const blend = animFrame - f0;
-
-        for (const u of mainUniformsList) {
-          u.u_instancePos.value.copy(posTmp);
-          u.u_instanceOrient.value.set(quatTmp.x, quatTmp.y, quatTmp.z, quatTmp.w);
-          u.u_frameFromToBlend.value.set(f0, f1, blend);
-          u.u_tunnelGlow.value = Math.max(blackTunnelAmt * 0.75, vortexAmt);
-          u.u_opacity.value = astroOpacity;
-        }
-
-        // Update 4 additive ghost clones visible inside `blackTunnel` (`07b`) — skip vertex skinning when hidden!
-        const showClones = blackTunnelAmt > 0.05;
-        for (let c = 0; c < cloneGroups.length; c += 1) {
-          cloneGroups[c].group.visible = showClones;
-          if (!showClones) continue;
-          const ang = (c / cloneGroups.length) * Math.PI * 2 + elapsed * 0.45;
-          const cf = ((animFrame + c * 19) % 88) + 1;
-          for (const cu of cloneGroups[c].uniformsList) {
-            cu.u_instancePos.value.set(
-              posTmp.x + Math.cos(ang) * 1.9,
-              posTmp.y + Math.sin(ang) * 1.35,
-              posTmp.z - 1.2 - c * 1.1
-            );
-            cu.u_instanceOrient.value.set(quatTmp.x, quatTmp.y, quatTmp.z, quatTmp.w);
-            cu.u_frameFromToBlend.value.set(Math.floor(cf), Math.min(89, Math.ceil(cf)), cf % 1);
-            cu.u_cloneAlpha.value = blackTunnelAmt * 0.55;
-          }
-        }
-
-        // Update floating `stickers.png` (`GoalWhiteTunnelStickers`) & chrome spheres at `09a`
-        if (stickerMesh) {
-          stickerMesh.visible = waitAmt > 0.02;
-          stickerMesh.material.uniforms.u_activeRatio.value = waitAmt;
-          stickerMesh.material.uniforms.u_time.value = 3.4 + elapsed * 0.35;
-          stickerMesh.material.uniforms.u_aspect.value = camera.aspect;
-        }
-        chromeGroup.visible = waitAmt > 0.02;
-        if (chromeGroup.visible) {
-          for (let i = 0; i < chromeSpheres.length; i += 1) {
-            chromeSpheres[i].position.y += Math.sin(elapsed + i) * 0.002;
-          }
+          boxUv.setXY(i, u * 1.0, v * 3.4);
         }
       }
+    }
+    boxUv.needsUpdate = true;
 
-      renderer.render(scene, camera);
-    };
+    const whiteTunnelShaft = new THREE.Mesh(whiteBoxGeo, whiteTunnelWallMat);
+    whiteTunnelShaft.position.set(0, 0, -TUNNEL_SEG_LEN * 0.46);
+    whiteTunnelGroup.add(whiteTunnelShaft);
 
-    readyPromise
-      .then((bundle) => {
-        if (disposed) return;
-        bundleRef = bundle;
-
-        const partNames: Array<"wearpack" | "glove_shoes" | "helmet" | "helmet_glass"> = [
-          "wearpack",
-          "glove_shoes",
-          "helmet",
-          "helmet_glass",
-        ];
-
-        const buildAstronautMeshes = (isClone: boolean, targetGroup: THREE.Group) => {
-          const uniformsList: Record<string, THREE.IUniform>[] = [];
-          for (const partName of partNames) {
-            if (isClone && partName === "helmet_glass") continue;
-            const texPrefix = partName === "helmet_glass" ? "helmet" : partName;
-            const uniforms: Record<string, THREE.IUniform> = {
-              u_animationPositionTexture: { value: bundle.animPosTex },
-              u_animationOrientTexture: { value: bundle.animOrientTex },
-              u_animationTextureSize: { value: bundle.animTexSize },
-              u_frameFromToBlend: { value: new THREE.Vector3(0, 1, 0) },
-              u_instancePos: { value: new THREE.Vector3(0, -0.75, 23) },
-              u_instanceOrient: { value: new THREE.Vector4(0, 0, 0, 1) },
-              u_baseTexture: { value: bundle.textures[`${texPrefix}_base`] },
-              u_armTexture: { value: bundle.textures[`${texPrefix}_arm`] },
-              u_norTexture: { value: bundle.textures[`${texPrefix}_nor`] },
-              u_matcapTexture: { value: bundle.textures.matcap },
-              u_envTexture: { value: bundle.textures.earth },
-              u_sunPosition: { value: new THREE.Vector3(-18, 6, 28) },
-              u_ambientColor: { value: new THREE.Color("#566d80") },
-              u_isGlass: { value: partName === "helmet_glass" ? 1 : 0 },
-              u_isClone: { value: isClone ? 1 : 0 },
-              u_cloneAlpha: { value: 0 },
-              u_tunnelGlow: { value: 0 },
-              u_opacity: { value: 1 },
-            };
-            const mat = new THREE.ShaderMaterial({
-              uniforms,
-              vertexShader: ASTRONAUT_VERTEX_GLSL,
-              fragmentShader: ASTRONAUT_FRAGMENT_GLSL,
-              side: THREE.DoubleSide,
-              transparent: isClone || partName === "helmet_glass",
-              blending: isClone ? THREE.AdditiveBlending : THREE.NormalBlending,
-              depthWrite: !isClone,
-            });
-            const mesh = new THREE.Mesh(bundle.parts[partName].geometry, mat);
-            mesh.frustumCulled = false;
-            mesh.renderOrder = isClone ? 5 : partName === "helmet_glass" ? 3 : 2;
-            targetGroup.add(mesh);
-            uniformsList.push(uniforms);
+    // Glowing white end-portal cap deep inside the royal-blue shaft (`home-07`, `home-08`, `home-09`)
+    const whiteEndGlowMat = track(
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        uniforms: { uOpacity: { value: 1 } },
+        vertexShader: `
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
-          return uniformsList;
-        };
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          uniform float uOpacity;
+          void main() {
+            float d = length(vUv - 0.5) * 2.0;
+            float core = smoothstep(0.95, 0.08, d);
+            vec3 col = mix(vec3(0.10, 0.22, 1.0), vec3(1.0, 1.0, 1.0), pow(core, 0.65));
+            gl_FragColor = vec4(col, uOpacity);
+          }
+        `,
+      })
+    );
+    const whiteEndCap = new THREE.Mesh(track(new THREE.PlaneGeometry(7.2, 7.2)), whiteEndGlowMat);
+    whiteEndCap.position.set(0, 0, -25.0);
+    whiteTunnelGroup.add(whiteEndCap);
 
-        mainUniformsList.push(...buildAstronautMeshes(false, astronautGroup));
-        for (let c = 0; c < 4; c += 1) {
-          const cloneGroup = new THREE.Group();
-          cloneGroup.visible = false;
-          astronautGroup.add(cloneGroup);
-          cloneGroups.push({ group: cloneGroup, uniformsList: buildAstronautMeshes(true, cloneGroup) });
-        }
+    // -------------------------------------------------------------------------
+    // 4. Main Articulated 3D EVA Astronaut + 4 Tunnel Ghost Clones
+    // -------------------------------------------------------------------------
+    const suitBumpTex = track(createSuitFabricBumpTexture());
+    const mainAstro = buildAstronautRig(suitBumpTex, false);
+    track(mainAstro.suitMat);
+    track(mainAstro.harnessMat);
+    track(mainAstro.visorMat);
+    track(mainAstro.plumeMat);
+    scene.add(mainAstro.root);
 
-        // Build `GoalWhiteTunnelStickers` instanced quad cloud (`stickers.png`)
-        const count = 20;
-        const plane = new THREE.PlaneGeometry(1, 1);
-        const instGeo = new THREE.InstancedBufferGeometry();
-        instGeo.index = plane.index;
-        instGeo.setAttribute("position", plane.attributes.position);
-        instGeo.setAttribute("uv", plane.attributes.uv);
+    const clones: AstronautRig[] = [];
+    for (let c = 0; c < 4; c++) {
+      const cl = buildAstronautRig(suitBumpTex, true);
+      track(cl.suitMat);
+      track(cl.harnessMat);
+      track(cl.visorMat);
+      track(cl.plumeMat);
+      cl.root.visible = false;
+      applyPose(cl, POSE_TUNNEL_DIVE);
+      scene.add(cl.root);
+      clones.push(cl);
+    }
 
-        const uvInfo = new Float32Array(count * 4);
-        const instPos = new Float32Array(count * 3);
-        const instRotScale = new Float32Array(count * 2);
-        for (let i = 0; i < count; i += 1) {
-          const rect = STICKER_RECTS[i % STICKER_RECTS.length];
-          uvInfo[i * 4] = rect.x / STICKER_ATLAS_W;
-          uvInfo[i * 4 + 1] = rect.y / STICKER_ATLAS_H;
-          uvInfo[i * 4 + 2] = rect.w / STICKER_ATLAS_W;
-          uvInfo[i * 4 + 3] = rect.h / STICKER_ATLAS_H;
+    // -------------------------------------------------------------------------
+    // 5. Shattered 3D Chromatic Iridescent Glass Shards (`home-09-glass-break-drop`)
+    // -------------------------------------------------------------------------
+    const SHARD_COUNT = 112;
+    const shardGeo = track(new THREE.ConeGeometry(0.19, 0.44, 3));
+    shardGeo.scale(1.0, 1.0, 0.09);
+    const shardMat = track(
+      new THREE.ShaderMaterial({
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        uniforms: {
+          uOpacity: { value: 0 },
+          uTime: { value: 0 },
+        },
+        vertexShader: `
+          varying vec3 vNormalV;
+          varying vec3 vPosV;
+          void main() {
+            vec4 mv = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+            vPosV = mv.xyz;
+            vNormalV = normalize(normalMatrix * mat3(instanceMatrix) * normal);
+            gl_Position = projectionMatrix * mv;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vNormalV;
+          varying vec3 vPosV;
+          uniform float uOpacity;
+          void main() {
+            vec3 V = normalize(-vPosV);
+            float fres = pow(1.0 - abs(dot(normalize(vNormalV), V)), 1.65);
+            vec3 deep = vec3(0.12, 0.28, 0.98);
+            vec3 cyan = vec3(0.42, 0.86, 1.0);
+            vec3 violet = vec3(0.68, 0.46, 1.0);
+            vec3 col = mix(deep, mix(cyan, violet, vNormalV.x * 0.5 + 0.5), fres * 0.92 + 0.18);
+            col += vec3(1.0) * pow(fres, 4.0) * 0.65;
+            gl_FragColor = vec4(col, (0.48 + fres * 0.48) * uOpacity);
+          }
+        `,
+      })
+    );
+    const shardsMesh = new THREE.InstancedMesh(shardGeo, shardMat, SHARD_COUNT);
+    shardsMesh.visible = false;
+    shardsMesh.frustumCulled = false;
+    scene.add(shardsMesh);
 
-          const side = i % 2 === 0 ? -1 : 1;
-          const col = (i % 5) / 5;
-          instPos[i * 3] = side * (0.85 + col * 2.35) + (i % 3 === 0 ? 0.35 : -0.2);
-          instPos[i * 3 + 1] = -1.65 + ((i * 0.37) % 1) * 3.35;
-          instPos[i * 3 + 2] = 20.4 + (i % 4) * 0.45;
-          instRotScale[i * 2] = ((i * 1.13) % 6.28) - 3.14;
-          instRotScale[i * 2 + 1] = 0.30 + (i % 3) * 0.08;
-        }
-        instGeo.setAttribute("a_uvInfo", new THREE.InstancedBufferAttribute(uvInfo, 4));
-        instGeo.setAttribute("a_offset", new THREE.InstancedBufferAttribute(instPos, 3));
-        instGeo.setAttribute("a_rotScale", new THREE.InstancedBufferAttribute(instRotScale, 2));
+    const shardSeeds = Array.from({ length: SHARD_COUNT }, (_, i) => {
+      const a = (i / SHARD_COUNT) * Math.PI * 2 * 3.7;
+      const rad = 0.74 + (((i * 37) % 100) / 100) * 1.68;
+      return {
+        dirX: Math.cos(a) * rad * 1.45,
+        dirY: Math.sin(a) * rad * 0.92,
+        dirZ: 0.45 + ((i * 19) % 100) / 100 * 2.25,
+        rotX: ((i * 13) % 10) * 0.6,
+        rotY: ((i * 29) % 10) * 0.6,
+        rotZ: a,
+        scale: 0.55 + ((i * 23) % 100) / 100 * 1.25,
+      };
+    });
 
-        const stickerMat = new THREE.ShaderMaterial({
+    // -------------------------------------------------------------------------
+    // 6. `#end-section` Starburst Crystal Diamonds + Pop-Art Stickers (`home-10`)
+    // -------------------------------------------------------------------------
+    const waitDecorGroup = new THREE.Group();
+    waitDecorGroup.visible = false;
+    scene.add(waitDecorGroup);
+
+    const diamondGeo = track(new THREE.OctahedronGeometry(0.085, 0));
+    const diamondMat = track(
+      new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color("#dbeafe"),
+        emissive: new THREE.Color("#60a5fa"),
+        emissiveIntensity: 0.35,
+        roughness: 0.08,
+        metalness: 0.35,
+        clearcoat: 1.0,
+      })
+    );
+    const DIAMOND_COUNT = 22;
+    const diamondAnchors: Array<[number, number, number, number]> = [];
+    for (let i = 0; i < DIAMOND_COUNT; i++) {
+      const angle = (i / DIAMOND_COUNT) * Math.PI * 2 + 0.3;
+      const radiusX = 1.05 + ((i * 31) % 7) * 0.34;
+      const py = -1.55 + ((i * 17) % 11) * 0.31;
+      const pz = -0.6 - ((i * 13) % 5) * 0.45;
+      const dm = new THREE.Mesh(diamondGeo, diamondMat);
+      dm.position.set(Math.cos(angle) * radiusX, py, pz);
+      const sc = 0.55 + ((i * 7) % 5) * 0.16;
+      dm.scale.set(sc, sc * 0.72, sc);
+      waitDecorGroup.add(dm);
+      diamondAnchors.push([dm.position.x, dm.position.y, dm.position.z, i]);
+    }
+
+    const stickerMeshes: Array<{ mesh: THREE.Mesh; baseX: number; baseY: number; baseZ: number; phase: number }> = [];
+    const stickerCoords: Array<[number, number, number, number]> = [
+      [-2.18, -0.82, 0.35, 0], // Lime slime ghost bottom-left
+      [-1.72, -1.24, 0.42, 1], // Pizza slice bottom-left
+      [-1.18, -1.02, 0.30, 2], // Double eyeballs left-center
+      [1.08, -0.96, 0.36, 3],  // Pink lollipop right-center
+      [2.26, -0.68, 0.25, 4],  // Neon bell/planet far right
+      [-1.06, 0.92, -0.35, 3], // Upper-left mini sticker
+      [-0.48, 0.02, -0.25, 0], // Small green lollipop near left shoulder
+    ];
+    for (const [sx, sy, sz, kind] of stickerCoords) {
+      const stTex = track(createStickerTexture(kind));
+      const stMat = track(
+        new THREE.MeshBasicMaterial({
+          map: stTex,
           transparent: true,
           depthWrite: false,
-          uniforms: {
-            u_texture: { value: bundle.textures.stickers },
-            u_textureSize: { value: new THREE.Vector2(STICKER_ATLAS_W, STICKER_ATLAS_H) },
-            u_activeRatio: { value: 0 },
-            u_time: { value: 0 },
-            u_aspect: { value: camera.aspect },
-          },
-          vertexShader: /* glsl */ `
-            attribute vec4 a_uvInfo;
-            attribute vec3 a_offset;
-            attribute vec2 a_rotScale;
-            uniform vec2 u_textureSize;
-            uniform float u_activeRatio;
-            uniform float u_time;
-            varying vec2 vStickerUv;
-            void main() {
-              vec3 pos = position;
-              pos.xy *= a_uvInfo.zw * u_textureSize * 0.0028 * a_rotScale.y * u_activeRatio;
-              float ang = a_rotScale.x + sin(u_time * 0.6 + a_offset.x) * 0.22;
-              float c = cos(ang);
-              float s = sin(ang);
-              pos.xy = mat2(c, s, -s, c) * pos.xy;
-              pos += a_offset;
-              pos.y += sin(u_time * 0.45 + a_offset.x * 1.7) * 0.14;
-              vStickerUv = vec2(
-                a_uvInfo.x + a_uvInfo.z * uv.x,
-                1.0 - (a_uvInfo.y + a_uvInfo.w * (1.0 - uv.y))
-              );
-              gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-            }
-          `,
-          fragmentShader: /* glsl */ `
-            precision highp float;
-            uniform sampler2D u_texture;
-            uniform float u_activeRatio;
-            varying vec2 vStickerUv;
-            void main() {
-              vec4 texel = texture2D(u_texture, vStickerUv);
-              if (texel.a < 0.08) discard;
-              gl_FragColor = vec4(texel.rgb, texel.a * u_activeRatio);
-            }
-          `,
-        });
+        })
+      );
+      const stMesh = new THREE.Mesh(track(new THREE.PlaneGeometry(0.42, 0.42)), stMat);
+      stMesh.position.set(sx, sy, sz);
+      waitDecorGroup.add(stMesh);
+      stickerMeshes.push({ mesh: stMesh, baseX: sx, baseY: sy, baseZ: sz, phase: sx * 1.7 + sy });
+    }
 
-        stickerMesh = new THREE.Mesh(instGeo, stickerMat);
-        stickerMesh.frustumCulled = false;
-        stickerMesh.renderOrder = 8;
-        stickerMesh.visible = false;
-        scene.add(stickerMesh);
-
-        drawFrame();
-      })
-      .catch(() => {});
-
+    // -------------------------------------------------------------------------
+    // Layout Measurement & Inspector Synchronization
+    // -------------------------------------------------------------------------
+    let metrics: GoalLayoutMetrics | null = null;
+    let targetScrollY = typeof window !== "undefined" ? window.scrollY : 0;
+    let smoothScrollY = targetScrollY;
+    let docVisible = true;
+    let wasInBand = true;
     let rafId = 0;
-    const loop = () => {
-      if (disposed) return;
-      const r = host.getBoundingClientRect();
-      if (r.bottom > -240 && r.top < window.innerHeight + 240) {
-        drawFrame();
-      }
-      rafId = window.requestAnimationFrame(loop);
-    };
-    loop();
+    const startClock = performance.now();
 
-    return () => {
-      disposed = true;
-      window.cancelAnimationFrame(rafId);
-      ro.disconnect();
-      renderer.dispose();
-      if (renderer.domElement.parentNode === host) {
-        host.removeChild(renderer.domElement);
-      }
-    };
-  }, [reducedMotion]);
+    const measure = () => {
+      const W = Math.max(1, window.innerWidth);
+      const H = Math.max(1, window.innerHeight);
+      const sy = window.scrollY;
 
-  return <div ref={containerRef} className="h-full w-full bg-[#000000]" />;
-}
+      const gRect = goalEl.getBoundingClientRect();
+      const inRect = imgInEl.getBoundingClientRect();
+      const outRect = imgOutEl.getBoundingClientRect();
+      const endEl = document.getElementById("end-section");
+      const endRect = endEl ? endEl.getBoundingClientRect() : null;
 
-/**
- * Verified Lusion Goal & Multi-Stage 3D EVA Astronaut Tunnel (`#home-goal`)
- */
-export function GoalTunnelSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const tunnelTrackRef = useRef<HTMLDivElement>(null);
-  const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
-  const reducedMotion = useStudioStore((s) => s.reducedMotion);
-  const [progress, setProgress] = useState(0);
+      const goalTop = gRect.top + sy;
+      const goalHeight = gRect.height;
+      const imgInLeft = inRect.left;
+      const imgInTop = inRect.top + sy;
+      const imgInWidth = Math.max(1, inRect.width);
+      const imgInHeight = Math.max(1, inRect.height);
 
-  useEffect(() => {
-    // Eagerly preload `.buf` astronaut meshes & PBR textures on homepage load
-    loadAstronautBundle().catch(() => {});
-  }, []);
+      const imgOutLeft = outRect.left;
+      const imgOutTop = outRect.top + sy;
+      const imgOutWidth = Math.max(1, outRect.width);
+      const imgOutHeight = Math.max(1, outRect.height);
 
-  useEffect(() => {
-    let rafId = 0;
+      const endTop = endRect ? endRect.top + sy : goalTop + goalHeight;
+      const endHeight = endRect ? Math.max(H, endRect.height) : H * 2;
 
-    const syncInspectorRanges = () => {
-      const track = tunnelTrackRef.current;
-      if (!track || typeof window === "undefined") return;
-      const rect = track.getBoundingClientRect();
-      const baseY = Math.max(0, window.scrollY + rect.top);
-      const vhSpan = Math.max(1, track.offsetHeight - (window.innerHeight || 900));
+      const imgInStart = Math.max(0, imgInTop - H * 0.45);
+      const imgInSpan = H * 1.4;
+      const imgInEnd = imgInStart + imgInSpan;
+
+      const tunnelStart = imgInEnd;
+      const tunnelEnd = Math.max(tunnelStart + H * 4, imgOutTop + imgOutHeight - H);
+      const tunnelSpan = Math.max(1, tunnelEnd - tunnelStart);
+
+      metrics = {
+        goalTop,
+        goalHeight,
+        imgInLeft,
+        imgInTop,
+        imgInWidth,
+        imgInHeight,
+        imgInStart,
+        imgInSpan,
+        imgInEnd,
+        tunnelStart,
+        tunnelEnd,
+        tunnelSpan,
+        imgOutLeft,
+        imgOutTop,
+        imgOutWidth,
+        imgOutHeight,
+        endTop,
+        endHeight,
+        viewportW: W,
+        viewportH: H,
+        isMobile: W < 820,
+      };
+
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      glRenderer.setPixelRatio(dpr);
+      glRenderer.setSize(W, H, false);
+
+      // Expose exact Lusion Inspector contract for automated harnesses & live inspection
+      const blackTitleFrom = tunnelStart;
+      const blackTitleTo = tunnelStart + tunnelSpan * 0.24;
+      const blackTunnelFrom = blackTitleTo;
+      const blackTunnelTo = tunnelStart + tunnelSpan * 0.78;
+      const whiteTunnelFrom = blackTunnelTo;
+      const whiteTunnelTo = tunnelEnd;
+      const astroDropFrom = imgOutTop - H * 0.25;
+      const astroDropTo = endTop;
+      const astroWaitFrom = endTop;
+      const astroWaitTo = endTop + endHeight;
 
       window.__lusionInspector = {
         ...window.__lusionInspector,
         properties: { hasStarted: true },
         scrollManager: {
-          scrollPixel: window.scrollY,
-          contentSizePixel: Math.max(0, document.documentElement.scrollHeight - window.innerHeight),
-          scrollLimit: Math.max(0, document.documentElement.scrollHeight - window.innerHeight),
+          scrollPixel: sy,
+          contentSizePixel: Math.max(0, document.documentElement.scrollHeight - H),
+          scrollLimit: Math.max(0, document.documentElement.scrollHeight - H),
           scrollToPixel: (y: number) => {
-            const w = window as unknown as {
+            const win = window as unknown as {
               __lenis?: { resize: () => void; scrollTo: (t: number, o?: { immediate?: boolean }) => void };
             };
-            w.__lenis?.resize();
-            w.__lenis?.scrollTo(y, { immediate: true });
+            win.__lenis?.resize();
+            win.__lenis?.scrollTo(y, { immediate: true });
             window.scrollTo({ top: y, behavior: "instant" });
+            targetScrollY = y;
+            smoothScrollY = y;
           },
         },
         homeGoalSectionRanges: {
-          baseY,
+          baseY: goalTop,
+          totalPixelCount: Math.max(1, astroWaitTo - goalTop),
           items: {
             blackTitle: {
               id: "blackTitle",
-              pixelFrom: Math.round(theSpan(vhSpan, 0.04)),
-              pixelCount: Math.round(theSpan(vhSpan, 0.22)),
-              pixelTo: Math.round(theSpan(vhSpan, 0.26)),
+              pixelFrom: blackTitleFrom,
+              pixelCount: blackTitleTo - blackTitleFrom,
+              pixelTo: blackTitleTo,
             },
             blackTunnel: {
               id: "blackTunnel",
-              pixelFrom: Math.round(theSpan(vhSpan, 0.28)),
-              pixelCount: Math.round(theSpan(vhSpan, 0.13)),
-              pixelTo: Math.round(theSpan(vhSpan, 0.41)),
+              pixelFrom: blackTunnelFrom,
+              pixelCount: blackTunnelTo - blackTunnelFrom,
+              pixelTo: blackTunnelTo,
             },
             whiteTunnel: {
               id: "whiteTunnel",
-              pixelFrom: Math.round(theSpan(vhSpan, 0.50)),
-              pixelCount: Math.round(theSpan(constVh(vhSpan), 0.14)),
-              pixelTo: Math.round(theSpan(vhSpan, 0.64)),
+              pixelFrom: whiteTunnelFrom,
+              pixelCount: whiteTunnelTo - whiteTunnelFrom,
+              pixelTo: whiteTunnelTo,
             },
             astronautDrop: {
               id: "astronautDrop",
-              pixelFrom: Math.round(theSpan(vhSpan, 0.66)),
-              pixelCount: Math.round(theSpan(vhSpan, 0.14)),
-              pixelTo: Math.round(theSpan(vhSpan, 0.80)),
+              pixelFrom: astroDropFrom,
+              pixelCount: Math.max(1, astroDropTo - astroDropFrom),
+              pixelTo: astroDropTo,
+            },
+            astronautWait: {
+              id: "astronautWait",
+              pixelFrom: astroWaitFrom,
+              pixelCount: Math.max(1, astroWaitTo - astroWaitFrom),
+              pixelTo: astroWaitTo,
             },
           },
         },
       };
     };
 
-    function constVh(v: number) {
-      return v;
-    }
+    const renderSceneAtScroll = (sy: number, elapsedSec: number) => {
+      if (!metrics) measure();
+      const m = metrics;
+      if (!m) return;
 
-    function theSpan(span: number, ratio: number) {
-      return span * ratio;
-    }
+      const W = m.viewportW;
+      const H = m.viewportH;
 
-    const update = () => {
-      const track = tunnelTrackRef.current;
-      if (!track) return;
-      const rect = track.getBoundingClientRect();
-      const vh = window.innerHeight || 900;
-      const scrollable = Math.max(1, rect.height - vh);
-      const raw = Math.min(1, Math.max(0, -rect.top / scrollable));
-      setProgress(raw);
-      syncInspectorRanges();
+      // Active spatial envelope covers from 1.2 viewports before `imgIn` all the way to the bottom of `#end-section`
+      const activeStart = Math.max(0, m.goalTop - H * 0.9);
+      const activeEnd = m.endTop + m.endHeight;
 
-      if (rect.top <= 72 && rect.bottom >= 96) {
-        setActiveSurface("void");
+      if (sy < activeStart || sy > activeEnd) {
+        overlayEl.style.visibility = "hidden";
+        if (lastSurfaceDarkRef.current) {
+          lastSurfaceDarkRef.current = false;
+          setActiveSurface("ice");
+        }
+        return;
+      }
+      overlayEl.style.visibility = "visible";
+
+      // -----------------------------------------------------------------------
+      // Continuous Monotonic Sub-Progresses (100% pure function of `sy`!)
+      // -----------------------------------------------------------------------
+      // `tEmerge`: 0 at resting tablet entry (`home-01`), -> 1 when screen swallows full viewport (`home-03` = 0.90)
+      const tEmerge = clamp01((sy - m.imgInStart) / m.imgInSpan);
+      const wantDarkHeader = tEmerge > 0.75;
+      if (lastSurfaceDarkRef.current !== wantDarkHeader) {
+        lastSurfaceDarkRef.current = wantDarkHeader;
+        setActiveSurface(wantDarkHeader ? "void" : "ice");
+      }
+      // `tTunnel`: 0..1 across deep tunnel journey (`home-04`..`home-07`)
+      const tTunnel = clamp01((sy - m.tunnelStart) / m.tunnelSpan);
+      // `tOutPull`: 0 -> 1 as royal-blue tunnel shrinks into `#home-goal-image-out` desktop monitor (`home-08`)
+      const outPullStart = m.imgOutTop - H * 0.95;
+      const outPullEnd = m.imgOutTop - H * 0.08;
+      const tOutPull = smoothstep(outPullStart, outPullEnd, sy);
+      // `tShatter`: 0 -> 1 across glass-break & foreground astronaut breakout (`home-09`..`home-10`)
+      const shatterStart = m.imgOutTop + H * 0.06;
+      const shatterEnd = m.endTop;
+      const tShatter = clamp01((sy - shatterStart) / Math.max(1, shatterEnd - shatterStart));
+      // `tWait`: 0 -> 1 down `#end-section` (`home-10` -> footer)
+      const tWait = clamp01((sy - m.endTop) / Math.max(1, m.endHeight));
+
+      // Keep inspector scrollPixel current
+      if (window.__lusionInspector?.scrollManager) {
+        window.__lusionInspector.scrollManager.scrollPixel = sy;
+      }
+
+      // -----------------------------------------------------------------------
+      // A. Physical Tablet Bezel (`home-01` -> `home-03` & reverse `home-11`)
+      //    SINGLE continuous transform scaling & rotating BOTH bezel & clip window!
+      // -----------------------------------------------------------------------
+      const inDocScreenTop = m.imgInTop - sy;
+      const inCenterX0 = m.imgInLeft + m.imgInWidth * 0.5;
+      const inCenterY0 = inDocScreenTop + m.imgInHeight * 0.5;
+
+      // Smooth exponential scale curve so at tEmerge=0 it sits 1:1 over `#home-goal-image-in`,
+      // at tEmerge=0.40 (`home-02`) it scales ~1.7x & tilts +0.17 rad, and by tEmerge=0.88 (`home-03`)
+      // its inner black screen completely fills 100vw x 100vh with zero seam!
+      const emergeEase = tEmerge * tEmerge * (2.2 - 1.2 * tEmerge);
+      const minFullScale =
+        (Math.hypot(W, H) / Math.max(1, Math.min(m.imgInWidth, m.imgInHeight))) * 1.24;
+      const tabletScale = Math.pow(minFullScale, clamp01(tEmerge / 0.86));
+      const tabletRotRad = smoothstep(0.04, 0.85, tEmerge) * 0.39;
+      const tabletCenterX = lerp(inCenterX0, W * 0.44, emergeEase);
+      const tabletCenterY = lerp(inCenterY0, H * 0.52, emergeEase);
+
+      const inTabletPhase = tOutPull <= 0.001 && tTunnel < 0.02;
+      if (inTabletPhase && tEmerge < 0.96) {
+        tabletBezelEl.style.display = "block";
+        tabletBezelEl.style.width = `${m.imgInWidth}px`;
+        tabletBezelEl.style.height = `${m.imgInHeight}px`;
+        tabletBezelEl.style.transform = `translate3d(${tabletCenterX - m.imgInWidth * 0.5}px, ${
+          tabletCenterY - m.imgInHeight * 0.5
+        }px, 0) rotate(${tabletRotRad}rad) scale(${tabletScale})`;
+      } else {
+        tabletBezelEl.style.display = "none";
+      }
+
+      // Clip `hostEl` strictly inside the inner tablet screen whenever `tEmerge < 0.87`
+      // -> GUARANTEES ZERO astronaut head/hand/foot pop-through outside the bezel at EVERY scroll stop!
+      if (inTabletPhase && tEmerge < 0.87) {
+        const padFracX = 0.036;
+        const padFracY = 0.046;
+        const innerW = m.imgInWidth * (1 - padFracX * 2) * tabletScale;
+        const innerH = m.imgInHeight * (1 - padFracY * 2) * tabletScale;
+        const radiusPx = Math.max(12, 22 * tabletScale);
+        hostEl.style.clipPath = "none";
+        hostEl.style.width = `${innerW}px`;
+        hostEl.style.height = `${innerH}px`;
+        hostEl.style.borderRadius = `${radiusPx}px`;
+        hostEl.style.overflow = "hidden";
+        hostEl.style.transform = `translate3d(${tabletCenterX - innerW * 0.5}px, ${
+          tabletCenterY - innerH * 0.5
+        }px, 0) rotate(${tabletRotRad}rad)`;
+
+        glRenderer.setSize(Math.max(2, Math.round(innerW)), Math.max(2, Math.round(innerH)), false);
+        camera.aspect = innerW / Math.max(1, innerH);
+      } else {
+        hostEl.style.width = `${W}px`;
+        hostEl.style.height = `${H}px`;
+        hostEl.style.borderRadius = "0px";
+        hostEl.style.overflow = "visible";
+        hostEl.style.transform = "translate3d(0,0,0)";
+
+        glRenderer.setSize(W, H, false);
+        camera.aspect = W / Math.max(1, H);
+      }
+
+      // -----------------------------------------------------------------------
+      // B. Backdrop Color & Desktop Monitor Frame (`home-08`, `home-09`, `home-10`)
+      // -----------------------------------------------------------------------
+      const outCenterX = m.imgOutLeft + m.imgOutWidth * 0.5;
+      // During shatter (`home-09` -> `home-10`), monitor smoothly drifts up with document scroll
+      const outBaseY =
+        tShatter <= 0.001
+          ? lerp(H * 0.5, H * 0.47, tOutPull)
+          : lerp(H * 0.47, -m.imgOutHeight * 0.9, smoothstep(0.55, 1.0, tShatter));
+
+      if (tEmerge < 0.87 && inTabletPhase) {
+        // Transparent overlay outside the clipped tablet screen so `#home-goal-context` editorial shines cleanly!
+        backdropEl.style.opacity = "0";
+      } else if (tOutPull > 0.01 && tWait <= 0.001) {
+        // Deep royal-indigo ambient monitor glow fading smoothly to pure `#000000` at `#end-section` (`home-10`)
+        const indigoFade = 1 - smoothstep(0.62, 0.98, tShatter);
+        backdropEl.style.opacity = "1";
+        backdropEl.style.background = `radial-gradient(ellipse 68% 58% at 50% 48%, rgba(28, 44, 152, ${(
+          0.92 * indigoFade
+        ).toFixed(3)}) 0%, rgba(10, 16, 62, ${(0.95 * indigoFade).toFixed(3)}) 48%, #000000 100%)`;
+      } else if (tWait > 0.001) {
+        // In `#end-section`, transparent backdrop lets `#end-section`'s own `#000000` + white CTA copy shine through!
+        backdropEl.style.opacity = "0";
+      } else {
+        backdropEl.style.opacity = "1";
+        backdropEl.style.background = "#000000";
+      }
+
+      // Desktop Monitor Bezel + Brushed Silver Stand (`home-08` & `home-09`)
+      if (tOutPull > 0.02 && tShatter < 0.94) {
+        const monScale = lerp(2.35, 1.0, smoothstep(0.0, 0.86, tOutPull));
+        const monRot = lerp(-0.26, 0.0, smoothstep(0.0, 0.72, tOutPull));
+        monitorBezelEl.style.display = "block";
+        monitorBezelEl.style.width = `${m.imgOutWidth}px`;
+        monitorBezelEl.style.height = `${m.imgOutHeight}px`;
+        monitorBezelEl.style.opacity = String(1 - smoothstep(0.76, 0.94, tShatter));
+        monitorBezelEl.style.transform = `translate3d(${outCenterX - m.imgOutWidth * 0.5}px, ${
+          outBaseY - m.imgOutHeight * 0.5
+        }px, 0) rotate(${monRot}rad) scale(${monScale})`;
+      } else {
+        monitorBezelEl.style.display = "none";
+      }
+
+      // -----------------------------------------------------------------------
+      // C. 3D Portal Headline (`"STEP INTO A NEW WORLD..."` — `home-04`)
+      // -----------------------------------------------------------------------
+      const titleIn = smoothstep(0.015, 0.09, tTunnel);
+      const titleOut = 1 - smoothstep(0.18, 0.28, tTunnel);
+      const titleVis = titleIn * titleOut;
+      if (titleVis > 0.005) {
+        const titleScale = lerp(0.74, 2.35, smoothstep(0.015, 0.28, tTunnel));
+        titleWrapEl.style.display = "flex";
+        titleWrapEl.style.opacity = String(titleVis);
+        titleWrapEl.style.transform = `translate3d(-50%, -50%, 0) scale(${titleScale})`;
+      } else {
+        titleWrapEl.style.display = "none";
+      }
+
+      // -----------------------------------------------------------------------
+      // D. 3D World Subsystems: Earth, Black Greeble Corridor, Blue/White Tunnel, Shards, Diamonds
+      // -----------------------------------------------------------------------
+      camera.fov = m.isMobile ? 54 : 45;
+      camera.updateProjectionMatrix();
+
+      // 1. Earth horizon (`home-01` -> fades smoothly by `home-03` so deep space is crisp black!)
+      const earthAlpha = clamp01(1 - smoothstep(0.32, 0.80, tEmerge)) * (tTunnel > 0.01 ? 0 : 1);
+      earthGroup.visible = earthAlpha > 0.005;
+      if (earthGroup.visible) {
+        earthMat.uniforms.uOpacity.value = earthAlpha;
+        atmoHaloMat.uniforms.uOpacity.value = earthAlpha;
+        earthGroup.position.set(
+          lerp(0.15, -1.2, tEmerge),
+          lerp(0.55, -2.6, smoothstep(0.15, 0.82, tEmerge)),
+          0
+        );
+      }
+
+      // 2. Dark Metallic Greeble Corridor (`home-05`..`home-06`)
+      const blackIn = smoothstep(0.20, 0.31, tTunnel);
+      const blackOut = 1 - smoothstep(0.76, 0.84, tTunnel);
+      const blackVis = blackIn * blackOut;
+      blackTunnelGroup.visible = blackVis > 0.01;
+      if (blackTunnelGroup.visible) {
+        const travel = ((tTunnel * 42) % 1.45);
+        blackTunnelGroup.position.set(0, 0, travel);
+        // Stereographic twist & roll rotation matching `home-06-black-tunnel-twist`!
+        const twistProg = smoothstep(0.46, 0.78, tTunnel);
+        blackTunnelGroup.rotation.set(
+          Math.sin(twistProg * Math.PI) * 0.14,
+          Math.sin(twistProg * Math.PI * 0.8) * 0.20,
+          twistProg * 1.18
+        );
+        portalRingMat.uniforms.uTime.value = elapsedSec;
+        portalRingMat.uniforms.uOpacity.value = blackVis;
+        portalPlane.position.z = -1.6;
+      }
+
+      // 3. Royal-Blue & White Voronoi Square Tunnel (`home-07`, `home-08`, `home-09`)
+      const whiteIn = smoothstep(0.76, 0.84, tTunnel);
+      const whiteOut = 1 - smoothstep(0.78, 0.94, tShatter);
+      const whiteVis = whiteIn * whiteOut * (tWait > 0.001 ? 0 : 1);
+      whiteTunnelGroup.visible = whiteVis > 0.01;
+      if (whiteTunnelGroup.visible) {
+        voronoiTex.offset.y = -tTunnel * 3.8;
+        const monShrink =
+          tOutPull > 0.01 ? lerp(1.0, m.isMobile ? 0.56 : 0.65, smoothstep(0.0, 0.86, tOutPull)) : 1.0;
+        const wideAspect =
+          tOutPull > 0.01 ? lerp(1.0, m.isMobile ? 1.28 : 1.68, smoothstep(0.0, 0.86, tOutPull)) : 1.0;
+        const monRoll =
+          tOutPull > 0.01
+            ? lerp(0.68, 0.0, smoothstep(0.0, 0.72, tOutPull))
+            : lerp(0.55, 0.82, smoothstep(0.76, 1.0, tTunnel));
+        const tunnelShiftY =
+          tShatter > 0.001 ? ((H * 0.5 - outBaseY) / H) * 5.2 : 0;
+        whiteTunnelGroup.scale.set(monShrink * wideAspect, monShrink, monShrink);
+        whiteTunnelGroup.rotation.set(0, 0, monRoll);
+        whiteTunnelGroup.position.set(0, tunnelShiftY, tOutPull > 0.01 ? -4.2 : 0);
+        whiteEndGlowMat.uniforms.uOpacity.value = whiteVis;
+      }
+
+      // 4. Shattered 3D Chromatic Glass Shards (`home-09`)
+      const shardVis =
+        smoothstep(0.10, 0.24, tShatter) * (1 - smoothstep(0.76, 0.96, tShatter)) * (tWait > 0.001 ? 0 : 1);
+      shardsMesh.visible = shardVis > 0.005;
+      if (shardsMesh.visible) {
+        const burst = smoothstep(0.08, 0.72, tShatter);
+        shardMat.uniforms.uOpacity.value = shardVis;
+        for (let i = 0; i < SHARD_COUNT; i++) {
+          const s = shardSeeds[i];
+          const spread = 0.35 + burst * 2.35;
+          dummy.position.set(
+            s.dirX * spread,
+            s.dirY * spread + 0.15 - burst * burst * 0.55,
+            1.15 + s.dirZ * burst * 1.15
+          );
+          dummy.rotation.set(
+            s.rotX + burst * 2.2,
+            s.rotY + burst * 2.6,
+            s.rotZ + burst * 1.5
+          );
+          dummy.scale.setScalar(s.scale * (1 - burst * 0.18));
+          dummy.updateMatrix();
+          shardsMesh.setMatrixAt(i, dummy.matrix);
+        }
+        shardsMesh.instanceMatrix.needsUpdate = true;
+      }
+
+      // 5. `#end-section` Starburst Diamonds & Stickers (`home-10`)
+      const waitVis = smoothstep(0.92, 1.0, tShatter);
+      waitDecorGroup.visible = waitVis > 0.01;
+      if (waitDecorGroup.visible) {
+        const upwardScrollWorld = tWait * 5.6;
+        waitDecorGroup.position.set(0, upwardScrollWorld * 0.65, 0);
+        waitDecorGroup.children.forEach((child, idx) => {
+          if (idx < DIAMOND_COUNT) {
+            const [bx, by, bz, seedIdx] = diamondAnchors[idx];
+            child.position.set(
+              bx,
+              by + Math.sin(elapsedSec * 1.1 + seedIdx) * (reducedMotion ? 0 : 0.05),
+              bz
+            );
+            child.rotation.set(elapsedSec * 0.5 + seedIdx, elapsedSec * 0.7 + seedIdx, 0);
+          }
+        });
+        for (const st of stickerMeshes) {
+          st.mesh.position.set(
+            st.baseX * (m.isMobile ? 0.52 : 1.0),
+            st.baseY + (reducedMotion ? 0 : Math.sin(elapsedSec * 1.25 + st.phase) * 0.045),
+            st.baseZ
+          );
+          st.mesh.rotation.z = Math.sin(elapsedSec * 0.8 + st.phase) * (reducedMotion ? 0 : 0.08);
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // E. Continuous 3D Astronaut Spatial Path, Pose & Lighting (ZERO cuts!)
+      // -----------------------------------------------------------------------
+      let pose: PoseAngles;
+      let ax = 0;
+      let ay = 0;
+      let az = 2.4;
+      const aScale = 1.0;
+      const worldSpinX = 0;
+      let worldSpinY = 0;
+      let worldSpinZ = 0;
+
+      if (tTunnel <= 0.001) {
+        // Stage 1–2 (`home-01` -> `home-03` & reverse `home-11`):
+        // Inside tablet screen -> waist-up EVA framing in `home-01` zooming cleanly to left-center `home-03`!
+        pose = POSE_TABLET_FLOAT;
+        ax = lerp(0.02, m.isMobile ? -0.18 : -0.68, smoothstep(0.25, 0.88, tEmerge));
+        ay = lerp(-0.66, -0.56, smoothstep(0.15, 0.88, tEmerge));
+        az = lerp(3.45, 2.75, smoothstep(0.10, 0.90, tEmerge));
+        worldSpinZ = lerp(0, -0.32, smoothstep(0.25, 0.88, tEmerge));
+        mainAstro.visorMat.emissive.setHex(0x164488);
+        mainAstro.visorMat.emissiveIntensity = lerp(0.55, 0.16, tEmerge);
+        mainAstro.plumeGroup.visible = false;
+      } else if (tOutPull <= 0.001) {
+        // Stage 3–5 (`home-04` -> `home-05` -> `home-06` -> `home-07`):
+        // Continuous freefall through title portal, black greeble tunnel (with upside-down roll in `home-06`),
+        // and deep royal-blue/white Voronoi tunnel (`home-07`)!
+        const toDive = smoothstep(0.0, 0.16, tTunnel);
+        pose = blendPose(POSE_TABLET_FLOAT, POSE_TUNNEL_DIVE, toDive);
+
+        const intoWhite = smoothstep(0.75, 0.92, tTunnel);
+        ax = lerp(
+          lerp(m.isMobile ? -0.15 : -0.55, 0.02, smoothstep(0.0, 0.28, tTunnel)),
+          0.16,
+          intoWhite
+        );
+        ay = lerp(-0.32, 0.02, smoothstep(0.15, 0.35, tTunnel));
+        // Dives smoothly down the corridor axis in `home-05`, `home-06`, and `home-07` just like reference!
+        az = lerp(2.25, -4.4, smoothstep(0.16, 0.42, tTunnel));
+        worldSpinZ = lerp(-0.30, Math.PI * 1.0, smoothstep(0.24, 0.46, tTunnel));
+        worldSpinY = Math.sin(tTunnel * Math.PI * 1.5) * 0.24;
+
+        mainAstro.visorMat.emissive.setHex(intoWhite > 0.5 ? 0x1d4ed8 : 0x0f2942);
+        mainAstro.visorMat.emissiveIntensity = lerp(0.18, 0.42, intoWhite);
+        mainAstro.plumeGroup.visible = false;
+      } else if (tWait <= 0.001) {
+        // Stage 6 (`home-08` desktop pullback -> `home-09` glass-shatter foreground breakout!):
+        const burst = smoothstep(0.12, 0.56, tShatter);
+        const settleStand = smoothstep(0.62, 1.0, tShatter);
+        pose = blendPose(
+          blendPose(POSE_TUNNEL_DIVE, POSE_BREAKOUT, burst),
+          POSE_STANDING_WAIT,
+          settleStand
+        );
+        ax = 0;
+        ay = lerp(0.12, m.isMobile ? -0.10 : -0.44, settleStand);
+        az = lerp(-2.2, m.isMobile ? 0.55 : 2.18, burst);
+        worldSpinZ = lerp(0.35, 0, burst);
+        mainAstro.visorMat.emissive.setHex(0x0b1636);
+        mainAstro.visorMat.emissiveIntensity = 0.22;
+
+        // Chromatic helmet plume ignites during breakout (`home-09`) and persists into `home-10`!
+        mainAstro.plumeGroup.visible = burst > 0.15;
+        mainAstro.plumeMat.uniforms.uTime.value = elapsedSec;
+        mainAstro.plumeMat.uniforms.uOpacity.value = burst * 0.92;
+      } else {
+        // Stage 7 (`home-10`: standing centered in `#end-section`, scrolling smoothly up as user continues!)
+        pose = POSE_STANDING_WAIT;
+        ax = 0;
+        const scrollUpWorld = Math.max(0, tWait - 0.05) * (m.isMobile ? 4.2 : 6.4);
+        ay = (m.isMobile ? 0.06 : -0.44) + scrollUpWorld;
+        az = m.isMobile ? 0.45 : 2.18;
+        mainAstro.visorMat.emissive.setHex(0x09122b);
+        mainAstro.visorMat.emissiveIntensity = 0.18;
+        mainAstro.plumeGroup.visible = true;
+        mainAstro.plumeMat.uniforms.uTime.value = elapsedSec;
+        mainAstro.plumeMat.uniforms.uOpacity.value = 0.88;
+      }
+
+      // Subtle bounded idle breathing ONLY outside strict tablet clip so forward/reverse is 100% drift-free
+      const idleAmp = reducedMotion || tEmerge < 0.95 ? 0 : 1;
+      applyPose(mainAstro, pose);
+      if (idleAmp > 0 && tWait > 0.001) {
+        mainAstro.shoulderR.rotation.z += Math.sin(elapsedSec * 1.8) * 0.04;
+        mainAstro.headGroup.rotation.y += Math.sin(elapsedSec * 1.1) * 0.05;
+      }
+
+      mainAstro.root.position.set(ax, ay + Math.sin(elapsedSec * 1.4) * 0.02 * idleAmp, az);
+      mainAstro.root.rotation.set(worldSpinX, worldSpinY, worldSpinZ);
+      mainAstro.root.scale.setScalar(aScale);
+
+      // Update 4 trailing ghost clones inside `blackTunnel` (`home-05` & `home-06`)
+      const clonesActive = tTunnel > 0.28 && tTunnel < 0.80 && tOutPull <= 0.001;
+      for (let c = 0; c < clones.length; c++) {
+        const cl = clones[c];
+        cl.root.visible = clonesActive;
+        if (clonesActive) {
+          const depthT = (c + 1) / (clones.length + 0.5);
+          const spiralA = tTunnel * 9.0 + c * 1.55;
+          cl.root.position.set(
+            Math.cos(spiralA) * (0.85 + c * 0.28),
+            Math.sin(spiralA) * (0.62 + c * 0.22),
+            -2.4 - depthT * 11.5
+          );
+          cl.root.rotation.set(0.45 + c * 0.3, spiralA * 0.35, worldSpinZ + c * 0.75);
+          cl.root.scale.setScalar(0.88 - c * 0.08);
+        }
+      }
+
+      glRenderer.render(scene, camera);
+    };
+
+    const tick = () => {
+      if (!docVisible) {
+        rafId = 0;
+        return;
+      }
+      targetScrollY = window.scrollY;
+      const vhNow = window.innerHeight;
+      const inBand =
+        metrics !== null &&
+        targetScrollY + vhNow >= metrics.goalTop - vhNow * 0.5 &&
+        targetScrollY <= metrics.goalTop + metrics.goalHeight + vhNow * 1.35;
+      if (!inBand) {
+        if (wasInBand) {
+          renderSceneAtScroll(targetScrollY, (performance.now() - startClock) * 0.001);
+          wasInBand = false;
+        }
+        rafId = 0;
+        return;
+      }
+      wasInBand = true;
+
+      const diff = targetScrollY - smoothScrollY;
+      // Instant snap on programmatic jumps (> 0.42 viewport), critically damped smooth glide on wheel/touch
+      if (Math.abs(diff) > window.innerHeight * 0.42 || reducedMotion) {
+        smoothScrollY = targetScrollY;
+      } else {
+        smoothScrollY += diff * 0.34;
+        if (Math.abs(targetScrollY - smoothScrollY) < 0.15) {
+          smoothScrollY = targetScrollY;
+        }
+      }
+
+      const elapsedSec = (performance.now() - startClock) * 0.001;
+      renderSceneAtScroll(smoothScrollY, elapsedSec);
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    const ensureLoop = () => {
+      if (!rafId && docVisible) {
+        rafId = window.requestAnimationFrame(tick);
       }
     };
 
     const onScroll = () => {
-      window.cancelAnimationFrame(rafId);
-      rafId = window.requestAnimationFrame(update);
+      targetScrollY = window.scrollY;
+      ensureLoop();
     };
 
-    update();
+    const onResize = () => {
+      measure();
+      renderSceneAtScroll(window.scrollY, (performance.now() - startClock) * 0.001);
+    };
+
+    const onVisibility = () => {
+      docVisible = document.visibilityState === "visible";
+      ensureLoop();
+    };
+
+    const ro = new ResizeObserver(() => {
+      measure();
+    });
+
+    measure();
+    ro.observe(goalEl);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    document.addEventListener("visibilitychange", onVisibility);
+    ensureLoop();
+
     return () => {
+      if (rafId) window.cancelAnimationFrame(rafId);
+      ro.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      window.cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
+
+      for (const item of disposables) {
+        item.dispose();
+      }
+      glRenderer.dispose();
+      if (glRenderer.domElement.parentElement === hostEl) {
+        hostEl.removeChild(glRenderer.domElement);
+      }
     };
   }, [setActiveSurface]);
 
-  // Stage 1 white title opacity: crisp `#ffffff` across `blackTitle` (`0.03..0.25`)
-  const stage1TitleOpacity = reducedMotion
-    ? 1
-    : progress < 0.03
-      ? progress / 0.03
-      : progress <= 0.24
-        ? 1
-        : Math.max(0, 1 - (progress - 0.24) / 0.04);
-
-  const stage1Scale = reducedMotion ? 1 : 0.97 + Math.min(0.25, progress) * 0.22;
-  const showContinuePill = !reducedMotion && progress >= 0.87;
-
   return (
     <section
+      ref={goalRef}
       id="home-goal"
-      ref={sectionRef}
-      className="section relative w-full text-[clamp(0.875rem,1vw,2rem)]"
+      aria-label="Our Goal"
+      className="relative w-full bg-[#f0f1fa] text-[#111319]"
     >
-      {/* Part A: Context Editorial Band (`#home-goal-context` — `06-home-goal-intro`) */}
+      {/* =======================================================================
+          Part A: Editorial Context Band + Left Physical Tablet Bezel (`home-01`)
+          ======================================================================= */}
       <div
         id="home-goal-context"
-        className="relative overflow-hidden grid grid-cols-6 gap-x-[var(--grid-gap)] bg-[#f0f1fa] px-[var(--base-padding-x)] pt-24 pb-24 text-[#000000] min-[813px]:grid-cols-12 min-[813px]:pt-32 min-[813px]:pb-32"
+        className="relative z-10 w-full overflow-x-clip bg-[#f0f1fa] pt-40 pb-36 md:pt-56 md:pb-32"
       >
-        {/* Sculptural 3D Cyan Ribbon Loop sweeping behind upper-right (`06-home-goal-intro`) */}
+        {/* Sculptural 3D Turquoise Tube Loop sweeping behind upper-right title (`home-01`) */}
         <svg
           aria-hidden="true"
-          viewBox="0 0 1440 520"
+          viewBox="0 0 1440 960"
           fill="none"
-          className="pointer-events-none absolute top-0 left-0 h-full w-full object-cover opacity-95"
+          className="pointer-events-none absolute inset-x-0 top-0 h-full w-full select-none"
+          preserveAspectRatio="none"
         >
           <defs>
-            <linearGradient id="goal-cyan-loop" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#65f7f8" />
-              <stop offset="55%" stopColor="#26e4eb" />
-              <stop offset="100%" stopColor="#09b7c8" />
+            <linearGradient id="goalRibbonTube" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#5ffbf5" />
+              <stop offset="52%" stopColor="#46f0e8" />
+              <stop offset="100%" stopColor="#6ffcf6" />
             </linearGradient>
           </defs>
           <path
-            d="M 880 -40 C 835 165, 995 275, 1145 190 C 1270 118, 1210 -20, 1125 45 C 1040 110, 1185 330, 1490 275"
-            stroke="url(#goal-cyan-loop)"
-            strokeWidth="38"
+            d="M 118 -40 C 175 235, 315 275, 342 70 C 362 -75, 468 -55, 398 118 C 338 265, 326 545, 456 540"
+            stroke="url(#goalRibbonTube)"
+            strokeWidth="26"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 118 -40 C 175 235, 315 275, 342 70 C 362 -75, 468 -55, 398 118 C 338 265, 326 545, 456 540"
+            stroke="#c7fffe"
+            strokeOpacity="0.45"
+            strokeWidth="7"
             strokeLinecap="round"
           />
         </svg>
 
         <div
           id="home-goal-context-inner"
-          className="relative z-10 col-span-6 grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:col-span-12 min-[813px]:grid-cols-12"
+          className="relative mx-auto w-full px-[var(--gutter-x)]"
         >
+          {/* Large Left-Indented Display Heading (`Where Creative Ideas Become Immersive Experiences`) */}
           <h2
             id="home-goal-title"
-            className="col-span-6 m-0 font-sans text-[11vw] leading-[1.06] font-normal tracking-[-0.025em] min-[813px]:col-span-8 min-[813px]:text-[5.5vw]"
+            className="max-w-[14ch] pl-0 min-[820px]:pl-[5.2vw] font-sans text-[clamp(3.0rem,6.8vw,6.35rem)] font-normal leading-[1.03] tracking-[-0.03em] text-[#0c0e14]"
           >
             {LUSION_HOME.goal.heading}
           </h2>
 
-          <p
-            id="home-goal-texts"
-            className="col-span-6 mt-10 mb-0 font-sans text-[1.125rem] leading-[1.5] text-black/85 min-[813px]:col-start-7 min-[813px]:col-span-6 min-[813px]:mt-14 min-[813px]:text-[clamp(1.1rem,1.35vw,1.8rem)]"
-          >
-            {LUSION_HOME.goal.paragraphs.map((para, idx) => (
-              <React.Fragment key={idx}>
-                <span className="home-goal-texts-p block">{para}</span>
-                {idx < LUSION_HOME.goal.paragraphs.length - 1 && (
-                  <>
-                    <br />
-                    <br />
-                  </>
-                )}
-              </React.Fragment>
-            ))}
-          </p>
+          {/* Responsive Two-Column Row:
+              - Mobile (<820px): Copy paragraphs FIRST, then full-width Tablet Bezel below (`390x844/home-01`)
+              - Desktop (>=820px): Left Tablet Bezel (`53%`) + Right Two Paragraphs (`40%`) (`1440x900/home-01`) */}
+          <div className="mt-10 min-[820px]:mt-14 flex flex-col min-[820px]:flex-row-reverse min-[820px]:items-end min-[820px]:justify-between gap-10 min-[820px]:gap-8">
+            <div
+              id="home-goal-texts"
+              className="w-full min-[820px]:w-[40.5%] min-[820px]:pb-10 space-y-6 font-sans text-[clamp(0.95rem,1.08vw,1.08rem)] font-normal leading-[1.45] text-[#151821]"
+            >
+              {LUSION_HOME.goal.paragraphs.map((para, idx) => (
+                <p key={idx} className="home-goal-texts-paragraph">
+                  <span className="home-goal-texts-p block">{para}</span>
+                </p>
+              ))}
+            </div>
 
-          {/* Centered Device Portal Bezel transitioning into `#home-goal-tunnel` (`06-home-goal-intro`) */}
+            {/* Anchor Rect for Physical Tablet Device (`#home-goal-image-in`) */}
+            <div
+              ref={imgInRef}
+              id="home-goal-image-in"
+              className="relative w-full min-[820px]:w-[46.5%] aspect-[4/2.95] rounded-[24px] bg-[#07090e]"
+            >
+              {/* Graceful Reduced-Motion / Non-WebGL Fallback Poster */}
+              <div
+                ref={fallbackPosterRef}
+                style={{ display: "none" }}
+                className="h-full w-full items-center justify-center rounded-[24px] bg-gradient-to-b from-[#050811] via-[#09183a] to-[#1a56db] p-8 text-center text-white"
+              >
+                <p className="font-sans text-lg uppercase tracking-[0.08em]">
+                  Step into a new world and let your imagination run wild
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* =======================================================================
+          Part B: Deep 3D Tunnel Scroll Track + Exit Monitor Anchor (`#home-goal-image-out`)
+          ======================================================================= */}
+      <div
+        ref={tunnelRef}
+        id="home-goal-tunnel"
+        className="relative w-full bg-[#000000]"
+        style={{ height: "3550vh" }}
+      >
+        {/* Exit Desktop Display Anchor positioned near bottom of `#home-goal` (`home-08`, `home-09`) */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-[135vh] flex flex-col items-center justify-center">
           <div
-            id="home-goal-image-in"
-            className="col-span-6 mt-14 mx-auto aspect-[16/10] w-full max-w-[44rem] rounded-[1.4rem] border-[6px] border-[#262932] bg-[#000000] shadow-[0_28px_70px_rgba(0,0,0,0.28)] min-[813px]:col-span-12 min-[813px]:mt-20"
+            ref={imgOutRef}
+            id="home-goal-image-out"
+            className="w-[93vw] aspect-[4/3.05] min-[820px]:w-[81vw] min-[820px]:max-w-[1180px] min-[820px]:aspect-[16/9.6]"
           />
         </div>
       </div>
 
-      {/* Part B: Full-Length Multi-Stage Sticky 3D WebGL Tunnel (`maxScroll ≈ 64,062px` matching live `lusion.co`) */}
+      {/* =======================================================================
+          Part C: Fixed Full-Viewport Hardware-Accelerated Stage Overlay
+          Synchronizes backdrop, tablet bezel, 3D WebGL canvas & desktop monitor
+          ======================================================================= */}
       <div
-        id="home-goal-tunnel"
-        ref={tunnelTrackRef}
-        className={`relative w-full bg-[#000000] ${
-          reducedMotion ? "min-h-[100dvh]" : "h-[6000vh]"
-        }`}
+        ref={stageOverlayRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-[12]"
+        style={{ visibility: "hidden" }}
       >
-        {/* Stage 6 anchor (`#end-section` — standing/waving EVA astronaut + pop-art stickers + scroll pill) */}
+        {/* Dynamic Space / Indigo Glow Backdrop */}
+        <div ref={backdropGlowRef} className="absolute inset-0 transition-none" />
+
+        {/* Physical Dark Brushed-Aluminum iPad Pro Bezel (`home-01` -> `home-03` & `home-11`) */}
         <div
-          id="end-section"
-          aria-label="Astronaut finale and continue-scroll transition"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[100dvh]"
+          ref={tabletBezelRef}
+          className="absolute left-0 top-0 rounded-[26px] border-[2px] border-[#343844] bg-[#0b0d12] shadow-[0_28px_70px_rgba(8,12,28,0.42)] will-change-transform"
+          style={{ display: "none", transformOrigin: "50% 50%" }}
+        >
+          {/* Left bezel camera & LiDAR sensors matching `tablet.png` */}
+          <span className="absolute left-[1.3%] top-[46%] h-2 w-2 rounded-full bg-[#1a2234]" />
+          <span className="absolute left-[1.3%] top-[52%] h-1.5 w-1.5 rounded-full bg-[#151b28]" />
+        </div>
+
+        {/* Desktop Display Bezel + Brushed Aluminum Stand (`home-08` & `home-09`)
+            Rendered BEHIND `canvasHostRef` during `home-09` shatter so astronaut & shards break IN FRONT! */}
+        <div
+          ref={monitorBezelRef}
+          className="absolute left-0 top-0 will-change-transform"
+          style={{ display: "none", transformOrigin: "50% 50%" }}
+        >
+          {/* Brushed silver stand neck below chin matching `desktop.png` */}
+          <div
+            className="mx-auto"
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: "-15.5%",
+              transform: "translateX(-50%)",
+              width: "18%",
+              height: "16%",
+              background:
+                "linear-gradient(90deg, #59607a 0%, #8f98b8 28%, #9ba4c4 52%, #676f8c 82%, #4a5168 100%)",
+              borderBottomLeftRadius: "4px",
+              borderBottomRightRadius: "4px",
+              boxShadow: "0 12px 28px rgba(0,0,0,0.65)",
+            }}
+          />
+          {/* Crisp dark studio display chassis */}
+          <div className="h-full w-full rounded-[6px] border-[14px] border-[#0a0c12] bg-[#030612] shadow-[0_0_90px_rgba(32,58,205,0.45)]" />
+        </div>
+
+        {/* Continuous Single-World Three.js WebGL Stage Host */}
+        <div
+          ref={canvasHostRef}
+          className="absolute left-0 top-0 will-change-transform"
+          style={{ transformOrigin: "50% 50%" }}
         />
 
-        <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[#000000]">
-          <GoalTunnelWebGLCanvas progress={progress} reducedMotion={reducedMotion} />
-
-          {/* Stage 1 Centered High-Contrast White Display Headline (`21:1` WCAG AAA) */}
-          <div
-            id="home-goal-image-in-text"
-            style={{
-              opacity: stage1TitleOpacity,
-              transform: `translate(-50%, -50%) scale(${stage1Scale.toFixed(3)})`,
-            }}
-            className="pointer-events-none absolute top-1/2 left-1/2 z-20 w-[94vw] text-center font-sans text-[5.15vw] leading-[1.18] font-normal tracking-[0.06em] whitespace-nowrap text-white uppercase drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)] min-[813px]:w-[92vw] min-[813px]:text-[4.55vw] min-[813px]:tracking-[0.07em]"
-          >
-            {LUSION_HOME.goal.tunnelTitleLines.map((line, idx) => (
-              <span key={idx} className="block">
-                {line}
-              </span>
-            ))}
-          </div>
-
-          {/* Stage 6 Mobile Display CTA Overlay (`09a--390x844`) */}
-          {showContinuePill && (
-            <div className="pointer-events-none absolute inset-x-4 top-[29%] z-20 text-center text-white min-[813px]:hidden">
-              <p className="font-sans text-[11px] font-medium tracking-[0.06em] uppercase opacity-95">
-                IS YOUR BIG IDEA READY
-                <br />
-                TO GO WILD?
-              </p>
-              <p className="mt-4 font-sans text-[13.5vw] leading-[0.98] font-normal tracking-[-0.025em]">
-                Let&apos;s work
-                <br />
-                together!
-              </p>
-            </div>
-          )}
-
-          {/* Stage 6 Bottom Continue-Scroll Pill (`09a` standing/waving EVA astronaut + stickers) */}
-          {showContinuePill && (
-            <div className="pointer-events-none absolute bottom-7 left-1/2 z-20 -translate-x-1/2 rounded-full bg-white px-5 py-2.5 font-mono text-[0.68rem] font-medium tracking-[0.08em] whitespace-nowrap text-[#000000] uppercase shadow-lg min-[813px]:left-[31%] min-[813px]:-translate-x-1/2">
-              ↓ &nbsp; CONTINUE TO SCROLL &nbsp; ↓
-            </div>
-          )}
+        {/* 3D Portal Headline (`home-04-title-portal`) */}
+        <div
+          ref={tunnelTitleWrapRef}
+          id="home-goal-tunnel-title"
+          className="pointer-events-none absolute left-1/2 top-1/2 flex w-[92vw] max-w-[1160px] flex-col items-center text-center text-white will-change-transform"
+          style={{ display: "none" }}
+        >
+          {LUSION_HOME.goal.tunnelTitleLines.map((line, i) => (
+            <span
+              key={i}
+              className="home-goal-tunnel-title-line block font-sans text-[clamp(1.75rem,3.65vw,3.45rem)] font-normal uppercase leading-[1.16] tracking-[0.04em] text-white drop-shadow-[0_2px_24px_rgba(90,145,255,0.28)]"
+            >
+              {line}
+            </span>
+          ))}
         </div>
       </div>
     </section>
