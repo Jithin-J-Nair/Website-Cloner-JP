@@ -1,0 +1,323 @@
+{
+  "generatedAt": "2026-10-22T16:48:40.951Z",
+  "label": "current",
+  "viewports": {
+    "1440x900": {
+      "home-01-tablet-entry": {
+        "mae": 45.71,
+        "psnr": 8.73,
+        "ssim": 0.5806,
+        "pctOver24": 30.25
+      },
+      "home-02-tablet-emerge-start": {
+        "mae": 58.5,
+        "psnr": 8.27,
+        "ssim": 0.4104,
+        "pctOver24": 36.56
+      },
+      "home-03-tablet-emerge-mid": {
+        "mae": 38.81,
+        "psnr": 11.02,
+        "ssim": 0.2055,
+        "pctOver24": 17.85
+      },
+      "home-04-title-portal": {
+        "mae": 28.69,
+        "psnr": 11.28,
+        "ssim": 0.4572,
+        "pctOver24": 19.46
+      },
+      "home-05-black-tunnel-early": {
+        "mae": 40.45,
+        "psnr": 12.39,
+        "ssim": 0.2025,
+        "pctOver24": 53.92
+      },
+      "home-06-black-tunnel-twist": {
+        "mae": 55.07,
+        "psnr": 10.78,
+        "ssim": 0.1888,
+        "pctOver24": 74.56
+      },
+      "home-07-white-blue-tunnel": {
+        "mae": 69.8,
+        "psnr": 8.51,
+        "ssim": 0.5858,
+        "pctOver24": 73.41
+      },
+      "home-08-desktop-frame-out": {
+        "mae": 65.01,
+        "psnr": 8.62,
+        "ssim": 0.5585,
+        "pctOver24": 68.94
+      },
+      "home-09-glass-break-drop": {
+        "mae": 60.59,
+        "psnr": 9.36,
+        "ssim": 0.3505,
+        "pctOver24": 74.2
+      },
+      "home-10-end-cta-wait": {
+        "mae": 12.7,
+        "psnr": 15.4,
+        "ssim": 0.6977,
+        "pctOver24": 9.13
+      },
+      "home-11-reverse-tablet-mid": {
+        "mae": 38.48,
+        "psnr": 11.07,
+        "ssim": 0.2085,
+        "pctOver24": 17.67
+      },
+      "about-01-hero-top": {
+        "mae": 37.63,
+        "psnr": 10.56,
+        "ssim": 0.1645,
+        "pctOver24": 29.49
+      },
+      "about-02-we-are-reveal": {
+        "mae": 52.14,
+        "psnr": 11.06,
+        "ssim": 0.5019,
+        "pctOver24": 62.18
+      },
+      "about-03-details-hud": {
+        "mae": 16.8,
+        "psnr": 13.44,
+        "ssim": 0.5455,
+        "pctOver24": 10.28
+      },
+      "about-04-team-hologram": {
+        "mae": 14.16,
+        "psnr": 16.99,
+        "ssim": 0.3689,
+        "pctOver24": 12.96
+      },
+      "about-05-end-cta-flip": {
+        "mae": 15.87,
+        "psnr": 14.55,
+        "ssim": 0.818,
+        "pctOver24": 9.58
+      },
+      "about-06-reverse-we-are": {
+        "mae": 50.85,
+        "psnr": 11.35,
+        "ssim": 0.4998,
+        "pctOver24": 62.19
+      }
+    },
+    "1024x768": {
+      "home-01-tablet-entry": {
+        "mae": 44.43,
+        "psnr": 8.95,
+        "ssim": 0.5457,
+        "pctOver24": 30.25
+      },
+      "home-02-tablet-emerge-start": {
+        "mae": 71.41,
+        "psnr": 7.09,
+        "ssim": 0.3791,
+        "pctOver24": 42.27
+      },
+      "home-03-tablet-emerge-mid": {
+        "mae": 39.64,
+        "psnr": 10.97,
+        "ssim": 0.191,
+        "pctOver24": 19.14
+      },
+      "home-04-title-portal": {
+        "mae": 29.61,
+        "psnr": 11.16,
+        "ssim": 0.4783,
+        "pctOver24": 18.95
+      },
+      "home-05-black-tunnel-early": {
+        "mae": 41.91,
+        "psnr": 12.16,
+        "ssim": 0.1578,
+        "pctOver24": 57.87
+      },
+      "home-06-black-tunnel-twist": {
+        "mae": 52.76,
+        "psnr": 11.02,
+        "ssim": 0.1316,
+        "pctOver24": 70.44
+      },
+      "home-07-white-blue-tunnel": {
+        "mae": 80.63,
+        "psnr": 7.72,
+        "ssim": 0.5007,
+        "pctOver24": 81.91
+      },
+      "home-08-desktop-frame-out": {
+        "mae": 60.02,
+        "psnr": 9.17,
+        "ssim": 0.4104,
+        "pctOver24": 71.56
+      },
+      "home-09-glass-break-drop": {
+        "mae": 62.31,
+        "psnr": 9.13,
+        "ssim": 0.326,
+        "pctOver24": 66.85
+      },
+      "home-10-end-cta-wait": {
+        "mae": 14.57,
+        "psnr": 14.51,
+        "ssim": 0.7455,
+        "pctOver24": 10.63
+      },
+      "home-11-reverse-tablet-mid": {
+        "mae": 39.01,
+        "psnr": 11.06,
+        "ssim": 0.2006,
+        "pctOver24": 18.85
+      },
+      "about-01-hero-top": {
+        "mae": 36.7,
+        "psnr": 10.87,
+        "ssim": 0.1703,
+        "pctOver24": 31.61
+      },
+      "about-02-we-are-reveal": {
+        "mae": 50.28,
+        "psnr": 11.27,
+        "ssim": 0.4895,
+        "pctOver24": 56.06
+      },
+      "about-03-details-hud": {
+        "mae": 16.35,
+        "psnr": 13.83,
+        "ssim": 0.5356,
+        "pctOver24": 10.89
+      },
+      "about-04-team-hologram": {
+        "mae": 14.75,
+        "psnr": 16.2,
+        "ssim": 0.4139,
+        "pctOver24": 12.74
+      },
+      "about-05-end-cta-flip": {
+        "mae": 17.15,
+        "psnr": 14.22,
+        "ssim": 0.7649,
+        "pctOver24": 11.2
+      },
+      "about-06-reverse-we-are": {
+        "mae": 48.7,
+        "psnr": 11.6,
+        "ssim": 0.4965,
+        "pctOver24": 56.25
+      }
+    },
+    "390x844": {
+      "home-01-tablet-entry": {
+        "mae": 52.48,
+        "psnr": 8.53,
+        "ssim": 0.3882,
+        "pctOver24": 33.82
+      },
+      "home-02-tablet-emerge-start": {
+        "mae": 97.36,
+        "psnr": 5.52,
+        "ssim": 0.3462,
+        "pctOver24": 60.81
+      },
+      "home-03-tablet-emerge-mid": {
+        "mae": 63.14,
+        "psnr": 8.37,
+        "ssim": 0.3296,
+        "pctOver24": 41.16
+      },
+      "home-04-title-portal": {
+        "mae": 54.84,
+        "psnr": 8.85,
+        "ssim": 0.1933,
+        "pctOver24": 41.63
+      },
+      "home-05-black-tunnel-early": {
+        "mae": 49.46,
+        "psnr": 11.22,
+        "ssim": 0.0991,
+        "pctOver24": 64.71
+      },
+      "home-06-black-tunnel-twist": {
+        "mae": 66.65,
+        "psnr": 9.37,
+        "ssim": 0.0969,
+        "pctOver24": 78.93
+      },
+      "home-07-white-blue-tunnel": {
+        "mae": 68.96,
+        "psnr": 8.56,
+        "ssim": 0.4661,
+        "pctOver24": 65.24
+      },
+      "home-08-desktop-frame-out": {
+        "mae": 39.42,
+        "psnr": 11.74,
+        "ssim": 0.2683,
+        "pctOver24": 45.7
+      },
+      "home-09-glass-break-drop": {
+        "mae": 49.64,
+        "psnr": 9.98,
+        "ssim": 0.2663,
+        "pctOver24": 45.39
+      },
+      "home-10-end-cta-wait": {
+        "mae": 28.61,
+        "psnr": 10.49,
+        "ssim": 0.6521,
+        "pctOver24": 16.35
+      },
+      "home-11-reverse-tablet-mid": {
+        "mae": 62.56,
+        "psnr": 8.4,
+        "ssim": 0.3456,
+        "pctOver24": 40.71
+      },
+      "about-01-hero-top": {
+        "mae": 57.14,
+        "psnr": 10.16,
+        "ssim": 0.0619,
+        "pctOver24": 64.09
+      },
+      "about-02-we-are-reveal": {
+        "mae": 63.74,
+        "psnr": 10.75,
+        "ssim": 0.5129,
+        "pctOver24": 84.1
+      },
+      "about-03-details-hud": {
+        "mae": 26.37,
+        "psnr": 12.12,
+        "ssim": 0.3375,
+        "pctOver24": 19.29
+      },
+      "about-04-team-hologram": {
+        "mae": 19.28,
+        "psnr": 14.57,
+        "ssim": 0.4255,
+        "pctOver24": 17.76
+      },
+      "about-05-end-cta-flip": {
+        "mae": 27.38,
+        "psnr": 11.54,
+        "ssim": 0.6274,
+        "pctOver24": 19.69
+      },
+      "about-06-reverse-we-are": {
+        "mae": 66.58,
+        "psnr": 10.42,
+        "ssim": 0.4824,
+        "pctOver24": 85.48
+      }
+    }
+  },
+  "summary": {
+    "totalStates": 51,
+    "meanMae": 45.39,
+    "meanSsim": 0.3957
+  }
+}

@@ -47,3 +47,18 @@ next-env.d.ts
 
 # Local temp files
 temp/
+
+# Local-inspection reference capture binaries (not licensed for Git redistribution;
+# staged reproducibly via `node scripts/stage-reference-assets.mjs` — open-license fonts & notices remain tracked)
+public/assets/audios/
+public/assets/images/
+public/assets/meta/
+public/assets/models/
+public/assets/projects/
+public/assets/team/
+public/assets/textures/*
+!public/assets/textures/LDR_RGB1_0.png
+!public/assets/textures/smaa-area.png
+!public/assets/textures/smaa-search.png
+docs/validation/*/raw/
+

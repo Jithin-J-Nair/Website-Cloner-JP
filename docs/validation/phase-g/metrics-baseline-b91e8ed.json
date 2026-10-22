@@ -1,0 +1,768 @@
+{
+  "label": "baseline-b91e8ed",
+  "generatedAt": "2026-10-22T12:05:06.893Z",
+  "totalStatesCompared": 82,
+  "meanMae": 60.33,
+  "meanPsnr": 9.77,
+  "meanSsim": 0.4894,
+  "byViewport": {
+    "1440x900": {
+      "count": 39,
+      "meanMae": 63.04,
+      "meanPsnr": 9.86,
+      "meanSsim": 0.5405
+    },
+    "390x844": {
+      "count": 39,
+      "meanMae": 56.98,
+      "meanPsnr": 9.84,
+      "meanSsim": 0.4502
+    },
+    "1024x768": {
+      "count": 4,
+      "meanMae": 66.54,
+      "meanPsnr": 8.33,
+      "meanSsim": 0.3735
+    }
+  },
+  "results": [
+    {
+      "id": "01-home-hero",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 42.88,
+      "psnr": 10.1,
+      "ssim": 0.5723,
+      "pctOver24": 42.54
+    },
+    {
+      "id": "02-home-reel-intro",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 31.52,
+      "psnr": 10.48,
+      "ssim": 0.7607,
+      "pctOver24": 24.82
+    },
+    {
+      "id": "03-home-reel-stage",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 69.57,
+      "psnr": 8.4,
+      "ssim": 0.7067,
+      "pctOver24": 68.93
+    },
+    {
+      "id": "04-home-featured-top",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 38.8,
+      "psnr": 11.15,
+      "ssim": 0.665,
+      "pctOver24": 43.61
+    },
+    {
+      "id": "05-home-featured-cta",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 92.38,
+      "psnr": 5.99,
+      "ssim": 0.4862,
+      "pctOver24": 74.72
+    },
+    {
+      "id": "06-home-goal-intro",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 40.48,
+      "psnr": 8.66,
+      "ssim": 0.6978,
+      "pctOver24": 22.33
+    },
+    {
+      "id": "07-home-goal-stage1",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 42.17,
+      "psnr": 8.91,
+      "ssim": 0.4284,
+      "pctOver24": 26.02
+    },
+    {
+      "id": "07b-home-goal-mid",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 43.27,
+      "psnr": 11.19,
+      "ssim": 0.1658,
+      "pctOver24": 59.15
+    },
+    {
+      "id": "08-home-goal-stage2",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 129,
+      "psnr": 4.83,
+      "ssim": 0.0984,
+      "pctOver24": 99.08
+    },
+    {
+      "id": "08b-home-goal-drop",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 34.26,
+      "psnr": 10.96,
+      "ssim": 0.4792,
+      "pctOver24": 33
+    },
+    {
+      "id": "09a-home-end-cta",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 114.44,
+      "psnr": 4.5,
+      "ssim": 0.1643,
+      "pctOver24": 98.59
+    },
+    {
+      "id": "09b-home-footer-portal",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 35.29,
+      "psnr": 9.1,
+      "ssim": 0.8018,
+      "pctOver24": 15.62
+    },
+    {
+      "id": "09c-header-menu-open",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 56.72,
+      "psnr": 8.8,
+      "ssim": 0.526,
+      "pctOver24": 53.78
+    },
+    {
+      "id": "09d-showreel-modal",
+      "route": "/",
+      "viewport": "1440x900",
+      "mae": 213.28,
+      "psnr": 1.23,
+      "ssim": 0.0519,
+      "pctOver24": 98.42
+    },
+    {
+      "id": "10a-about-hero",
+      "route": "/about",
+      "viewport": "1440x900",
+      "mae": 43.22,
+      "psnr": 10.53,
+      "ssim": 0.1673,
+      "pctOver24": 35.58
+    },
+    {
+      "id": "10b-about-team",
+      "route": "/about",
+      "viewport": "1440x900",
+      "mae": 229.89,
+      "psnr": 0.75,
+      "ssim": 0.0474,
+      "pctOver24": 98.13
+    },
+    {
+      "id": "10c-about-clients-awards",
+      "route": "/about",
+      "viewport": "1440x900",
+      "mae": 235.22,
+      "psnr": 0.54,
+      "ssim": 0.0121,
+      "pctOver24": 97.04
+    },
+    {
+      "id": "10d-about-capability",
+      "route": "/about",
+      "viewport": "1440x900",
+      "mae": 154.38,
+      "psnr": 3.3,
+      "ssim": 0.324,
+      "pctOver24": 95.01
+    },
+    {
+      "id": "11a-projects-archive-top",
+      "route": "/projects",
+      "viewport": "1440x900",
+      "mae": 34.28,
+      "psnr": 11.13,
+      "ssim": 0.6923,
+      "pctOver24": 37.98
+    },
+    {
+      "id": "11b-projects-archive-mid",
+      "route": "/projects",
+      "viewport": "1440x900",
+      "mae": 93.66,
+      "psnr": 6.3,
+      "ssim": 0.498,
+      "pctOver24": 74.23
+    },
+    {
+      "id": "12-01-project-oryzo_ai",
+      "route": "/projects/oryzo_ai",
+      "viewport": "1440x900",
+      "mae": 19.4,
+      "psnr": 15.25,
+      "ssim": 0.6266,
+      "pctOver24": 35.87
+    },
+    {
+      "id": "12-02-project-atlas_motion",
+      "route": "/projects/atlas_motion",
+      "viewport": "1440x900",
+      "mae": 30.52,
+      "psnr": 13.11,
+      "ssim": 0.6859,
+      "pctOver24": 40.95
+    },
+    {
+      "id": "12-03-project-devin_ai",
+      "route": "/projects/devin_ai",
+      "viewport": "1440x900",
+      "mae": 26.16,
+      "psnr": 12.51,
+      "ssim": 0.7419,
+      "pctOver24": 29.07
+    },
+    {
+      "id": "12-04-project-of_the_oak",
+      "route": "/projects/of_the_oak",
+      "viewport": "1440x900",
+      "mae": 16.54,
+      "psnr": 16.66,
+      "ssim": 0.6539,
+      "pctOver24": 27.17
+    },
+    {
+      "id": "12-05-project-everswap",
+      "route": "/projects/everswap",
+      "viewport": "1440x900",
+      "mae": 57.26,
+      "psnr": 8.99,
+      "ssim": 0.6641,
+      "pctOver24": 52.32
+    },
+    {
+      "id": "12-06-project-porsche_dream_machine",
+      "route": "/projects/porsche_dream_machine",
+      "viewport": "1440x900",
+      "mae": 51.23,
+      "psnr": 9.56,
+      "ssim": 0.6113,
+      "pctOver24": 46.48
+    },
+    {
+      "id": "12-07-project-synthetic_human",
+      "route": "/projects/synthetic_human",
+      "viewport": "1440x900",
+      "mae": 40.07,
+      "psnr": 11.45,
+      "ssim": 0.6535,
+      "pctOver24": 45.52
+    },
+    {
+      "id": "12-08-project-ddd_2024",
+      "route": "/projects/ddd_2024",
+      "viewport": "1440x900",
+      "mae": 22.33,
+      "psnr": 14.93,
+      "ssim": 0.717,
+      "pctOver24": 39.98
+    },
+    {
+      "id": "12-09-project-spaace",
+      "route": "/projects/spaace",
+      "viewport": "1440x900",
+      "mae": 19.25,
+      "psnr": 14.67,
+      "ssim": 0.7457,
+      "pctOver24": 33.6
+    },
+    {
+      "id": "12-10-project-choo_choo_world",
+      "route": "/projects/choo_choo_world",
+      "viewport": "1440x900",
+      "mae": 29.04,
+      "psnr": 13.97,
+      "ssim": 0.7428,
+      "pctOver24": 45.22
+    },
+    {
+      "id": "12-11-project-zero_tech",
+      "route": "/projects/zero_tech",
+      "viewport": "1440x900",
+      "mae": 23.79,
+      "psnr": 15.2,
+      "ssim": 0.695,
+      "pctOver24": 43.8
+    },
+    {
+      "id": "12-12-project-spatial_fusion",
+      "route": "/projects/spatial_fusion",
+      "viewport": "1440x900",
+      "mae": 67.5,
+      "psnr": 7.75,
+      "ssim": 0.5482,
+      "pctOver24": 49.07
+    },
+    {
+      "id": "12-13-project-worldcoin",
+      "route": "/projects/worldcoin",
+      "viewport": "1440x900",
+      "mae": 29.22,
+      "psnr": 14.11,
+      "ssim": 0.7856,
+      "pctOver24": 44.9
+    },
+    {
+      "id": "12-14-project-lusion_labs",
+      "route": "/projects/lusion_labs",
+      "viewport": "1440x900",
+      "mae": 23.96,
+      "psnr": 15.29,
+      "ssim": 0.6902,
+      "pctOver24": 40.33
+    },
+    {
+      "id": "12-15-project-my_little_story_book",
+      "route": "/projects/my_little_story_book",
+      "viewport": "1440x900",
+      "mae": 55.59,
+      "psnr": 9.16,
+      "ssim": 0.6141,
+      "pctOver24": 48.16
+    },
+    {
+      "id": "12-16-project-soda_experience",
+      "route": "/projects/soda_experience",
+      "viewport": "1440x900",
+      "mae": 64.58,
+      "psnr": 7.95,
+      "ssim": 0.6006,
+      "pctOver24": 50.96
+    },
+    {
+      "id": "12-17-project-infinite_passerella",
+      "route": "/projects/infinite_passerella",
+      "viewport": "1440x900",
+      "mae": 35.47,
+      "psnr": 12.46,
+      "ssim": 0.6556,
+      "pctOver24": 46.12
+    },
+    {
+      "id": "12-18-project-the_turn_of_the_screw",
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": "1440x900",
+      "mae": 27.11,
+      "psnr": 14.05,
+      "ssim": 0.6407,
+      "pctOver24": 38.93
+    },
+    {
+      "id": "12-19-project-maxmara_bearings_gifts",
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": "1440x900",
+      "mae": 44.97,
+      "psnr": 10.49,
+      "ssim": 0.6631,
+      "pctOver24": 47.65
+    },
+    {
+      "id": "01-home-hero",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 53.28,
+      "psnr": 9.32,
+      "ssim": 0.4106,
+      "pctOver24": 59.33
+    },
+    {
+      "id": "02-home-reel-intro",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 33.29,
+      "psnr": 10.51,
+      "ssim": 0.5888,
+      "pctOver24": 24.13
+    },
+    {
+      "id": "03-home-reel-stage",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 47.75,
+      "psnr": 10.52,
+      "ssim": 0.6832,
+      "pctOver24": 57.57
+    },
+    {
+      "id": "04-home-featured-top",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 42.12,
+      "psnr": 10.9,
+      "ssim": 0.4802,
+      "pctOver24": 48.72
+    },
+    {
+      "id": "05-home-featured-cta",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 27.1,
+      "psnr": 12.54,
+      "ssim": 0.6175,
+      "pctOver24": 31.04
+    },
+    {
+      "id": "06-home-goal-intro",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 45.81,
+      "psnr": 8.47,
+      "ssim": 0.4778,
+      "pctOver24": 27.33
+    },
+    {
+      "id": "07-home-goal-stage1",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 64.21,
+      "psnr": 8.42,
+      "ssim": 0.0967,
+      "pctOver24": 58.61
+    },
+    {
+      "id": "07b-home-goal-mid",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 62.03,
+      "psnr": 9.22,
+      "ssim": 0.1951,
+      "pctOver24": 60.64
+    },
+    {
+      "id": "08-home-goal-stage2",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 130.7,
+      "psnr": 4.04,
+      "ssim": 0.1295,
+      "pctOver24": 99.54
+    },
+    {
+      "id": "08b-home-goal-drop",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 23.07,
+      "psnr": 13,
+      "ssim": 0.4775,
+      "pctOver24": 24.03
+    },
+    {
+      "id": "09a-home-end-cta",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 120.72,
+      "psnr": 4.15,
+      "ssim": 0.0704,
+      "pctOver24": 97.13
+    },
+    {
+      "id": "09b-home-footer-portal",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 51.22,
+      "psnr": 7.74,
+      "ssim": 0.5949,
+      "pctOver24": 23.98
+    },
+    {
+      "id": "09c-header-menu-open",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 34.47,
+      "psnr": 9.22,
+      "ssim": 0.6869,
+      "pctOver24": 22.27
+    },
+    {
+      "id": "09d-showreel-modal",
+      "route": "/",
+      "viewport": "390x844",
+      "mae": 218.12,
+      "psnr": 1.04,
+      "ssim": 0.0191,
+      "pctOver24": 96.04
+    },
+    {
+      "id": "10a-about-hero",
+      "route": "/about",
+      "viewport": "390x844",
+      "mae": 37.87,
+      "psnr": 13.08,
+      "ssim": 0.29,
+      "pctOver24": 50.02
+    },
+    {
+      "id": "10b-about-team",
+      "route": "/about",
+      "viewport": "390x844",
+      "mae": 225.03,
+      "psnr": 0.85,
+      "ssim": 0.0345,
+      "pctOver24": 96.87
+    },
+    {
+      "id": "10c-about-clients-awards",
+      "route": "/about",
+      "viewport": "390x844",
+      "mae": 230.88,
+      "psnr": 0.62,
+      "ssim": 0.0071,
+      "pctOver24": 96.09
+    },
+    {
+      "id": "10d-about-capability",
+      "route": "/about",
+      "viewport": "390x844",
+      "mae": 136.78,
+      "psnr": 3.78,
+      "ssim": 0.244,
+      "pctOver24": 94.83
+    },
+    {
+      "id": "11a-projects-archive-top",
+      "route": "/projects",
+      "viewport": "390x844",
+      "mae": 43.7,
+      "psnr": 10.81,
+      "ssim": 0.4502,
+      "pctOver24": 54.59
+    },
+    {
+      "id": "11b-projects-archive-mid",
+      "route": "/projects",
+      "viewport": "390x844",
+      "mae": 49.52,
+      "psnr": 10.64,
+      "ssim": 0.5656,
+      "pctOver24": 64.47
+    },
+    {
+      "id": "12-01-project-oryzo_ai",
+      "route": "/projects/oryzo_ai",
+      "viewport": "390x844",
+      "mae": 27.07,
+      "psnr": 11.87,
+      "ssim": 0.4929,
+      "pctOver24": 20.09
+    },
+    {
+      "id": "12-02-project-atlas_motion",
+      "route": "/projects/atlas_motion",
+      "viewport": "390x844",
+      "mae": 26.54,
+      "psnr": 11.81,
+      "ssim": 0.5652,
+      "pctOver24": 19.15
+    },
+    {
+      "id": "12-03-project-devin_ai",
+      "route": "/projects/devin_ai",
+      "viewport": "390x844",
+      "mae": 28.9,
+      "psnr": 10.95,
+      "ssim": 0.6005,
+      "pctOver24": 18.29
+    },
+    {
+      "id": "12-04-project-of_the_oak",
+      "route": "/projects/of_the_oak",
+      "viewport": "390x844",
+      "mae": 23.34,
+      "psnr": 12.7,
+      "ssim": 0.5647,
+      "pctOver24": 17.07
+    },
+    {
+      "id": "12-05-project-everswap",
+      "route": "/projects/everswap",
+      "viewport": "390x844",
+      "mae": 50.62,
+      "psnr": 8.29,
+      "ssim": 0.5191,
+      "pctOver24": 28.37
+    },
+    {
+      "id": "12-06-project-porsche_dream_machine",
+      "route": "/projects/porsche_dream_machine",
+      "viewport": "390x844",
+      "mae": 26.67,
+      "psnr": 12.36,
+      "ssim": 0.5673,
+      "pctOver24": 23.66
+    },
+    {
+      "id": "12-07-project-synthetic_human",
+      "route": "/projects/synthetic_human",
+      "viewport": "390x844",
+      "mae": 23.66,
+      "psnr": 13.48,
+      "ssim": 0.5304,
+      "pctOver24": 28.43
+    },
+    {
+      "id": "12-08-project-ddd_2024",
+      "route": "/projects/ddd_2024",
+      "viewport": "390x844",
+      "mae": 25.25,
+      "psnr": 12.62,
+      "ssim": 0.658,
+      "pctOver24": 31.32
+    },
+    {
+      "id": "12-09-project-spaace",
+      "route": "/projects/spaace",
+      "viewport": "390x844",
+      "mae": 29.4,
+      "psnr": 10.99,
+      "ssim": 0.6208,
+      "pctOver24": 27.54
+    },
+    {
+      "id": "12-10-project-choo_choo_world",
+      "route": "/projects/choo_choo_world",
+      "viewport": "390x844",
+      "mae": 24.73,
+      "psnr": 12.12,
+      "ssim": 0.5603,
+      "pctOver24": 16.88
+    },
+    {
+      "id": "12-11-project-zero_tech",
+      "route": "/projects/zero_tech",
+      "viewport": "390x844",
+      "mae": 29.24,
+      "psnr": 12.01,
+      "ssim": 0.5735,
+      "pctOver24": 27.45
+    },
+    {
+      "id": "12-12-project-spatial_fusion",
+      "route": "/projects/spatial_fusion",
+      "viewport": "390x844",
+      "mae": 29.62,
+      "psnr": 11.48,
+      "ssim": 0.4818,
+      "pctOver24": 20.83
+    },
+    {
+      "id": "12-13-project-worldcoin",
+      "route": "/projects/worldcoin",
+      "viewport": "390x844",
+      "mae": 28.47,
+      "psnr": 11.87,
+      "ssim": 0.5871,
+      "pctOver24": 26.87
+    },
+    {
+      "id": "12-14-project-lusion_labs",
+      "route": "/projects/lusion_labs",
+      "viewport": "390x844",
+      "mae": 27.69,
+      "psnr": 11.77,
+      "ssim": 0.5247,
+      "pctOver24": 20.7
+    },
+    {
+      "id": "12-15-project-my_little_story_book",
+      "route": "/projects/my_little_story_book",
+      "viewport": "390x844",
+      "mae": 27.81,
+      "psnr": 11.83,
+      "ssim": 0.4821,
+      "pctOver24": 20.94
+    },
+    {
+      "id": "12-16-project-soda_experience",
+      "route": "/projects/soda_experience",
+      "viewport": "390x844",
+      "mae": 28.64,
+      "psnr": 12.58,
+      "ssim": 0.5667,
+      "pctOver24": 29.63
+    },
+    {
+      "id": "12-17-project-infinite_passerella",
+      "route": "/projects/infinite_passerella",
+      "viewport": "390x844",
+      "mae": 27.66,
+      "psnr": 12.02,
+      "ssim": 0.5706,
+      "pctOver24": 22.34
+    },
+    {
+      "id": "12-18-project-the_turn_of_the_screw",
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": "390x844",
+      "mae": 30.23,
+      "psnr": 11.83,
+      "ssim": 0.5554,
+      "pctOver24": 27.37
+    },
+    {
+      "id": "12-19-project-maxmara_bearings_gifts",
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": "390x844",
+      "mae": 28.91,
+      "psnr": 12.15,
+      "ssim": 0.4155,
+      "pctOver24": 22.58
+    },
+    {
+      "id": "01-home-hero",
+      "route": "/",
+      "viewport": "1024x768",
+      "mae": 52.51,
+      "psnr": 9.34,
+      "ssim": 0.5058,
+      "pctOver24": 51.99
+    },
+    {
+      "id": "07-home-goal-stage1",
+      "route": "/",
+      "viewport": "1024x768",
+      "mae": 51.3,
+      "psnr": 8.52,
+      "ssim": 0.2145,
+      "pctOver24": 36.12
+    },
+    {
+      "id": "08-home-goal-stage2",
+      "route": "/",
+      "viewport": "1024x768",
+      "mae": 129.68,
+      "psnr": 4.14,
+      "ssim": 0.1179,
+      "pctOver24": 98.08
+    },
+    {
+      "id": "11a-projects-archive-top",
+      "route": "/projects",
+      "viewport": "1024x768",
+      "mae": 32.67,
+      "psnr": 11.32,
+      "ssim": 0.6557,
+      "pctOver24": 36.25
+    }
+  ]
+}

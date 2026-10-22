@@ -1,0 +1,491 @@
+{
+  "1440x900": {
+    "homeLayout": {
+      "mode": "fallback-normalized",
+      "scrollHeight": 63721,
+      "domContainer": {
+        "left": 0,
+        "top": 6640.96875,
+        "bottom": 61987.234375,
+        "width": 1440,
+        "height": 55346.265625
+      },
+      "domImgIn": {
+        "left": 368,
+        "top": 7419.234375,
+        "bottom": 7859.234375,
+        "width": 704,
+        "height": 440
+      },
+      "domImgOut": null,
+      "endSection": {
+        "left": 0,
+        "top": 61087.234375,
+        "bottom": 61987.234375,
+        "width": 1440,
+        "height": 900
+      },
+      "footerSection": {
+        "left": 0,
+        "top": 62815.234375,
+        "bottom": 63293.203125,
+        "width": 1440,
+        "height": 477.96875
+      },
+      "ranges": {
+        "blackFrameShow": {
+          "scrollFrom": 7395.0940625,
+          "pixelCount": 3342.3759375,
+          "scrollTo": 10737.470000000001
+        },
+        "blackFrameIn": {
+          "scrollFrom": 10737.470000000001,
+          "pixelCount": 3342.375937500001,
+          "scrollTo": 14079.845937500002
+        },
+        "blackTitle": {
+          "scrollFrom": 14079.845937500002,
+          "pixelCount": 8913.002499999999,
+          "scrollTo": 22992.8484375
+        },
+        "blackTunnel": {
+          "scrollFrom": 22992.8484375,
+          "pixelCount": 17826.005,
+          "scrollTo": 40818.8534375
+        },
+        "whiteTunnel": {
+          "scrollFrom": 40818.8534375,
+          "pixelCount": 4456.5012499999975,
+          "scrollTo": 45275.354687499996
+        },
+        "whiteFrameOut": {
+          "scrollFrom": 45275.354687499996,
+          "pixelCount": 2785.3132812500025,
+          "scrollTo": 48060.66796875
+        },
+        "whiteFrameBreak": {
+          "scrollFrom": 48060.66796875,
+          "pixelCount": 2785.3132812500025,
+          "scrollTo": 50845.981250000004
+        },
+        "astronautDrop": {
+          "scrollFrom": 50845.981250000004,
+          "pixelCount": 4456.5012499999975,
+          "scrollTo": 55302.4825
+        },
+        "astronautWait": {
+          "scrollFrom": 61087.234375,
+          "pixelCount": 900,
+          "scrollTo": 61987.234375
+        }
+      }
+    },
+    "homeCaptures": [
+      {
+        "name": "home-01-tablet-entry",
+        "scrollY": 9802
+      },
+      {
+        "name": "home-02-tablet-emerge-start",
+        "scrollY": 11473
+      },
+      {
+        "name": "home-03-tablet-emerge-mid",
+        "scrollY": 12810
+      },
+      {
+        "name": "home-04-title-portal",
+        "scrollY": 18982
+      },
+      {
+        "name": "home-05-black-tunnel-early",
+        "scrollY": 27628
+      },
+      {
+        "name": "home-06-black-tunnel-twist",
+        "scrollY": 35828
+      },
+      {
+        "name": "home-07-white-blue-tunnel",
+        "scrollY": 42824
+      },
+      {
+        "name": "home-08-desktop-frame-out",
+        "scrollY": 47448
+      },
+      {
+        "name": "home-09-glass-break-drop",
+        "scrollY": 50668
+      },
+      {
+        "name": "home-10-end-cta-wait",
+        "scrollY": 61141
+      },
+      {
+        "name": "home-11-reverse-tablet-mid",
+        "scrollY": 12810
+      }
+    ],
+    "aboutLayout": {
+      "mode": "proportional-who",
+      "unit": 1440,
+      "whoTop": 0,
+      "whoSpan": 1366.4375,
+      "endTop": 5573.53125,
+      "scrollHeight": 7308
+    },
+    "aboutCaptures": [
+      {
+        "name": "about-01-hero-top",
+        "scrollY": 0
+      },
+      {
+        "name": "about-02-we-are-reveal",
+        "scrollY": 273
+      },
+      {
+        "name": "about-03-details-hud",
+        "scrollY": 765
+      },
+      {
+        "name": "about-04-team-hologram",
+        "scrollY": 1175
+      },
+      {
+        "name": "about-05-end-cta-flip",
+        "scrollY": 5889
+      },
+      {
+        "name": "about-06-reverse-we-are",
+        "scrollY": 273
+      }
+    ],
+    "pageErrors": []
+  },
+  "1024x768": {
+    "homeLayout": {
+      "mode": "fallback-normalized",
+      "scrollHeight": 54159,
+      "domContainer": {
+        "left": 0,
+        "top": 5223.421875,
+        "bottom": 52552,
+        "width": 1024,
+        "height": 47328.578125
+      },
+      "domImgIn": {
+        "left": 160,
+        "top": 5904,
+        "bottom": 6344,
+        "width": 704,
+        "height": 440
+      },
+      "domImgOut": null,
+      "endSection": {
+        "left": 0,
+        "top": 51784,
+        "bottom": 52552,
+        "width": 1024,
+        "height": 768
+      },
+      "footerSection": {
+        "left": 0,
+        "top": 53258.546875,
+        "bottom": 53730.546875,
+        "width": 1024,
+        "height": 472
+      },
+      "ranges": {
+        "blackFrameShow": {
+          "scrollFrom": 5868.9374375,
+          "pixelCount": 2858.1466874999996,
+          "scrollTo": 8727.084125
+        },
+        "blackFrameIn": {
+          "scrollFrom": 8727.084125,
+          "pixelCount": 2858.1466875000006,
+          "scrollTo": 11585.2308125
+        },
+        "blackTitle": {
+          "scrollFrom": 11585.2308125,
+          "pixelCount": 7621.724499999998,
+          "scrollTo": 19206.9553125
+        },
+        "blackTunnel": {
+          "scrollFrom": 19206.9553125,
+          "pixelCount": 15243.448999999999,
+          "scrollTo": 34450.4043125
+        },
+        "whiteTunnel": {
+          "scrollFrom": 34450.4043125,
+          "pixelCount": 3810.862249999998,
+          "scrollTo": 38261.2665625
+        },
+        "whiteFrameOut": {
+          "scrollFrom": 38261.2665625,
+          "pixelCount": 2381.788906250002,
+          "scrollTo": 40643.05546875
+        },
+        "whiteFrameBreak": {
+          "scrollFrom": 40643.05546875,
+          "pixelCount": 2381.788906250002,
+          "scrollTo": 43024.844375
+        },
+        "astronautDrop": {
+          "scrollFrom": 43024.844375,
+          "pixelCount": 3810.862249999998,
+          "scrollTo": 46835.706625
+        },
+        "astronautWait": {
+          "scrollFrom": 51784,
+          "pixelCount": 768,
+          "scrollTo": 52552
+        }
+      }
+    },
+    "homeCaptures": [
+      {
+        "name": "home-01-tablet-entry",
+        "scrollY": 7927
+      },
+      {
+        "name": "home-02-tablet-emerge-start",
+        "scrollY": 9356
+      },
+      {
+        "name": "home-03-tablet-emerge-mid",
+        "scrollY": 10499
+      },
+      {
+        "name": "home-04-title-portal",
+        "scrollY": 15777
+      },
+      {
+        "name": "home-05-black-tunnel-early",
+        "scrollY": 23170
+      },
+      {
+        "name": "home-06-black-tunnel-twist",
+        "scrollY": 30182
+      },
+      {
+        "name": "home-07-white-blue-tunnel",
+        "scrollY": 36165
+      },
+      {
+        "name": "home-08-desktop-frame-out",
+        "scrollY": 40119
+      },
+      {
+        "name": "home-09-glass-break-drop",
+        "scrollY": 42872
+      },
+      {
+        "name": "home-10-end-cta-wait",
+        "scrollY": 51830
+      },
+      {
+        "name": "home-11-reverse-tablet-mid",
+        "scrollY": 10499
+      }
+    ],
+    "aboutLayout": {
+      "mode": "proportional-who",
+      "unit": 1024,
+      "whoTop": 0,
+      "whoSpan": 1314.5,
+      "endTop": 5339.125,
+      "scrollHeight": 6946
+    },
+    "aboutCaptures": [
+      {
+        "name": "about-01-hero-top",
+        "scrollY": 0
+      },
+      {
+        "name": "about-02-we-are-reveal",
+        "scrollY": 263
+      },
+      {
+        "name": "about-03-details-hud",
+        "scrollY": 736
+      },
+      {
+        "name": "about-04-team-hologram",
+        "scrollY": 1130
+      },
+      {
+        "name": "about-05-end-cta-flip",
+        "scrollY": 5608
+      },
+      {
+        "name": "about-06-reverse-we-are",
+        "scrollY": 263
+      }
+    ],
+    "pageErrors": []
+  },
+  "390x844": {
+    "homeLayout": {
+      "mode": "fallback-normalized",
+      "scrollHeight": 59822,
+      "domContainer": {
+        "left": 0,
+        "top": 6542.34375,
+        "bottom": 58201.21875,
+        "width": 390,
+        "height": 51658.875
+      },
+      "domImgIn": {
+        "left": 15,
+        "top": 7240.21875,
+        "bottom": 7465.21875,
+        "width": 360,
+        "height": 225
+      },
+      "domImgOut": null,
+      "endSection": {
+        "left": 0,
+        "top": 57357.21875,
+        "bottom": 58201.21875,
+        "width": 390,
+        "height": 844
+      },
+      "footerSection": {
+        "left": 0,
+        "top": 58977.6875,
+        "bottom": 59705.6875,
+        "width": 390,
+        "height": 728
+      },
+      "ranges": {
+        "blackFrameShow": {
+          "scrollFrom": 7244.67325,
+          "pixelCount": 3119.7884999999997,
+          "scrollTo": 10364.461749999999
+        },
+        "blackFrameIn": {
+          "scrollFrom": 10364.461749999999,
+          "pixelCount": 3119.7885000000006,
+          "scrollTo": 13484.250250000001
+        },
+        "blackTitle": {
+          "scrollFrom": 13484.250250000001,
+          "pixelCount": 8319.435999999998,
+          "scrollTo": 21803.68625
+        },
+        "blackTunnel": {
+          "scrollFrom": 21803.68625,
+          "pixelCount": 16638.872,
+          "scrollTo": 38442.55825
+        },
+        "whiteTunnel": {
+          "scrollFrom": 38442.55825,
+          "pixelCount": 4159.717999999998,
+          "scrollTo": 42602.276249999995
+        },
+        "whiteFrameOut": {
+          "scrollFrom": 42602.276249999995,
+          "pixelCount": 2599.8237500000023,
+          "scrollTo": 45202.1
+        },
+        "whiteFrameBreak": {
+          "scrollFrom": 45202.1,
+          "pixelCount": 2599.8237500000023,
+          "scrollTo": 47801.92375
+        },
+        "astronautDrop": {
+          "scrollFrom": 47801.92375,
+          "pixelCount": 4159.717999999998,
+          "scrollTo": 51961.64175
+        },
+        "astronautWait": {
+          "scrollFrom": 57357.21875,
+          "pixelCount": 844,
+          "scrollTo": 58201.21875
+        }
+      }
+    },
+    "homeCaptures": [
+      {
+        "name": "home-01-tablet-entry",
+        "scrollY": 9491
+      },
+      {
+        "name": "home-02-tablet-emerge-start",
+        "scrollY": 11051
+      },
+      {
+        "name": "home-03-tablet-emerge-mid",
+        "scrollY": 12299
+      },
+      {
+        "name": "home-04-title-portal",
+        "scrollY": 18060
+      },
+      {
+        "name": "home-05-black-tunnel-early",
+        "scrollY": 26130
+      },
+      {
+        "name": "home-06-black-tunnel-twist",
+        "scrollY": 33784
+      },
+      {
+        "name": "home-07-white-blue-tunnel",
+        "scrollY": 40314
+      },
+      {
+        "name": "home-08-desktop-frame-out",
+        "scrollY": 44630
+      },
+      {
+        "name": "home-09-glass-break-drop",
+        "scrollY": 47636
+      },
+      {
+        "name": "home-10-end-cta-wait",
+        "scrollY": 57408
+      },
+      {
+        "name": "home-11-reverse-tablet-mid",
+        "scrollY": 12299
+      }
+    ],
+    "aboutLayout": {
+      "mode": "proportional-who",
+      "unit": 844,
+      "whoTop": 0,
+      "whoSpan": 1334.71875,
+      "endTop": 7840.65625,
+      "scrollHeight": 9461
+    },
+    "aboutCaptures": [
+      {
+        "name": "about-01-hero-top",
+        "scrollY": 0
+      },
+      {
+        "name": "about-02-we-are-reveal",
+        "scrollY": 267
+      },
+      {
+        "name": "about-03-details-hud",
+        "scrollY": 747
+      },
+      {
+        "name": "about-04-team-hologram",
+        "scrollY": 1148
+      },
+      {
+        "name": "about-05-end-cta-flip",
+        "scrollY": 8136
+      },
+      {
+        "name": "about-06-reverse-we-are",
+        "scrollY": 267
+      }
+    ],
+    "pageErrors": []
+  }
+}

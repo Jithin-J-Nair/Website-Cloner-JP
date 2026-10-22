@@ -1,0 +1,291 @@
+{
+  "phase": "C",
+  "timestamp": "2026-10-22T00:04:49.158Z",
+  "summary": "18 / 18 checks passed",
+  "allPassed": true,
+  "checks": [
+    {
+      "name": "HTTP 206 Partial Content video range streaming",
+      "pass": true,
+      "detail": "status=206 content-range=bytes 0-1023/4980580"
+    },
+    {
+      "name": "Font Option 2 hard 403 block on commercial font paths",
+      "pass": true,
+      "detail": "status=403"
+    },
+    {
+      "name": "[1440x900] Exact 7-band Lusion homepage section order",
+      "pass": true,
+      "detail": "home-hero -> home-reel -> home-featured -> home-goal -> end-section -> footer-section -> scroll-nav-section"
+    },
+    {
+      "name": "[1440x900] Zero KINETA / telemetry pill leakage & GlobalStage suppressed on /",
+      "pass": true,
+      "detail": "telemetryLeak=false"
+    },
+    {
+      "name": "[1440x900] Hero WebGL shader compiled & active (1296x581)",
+      "pass": true,
+      "detail": "status=ready accent=#061dfb"
+    },
+    {
+      "name": "[1440x900] Hero stage renders non-empty 3D cobalt + white + obsidian cross cluster",
+      "pass": true,
+      "detail": "bluePx=68701, lightPx=176059, darkPx=62861"
+    },
+    {
+      "name": "Desktop pointer sweep displaces 3D hollow crosses in real time",
+      "pass": true,
+      "detail": "pointerInteractions=1"
+    },
+    {
+      "name": "Clicking hero stage cycles accent palette (#061dfb -> #ADFF00) & applies impulse",
+      "pass": true,
+      "detail": "accentAfterClick=#ADFF00"
+    },
+    {
+      "name": "Showreel PLAY REEL trigger opens #video-overlay & streams real 1920x960 video",
+      "pass": true,
+      "detail": "readyState=2 videoWidth=1920"
+    },
+    {
+      "name": "12 featured projects match exact Lusion order, canonical /projects/<slug> hrefs & loaded WebP media",
+      "pass": true,
+      "detail": "count=12, loadedImages=12/12"
+    },
+    {
+      "name": "Clicking Featured Card navigates cleanly to canonical /projects/oryzo_ai",
+      "pass": true,
+      "detail": "h1=\"Oryzo AI\""
+    },
+    {
+      "name": "[1440x900] Zero console.error / pageerror / broken local asset responses",
+      "pass": true,
+      "detail": "errors=0, failedMedia=0"
+    },
+    {
+      "name": "[390x844] Exact 7-band Lusion homepage section order",
+      "pass": true,
+      "detail": "home-hero -> home-reel -> home-featured -> home-goal -> end-section -> footer-section -> scroll-nav-section"
+    },
+    {
+      "name": "[390x844] Zero KINETA / telemetry pill leakage & GlobalStage suppressed on /",
+      "pass": true,
+      "detail": "telemetryLeak=false"
+    },
+    {
+      "name": "[390x844] Hero WebGL shader compiled & active (360x656)",
+      "pass": true,
+      "detail": "status=ready accent=#061dfb"
+    },
+    {
+      "name": "[390x844] Hero stage renders non-empty 3D cobalt + white + obsidian cross cluster",
+      "pass": true,
+      "detail": "bluePx=36098, lightPx=49569, darkPx=6329"
+    },
+    {
+      "name": "[390x844] Zero console.error / pageerror / broken local asset responses",
+      "pass": true,
+      "detail": "errors=0, failedMedia=0"
+    },
+    {
+      "name": "Reduced-motion & WebGL-disabled graceful fallback renders cleanly without errors",
+      "pass": true,
+      "detail": "status=fallback runwayH=648px"
+    }
+  ],
+  "stateMetrics": [
+    {
+      "viewport": "1440x900",
+      "state": "01-hero",
+      "label": "Hero Stage",
+      "mae": 57.26,
+      "bluePx": 68701,
+      "lightPx": 176059,
+      "darkPx": 62861
+    },
+    {
+      "viewport": "1440x900",
+      "state": "02-reel-intro",
+      "label": "Reel Intro & CTA",
+      "mae": 37.56
+    },
+    {
+      "viewport": "1440x900",
+      "state": "03-reel-stage",
+      "label": "Showreel Video Stage",
+      "mae": 51.02
+    },
+    {
+      "viewport": "1440x900",
+      "state": "04-featured-top",
+      "label": "Featured Work Header & Row 1",
+      "mae": 40.81
+    },
+    {
+      "viewport": "1440x900",
+      "state": "05-featured-cta",
+      "label": "Featured Work Grid Bottom & CTA",
+      "mae": 67.39
+    },
+    {
+      "viewport": "1440x900",
+      "state": "06-goal-context",
+      "label": "Goal Context & Entry Portal",
+      "mae": 20.61
+    },
+    {
+      "viewport": "1440x900",
+      "state": "07-goal-stage1-dark",
+      "label": "Goal Tunnel Stage 1 (Dark)",
+      "mae": 39.86
+    },
+    {
+      "viewport": "1440x900",
+      "state": "08-goal-stage2-white",
+      "label": "Goal Tunnel Stage 2 (White Crystals & Stickers)",
+      "mae": 209.99
+    },
+    {
+      "viewport": "1440x900",
+      "state": "09-end-cta",
+      "label": "Closing CTA & Ticker (#end-section)",
+      "mae": 112.82
+    },
+    {
+      "viewport": "1440x900",
+      "state": "10-footer-portal",
+      "label": "Footer & About Us Scroll Portal",
+      "mae": 178.63
+    },
+    {
+      "viewport": "390x844",
+      "state": "01-hero",
+      "label": "Hero Stage",
+      "mae": 80.07,
+      "bluePx": 36098,
+      "lightPx": 49569,
+      "darkPx": 6329
+    },
+    {
+      "viewport": "390x844",
+      "state": "02-reel-intro",
+      "label": "Reel Intro & CTA",
+      "mae": 50.18
+    },
+    {
+      "viewport": "390x844",
+      "state": "03-reel-stage",
+      "label": "Showreel Video Stage",
+      "mae": 80.08
+    },
+    {
+      "viewport": "390x844",
+      "state": "04-featured-top",
+      "label": "Featured Work Header & Row 1",
+      "mae": 32.43
+    },
+    {
+      "viewport": "390x844",
+      "state": "05-featured-cta",
+      "label": "Featured Work Grid Bottom & CTA",
+      "mae": 39.76
+    },
+    {
+      "viewport": "390x844",
+      "state": "06-goal-context",
+      "label": "Goal Context & Entry Portal",
+      "mae": 36.51
+    },
+    {
+      "viewport": "390x844",
+      "state": "07-goal-stage1-dark",
+      "label": "Goal Tunnel Stage 1 (Dark)",
+      "mae": 80.36
+    },
+    {
+      "viewport": "390x844",
+      "state": "08-goal-stage2-white",
+      "label": "Goal Tunnel Stage 2 (White Crystals & Stickers)",
+      "mae": 190.85
+    },
+    {
+      "viewport": "390x844",
+      "state": "09-end-cta",
+      "label": "Closing CTA & Ticker (#end-section)",
+      "mae": 115.22
+    },
+    {
+      "viewport": "390x844",
+      "state": "10-footer-portal",
+      "label": "Footer & About Us Scroll Portal",
+      "mae": 162.01
+    }
+  ],
+  "screenshots": [
+    "docs/validation/phase-c/ref-01-hero--1440x900.png",
+    "docs/validation/phase-c/ref-02-reel-intro--1440x900.png",
+    "docs/validation/phase-c/ref-03-reel-stage--1440x900.png",
+    "docs/validation/phase-c/ref-04-featured-top--1440x900.png",
+    "docs/validation/phase-c/ref-05-featured-cta--1440x900.png",
+    "docs/validation/phase-c/ref-06-goal-context--1440x900.png",
+    "docs/validation/phase-c/ref-07-goal-stage1-dark--1440x900.png",
+    "docs/validation/phase-c/ref-08-goal-stage2-white--1440x900.png",
+    "docs/validation/phase-c/ref-09-end-cta--1440x900.png",
+    "docs/validation/phase-c/ref-10-footer-portal--1440x900.png",
+    "docs/validation/phase-c/local-01-hero--1440x900.png",
+    "docs/validation/phase-c/composites/compare-01-hero--1440x900.jpg",
+    "docs/validation/phase-c/local-02-reel-intro--1440x900.png",
+    "docs/validation/phase-c/composites/compare-02-reel-intro--1440x900.jpg",
+    "docs/validation/phase-c/local-03-reel-stage--1440x900.png",
+    "docs/validation/phase-c/composites/compare-03-reel-stage--1440x900.jpg",
+    "docs/validation/phase-c/local-04-featured-top--1440x900.png",
+    "docs/validation/phase-c/composites/compare-04-featured-top--1440x900.jpg",
+    "docs/validation/phase-c/local-05-featured-cta--1440x900.png",
+    "docs/validation/phase-c/composites/compare-05-featured-cta--1440x900.jpg",
+    "docs/validation/phase-c/local-06-goal-context--1440x900.png",
+    "docs/validation/phase-c/composites/compare-06-goal-context--1440x900.jpg",
+    "docs/validation/phase-c/local-07-goal-stage1-dark--1440x900.png",
+    "docs/validation/phase-c/composites/compare-07-goal-stage1-dark--1440x900.jpg",
+    "docs/validation/phase-c/local-08-goal-stage2-white--1440x900.png",
+    "docs/validation/phase-c/composites/compare-08-goal-stage2-white--1440x900.jpg",
+    "docs/validation/phase-c/local-09-end-cta--1440x900.png",
+    "docs/validation/phase-c/composites/compare-09-end-cta--1440x900.jpg",
+    "docs/validation/phase-c/local-10-footer-portal--1440x900.png",
+    "docs/validation/phase-c/composites/compare-10-footer-portal--1440x900.jpg",
+    "docs/validation/phase-c/interaction-hero-click-lime--1440x900.png",
+    "docs/validation/phase-c/interaction-reel-modal--1440x900.png",
+    "docs/validation/phase-c/ref-01-hero--390x844.png",
+    "docs/validation/phase-c/ref-02-reel-intro--390x844.png",
+    "docs/validation/phase-c/ref-03-reel-stage--390x844.png",
+    "docs/validation/phase-c/ref-04-featured-top--390x844.png",
+    "docs/validation/phase-c/ref-05-featured-cta--390x844.png",
+    "docs/validation/phase-c/ref-06-goal-context--390x844.png",
+    "docs/validation/phase-c/ref-07-goal-stage1-dark--390x844.png",
+    "docs/validation/phase-c/ref-08-goal-stage2-white--390x844.png",
+    "docs/validation/phase-c/ref-09-end-cta--390x844.png",
+    "docs/validation/phase-c/ref-10-footer-portal--390x844.png",
+    "docs/validation/phase-c/local-01-hero--390x844.png",
+    "docs/validation/phase-c/composites/compare-01-hero--390x844.jpg",
+    "docs/validation/phase-c/local-02-reel-intro--390x844.png",
+    "docs/validation/phase-c/composites/compare-02-reel-intro--390x844.jpg",
+    "docs/validation/phase-c/local-03-reel-stage--390x844.png",
+    "docs/validation/phase-c/composites/compare-03-reel-stage--390x844.jpg",
+    "docs/validation/phase-c/local-04-featured-top--390x844.png",
+    "docs/validation/phase-c/composites/compare-04-featured-top--390x844.jpg",
+    "docs/validation/phase-c/local-05-featured-cta--390x844.png",
+    "docs/validation/phase-c/composites/compare-05-featured-cta--390x844.jpg",
+    "docs/validation/phase-c/local-06-goal-context--390x844.png",
+    "docs/validation/phase-c/composites/compare-06-goal-context--390x844.jpg",
+    "docs/validation/phase-c/local-07-goal-stage1-dark--390x844.png",
+    "docs/validation/phase-c/composites/compare-07-goal-stage1-dark--390x844.jpg",
+    "docs/validation/phase-c/local-08-goal-stage2-white--390x844.png",
+    "docs/validation/phase-c/composites/compare-08-goal-stage2-white--390x844.jpg",
+    "docs/validation/phase-c/local-09-end-cta--390x844.png",
+    "docs/validation/phase-c/composites/compare-09-end-cta--390x844.jpg",
+    "docs/validation/phase-c/local-10-footer-portal--390x844.png",
+    "docs/validation/phase-c/composites/compare-10-footer-portal--390x844.jpg",
+    "docs/validation/phase-c/state-reduced-motion-webgl-fallback--1440x900.png"
+  ]
+}
