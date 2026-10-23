@@ -308,115 +308,16 @@ export function buildArchitecturalTrussTunnel(
   baySpacing: number;
 } {
   const group = new THREE.Group();
-  const baySpacing = 1.32;
-  const bayCount = isMobile ? 22 : 30;
-  const innerSpan = 1.48;
-  const outerSpan = 3.35;
-
-  const boxGeo = track(new THREE.BoxGeometry(1, 1, 1));
-  const transforms: THREE.Matrix4[] = [];
-  const seeds: number[] = [];
-  const kinds: number[] = []; // 0 = structural steel beam, 1 = dark micro-greeble panel, 2 = bright HDR glint panel
-
-  const m4 = new THREE.Matrix4();
-  const pos = new THREE.Vector3();
-  const quat = new THREE.Quaternion();
-  const euler = new THREE.Euler();
-  const scl = new THREE.Vector3();
-
-  let rng = 20261023;
-  const rand = () => {
-    rng = (rng * 1664525 + 1013904223) >>> 0;
-    return rng / 4294967296;
-  };
-
-  const pushPart = (
-    px: number,
-    py: number,
-    pz: number,
-    sx: number,
-    sy: number,
-    sz: number,
-    kind: number,
-    rx = 0,
-    ry = 0,
-    rz = 0
-  ) => {
-    pos.set(px, py, pz);
-    euler.set(rx, ry, rz);
-    quat.setFromEuler(euler);
-    scl.set(sx, sy, sz);
-    m4.compose(pos, quat, scl);
-    transforms.push(m4.clone());
-    seeds.push(rand());
-    kinds.push(kind);
-  };
-
-  for (let b = 0; b < bayCount; b++) {
-    const z = 3.9 - b * baySpacing;
-
-    // 1. 4 Primary Inner Longitudinal Rails + 4 Outer Longitudinal Rails (Clean Orthogonal Grid — NO X-braces!)
-    for (const sx of [-1, 1]) {
-      for (const sy of [-1, 1]) {
-        pushPart(sx * innerSpan, sy * innerSpan, z - baySpacing * 0.5, 0.068, 0.068, baySpacing * 1.02, 0);
-        pushPart(sx * outerSpan, sy * innerSpan, z - baySpacing * 0.5, 0.052, 0.052, baySpacing * 1.02, 0);
-        pushPart(sx * innerSpan, sy * outerSpan, z - baySpacing * 0.5, 0.052, 0.052, baySpacing * 1.02, 0);
-      }
-    }
-
-    // 2. Full-Width Horizontal & Vertical Rectangular Scaffolding Cross-Beams (`3x3` architectural grid in Frames 10–13!)
-    for (const sy of [-innerSpan, innerSpan]) {
-      pushPart(0, sy, z, outerSpan * 2.15, 0.058, 0.058, 0);
-    }
-    for (const sx of [-innerSpan, innerSpan]) {
-      pushPart(sx, 0, z, 0.058, outerSpan * 2.15, 0.058, 0);
-    }
-
-    // 3. Dense Architectural Micro-Greeble Rectangular Panel Clusters along the 4 Inner Corner Rails (`Frames 10–14`!)
-    const greeblesPerBay = isMobile ? 28 : 48;
-    for (let g = 0; g < greeblesPerBay; g++) {
-      const corner = g % 4;
-      const cxSign = corner % 2 === 0 ? -1 : 1;
-      const cySign = corner < 2 ? 1 : -1;
-      // Spread along horizontal or vertical beam arm out from each inner corner
-      const alongHoriz = rand() < 0.55;
-      const spreadA = (rand() - 0.32) * 1.25;
-      const spreadB = (rand() - 0.5) * 0.42;
-      const px = alongHoriz
-        ? cxSign * (innerSpan + spreadA * 0.85)
-        : cxSign * (innerSpan + spreadB);
-      const py = alongHoriz
-        ? cySign * (innerSpan + spreadB)
-        : cySign * (innerSpan + spreadA * 0.85);
-      const pz = z - rand() * baySpacing;
-
-      const w = 0.06 + rand() * 0.24;
-      const h = 0.045 + rand() * 0.16;
-      const d = 0.02 + rand() * 0.12;
-      const isGlint = rand() < 0.19;
-      pushPart(px, py, pz, w, h, d, isGlint ? 2 : 1);
-    }
-  }
-
-  const instGeo = new THREE.InstancedBufferGeometry();
-  instGeo.index = boxGeo.index;
-  instGeo.attributes.position = boxGeo.attributes.position;
-  instGeo.attributes.normal = boxGeo.attributes.normal;
-  instGeo.instanceCount = transforms.length;
-
-  const seedArr = new Float32Array(seeds);
-  const kindArr = new Float32Array(kinds);
-  instGeo.setAttribute("aSeed", new THREE.InstancedBufferAttribute(seedArr, 1));
-  instGeo.setAttribute("aKind", new THREE.InstancedBufferAttribute(kindArr, 1));
-  track(instGeo);
+  const baySpacing = 1.0;
+  const bayCount = isMobile ? 32 : 45;
 
   const tunnelMaterial = track(
     new THREE.ShaderMaterial({
       uniforms: {
         uOpacity: { value: 1.0 },
-        uPhase: { value: 0.0 },      // 0..1 across Frames 10 -> 14
-        uTwist: { value: 0.0 },      // helical spiral twist angle per world Z unit
-        uVortexPinch: { value: 0.0 },// radial funnel convergence for Frame 14
+        uPhase: { value: 0.0 },
+        uTwist: { value: 0.0 },
+        uVortexPinch: { value: 0.0 },
         uTravelZ: { value: 0.0 },
       },
       vertexShader: [
@@ -452,7 +353,7 @@ export function buildArchitecturalTrussTunnel(
         "  vNormalW = normalize(nrm);",
         "  vWorldPos = wp.xyz;",
         "  gl_Position = projectionMatrix * viewMatrix * wp;",
-        "}",
+        "}"
       ].join("\n"),
       fragmentShader: [
         "varying vec3 vNormalW;",
@@ -471,152 +372,173 @@ export function buildArchitecturalTrussTunnel(
         "  float rim = pow(1.0 - abs(N.z), 1.6);",
         "  float depthFade = smoothstep(-36.0, -3.5, vWorldPos.z);",
         "",
-        "  // 4-Stage Lusion Palette Progression calibrated to exact scroll checkpoints:",
-        "  //   10-11 (uPhase ~ 0.12..0.26): Cool gunmetal + cyan/white star glints",
-        "  //   12    (uPhase ~ 0.42):       Warm bronze + orange-red & cyan-teal glints",
-        "  //   13    (uPhase ~ 0.63):       Emerald-mint helical twist",
-        "  //   14    (uPhase ~ 0.90):       Blazing pink-magenta & cyan vortex funnel",
         "  float wCool  = 1.0 - smoothstep(0.24, 0.36, uPhase);",
         "  float wWarm  = smoothstep(0.24, 0.36, uPhase) * (1.0 - smoothstep(0.49, 0.59, uPhase));",
-        "  float wGreen = smoothstep(0.49, 0.59, uPhase) * (1.0 - smoothstep(0.72, 0.83, uPhase));",
-        "  float wPink  = smoothstep(0.72, 0.85, uPhase);",
+        "  float wEmer  = smoothstep(0.49, 0.59, uPhase) * (1.0 - smoothstep(0.76, 0.86, uPhase));",
+        "  float wPink  = smoothstep(0.76, 0.86, uPhase);",
         "",
-        "  vec3 steelBase = vec3(0.11, 0.125, 0.145) * wCool",
-        "                 + vec3(0.16, 0.095, 0.075) * wWarm",
-        "                 + vec3(0.075, 0.145, 0.105) * wGreen",
-        "                 + vec3(0.34, 0.20, 0.36) * wPink;",
+        "  vec3 cCool  = vec3(0.02, 0.04, 0.08) + vec3(0.3, 0.7, 1.0) * (ndl * 0.4 + rim * 0.2);",
+        "  vec3 cWarm  = vec3(0.06, 0.03, 0.01) + vec3(1.0, 0.3, 0.1) * ndl * 0.5 + vec3(0.1, 0.8, 0.8) * rim * 0.3;",
+        "  vec3 cEmer  = vec3(0.01, 0.08, 0.04) + vec3(0.2, 1.0, 0.5) * (ndl * 0.6 + rim * 0.4);",
+        "  vec3 cPink  = vec3(0.15, 0.01, 0.08) + vec3(1.0, 0.1, 0.6) * (ndl * 0.8 + rim * 0.6) + vec3(0.1, 0.9, 1.0) * rim * 0.3;",
         "",
-        "  vec3 col = steelBase * (0.30 + 1.15 * ndl + 0.55 * rim);",
+        "  vec3 baseCol = cCool * wCool + cWarm * wWarm + cEmer * wEmer + cPink * wPink;",
         "",
-        "  if (vKind > 0.5 && vKind < 1.5) {",
-        "    // Dense architectural dark metallic micro-greeble panels (Frames 10-12!)",
-        "    float spec = pow(ndl, 6.0) * 0.42;",
-        "    col = steelBase * (0.14 + 0.45 * ndl) + vec3(spec) * (0.4 + wPink * 2.4);",
-        "  } else if (vKind > 1.5) {",
-        "    // Sharp Pinpoint Star-Glint Nodes + Radial Specular Falloff (zero flat rectangles!)",
-        "    bool secondary = vSeed > 0.56;",
-        "    float rFace = length(vFaceUv);",
-        "    float pinpoint = exp(-rFace * rFace * 3.8);",
-        "    float crossFlare = exp(-abs(vFaceUv.x) * 6.5) * exp(-abs(vFaceUv.y) * 1.4)",
-        "                     + exp(-abs(vFaceUv.y) * 6.5) * exp(-abs(vFaceUv.x) * 1.4);",
-        "    float spark = clamp(pinpoint * 1.25 + crossFlare * 0.55, 0.06, 2.2);",
-        "    vec3 glintCool  = secondary ? vec3(0.75, 1.65, 1.95) : vec3(2.25, 2.35, 2.50);",
-        "    vec3 glintWarm  = secondary ? vec3(0.32, 1.65, 1.55) : vec3(2.65, 0.62, 0.16);",
-        "    vec3 glintGreen = secondary ? vec3(0.35, 2.25, 1.15) : vec3(1.15, 2.65, 1.35);",
-        "    vec3 glintPink  = secondary ? vec3(0.35, 1.55, 2.35) : vec3(2.35, 0.45, 1.85);",
-        "    float flicker = 0.72 + 0.45 * sin(uPhase * 22.0 + vSeed * 31.0);",
-        "    col = (glintCool * wCool + glintWarm * wWarm + glintGreen * wGreen + glintPink * wPink) * flicker * spark;",
-        "  }",
+        "  float isGlint = step(1.5, vKind);",
+        "  float glintPhase = fract(vSeed * 7.31 + uPhase * 14.0);",
+        "  float glintInt = smoothstep(0.7, 0.95, glintPhase) * (1.0 - smoothstep(0.95, 1.0, glintPhase));",
+        "  vec3 glintColor = mix(vec3(0.2, 0.8, 1.0), vec3(1.0, 0.4, 0.1), wWarm) * 4.0;",
+        "  glintColor = mix(glintColor, vec3(0.4, 1.0, 0.6) * 5.0, wEmer);",
+        "  glintColor = mix(glintColor, vec3(1.0, 0.2, 0.8) * 6.0, wPink);",
+        "  baseCol += glintColor * isGlint * glintInt * (1.0 - uVortexPinch);",
         "",
-        "  // Frame 14 Vivid Saturated Neon Pink/Magenta & Electric Cyan Vortex Energy (no white blowout!)",
-        "  if (uVortexPinch > 0.01 && vKind < 0.5) {",
-        "    vec3 beamGlow = mix(vec3(0.22, 1.02, 1.68), vec3(1.58, 0.24, 1.22), fract(vSeed * 3.7));",
-        "    col = mix(col, beamGlow * (0.72 + 0.95 * rim), uVortexPinch * 0.92);",
-        "  }",
+        "  baseCol = mix(baseCol, vec3(2.0, 0.8, 1.5), uVortexPinch * 0.85);",
         "",
-        "  col *= mix(0.18, 1.0, depthFade);",
-        "  gl_FragColor = vec4(col * uOpacity, uOpacity);",
-        "}",
-      ].join("\n"),
+        "  gl_FragColor = vec4(baseCol * depthFade * uOpacity, uOpacity);",
+        "}"
+      ].join("\n")
     })
   );
 
-  const instMesh = new THREE.InstancedMesh(instGeo, tunnelMaterial, transforms.length);
-  for (let i = 0; i < transforms.length; i++) {
-    instMesh.setMatrixAt(i, transforms[i]);
-  }
-  instMesh.instanceMatrix.needsUpdate = true;
-  instMesh.frustumCulled = false;
-  group.add(instMesh);
-
-  // Frame 14 Central Blinding Pink-White Vortex Energy Core (`14_t18.2s`!)
   const vortexCoreMat = track(
     new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       uniforms: {
-        uIntensity: { value: 0.0 },
-        uMode: { value: 0.0 }, // 0 = Emerald atmospheric glow (`Frame 13`), 1 = Pink-cyan vortex core (`Frame 14`)
+        uMode: { value: 0.0 },
+        uIntensity: { value: 0.0 }
       },
       vertexShader: [
         "varying vec2 vUv;",
-        "void main() {",
-        "  vUv = uv;",
-        "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-        "}",
+        "void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }"
       ].join("\n"),
       fragmentShader: [
         "varying vec2 vUv;",
-        "uniform float uIntensity;",
         "uniform float uMode;",
+        "uniform float uIntensity;",
         "void main() {",
-        "  vec2 p = (vUv - 0.5) * 2.0;",
+        "  vec2 p = vUv * 2.0 - 1.0;",
         "  float r = length(p);",
-        "  float core = exp(-r * r * 6.8);",
-        "  float halo = exp(-r * 2.3);",
-        "  float ring = exp(-pow((r - 0.36) * 7.5, 2.0));",
-        "  float ringOuter = exp(-pow((r - 0.62) * 5.0, 2.0));",
-        "  vec3 pinkVortex = vec3(1.85, 1.55, 2.15) * core",
-        "                  + vec3(1.15, 0.26, 1.05) * halo * 0.72",
-        "                  + vec3(0.32, 0.95, 1.65) * ring * 0.85;",
-        "  vec3 emeraldWash = vec3(0.16, 0.88, 0.42) * halo * 0.55",
-        "                   + vec3(0.28, 1.15, 0.68) * ringOuter * 0.48;",
-        "  vec3 col = mix(emeraldWash, pinkVortex, uMode);",
-        "  float a = clamp(core + halo * 0.65 + ringOuter * 0.35, 0.0, 1.0) * uIntensity;",
-        "  gl_FragColor = vec4(col * uIntensity, a);",
-        "}",
-      ].join("\n"),
+        "  float core = exp(-r * 6.0) * 1.5 + exp(-r * 18.0) * 2.0;",
+        "  vec3 cE = vec3(0.3, 1.0, 0.7);",
+        "  vec3 cP = vec3(1.0, 0.4, 0.9);",
+        "  vec3 col = mix(cE, cP, uMode) * core;",
+        "  gl_FragColor = vec4(col * uIntensity, clamp(core * uIntensity, 0.0, 1.0));",
+        "}"
+      ].join("\n")
     })
   );
-  const vortexCoreMesh = new THREE.Mesh(track(new THREE.PlaneGeometry(9.5, 9.5)), vortexCoreMat);
-  vortexCoreMesh.position.set(0, 0, -4.5);
-  vortexCoreMesh.renderOrder = 8;
-  group.add(vortexCoreMesh);
 
-  // Seamless Lavender-White Portal Flash Veil bridging `Frame 14 -> Frame 15` (`0` hard cuts!)
+  const corePlane = new THREE.Mesh(track(new THREE.PlaneGeometry(16, 16)), vortexCoreMat);
+  corePlane.position.z = -12.0;
+  corePlane.renderOrder = 2;
+  group.add(corePlane);
+
   const flashVeilMat = track(
     new THREE.ShaderMaterial({
       transparent: true,
-      depthWrite: false,
       depthTest: false,
-      uniforms: {
-        uFlash: { value: 0.0 },
-      },
-      vertexShader: [
-        "varying vec2 vUv;",
-        "void main() {",
-        "  vUv = uv;",
-        "  gl_Position = vec4(position.xy * 2.0, 0.0, 1.0);",
-        "}",
-      ].join("\n"),
-      fragmentShader: [
-        "varying vec2 vUv;",
-        "uniform float uFlash;",
-        "void main() {",
-        "  float d = length(vUv - 0.5) * 2.0;",
-        "  vec3 col = mix(vec3(1.0, 0.99, 1.0), vec3(0.76, 0.72, 1.0), smoothstep(0.1, 1.1, d));",
-        "  gl_FragColor = vec4(col, uFlash);",
-        "}",
-      ].join("\n"),
+      depthWrite: false,
+      uniforms: { uFlash: { value: 0.0 } },
+      vertexShader: "void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }",
+      fragmentShader: "uniform float uFlash; void main() { gl_FragColor = vec4(1.0, 1.0, 1.0, uFlash); }"
     })
   );
-  const flashVeilMesh = new THREE.Mesh(track(new THREE.PlaneGeometry(1, 1)), flashVeilMat);
-  flashVeilMesh.frustumCulled = false;
-  flashVeilMesh.renderOrder = 30;
-  sceneAddSafe(group, flashVeilMesh);
+  const flashVeil = new THREE.Mesh(track(new THREE.PlaneGeometry(2, 2)), flashVeilMat);
+  flashVeil.renderOrder = 10;
+  flashVeil.frustumCulled = false;
+  group.add(flashVeil);
+
+  import("@/lib/lusion-buf-loader").then((m) => {
+    Promise.all([
+      m.loadLusionBuf("/assets/models/tunnels/grid_base_hd.buf"),
+      m.loadLusionBuf("/assets/models/tunnels/tunnel_block_wall.buf")
+    ]).then(([baseData, wallData]) => {
+      const gBase = track(baseData.geometry);
+      const gWall = track(wallData.geometry);
+
+      const instancesPerBay = 4;
+      const totalInstances = bayCount * instancesPerBay;
+      const m4 = new THREE.Matrix4();
+      const pos = new THREE.Vector3();
+      const quat = new THREE.Quaternion();
+      const euler = new THREE.Euler();
+      const scl = new THREE.Vector3(1, 1, 1);
+
+      let rng = 20261023;
+      const rand = () => { rng = (rng * 1664525 + 1013904223) >>> 0; return rng / 4294967296; };
+
+      const baseInstGeo = track(new THREE.InstancedBufferGeometry());
+      baseInstGeo.index = gBase.index;
+      baseInstGeo.attributes.position = gBase.attributes.position;
+      baseInstGeo.attributes.normal = gBase.attributes.normal;
+      baseInstGeo.instanceCount = totalInstances;
+      
+      const wallInstGeo = track(new THREE.InstancedBufferGeometry());
+      wallInstGeo.index = gWall.index;
+      wallInstGeo.attributes.position = gWall.attributes.position;
+      wallInstGeo.attributes.normal = gWall.attributes.normal;
+      wallInstGeo.instanceCount = totalInstances;
+
+      const baseSeeds = new Float32Array(totalInstances);
+      const baseKinds = new Float32Array(totalInstances);
+      const wallSeeds = new Float32Array(totalInstances);
+      const wallKinds = new Float32Array(totalInstances);
+
+      const baseInstMesh = new THREE.InstancedMesh(baseInstGeo, tunnelMaterial, totalInstances);
+      baseInstMesh.frustumCulled = false;
+      const wallInstMesh = new THREE.InstancedMesh(wallInstGeo, tunnelMaterial, totalInstances);
+      wallInstMesh.frustumCulled = false;
+
+      let idx = 0;
+      for (let b = 0; b < bayCount; b++) {
+        const z = 3.9 - b * baySpacing;
+        for (let rot = 0; rot < instancesPerBay; rot++) {
+          const angle = rot * (Math.PI / 2);
+          
+          quat.setFromEuler(new THREE.Euler(0, 0, angle));
+          
+          // `grid_base_hd` is the corners/frame.
+          // Translate outwards from center so the hole in the middle forms a corridor.
+          // If X: 0..3, Y: 0..1, then translating it so X=1.48, Y=1.48 puts the origin at the inner corner.
+          pos.set(1.48, 1.48, z);
+          pos.applyEuler(new THREE.Euler(0, 0, angle)); // rotate position too!
+          m4.compose(pos, quat, scl);
+          
+          baseInstMesh.setMatrixAt(idx, m4);
+          baseSeeds[idx] = rand();
+          baseKinds[idx] = 0; // structural
+          
+          // `tunnel_block_wall` X is -0.63..0.63, Y is -0.5..0.5.
+          // We can put it along the walls, e.g. at Y=1.48 + 0.5 = 1.98.
+          const wPos = new THREE.Vector3(0, 1.48 + 0.5, z);
+          wPos.applyEuler(new THREE.Euler(0, 0, angle));
+          m4.compose(wPos, quat, scl);
+          
+          wallInstMesh.setMatrixAt(idx, m4);
+          wallSeeds[idx] = rand();
+          wallKinds[idx] = rand() < 0.15 ? 2 : 1; // glint or dark panel
+          
+          idx++;
+        }
+      }
+
+      baseInstGeo.setAttribute("aSeed", new THREE.InstancedBufferAttribute(baseSeeds, 1));
+      baseInstGeo.setAttribute("aKind", new THREE.InstancedBufferAttribute(baseKinds, 1));
+      wallInstGeo.setAttribute("aSeed", new THREE.InstancedBufferAttribute(wallSeeds, 1));
+      wallInstGeo.setAttribute("aKind", new THREE.InstancedBufferAttribute(wallKinds, 1));
+
+      baseInstMesh.instanceMatrix.needsUpdate = true;
+      wallInstMesh.instanceMatrix.needsUpdate = true;
+
+      group.add(baseInstMesh);
+      group.add(wallInstMesh);
+    });
+  });
 
   return { group, tunnelMaterial, vortexCoreMat, flashVeilMat, baySpacing };
 }
-
-function sceneAddSafe(parent: THREE.Group, child: THREE.Object3D) {
-  parent.add(child);
-}
-
-/**
- * Royal Cobalt Architectural Arch & White Ring Corridor (`Frames 15 & 16`)
- * Single merged draw calls (3 draw calls total instead of 42!).
- */
 export function buildBlueArchCorridor(
   track: <T extends { dispose: () => void }>(item: T) => T
 ): {

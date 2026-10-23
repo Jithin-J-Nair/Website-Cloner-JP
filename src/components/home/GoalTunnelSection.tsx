@@ -332,8 +332,8 @@ export function GoalTunnelSection() {
     Promise.all([
       glbPromise,
       import("@/lib/lusion-buf-loader").then((m) => Promise.all([
-        m.loadLusionBuf("/models/tunnels/broken_glass.buf"),
-        m.loadLusionBuf("/models/tunnels/broken_glass_animation.buf"),
+        m.loadLusionBuf("/assets/models/tunnels/broken_glass.buf"),
+        m.loadLusionBuf("/assets/models/tunnels/broken_glass_animation.buf"),
       ]))
     ])
       .then(([{ primary, createClone }, [bg, bga]]) => {
@@ -364,6 +364,7 @@ export function GoalTunnelSection() {
         
         const mat = track(
           new THREE.ShaderMaterial({
+            defines: { USE_SHARDS: 1 },
             transparent: true,
             side: THREE.DoubleSide,
             depthWrite: false,
@@ -1215,9 +1216,9 @@ export function GoalTunnelSection() {
           const od = texOrient.image.data;
           
           for (let p = 0; p < numShards; p++) {
-            // The animation buffer appears to be frame-major: frame 0 pieces 0..N, frame 1 pieces 0..N
-            const idx0 = (iF * numShards + p);
-            const idx1 = (iN * numShards + p);
+            // The animation buffer appears to be piece-major: piece 0 frames 0..N, piece 1 frames 0..N
+            const idx0 = (p * framesPerShard + iF);
+            const idx1 = (p * framesPerShard + iN);
             
             fd[p*4+0] = lerp(animData[idx0*3+0], animData[idx1*3+0], fT);
             fd[p*4+1] = lerp(animData[idx0*3+1], animData[idx1*3+1], fT);

@@ -1,6 +1,6 @@
 {
   "mode": "after",
-  "capturedAt": "2026-10-23T10:40:18.278Z",
+  "capturedAt": "2026-10-23T17:09:52.136Z",
   "viewports": {
     "1440x900": {
       "layout": {
@@ -115,7 +115,7 @@
             "qualityTier": "desktop",
             "drawCalls": 5,
             "triangles": 55516,
-            "lastFrameMs": 1.6,
+            "lastFrameMs": 2.3,
             "emergenceProgress": 0.9907,
             "portalStencilActive": false
           }
@@ -130,7 +130,7 @@
             "qualityTier": "desktop",
             "drawCalls": 5,
             "triangles": 55516,
-            "lastFrameMs": 0.8,
+            "lastFrameMs": 1.1,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -143,9 +143,9 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "desktop",
-            "drawCalls": 8,
-            "triangles": 78560,
-            "lastFrameMs": 0.6,
+            "drawCalls": 9,
+            "triangles": 345770,
+            "lastFrameMs": 1.1,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -158,9 +158,9 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "desktop",
-            "drawCalls": 8,
-            "triangles": 78560,
-            "lastFrameMs": 0.7,
+            "drawCalls": 9,
+            "triangles": 345770,
+            "lastFrameMs": 1.2,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -173,9 +173,9 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "desktop",
-            "drawCalls": 24,
-            "triangles": 300616,
-            "lastFrameMs": 2.7,
+            "drawCalls": 25,
+            "triangles": 567826,
+            "lastFrameMs": 1.4,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -188,8 +188,8 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "desktop",
-            "drawCalls": 7,
-            "triangles": 78558,
+            "drawCalls": 8,
+            "triangles": 345768,
             "lastFrameMs": 0.7,
             "emergenceProgress": 1,
             "portalStencilActive": false
@@ -205,7 +205,7 @@
             "qualityTier": "desktop",
             "drawCalls": 8,
             "triangles": 56136,
-            "lastFrameMs": 0.6,
+            "lastFrameMs": 1.9,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -219,8 +219,8 @@
             "glbLoaded": true,
             "qualityTier": "desktop",
             "drawCalls": 10,
-            "triangles": 57626,
-            "lastFrameMs": 1.5,
+            "triangles": null,
+            "lastFrameMs": 1.3,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -235,7 +235,7 @@
             "qualityTier": "desktop",
             "drawCalls": 7,
             "triangles": 57422,
-            "lastFrameMs": 0.7,
+            "lastFrameMs": 1.2,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -250,7 +250,7 @@
             "qualityTier": "desktop",
             "drawCalls": 8,
             "triangles": 58190,
-            "lastFrameMs": 1,
+            "lastFrameMs": 0.7,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -265,7 +265,7 @@
             "qualityTier": "desktop",
             "drawCalls": 8,
             "triangles": 58190,
-            "lastFrameMs": 0.8,
+            "lastFrameMs": 1.5,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -280,7 +280,7 @@
             "qualityTier": "desktop",
             "drawCalls": 8,
             "triangles": 58190,
-            "lastFrameMs": 0.5,
+            "lastFrameMs": 1.1,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -292,8 +292,8 @@
       },
       "sweepPerf": {
         "samples": 41,
-        "meanFrameMs": 185.91,
-        "maxFrameMs": 995,
+        "meanFrameMs": 423.35,
+        "maxFrameMs": 2251,
         "consoleReady": true
       },
       "consoleErrors": [],
@@ -412,7 +412,7 @@
             "qualityTier": "mobile",
             "drawCalls": 5,
             "triangles": 55516,
-            "lastFrameMs": 0.9,
+            "lastFrameMs": 1.5,
             "emergenceProgress": 0.9901,
             "portalStencilActive": false
           }
@@ -427,7 +427,7 @@
             "qualityTier": "mobile",
             "drawCalls": 5,
             "triangles": 55516,
-            "lastFrameMs": 0.8,
+            "lastFrameMs": 1.1,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -440,9 +440,9 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "mobile",
-            "drawCalls": 8,
-            "triangles": 67136,
-            "lastFrameMs": 1.5,
+            "drawCalls": 9,
+            "triangles": 261920,
+            "lastFrameMs": 1,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -455,8 +455,8 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "mobile",
-            "drawCalls": 8,
-            "triangles": 67136,
+            "drawCalls": 9,
+            "triangles": 261920,
             "lastFrameMs": 0.9,
             "emergenceProgress": 1,
             "portalStencilActive": false
@@ -470,9 +470,9 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "mobile",
-            "drawCalls": 16,
-            "triangles": 178164,
-            "lastFrameMs": 2.4,
+            "drawCalls": 17,
+            "triangles": 372948,
+            "lastFrameMs": 2.2,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -485,9 +485,9 @@
           "telemetry": {
             "glbLoaded": true,
             "qualityTier": "mobile",
-            "drawCalls": 7,
-            "triangles": 67134,
-            "lastFrameMs": 0.6,
+            "drawCalls": 8,
+            "triangles": 261918,
+            "lastFrameMs": 1.1,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -502,7 +502,7 @@
             "qualityTier": "mobile",
             "drawCalls": 8,
             "triangles": 56136,
-            "lastFrameMs": 0.5,
+            "lastFrameMs": 0.7,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -516,8 +516,8 @@
             "glbLoaded": true,
             "qualityTier": "mobile",
             "drawCalls": 10,
-            "triangles": 57050,
-            "lastFrameMs": 0.8,
+            "triangles": null,
+            "lastFrameMs": 1.4,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -532,7 +532,7 @@
             "qualityTier": "mobile",
             "drawCalls": 7,
             "triangles": 56762,
-            "lastFrameMs": 0.6,
+            "lastFrameMs": 1.2,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -547,7 +547,7 @@
             "qualityTier": "mobile",
             "drawCalls": 8,
             "triangles": 57530,
-            "lastFrameMs": 0.6,
+            "lastFrameMs": 1.2,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -562,7 +562,7 @@
             "qualityTier": "mobile",
             "drawCalls": 8,
             "triangles": 57530,
-            "lastFrameMs": 1.3,
+            "lastFrameMs": 2.2,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -577,7 +577,7 @@
             "qualityTier": "mobile",
             "drawCalls": 8,
             "triangles": 57530,
-            "lastFrameMs": 0.7,
+            "lastFrameMs": 0.8,
             "emergenceProgress": 1,
             "portalStencilActive": false
           }
@@ -589,8 +589,8 @@
       },
       "sweepPerf": {
         "samples": 41,
-        "meanFrameMs": 113.96,
-        "maxFrameMs": 645.2,
+        "meanFrameMs": 242.7,
+        "maxFrameMs": 1744.1,
         "consoleReady": true
       },
       "consoleErrors": [],
