@@ -26,6 +26,27 @@ export function CustomCursor() {
 
     let prevX = 0;
     let prevY = 0;
+    let ringX = -100;
+    let ringY = -100;
+    let rafId = 0;
+
+    const renderLoop = () => {
+      rafId = 0;
+      const tx = STAGE_TELEMETRY.clientX;
+      const ty = STAGE_TELEMETRY.clientY;
+      ringX += (tx - ringX) * 0.2;
+      ringY += (ty - ringY) * 0.2;
+
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) translate(-50%, -50%)`;
+      }
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+      }
+      if (Math.hypot(tx - ringX, ty - ringY) > 0.25) {
+        rafId = window.requestAnimationFrame(renderLoop);
+      }
+    };
 
     const onPointerMove = (e: PointerEvent) => {
       const nx = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
@@ -40,32 +61,13 @@ export function CustomCursor() {
       STAGE_TELEMETRY.pointerVelocity = Math.hypot(vx, vy);
       STAGE_TELEMETRY.clientX = e.clientX;
       STAGE_TELEMETRY.clientY = e.clientY;
+
+      if (!rafId && mq.matches && !reducedMotion) {
+        rafId = window.requestAnimationFrame(renderLoop);
+      }
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-
-    let ringX = -100;
-    let ringY = -100;
-    let rafId = 0;
-
-    const renderLoop = () => {
-      const tx = STAGE_TELEMETRY.clientX;
-      const ty = STAGE_TELEMETRY.clientY;
-      ringX += (tx - ringX) * 0.2;
-      ringY += (ty - ringY) * 0.2;
-
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) translate(-50%, -50%)`;
-      }
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
-      }
-      rafId = window.requestAnimationFrame(renderLoop);
-    };
-
-    if (mq.matches && !reducedMotion) {
-      rafId = window.requestAnimationFrame(renderLoop);
-    }
 
     return () => {
       mq.removeEventListener("change", update);

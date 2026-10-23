@@ -1,0 +1,600 @@
+{
+  "mode": "after",
+  "capturedAt": "2026-10-23T10:40:18.278Z",
+  "viewports": {
+    "1440x900": {
+      "layout": {
+        "vh": 900,
+        "scrollHeight": 42934,
+        "reelTop": 900,
+        "reelVideoTop": 1824,
+        "featuredTop": 2731,
+        "ctaTitleTop": 41238,
+        "footerTop": 42028,
+        "ranges": {
+          "blackTitle": {
+            "id": "blackTitle",
+            "pixelFrom": 9779.4,
+            "pixelCount": 1641.6000000000004,
+            "pixelTo": 11421
+          },
+          "blackTunnel": {
+            "id": "blackTunnel",
+            "pixelFrom": 11421,
+            "pixelCount": 18907.2,
+            "pixelTo": 30328.2
+          },
+          "whiteTunnel": {
+            "id": "whiteTunnel",
+            "pixelFrom": 30328.2,
+            "pixelCount": 7352.799999999999,
+            "pixelTo": 37681
+          },
+          "astronautDrop": {
+            "id": "astronautDrop",
+            "pixelFrom": 37656,
+            "pixelCount": 2140,
+            "pixelTo": 39796
+          },
+          "astronautWait": {
+            "id": "astronautWait",
+            "pixelFrom": 39796,
+            "pixelCount": 2232,
+            "pixelTo": 42028
+          }
+        }
+      },
+      "stats": [
+        {
+          "state": "01-hero",
+          "targetY": 0,
+          "scrollY": 0,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "02-reel-intro",
+          "targetY": 972,
+          "scrollY": 972,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "03-reel-stage",
+          "targetY": 1752,
+          "scrollY": 1752,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "04-featured-top",
+          "targetY": 2776,
+          "scrollY": 2776,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "08-emergence-end",
+          "targetY": 11381,
+          "scrollY": 11381,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 5,
+            "triangles": 55516,
+            "lastFrameMs": 1.6,
+            "emergenceProgress": 0.9907,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "09-tunnel-entry",
+          "targetY": 12366,
+          "scrollY": 12366,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 5,
+            "triangles": 55516,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "10-tunnel-dark-truss",
+          "targetY": 16148,
+          "scrollY": 16148,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 8,
+            "triangles": 78560,
+            "lastFrameMs": 0.6,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "12-tunnel-red-teal",
+          "targetY": 21631,
+          "scrollY": 21631,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 8,
+            "triangles": 78560,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "13-tunnel-emerald-twist",
+          "targetY": 25980,
+          "scrollY": 25980,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 24,
+            "triangles": 300616,
+            "lastFrameMs": 2.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "14-tunnel-pink-vortex",
+          "targetY": 31211,
+          "scrollY": 31211,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 7,
+            "triangles": 78558,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "15-blue-arch-tunnel",
+          "targetY": 35916,
+          "scrollY": 35916,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 8,
+            "triangles": 56136,
+            "lastFrameMs": 0.6,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "16-monitor-glass-shatter",
+          "targetY": 39111,
+          "scrollY": 39111,
+          "activeSurface": "is-ready is-white-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 10,
+            "triangles": 57626,
+            "lastFrameMs": 1.5,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "17-astronaut-stickers-wait",
+          "targetY": 39975,
+          "scrollY": 39975,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 7,
+            "triangles": 57422,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "19-cta-lets-work-together",
+          "targetY": 40914,
+          "scrollY": 40914,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 8,
+            "triangles": 58190,
+            "lastFrameMs": 1,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "18-footer-white-wipe",
+          "targetY": 41560,
+          "scrollY": 41560,
+          "activeSurface": "is-ready is-white-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 8,
+            "triangles": 58190,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "20-footer-portal",
+          "targetY": 42034,
+          "scrollY": 42034,
+          "activeSurface": "is-ready is-white-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "desktop",
+            "drawCalls": 8,
+            "triangles": 58190,
+            "lastFrameMs": 0.5,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        }
+      ],
+      "idleRafAudit": {
+        "featuredScrollY": 2956,
+        "rafCallsIn400ms": 26
+      },
+      "sweepPerf": {
+        "samples": 41,
+        "meanFrameMs": 185.91,
+        "maxFrameMs": 995,
+        "consoleReady": true
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    "390x844": {
+      "layout": {
+        "vh": 844,
+        "scrollHeight": 40054,
+        "reelTop": 844,
+        "reelVideoTop": 1536,
+        "featuredTop": 2171,
+        "ctaTitleTop": 38609,
+        "footerTop": 39210,
+        "ranges": {
+          "blackTitle": {
+            "id": "blackTitle",
+            "pixelFrom": 9248.743999999999,
+            "pixelCount": 1539.456000000002,
+            "pixelTo": 10788.2
+          },
+          "blackTunnel": {
+            "id": "blackTunnel",
+            "pixelFrom": 10788.2,
+            "pixelCount": 17711.136,
+            "pixelTo": 28499.336
+          },
+          "whiteTunnel": {
+            "id": "whiteTunnel",
+            "pixelFrom": 28499.336,
+            "pixelCount": 6887.664000000001,
+            "pixelTo": 35387
+          },
+          "astronautDrop": {
+            "id": "astronautDrop",
+            "pixelFrom": 35743,
+            "pixelCount": 1628,
+            "pixelTo": 37371
+          },
+          "astronautWait": {
+            "id": "astronautWait",
+            "pixelFrom": 37371,
+            "pixelCount": 1840,
+            "pixelTo": 39211
+          }
+        }
+      },
+      "stats": [
+        {
+          "state": "01-hero",
+          "targetY": 0,
+          "scrollY": 0,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "02-reel-intro",
+          "targetY": 912,
+          "scrollY": 912,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "03-reel-stage",
+          "targetY": 1468,
+          "scrollY": 1468,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "04-featured-top",
+          "targetY": 2213,
+          "scrollY": 2213,
+          "activeSurface": "is-white-bg is-ready",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true
+          }
+        },
+        {
+          "state": "08-emergence-end",
+          "targetY": 10748,
+          "scrollY": 10748,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 5,
+            "triangles": 55516,
+            "lastFrameMs": 0.9,
+            "emergenceProgress": 0.9901,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "09-tunnel-entry",
+          "targetY": 11674,
+          "scrollY": 11674,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 5,
+            "triangles": 55516,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "10-tunnel-dark-truss",
+          "targetY": 15216,
+          "scrollY": 15216,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 8,
+            "triangles": 67136,
+            "lastFrameMs": 1.5,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "12-tunnel-red-teal",
+          "targetY": 20352,
+          "scrollY": 20352,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 8,
+            "triangles": 67136,
+            "lastFrameMs": 0.9,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "13-tunnel-emerald-twist",
+          "targetY": 24426,
+          "scrollY": 24426,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 16,
+            "triangles": 178164,
+            "lastFrameMs": 2.4,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "14-tunnel-pink-vortex",
+          "targetY": 29326,
+          "scrollY": 29326,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 7,
+            "triangles": 67134,
+            "lastFrameMs": 0.6,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "15-blue-arch-tunnel",
+          "targetY": 33734,
+          "scrollY": 33734,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 8,
+            "triangles": 56136,
+            "lastFrameMs": 0.5,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "16-monitor-glass-shatter",
+          "targetY": 36850,
+          "scrollY": 36850,
+          "activeSurface": "is-ready is-white-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 10,
+            "triangles": 57050,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "17-astronaut-stickers-wait",
+          "targetY": 37518,
+          "scrollY": 37518,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 7,
+            "triangles": 56762,
+            "lastFrameMs": 0.6,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "19-cta-lets-work-together",
+          "targetY": 38305,
+          "scrollY": 38305,
+          "activeSurface": "is-ready is-black-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 8,
+            "triangles": 57530,
+            "lastFrameMs": 0.6,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "18-footer-white-wipe",
+          "targetY": 38771,
+          "scrollY": 38771,
+          "activeSurface": "is-ready is-white-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 8,
+            "triangles": 57530,
+            "lastFrameMs": 1.3,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        },
+        {
+          "state": "20-footer-portal",
+          "targetY": 39210,
+          "scrollY": 39210,
+          "activeSurface": "is-ready is-white-bg",
+          "telemetry": {
+            "glbLoaded": true,
+            "qualityTier": "mobile",
+            "drawCalls": 8,
+            "triangles": 57530,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false
+          }
+        }
+      ],
+      "idleRafAudit": {
+        "featuredScrollY": 2382,
+        "rafCallsIn400ms": 25
+      },
+      "sweepPerf": {
+        "samples": 41,
+        "meanFrameMs": 113.96,
+        "maxFrameMs": 645.2,
+        "consoleReady": true
+      },
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  }
+}

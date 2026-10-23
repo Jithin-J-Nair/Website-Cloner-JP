@@ -328,40 +328,38 @@ export function ContactCtaSection({
         id={sectionId}
         surface="void"
         webglMode="contact-beacon"
-        className="relative z-10 w-full !bg-[#000000] py-0 text-[#ffffff]"
+        className="relative z-[20] w-full !bg-transparent py-0 text-[#ffffff]"
       >
         <style>{`
           .home-end-cta-shell {
-            min-height: 205vh;
+            min-height: 248vh;
           }
           .home-end-cta-pad {
-            padding-top: 102vh;
-            padding-bottom: 24vh;
+            padding-top: 124vh;
+            padding-bottom: 28vh;
           }
           @media (max-width: 819px) {
             .home-end-cta-shell {
-              min-height: 145vh;
+              min-height: 218vh;
             }
             .home-end-cta-pad {
-              padding-top: 23vh;
-              padding-bottom: 22vh;
+              padding-top: 108vh;
+              padding-bottom: 24vh;
             }
           }
         `}</style>
 
-        <div className="home-end-cta-shell relative flex w-full flex-col justify-between bg-[#000000]">
+        <div className="home-end-cta-shell relative flex w-full flex-col justify-between bg-transparent pt-[26vh]">
           <div
             id="end-section-outer"
             className="home-end-cta-pad relative mx-auto flex w-full flex-col items-center justify-center px-[var(--base-padding-x)]"
           >
+            {/* Symmetric Quadrant + Center Registration Crosshairs matching Reference Frames 19 & 20 */}
             <div
               id="end-section-content-crosses"
               aria-hidden="true"
-              className="mb-10 flex w-full max-w-[60vw] items-center justify-between text-white/60 max-[560px]:max-w-full"
+              className="pointer-events-none relative mx-auto mb-10 flex w-full items-center justify-between px-[1vw] text-white/90"
             >
-              <span className="lusion-plus-cross" />
-              <span className="lusion-plus-cross" />
-              <span className="lusion-plus-cross" />
               <span className="lusion-plus-cross" />
               <span className="lusion-plus-cross" />
             </div>
@@ -370,19 +368,19 @@ export function ContactCtaSection({
               <div id="end-section-subtitle" className="overflow-hidden">
                 <p
                   id="end-section-subtitle-text"
-                  className="mx-auto max-w-[16ch] font-sans text-[clamp(0.85rem,1.08vw,1.1rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white/95"
+                  className="mx-auto max-w-[26ch] font-sans text-[clamp(0.84rem,1.06vw,1.08rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white sm:max-w-none sm:whitespace-nowrap"
                 >
                   {LUSION_GLOBAL_CHROME.endSection.subtitle}
                 </p>
               </div>
 
-              <div id="end-section-title" className="group relative mx-auto mt-4 w-fit">
+              <div id="end-section-title" className="group relative mx-auto mt-5 w-fit">
                 <a
                   id="end-section-title-link"
                   href={`mailto:${LUSION_GLOBAL_CHROME.footer.businessEmail}`}
                   onClick={handleEmailTrigger}
                   onMouseEnter={() => soundEngine.playHover()}
-                  className="block font-sans text-[17.2vw] font-normal leading-[0.98] tracking-[-0.03em] text-white sm:text-[8.2vw] min-[1800px]:text-[9.5rem]"
+                  className="block font-sans text-[17.2vw] font-normal leading-[0.98] tracking-[-0.03em] text-white drop-shadow-[0_6px_28px_rgba(0,0,0,0.45)] sm:text-[8.2vw] min-[1800px]:text-[9.5rem]"
                 >
                   Let&apos;s work
                   <br />
@@ -401,11 +399,21 @@ export function ContactCtaSection({
                   {LUSION_GLOBAL_CHROME.footer.businessEmail} copied to clipboard
                 </p>
               )}
+
+              {/* Lower Quadrant + Center Registration Crosshairs (`Frames 19 & 20`) */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none mx-auto mt-16 flex w-full items-center justify-between px-[1vw] text-white/90"
+              >
+                <span className="lusion-plus-cross" />
+                <span className="lusion-plus-cross" />
+                <span className="lusion-plus-cross" />
+              </div>
             </div>
           </div>
 
-          {/* Sticky Bottom White Pill (`#end-bottom` — visible throughout `#end-section` wait & CTA) */}
-          <div className="pointer-events-none sticky bottom-7 z-30 flex w-full justify-center pb-4">
+          {/* Sticky Bottom White Pill (`#end-bottom` — visible throughout `#end-section` wait & CTA, stops cleanly before `#footer-section`) */}
+          <div className="pointer-events-none sticky bottom-7 z-30 flex w-full justify-center pb-8">
             <a
               id="end-bottom"
               href="#footer-section"

@@ -188,7 +188,7 @@ export function StudioFooter({
       <footer
         id="footer-section"
         ref={footerRef}
-        className="relative z-10 flex min-h-[728px] flex-col justify-between bg-[#ffffff] px-[var(--base-padding-x)] pt-32 pb-8 text-[clamp(0.875rem,1vw,1.1rem)] text-[#000000] md:min-h-[472px] md:pt-20 md:pb-8"
+        className="relative z-[32] flex min-h-[728px] flex-col justify-between bg-[#ffffff] px-[var(--base-padding-x)] pt-32 pb-8 text-[clamp(0.875rem,1vw,1.1rem)] text-[#000000] md:min-h-[472px] md:pt-20 md:pb-8"
       >
         {/* Subtle Curved Top Edge Crest (`#footer-bg`) */}
         <div
@@ -459,7 +459,7 @@ export function StudioFooter({
         id="scroll-nav-section"
         ref={portalRef}
         data-path={resolvedPortal.targetPath}
-        className="relative z-10 flex flex-col justify-between overflow-hidden bg-[#121416] px-[var(--base-padding-x)] py-7 text-[clamp(0.875rem,1vw,1.25rem)] text-white max-[812px]:max-h-[116px] max-[812px]:focus-within:max-h-[340px] md:min-h-[428px] md:py-11"
+        className="relative z-[32] flex flex-col justify-between overflow-hidden bg-[#121416] px-[var(--base-padding-x)] py-7 text-[clamp(0.875rem,1vw,1.25rem)] text-white max-[812px]:max-h-[116px] max-[812px]:focus-within:max-h-[340px] md:min-h-[428px] md:py-11"
       >
         <div id="scroll-nav-content" className="uppercase">
           <div id="scroll-nav-subtitle" className="text-[0.85em] leading-[1.35] text-white/80">
