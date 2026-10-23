@@ -1,0 +1,393 @@
+{
+  "timestamp": "2026-10-23T07:35:18.731Z",
+  "viewports": {
+    "1440x900": [
+      {
+        "u": 0,
+        "scrollY": 6955,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "desktop",
+          "renderWidth": 1440,
+          "renderHeight": 900,
+          "pixelRatio": 1,
+          "textureMaxDim": 2048,
+          "drawCalls": 19,
+          "triangles": 74440,
+          "lastFrameMs": 0.6,
+          "emergenceProgress": 0,
+          "portalStencilActive": true,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "17.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-01--1440x900.png"
+      },
+      {
+        "u": 0.19,
+        "scrollY": 7775.8,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "desktop",
+          "renderWidth": 1440,
+          "renderHeight": 900,
+          "pixelRatio": 1,
+          "textureMaxDim": 2048,
+          "drawCalls": 19,
+          "triangles": 74440,
+          "lastFrameMs": 1.9,
+          "emergenceProgress": 0.19,
+          "portalStencilActive": true,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "17.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-03--1440x900.png"
+      },
+      {
+        "u": 0.4,
+        "scrollY": 8683,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "desktop",
+          "renderWidth": 1440,
+          "renderHeight": 900,
+          "pixelRatio": 1,
+          "textureMaxDim": 2048,
+          "drawCalls": 6,
+          "triangles": 55518,
+          "lastFrameMs": 0.6,
+          "emergenceProgress": 0.4,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "17.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-04--1440x900.png"
+      },
+      {
+        "u": 0.53,
+        "scrollY": 9244.6,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "desktop",
+          "renderWidth": 1440,
+          "renderHeight": 900,
+          "pixelRatio": 1,
+          "textureMaxDim": 2048,
+          "drawCalls": 7,
+          "triangles": 55520,
+          "lastFrameMs": 1.7,
+          "emergenceProgress": 0.53,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "17.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-05--1440x900.png"
+      },
+      {
+        "u": 0.66,
+        "scrollY": 9806.2,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "desktop",
+          "renderWidth": 1440,
+          "renderHeight": 900,
+          "pixelRatio": 1,
+          "textureMaxDim": 2048,
+          "drawCalls": 7,
+          "triangles": 55520,
+          "lastFrameMs": 0.6,
+          "emergenceProgress": 0.66,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": true,
+        "titleOpacity": 0.44,
+        "titleZIndex": "16",
+        "titleColumnGap": "17.94px",
+        "titleWidthPx": 736,
+        "screenshot": "docs/validation/astronaut-emergence/kf-06--1440x900.png"
+      },
+      {
+        "u": 0.79,
+        "scrollY": 10367.8,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "desktop",
+          "renderWidth": 1440,
+          "renderHeight": 900,
+          "pixelRatio": 1,
+          "textureMaxDim": 2048,
+          "drawCalls": 6,
+          "triangles": 55518,
+          "lastFrameMs": 0.5,
+          "emergenceProgress": 0.79,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": true,
+        "titleOpacity": 0.439902,
+        "titleZIndex": "16",
+        "titleColumnGap": "17.94px",
+        "titleWidthPx": 736,
+        "screenshot": "docs/validation/astronaut-emergence/kf-07--1440x900.png"
+      },
+      {
+        "u": 0.91,
+        "scrollY": 10886.2,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "desktop",
+          "renderWidth": 1440,
+          "renderHeight": 900,
+          "pixelRatio": 1,
+          "textureMaxDim": 2048,
+          "drawCalls": 6,
+          "triangles": 55518,
+          "lastFrameMs": 0.7,
+          "emergenceProgress": 0.91,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": true,
+        "titleOpacity": 0.980061,
+        "titleZIndex": "16",
+        "titleColumnGap": "37.04px",
+        "titleWidthPx": 919,
+        "screenshot": "docs/validation/astronaut-emergence/kf-08--1440x900.png"
+      }
+    ],
+    "390x844": [
+      {
+        "u": 0,
+        "scrollY": 6688,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "mobile",
+          "renderWidth": 390,
+          "renderHeight": 844,
+          "pixelRatio": 1,
+          "textureMaxDim": 1024,
+          "drawCalls": 19,
+          "triangles": 74440,
+          "lastFrameMs": 2.9,
+          "emergenceProgress": 0,
+          "portalStencilActive": true,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "5.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-01--390x844.png"
+      },
+      {
+        "u": 0.19,
+        "scrollY": 7457.728,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "mobile",
+          "renderWidth": 390,
+          "renderHeight": 844,
+          "pixelRatio": 1,
+          "textureMaxDim": 1024,
+          "drawCalls": 15,
+          "triangles": 74380,
+          "lastFrameMs": 0.8,
+          "emergenceProgress": 0.19,
+          "portalStencilActive": true,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "5.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-03--390x844.png"
+      },
+      {
+        "u": 0.4,
+        "scrollY": 8308.48,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "mobile",
+          "renderWidth": 390,
+          "renderHeight": 844,
+          "pixelRatio": 1,
+          "textureMaxDim": 1024,
+          "drawCalls": 6,
+          "triangles": 55518,
+          "lastFrameMs": 0.7,
+          "emergenceProgress": 0.4,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "5.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-04--390x844.png"
+      },
+      {
+        "u": 0.53,
+        "scrollY": 8835.136,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "mobile",
+          "renderWidth": 390,
+          "renderHeight": 844,
+          "pixelRatio": 1,
+          "textureMaxDim": 1024,
+          "drawCalls": 7,
+          "triangles": 55520,
+          "lastFrameMs": 0.6,
+          "emergenceProgress": 0.53,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": false,
+        "titleOpacity": 1,
+        "titleZIndex": "16",
+        "titleColumnGap": "5.9px",
+        "titleWidthPx": 0,
+        "screenshot": "docs/validation/astronaut-emergence/kf-05--390x844.png"
+      },
+      {
+        "u": 0.66,
+        "scrollY": 9361.792,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "mobile",
+          "renderWidth": 390,
+          "renderHeight": 844,
+          "pixelRatio": 1,
+          "textureMaxDim": 1024,
+          "drawCalls": 7,
+          "triangles": 55520,
+          "lastFrameMs": 1.6,
+          "emergenceProgress": 0.66,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": true,
+        "titleOpacity": 0.44,
+        "titleZIndex": "16",
+        "titleColumnGap": "5.88px",
+        "titleWidthPx": 242,
+        "screenshot": "docs/validation/astronaut-emergence/kf-06--390x844.png"
+      },
+      {
+        "u": 0.79,
+        "scrollY": 9888.448,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "mobile",
+          "renderWidth": 390,
+          "renderHeight": 844,
+          "pixelRatio": 1,
+          "textureMaxDim": 1024,
+          "drawCalls": 6,
+          "triangles": 55518,
+          "lastFrameMs": 0.7,
+          "emergenceProgress": 0.79,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": true,
+        "titleOpacity": 0.440109,
+        "titleZIndex": "16",
+        "titleColumnGap": "5.88px",
+        "titleWidthPx": 242,
+        "screenshot": "docs/validation/astronaut-emergence/kf-07--390x844.png"
+      },
+      {
+        "u": 0.91,
+        "scrollY": 10374.592,
+        "telemetry": {
+          "glbLoaded": true,
+          "glbError": null,
+          "qualityTier": "mobile",
+          "renderWidth": 390,
+          "renderHeight": 844,
+          "pixelRatio": 1,
+          "textureMaxDim": 1024,
+          "drawCalls": 6,
+          "triangles": 55518,
+          "lastFrameMs": 0.6,
+          "emergenceProgress": 0.91,
+          "portalStencilActive": false,
+          "fallbackVisible": false
+        },
+        "titleVisible": true,
+        "titleOpacity": 0.979866,
+        "titleZIndex": "16",
+        "titleColumnGap": "9.21px",
+        "titleWidthPx": 291,
+        "screenshot": "docs/validation/astronaut-emergence/kf-08--390x844.png"
+      }
+    ]
+  },
+  "determinism": {
+    "1440x900": {
+      "forwardSha256": "0b2def247685464a169d69aa0ac4ebcf235bda6b8dd4cbc125e44a1ccdc1ae29",
+      "reverseJumpSha256": "0b2def247685464a169d69aa0ac4ebcf235bda6b8dd4cbc125e44a1ccdc1ae29",
+      "exactMatch": true
+    },
+    "390x844": {
+      "forwardSha256": "27618444964893b55fd478ee91f985c4fe3b11699fbda3473f97a3bcffa23a49",
+      "reverseJumpSha256": "27618444964893b55fd478ee91f985c4fe3b11699fbda3473f97a3bcffa23a49",
+      "exactMatch": true
+    }
+  },
+  "portalContinuity": {
+    "1440x900": {
+      "beforeBytes": 249467,
+      "afterBytes": 246927
+    },
+    "390x844": {
+      "beforeBytes": 134361,
+      "afterBytes": 139760
+    }
+  },
+  "assetFailureFallback": {
+    "glbLoaded": false,
+    "fallbackVisible": true,
+    "posterDisplay": "flex",
+    "posterTextPresent": true
+  },
+  "cleanupVerified": {
+    "path": "/about",
+    "telemetryRemovedOnUnmount": true,
+    "goalOverlayCanvasesRemaining": 0
+  },
+  "errors": []
+}
