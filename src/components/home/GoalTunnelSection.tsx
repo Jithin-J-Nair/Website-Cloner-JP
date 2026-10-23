@@ -315,70 +315,121 @@ export function GoalTunnelSection() {
     scene.add(blueCorridor.monitorStencilMask);
 
     // Sharp Polygonal Clear Plate-Glass Shards (`Frame 16` Studio Display Shatter!)
-    const SHARD_COUNT = isMobileInit ? 76 : 124;
-    const shardGeo = track(new THREE.CylinderGeometry(0.012, 0.24, 0.42, 3, 1));
-    shardGeo.scale(1.0, 1.0, 0.055);
-    shardGeo.computeVertexNormals();
-    const shardMat = track(
-      new THREE.ShaderMaterial({
-        transparent: true,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        uniforms: { uOpacity: { value: 0 } },
-        vertexShader: [
-          "varying vec3 vNormalV;",
-          "varying vec3 vPosV;",
-          "void main() {",
-          "  vec4 mv = modelViewMatrix * instanceMatrix * vec4(position, 1.0);",
-          "  vPosV = mv.xyz;",
-          "  vNormalV = normalize(normalMatrix * mat3(instanceMatrix) * normal);",
-          "  gl_Position = projectionMatrix * mv;",
-          "}",
-        ].join("\n"),
-        fragmentShader: [
-          "varying vec3 vNormalV;",
-          "varying vec3 vPosV;",
-          "uniform float uOpacity;",
-          "void main() {",
-          "  vec3 N = normalize(vNormalV);",
-          "  vec3 V = normalize(-vPosV);",
-          "  float fres = pow(1.0 - abs(dot(N, V)), 1.75);",
-          "  float spec = pow(max(dot(N, normalize(vec3(-0.45, 0.72, 0.55))), 0.0), 12.0);",
-          "  vec3 glassTint = mix(vec3(0.42, 0.62, 0.98), vec3(0.92, 0.96, 1.0), fres);",
-          "  vec3 col = glassTint + vec3(1.9) * spec;",
-          "  float alpha = clamp(0.30 + fres * 0.66 + spec, 0.0, 1.0) * uOpacity;",
-          "  gl_FragColor = vec4(col, alpha);",
-          "}",
-        ].join("\n"),
-      })
-    );
-    const shardsMesh = new THREE.InstancedMesh(shardGeo, shardMat, SHARD_COUNT);
-    shardsMesh.visible = false;
-    shardsMesh.frustumCulled = false;
-    shardsMesh.renderOrder = 12;
-    scene.add(shardsMesh);
+    
+    // Authentic Lusion pre-calculated 3D glass shards & animation
+    let shardsMesh: THREE.Mesh | null = null;
+    let numShards = 0;
+    let framesPerShard = 0;
 
-    const dummy = new THREE.Object3D();
-    const shardSeeds = Array.from({ length: SHARD_COUNT }, (_, i) => {
-      const a = (i / SHARD_COUNT) * Math.PI * 2 * 3.7;
-      const rad = 0.28 + (((i * 37) % 100) / 100) * 1.42;
-      return {
-        dirX: Math.cos(a) * rad * 1.55,
-        dirY: Math.sin(a) * rad * 1.05,
-        dirZ: 0.35 + (((i * 19) % 100) / 100) * 2.15,
-        rotX: ((i * 13) % 10) * 0.62,
-        rotY: ((i * 29) % 10) * 0.62,
-        rotZ: a,
-        scale: 0.45 + (((i * 23) % 100) / 100) * 1.05,
-      };
-    });
+
+    
 
     const endDecor = buildDiamondsAndPopStickers(track, isMobileInit);
     endDecor.group.visible = false;
     scene.add(endDecor.group);
 
-    glbPromise
-      .then(({ primary, createClone }) => {
+    
+    Promise.all([
+      glbPromise,
+      import("@/lib/lusion-buf-loader").then((m) => Promise.all([
+        m.loadLusionBuf("/models/tunnels/broken_glass.buf"),
+        m.loadLusionBuf("/models/tunnels/broken_glass_animation.buf"),
+      ]))
+    ])
+      .then(([{ primary, createClone }, [bg, bga]]) => {
+        if (unmounted) return;
+
+        const maxPiece = Math.max(...bg.attributes.piece);
+        numShards = maxPiece + 1;
+        framesPerShard = Math.floor(bga.header.vertexCount / numShards);
+        
+        // Assemble authentic pieces into a master geometry
+        const baseGeo = bg.geometry;
+        const geom = new THREE.InstancedBufferGeometry();
+        geom.index = baseGeo.index;
+        geom.setAttribute("position", baseGeo.attributes.position);
+        geom.setAttribute("aPiece", baseGeo.attributes.piece);
+        
+        // We will pass the animation frames as a uniform data texture or uniform array if possible, 
+        // OR we can just update a single vertex attribute per frame. Given 946 pieces, passing an array of matrices/positions is fine.
+        // Actually, to keep it simple, since the shader just needs to read the current frame, 
+        // we can instance it? Wait, broken_glass.buf is ONE continuous mesh with a "piece" attribute (0..945).
+        // It's NOT an InstancedMesh, it is a single Mesh, but each vertex belongs to a piece.
+        // We can upload a DataTexture with the positions of the 946 pieces for the current frame,
+        // or we can pass a uniform array of 946 vec3s... but WebGL max uniforms might be exceeded.
+        // A floating point DataTexture is safer!
+        
+        const animData = new Float32Array(bga.attributes.position);
+        const animOrient = new Float32Array(bga.attributes.orient);
+        
+        const mat = track(
+          new THREE.ShaderMaterial({
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            uniforms: { 
+              uOpacity: { value: 0 },
+              uFrameData: { value: null }, 
+              uOrientData: { value: null } 
+            },
+            vertexShader: [
+              "attribute float aPiece;",
+              "uniform sampler2D uFrameData;",
+              "uniform sampler2D uOrientData;",
+              "varying vec3 vNormalV;",
+              "varying vec3 vPosV;",
+              "vec3 applyQuat(vec3 v, vec4 q) {",
+              "  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);",
+              "}",
+              "void main() {",
+              "  float p = aPiece;",
+              "  float u = (mod(p, 32.0) + 0.5) / 32.0;",
+              "  float v = (floor(p / 32.0) + 0.5) / 30.0;",
+              "  vec3 center = texture2D(uFrameData, vec2(u, v)).xyz;",
+              "  vec4 q = texture2D(uOrientData, vec2(u, v));",
+              "  vec3 pos = center + applyQuat(position, q);",
+              "  vec4 mv = modelViewMatrix * vec4(pos, 1.0);",
+              "  vPosV = mv.xyz;",
+              "  // Approx normal",
+              "  vNormalV = normalize(normalMatrix * applyQuat(normal, q));",
+              "  gl_Position = projectionMatrix * mv;",
+              "}",
+            ].join("\n"),
+            fragmentShader: [
+              "varying vec3 vNormalV;",
+              "varying vec3 vPosV;",
+              "uniform float uOpacity;",
+              "void main() {",
+              "  vec3 N = normalize(vNormalV);",
+              "  vec3 V = normalize(-vPosV);",
+              "  float fres = pow(1.0 - abs(dot(N, V)), 1.75);",
+              "  float spec = pow(max(dot(N, normalize(vec3(-0.45, 0.72, 0.55))), 0.0), 12.0);",
+              "  vec3 glassTint = mix(vec3(0.42, 0.62, 0.98), vec3(0.92, 0.96, 1.0), fres);",
+              "  vec3 col = glassTint + vec3(1.9) * spec;",
+              "  float alpha = clamp(0.30 + fres * 0.66 + spec, 0.0, 1.0) * uOpacity;",
+              "  gl_FragColor = vec4(col, alpha);",
+              "}",
+            ].join("\n"),
+          })
+        );
+        
+        shardsMesh = new THREE.Mesh(geom, mat);
+        shardsMesh.visible = false;
+        shardsMesh.frustumCulled = false;
+        shardsMesh.renderOrder = 12;
+        // The data is 946 items. 32x30 texture is 960 items.
+        const frameData = new Float32Array(32 * 30 * 4);
+        const orientData = new Float32Array(32 * 30 * 4);
+        const texFrame = track(new THREE.DataTexture(frameData, 32, 30, THREE.RGBAFormat, THREE.FloatType));
+        const texOrient = track(new THREE.DataTexture(orientData, 32, 30, THREE.RGBAFormat, THREE.FloatType));
+        texFrame.needsUpdate = true;
+        texOrient.needsUpdate = true;
+        mat.uniforms.uFrameData.value = texFrame;
+        mat.uniforms.uOrientData.value = texOrient;
+        
+        shardsMesh.userData = { animData, animOrient, texFrame, texOrient, framesPerShard, numShards };
+        scene.add(shardsMesh);
+
         if (unmounted) return;
         mainAstro = primary;
         portalMaskedMaterials.push(...primary.materials);
@@ -415,19 +466,19 @@ export function GoalTunnelSection() {
         if (!isSoftwareRenderer) {
           const prevTruss = trussSystem.group.visible;
           const prevBlue = blueCorridor.group.visible;
-          const prevShards = shardsMesh.visible;
+          const prevShards = shardsMesh ? shardsMesh.visible : false;
           const prevDecor = endDecor.group.visible;
           const prevLed = visorLed.mesh.visible;
           trussSystem.group.visible = true;
           blueCorridor.group.visible = true;
-          shardsMesh.visible = true;
+          if(shardsMesh) shardsMesh.visible = true;
           endDecor.group.visible = true;
           visorLed.mesh.visible = true;
           if (clones[0]) clones[0].root.visible = true;
           glRenderer.compile(scene, camera);
           trussSystem.group.visible = prevTruss;
           blueCorridor.group.visible = prevBlue;
-          shardsMesh.visible = prevShards;
+          if(shardsMesh) shardsMesh.visible = prevShards;
           endDecor.group.visible = prevDecor;
           visorLed.mesh.visible = prevLed;
           if (clones[0]) clones[0].root.visible = false;
@@ -1143,29 +1194,44 @@ export function GoalTunnelSection() {
         blueCorridor.endGlowMat.uniforms.uOpacity.value = whiteVis;
       }
 
-      // 3. Polygonal Plate-Glass Shatter Burst (`Frame 16`)
-      const shardVis =
-        smoothstep(0.18, 0.42, tShatter) *
-        (1 - smoothstep(0.85, 0.97, tShatter)) *
-        (tWait > 0.001 ? 0 : 1);
-      shardsMesh.visible = shardVis > 0.005;
-      if (shardsMesh.visible) {
-        const burst = smoothstep(0.18, 0.82, tShatter);
-        shardMat.uniforms.uOpacity.value = shardVis;
-        for (let i = 0; i < SHARD_COUNT; i++) {
-          const s = shardSeeds[i];
-          const spread = 0.22 + burst * 1.95;
-          dummy.position.set(
-            s.dirX * spread,
-            s.dirY * spread + 0.12 - burst * burst * 0.35,
-            1.35 + s.dirZ * burst * 0.95
-          );
-          dummy.rotation.set(s.rotX + burst * 2.1, s.rotY + burst * 2.4, s.rotZ + burst * 1.4);
-          dummy.scale.setScalar(s.scale * (1 - burst * 0.14));
-          dummy.updateMatrix();
-          shardsMesh.setMatrixAt(i, dummy.matrix);
+      // 3. Authentic Plate-Glass Shatter Burst (`Frame 16`)
+      if (shardsMesh) {
+        const shardVis = smoothstep(0.18, 0.42, tShatter) * (1 - smoothstep(0.85, 0.97, tShatter)) * (tWait > 0.001 ? 0 : 1);
+        shardsMesh.visible = shardVis > 0.005;
+        if (shardsMesh.visible) {
+          const mat = shardsMesh.material as THREE.ShaderMaterial;
+          mat.uniforms.uOpacity.value = shardVis;
+          
+          const burst = smoothstep(0.18, 0.82, tShatter);
+          const { animData, animOrient, texFrame, texOrient, framesPerShard, numShards } = shardsMesh.userData;
+          
+          // burst 0..1 maps to frame 0..framesPerShard-1
+          const targetFrame = clamp01(burst) * (framesPerShard - 1);
+          const iF = Math.floor(targetFrame);
+          const iN = Math.min(framesPerShard - 1, iF + 1);
+          const fT = targetFrame - iF;
+          
+          const fd = texFrame.image.data;
+          const od = texOrient.image.data;
+          
+          for (let p = 0; p < numShards; p++) {
+            // The animation buffer appears to be frame-major: frame 0 pieces 0..N, frame 1 pieces 0..N
+            const idx0 = (iF * numShards + p);
+            const idx1 = (iN * numShards + p);
+            
+            fd[p*4+0] = lerp(animData[idx0*3+0], animData[idx1*3+0], fT);
+            fd[p*4+1] = lerp(animData[idx0*3+1], animData[idx1*3+1], fT);
+            fd[p*4+2] = lerp(animData[idx0*3+2], animData[idx1*3+2], fT) + 1.25; // Z offset
+            
+            // simple slerp approximation for orientation since it's just debris
+            od[p*4+0] = lerp(animOrient[idx0*4+0], animOrient[idx1*4+0], fT);
+            od[p*4+1] = lerp(animOrient[idx0*4+1], animOrient[idx1*4+1], fT);
+            od[p*4+2] = lerp(animOrient[idx0*4+2], animOrient[idx1*4+2], fT);
+            od[p*4+3] = lerp(animOrient[idx0*4+3], animOrient[idx1*4+3], fT);
+          }
+          texFrame.needsUpdate = true;
+          texOrient.needsUpdate = true;
         }
-        shardsMesh.instanceMatrix.needsUpdate = true;
       }
 
       // 4. Faceted Glass Diamonds + Star Flares + 18 Die-Cut Pop-Art Stickers (`Frames 17–20`)

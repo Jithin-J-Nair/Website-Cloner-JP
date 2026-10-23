@@ -47,6 +47,11 @@ next-env.d.ts
 
 # Local temp files
 temp/
+/google_drive/
+/.agents/
+/.claude/
+/agent/
+skills-lock.json
 
 # Local-inspection reference capture binaries (not licensed for Git redistribution;
 # staged reproducibly via `node scripts/stage-reference-assets.mjs` — open-license fonts & notices remain tracked)
