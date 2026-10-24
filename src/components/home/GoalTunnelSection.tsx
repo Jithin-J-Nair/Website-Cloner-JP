@@ -18,6 +18,7 @@ import {
   evaluateEmergenceChoreography,
   evaluateSuitPoseStage,
   loadLicensedAstronautGlb,
+  loadLusionAstronautParts,
   setPortalStencilMask,
   SUIT_POSE_TABLET_FLOAT,
   type LoadedAstronautRig,
@@ -299,8 +300,12 @@ export function GoalTunnelSection() {
     let unmounted = false;
 
     const glbPromise = forceAssetFailure
-      ? Promise.reject(new Error("Simulated GLB asset failure (?simulateGlbError=1)"))
-      : loadLicensedAstronautGlb(visorEnvTarget.texture, isMobileInit, track);
+      ? Promise.reject(new Error("Simulated astronaut asset failure (?simulateGlbError=1)"))
+      : loadLusionAstronautParts(visorEnvTarget.texture, isMobileInit, track).catch(() =>
+          // The captured Lusion .buf suit parts are authoritative. Keep the legacy GLB only as a
+          // last-resort fallback if one of those bundled source assets is unavailable.
+          loadLicensedAstronautGlb(visorEnvTarget.texture, isMobileInit, track)
+        );
 
     // -------------------------------------------------------------------------
     // 5. High-Fidelity Single-Draw-Call Downstream Worlds (`Frames 09–20`)
@@ -439,7 +444,9 @@ export function GoalTunnelSection() {
         if (primary.bones.Head) {
           primary.bones.Head.add(visorLed.mesh);
         } else {
+          // Static captured .buf parts have no runtime skeleton; place the LED on the shared-space visor.
           primary.root.add(visorLed.mesh);
+          visorLed.mesh.position.y += 1.66;
         }
 
         applySuitJointPose(primary, SUIT_POSE_TABLET_FLOAT);
