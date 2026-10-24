@@ -444,9 +444,9 @@ export function GoalTunnelSection() {
         if (primary.bones.Head) {
           primary.bones.Head.add(visorLed.mesh);
         } else {
-          // Static captured .buf parts have no runtime skeleton; place the LED on the shared-space visor.
+          // Static captured .buf parts have no runtime skeleton; use their root-space visor anchor.
           primary.root.add(visorLed.mesh);
-          visorLed.mesh.position.y += 1.66;
+          visorLed.mesh.position.copy(primary.visorAnchorLocal);
         }
 
         applySuitJointPose(primary, SUIT_POSE_TABLET_FLOAT);
