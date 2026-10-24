@@ -10,6 +10,7 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 import { createHollowCrossGeometry } from "@/components/home/HollowCrossGeometry";
+import { loadLusionBuf } from "@/lib/lusion-buf-loader";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
@@ -524,6 +525,24 @@ export function HeroCrossesStage() {
       if (spec.isHero) heroMesh = mesh;
     }
 
+    // Prefer the actual captured Lusion cross mesh; keep the procedural mesh only as a
+    // resilient fallback if the bundled asset cannot be fetched or decoded.
+    let loadedCrossGeometry: THREE.BufferGeometry | null = null;
+    let sceneDisposed = false;
+    void loadLusionBuf("/assets/models/home/cross.buf")
+      .then(({ geometry: referenceGeometry }) => {
+        if (sceneDisposed) {
+          referenceGeometry.dispose();
+          return;
+        }
+        loadedCrossGeometry = referenceGeometry;
+        for (const mesh of meshes) mesh.geometry = referenceGeometry;
+        crossGeometry.dispose();
+      })
+      .catch(() => {
+        // The already-rendering procedural geometry remains available as a fallback.
+      });
+
     blueMaterialsRef.current = blueMats;
     impulseVelRef.current = impulseStates;
 
@@ -802,6 +821,7 @@ export function HeroCrossesStage() {
     renderFrame(performance.now());
 
     return () => {
+      sceneDisposed = true;
       window.cancelAnimationFrame(rafId);
       window.clearTimeout(yieldTimerId);
       resizeObserver.disconnect();
@@ -809,6 +829,7 @@ export function HeroCrossesStage() {
       renderer.domElement.removeEventListener("webglcontextlost", onContextLost);
 
       crossGeometry.dispose();
+      loadedCrossGeometry?.dispose();
       for (const m of disposableMaterials) m.dispose();
       envTarget.dispose();
 
