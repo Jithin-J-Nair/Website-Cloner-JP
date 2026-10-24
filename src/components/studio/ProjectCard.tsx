@@ -31,7 +31,7 @@ export function ProjectCard({ project, staggerOffset = false }: ProjectCardProps
         className="group block focus:outline-none"
       >
         {/* Rounded Optical Stage Card */}
-        <GlowCard>
+        <GlowCard variant="surface" customSize radius={26} glowColor="brand" className="w-full">
         <div
           className="relative aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white/12 bg-[#0e121c] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-white/30"
           style={{

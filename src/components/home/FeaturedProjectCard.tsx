@@ -169,7 +169,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
       } ${index >= 1 ? "max-[812px]:mt-[2em]" : ""}`}
     >
       {/* Thumbnail Stage (`.project-item-main`, 65% aspect ratio, 15px border radius) */}
-      <GlowCard>
+      <GlowCard variant="surface" customSize radius={15} glowColor="brand" className="w-full">
       <div
         ref={cardStageRef}
         onPointerMove={handlePointerMove}
