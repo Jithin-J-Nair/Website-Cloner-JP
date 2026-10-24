@@ -1,12 +1,5 @@
-import type { Metadata } from "next";
-import { WorkArchiveView } from "@/components/pages/WorkArchiveView";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Selected Projects",
-  description:
-    "Explore KINETA's archive of real-time 3D web experiences, optical shader campaigns, autonomous digital twins, and WebXR installations.",
-};
-
-export default function WorkPage() {
-  return <WorkArchiveView />;
+export default function WorkPage(): never {
+  redirect("/projects");
 }
