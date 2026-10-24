@@ -9,7 +9,25 @@ import { BokehPass } from "three/examples/jsm/postprocessing/BokehPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
-import { createHollowCrossGeometry } from "@/components/home/HollowCrossGeometry";
+
+function createBalloonGeometry(seed: number) {
+  // Lusion balloons are inflated soft capsule/bean/pill and organic rounded forms
+  const r = (k: number) => Math.sin(seed * 12.9898 + k * 78.233) * 0.5 + 0.5;
+  const type = r(1) > 0.5 ? "capsule" : "sphere";
+  if (type === "capsule") {
+    // fat, short capsule
+    const radius = 0.5 + r(2) * 0.3;
+    const length = 0.4 + r(3) * 0.6;
+    return new THREE.CapsuleGeometry(radius, length, 32, 64);
+  } else {
+    // slightly deformed sphere (squashed or stretched)
+    const geo = new THREE.SphereGeometry(0.7 + r(2) * 0.3, 64, 64);
+    geo.scale(1.0, 0.8 + r(3)*0.4, 0.9 + r(4)*0.2);
+    geo.computeVertexNormals();
+    return geo;
+  }
+}
+
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
@@ -328,7 +346,7 @@ function StaticSculpturalFallback({ accentHex }: { accentHex: string }) {
   );
 }
 
-export function HeroCrossesStage() {
+export function HomeBalloonsStage() {
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const preloaderDone = useStudioStore((s) => s.preloaderDone);
   const [colorIdx, setColorIdx] = useState(0);
@@ -447,10 +465,12 @@ export function HeroCrossesStage() {
       const aspect = w / Math.max(1, h);
       camera.aspect = aspect;
       if (aspect < 0.85) {
+        camera.userData.baseFov = 33;
         camera.fov = 33;
         camera.position.set(0.06, -0.08, 8.2);
         camera.lookAt(-0.04, -0.16, 0);
       } else {
+        camera.userData.baseFov = 32;
         camera.fov = 32;
         camera.position.set(0.24, 0.04, 8.15);
         camera.lookAt(0.14, -0.02, 0);
@@ -478,14 +498,15 @@ export function HeroCrossesStage() {
 
     // Shared Polar-Radial + Analytical-Fillet Hollow Cross Geometry
     const isMobileInit = initialW < 680;
-    const crossGeometry = createHollowCrossGeometry(isMobileInit ? 48 : 64);
+    // Balloon geometries vary per piece
 
     // Studio MeshPhysicalMaterial instances (roughness ~0.35, clearcoat 1, clearcoatRoughness ~0.03)
     const disposableMaterials: THREE.MeshPhysicalMaterial[] = [];
+    const disposableGeometries: THREE.BufferGeometry[] = [];
     const blueMats: THREE.MeshPhysicalMaterial[] = [];
 
     const meshes: THREE.Mesh[] = [];
-    const impulseStates: Array<{ pos: THREE.Vector3; rot: THREE.Vector3 }> = [];
+    const impulseStates: Array<{ pos: THREE.Vector3; rot: THREE.Vector3; dropT: number }> = [];
     let heroMesh: THREE.Mesh | null = null;
 
     const initAspect = initialW / Math.max(1, initialH);
@@ -510,7 +531,9 @@ export function HeroCrossesStage() {
       disposableMaterials.push(mat);
       if (spec.kind === "blue") blueMats.push(mat);
 
-      const mesh = new THREE.Mesh(crossGeometry, mat);
+      const geo = createBalloonGeometry(Math.random());
+      disposableGeometries.push(geo);
+      const mesh = new THREE.Mesh(geo, mat);
       const anchor = initAspect < 0.85 ? spec.anchorMobile : spec.anchorDesktop;
       mesh.position.set(anchor[0], anchor[1], anchor[2]);
       mesh.rotation.set(spec.euler[0], spec.euler[1], spec.euler[2]);
@@ -520,7 +543,10 @@ export function HeroCrossesStage() {
       scene.add(mesh);
 
       meshes.push(mesh);
-      impulseStates.push({ pos: new THREE.Vector3(), rot: new THREE.Vector3() });
+      
+      // Add initial drop-in state
+      impulseStates.push({ pos: new THREE.Vector3(0, 8.0, 0), rot: new THREE.Vector3(), dropT: 0.0 });
+
       if (spec.isHero) heroMesh = mesh;
     }
 
@@ -708,6 +734,21 @@ export function HeroCrossesStage() {
       // Exponential smoothing equivalent to ~0.05 lerp at 60fps, strictly delta-time invariant
       const alpha = 1 - Math.exp(-3.1 * dt);
       const decay = Math.exp(-2.6 * dt);
+
+      // FOV animation from 25 to 17.5 between 0.3s and 2.0s
+      if (elapsed > 0.3 && elapsed <= 2.0) {
+        const t = (elapsed - 0.3) / 1.7;
+        const easeT = 1 - Math.pow(1 - t, 3); // easeOutCubic
+        camera.fov = camera.userData.baseFov - (camera.userData.baseFov - 17.5) * easeT;
+        camera.updateProjectionMatrix();
+      } else if (elapsed > 2.0 && camera.fov !== 17.5) {
+        camera.fov = 17.5;
+        camera.updateProjectionMatrix();
+      } else if (elapsed <= 0.3 && camera.fov !== camera.userData.baseFov) {
+        camera.fov = camera.userData.baseFov;
+        camera.updateProjectionMatrix();
+      }
+
       const isPortrait = camera.aspect < 0.85;
 
       const ptr = pointerNdcRef.current;
@@ -718,15 +759,27 @@ export function HeroCrossesStage() {
       for (let i = 0; i < meshes.length; i++) {
         const spec = HERO_PIECES[i];
         const mesh = meshes[i];
+        
         const imp = impulseStates[i];
+        
+        // Drop-in easing (backOut)
+        imp.dropT = Math.min(1.0, imp.dropT + dt * 0.6); // 1.6s drop
+        const easeT = imp.dropT;
+        const tOut = easeT - 1;
+        const backOut = easeT === 1 ? 1 : 1 + tOut * tOut * ((1.70158 + 1) * tOut + 1.70158);
+        
         const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
+        
+        const startY = anchor[1] + 8.0;
+        const currentY = startY + (anchor[1] - startY) * backOut;
 
         const t = elapsed * 0.42 + spec.driftPhase;
         const dx = isReduced ? 0 : Math.sin(t) * spec.driftAmp[0];
         const dy = isReduced ? 0 : Math.cos(t * 0.87) * spec.driftAmp[1];
         const dz = isReduced ? 0 : Math.sin(t * 0.63) * spec.driftAmp[2];
 
-        targetPos.set(anchor[0] + dx + imp.pos.x, anchor[1] + dy + imp.pos.y, anchor[2] + dz + imp.pos.z);
+        targetPos.set(anchor[0] + dx + imp.pos.x, currentY + dy + imp.pos.y, anchor[2] + dz + imp.pos.z);
+
 
         // Smooth restrained pointer repulsion
         if (ptr.active && !isReduced) {
@@ -808,7 +861,7 @@ export function HeroCrossesStage() {
       visibilityObserver.disconnect();
       renderer.domElement.removeEventListener("webglcontextlost", onContextLost);
 
-      crossGeometry.dispose();
+      for (const g of disposableGeometries) g.dispose();
       for (const m of disposableMaterials) m.dispose();
       envTarget.dispose();
 

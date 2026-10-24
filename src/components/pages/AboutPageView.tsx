@@ -3,6 +3,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { LUSION_ABOUT } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
@@ -132,6 +133,31 @@ interface AboutWhoStageProps {
   reducedMotion: boolean;
 }
 
+function createFigureGeometry() {
+  const head = new THREE.SphereGeometry(0.12, 16, 16);
+  head.translate(0, 0.6, 0);
+
+  const torso = new THREE.CapsuleGeometry(0.15, 0.4, 16, 16);
+  torso.translate(0, 0.2, 0);
+
+  const armL = new THREE.CapsuleGeometry(0.06, 0.4, 8, 8);
+  armL.rotateZ(0.2);
+  armL.translate(-0.25, 0.2, 0);
+
+  const armR = new THREE.CapsuleGeometry(0.06, 0.4, 8, 8);
+  armR.rotateZ(-0.2);
+  armR.translate(0.25, 0.2, 0);
+
+  const legL = new THREE.CapsuleGeometry(0.08, 0.5, 8, 8);
+  legL.translate(-0.1, -0.35, 0);
+
+  const legR = new THREE.CapsuleGeometry(0.08, 0.5, 8, 8);
+  legR.translate(0.1, -0.35, 0);
+
+  const merged = BufferGeometryUtils.mergeGeometries([head, torso, armL, armR, legL, legR]);
+  return merged || head;
+}
+
 function AboutWhoExperience({
   activeMemberIdx,
   onStepMember,
@@ -219,10 +245,10 @@ function AboutWhoExperience({
     scene.add(coolRimLight);
 
     // -------------------------------------------------------------------------
-    // 1. 3D Curl-Noise + Vortex Sphere Storm ('6,400' GPU-Instanced Fine Icospheres)
+    // 1. 3D Abstract Figure Storm (150 GPU-Instanced Procedural Figures)
     // -------------------------------------------------------------------------
-    const SPHERE_COUNT = 6400;
-    const sphereGeo = track(new THREE.IcosahedronGeometry(0.042, 1));
+    const SPHERE_COUNT = 150;
+    const sphereGeo = track(createFigureGeometry());
 
     const instSeed = new Float32Array(SPHERE_COUNT * 4);
     let prng = 20260822;
@@ -281,7 +307,7 @@ function AboutWhoExperience({
             // Orbiting swirl around vortex center + diagonal hero plume tail ('about-01-hero-top')!
             float spinSpeed = (0.45 + (1.0 - radFrac) * 0.90);
             float ang = theta + uTime * spinSpeed * 0.45;
-            float heroR = mix(1.92, 2.95, uMobile);
+            float heroR = mix(2.5, 4.0, uMobile);
             float baseR = mix(heroR, 1.34, uCompact) * radFrac;
 
             vec3 localPos = vec3(
@@ -289,6 +315,12 @@ function AboutWhoExperience({
               cos(phi) * mix(1.18, 1.48, uMobile * (1.0 - uCompact)),
               sin(phi) * sin(ang)
             ) * baseR;
+            float rx = uTime * 0.2 + seed.y;
+            float ry = uTime * 0.3 + seed.z;
+            mat3 rotX = mat3(1.0, 0.0, 0.0, 0.0, cos(rx), -sin(rx), 0.0, sin(rx), cos(rx));
+            mat3 rotY = mat3(cos(ry), 0.0, sin(ry), 0.0, 1.0, 0.0, -sin(ry), 0.0, cos(ry));
+            vec3 lp = rotY * rotX * localPos;
+
 
             // Diagonal upper-right to lower-left turbulent curl stream prominent in 'about-01-hero-top'
             float tail = pow(radFrac, 1.25) * mix(1.0, 0.32, uCompact);
@@ -311,6 +343,10 @@ function AboutWhoExperience({
             }
 
             // Velocity tangent stretch along swirl direction (authentic motion-stretched spheres in 'about-01'!)
+            float rx = uTime * 0.2 + aSeed.y;
+            float ry = uTime * 0.3 + aSeed.z;
+            mat3 rotX = mat3(1.0, 0.0, 0.0, 0.0, cos(rx), -sin(rx), 0.0, sin(rx), cos(rx));
+            mat3 rotY = mat3(cos(ry), 0.0, sin(ry), 0.0, 1.0, 0.0, -sin(ry), 0.0, cos(ry));
             vec3 tangent = normalize(vec3(-sin(ang), 0.28 * cos(phi), cos(ang)));
             vec3 p = position;
             float stretch = 1.0 + (1.0 - radFrac * 0.4) * 1.05 * (1.0 - uCompact * 0.45);
@@ -318,10 +354,12 @@ function AboutWhoExperience({
 
             float sizeVar = mix(0.42, 1.55, pow(rnd, 1.6)) * mix(1.0, 0.62, uCompact);
             p *= sizeVar;
+            p = rotY * rotX * p;
 
             vCoreDist = radFrac;
             vCyanMask = step(0.968, rnd) * (1.0 - smoothstep(0.25, 0.72, radFrac));
-            vNormalV = normalize(normalMatrix * normal);
+            vec3 rotNormal = rotY * rotX * normal;
+            vNormalV = normalize(normalMatrix * rotNormal);
 
             gl_Position = projectionMatrix * viewMatrix * vec4(worldCenter + p, 1.0);
           }
