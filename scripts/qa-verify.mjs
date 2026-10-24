@@ -176,6 +176,41 @@ console.log(
 );
 if (!assetOk) failures += 1;
 
+// These are the actual captured Lusion hero/suit assets used by the WebGL scenes.
+// Check the delivered bytes, not merely whether a manifest entry or source path exists.
+const referenceSceneAssets = [
+  "/assets/models/home/cross.buf",
+  "/assets/models/tunnels/astronaut_helmet.buf",
+  "/assets/models/tunnels/astronaut_helmet_glass.buf",
+  "/assets/models/tunnels/astronaut_glove_shoes.buf",
+  "/assets/models/tunnels/astronaut_wearpack.buf",
+  "/assets/textures/tunnels/astronaut/astronaut_helmet_base.webp",
+  "/assets/textures/tunnels/astronaut/astronaut_helmet_nor.webp",
+  "/assets/textures/tunnels/astronaut/astronaut_glove_shoes_base.webp",
+  "/assets/textures/tunnels/astronaut/astronaut_wearpack_base.webp",
+];
+const sceneAssetResults = await Promise.all(
+  referenceSceneAssets.map(async (url) => {
+    try {
+      const response = await fetch(`${BASE_URL}${url}`);
+      const bytes = response.ok ? await response.arrayBuffer() : null;
+      return { url, status: response.status, bytes: bytes?.byteLength ?? 0 };
+    } catch {
+      return { url, status: 0, bytes: 0 };
+    }
+  })
+);
+const sceneAssetsOk = sceneAssetResults.every((result) => result.status === 200 && result.bytes > 0);
+console.log(
+  `  ${sceneAssetsOk ? "PASS" : "FAIL"} Captured Lusion scene assets: ${sceneAssetResults.filter((result) => result.status === 200 && result.bytes > 0).length}/${referenceSceneAssets.length} delivered with non-empty bodies`
+);
+for (const result of sceneAssetResults) {
+  if (result.status !== 200 || result.bytes === 0) {
+    console.error(`    Missing/empty scene asset: ${result.url} (HTTP ${result.status}, ${result.bytes} bytes)`);
+  }
+}
+if (!sceneAssetsOk) failures += 1;
+
 if (failures > 0) {
   console.error(`\nQA FAILED with ${failures} issue(s).`);
   process.exit(1);
