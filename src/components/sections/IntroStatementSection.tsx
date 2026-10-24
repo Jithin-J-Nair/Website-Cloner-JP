@@ -118,7 +118,7 @@ export function IntroStatementSection() {
               setHovered(false);
               resetCursor();
             }}
-            aria-label="Open KINETA 2026 Interactive Showreel"
+            aria-label="Open Lusion 2026 Interactive Showreel"
             className="group relative block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-[24px] border border-black/12 bg-[#090b10] text-left md:aspect-[16/9]"
           >
             <ProceduralMediaCanvas
@@ -135,7 +135,7 @@ export function IntroStatementSection() {
             <div className="pointer-events-none absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/75 via-transparent to-black/30 p-6 text-white md:p-10">
               <div className="flex items-center justify-between">
                 <span className="rounded-full border border-white/15 bg-black/45 px-3.5 py-1 font-mono text-[11px] uppercase tracking-widest backdrop-blur-md">
-                  KINETA REEL // 2024–2026
+                  Lusion REEL // 2024–2026
                 </span>
                 <span className="hidden font-mono text-[11px] uppercase tracking-widest text-white/75 sm:inline">
                   4 INTERACTIVE CHAPTERS · 60–120 FPS

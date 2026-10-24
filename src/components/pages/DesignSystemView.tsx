@@ -38,7 +38,7 @@ export function DesignSystemView() {
         <div className="kn-container">
           <CrosshairRow labelLeft="PHASE 02 // LIVING DESIGN SYSTEM" labelRight="TOKENS + PRIMITIVES" />
           <div className="mt-10 max-w-5xl">
-            <p className="kn-eyebrow mb-4 text-[#2434ff]">• KINETA DESIGN LANGUAGE v1.0</p>
+            <p className="kn-eyebrow mb-4 text-[#2434ff]">• Lusion DESIGN LANGUAGE v1.0</p>
             <SplitTextReveal
               as="h1"
               immediate
@@ -46,7 +46,7 @@ export function DesignSystemView() {
               className="kn-hero-title text-[#0a0c12]"
             />
             <p className="mt-8 max-w-2xl text-lg leading-relaxed text-[#4a5165] md:text-xl">
-              Single source of truth for KINETA&apos;s multi-surface color architecture, fluid
+              Single source of truth for Lusion&apos;s multi-surface color architecture, fluid
               grotesque typography, 8px spatial rhythm, optical radii, named motion curves, and
               real-time WebGL primitives.
             </p>

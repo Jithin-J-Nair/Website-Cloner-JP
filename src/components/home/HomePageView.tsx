@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { HeroCrossesStage } from "@/components/home/HeroCrossesStage";
+import { HomeBalloonsStage } from "@/components/home/HomeBalloonsStage";
 import { FeaturedProjectCard } from "@/components/home/FeaturedProjectCard";
 import { GoalTunnelSection } from "@/components/home/GoalTunnelSection";
 import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
@@ -250,7 +250,7 @@ export function HomePageView() {
 
         {/* Dark Rounded 3D Hollow Cross Stage (`#home-hero-visual-container`) */}
         <div className="col-span-6 mt-[calc(var(--base-padding-y)*0.55)] mb-[calc(var(--base-padding-y)*0.75)] min-h-0 min-[813px]:col-span-12 min-[813px]:mt-[calc(var(--base-padding-y)*0.6)] min-[813px]:mb-[calc(var(--base-padding-y)*0.55)]">
-          <HeroCrossesStage />
+          <HomeBalloonsStage />
         </div>
 
         {/* Bottom Crosshair + `SCROLL TO EXPLORE` Bar (`#home-hero-scroll-container`) */}
@@ -332,7 +332,7 @@ export function HomePageView() {
               id="home-reel-title-line-1"
               ref={reelTitleLine1Ref}
               style={{ wordSpacing: "0.52em" }}
-              className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*0.92+var(--grid-gap))]"
+              className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*2+var(--grid-gap)*2)]"
             >
               {LUSION_HOME.reel.eyebrowLine1}
             </span>

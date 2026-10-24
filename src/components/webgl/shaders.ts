@@ -1,6 +1,6 @@
 /**
- * KINETA Original Procedural GLSL Shaders
- * Written from first principles for KINETA Studio:
+ * Lusion Original Procedural GLSL Shaders
+ * Written from first principles for Lusion Studio:
  * 1. Cauchy Optical Glass Dispersion Shader (Snell's Law 3-channel refraction + Schlick Fresnel + procedural studio environment)
  * 2. Curl-Noise Harmonic Particle Field Shader (GPU vertex advection + soft optical bokeh discs)
  * 3. Harmonic Satin Wave Ribbon Shader (Analytic multi-wave displacement + iridescent rim caustics)

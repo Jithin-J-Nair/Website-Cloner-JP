@@ -206,7 +206,7 @@ export function WorkArchiveView() {
       </SurfaceSection>
 
       <ContactCtaSection />
-      <StudioFooter nextHref="/labs" nextLabel="Kineta Labs R&D" />
+      <StudioFooter nextHref="/labs" nextLabel="Lusion Labs R&D" />
     </div>
   );
 }

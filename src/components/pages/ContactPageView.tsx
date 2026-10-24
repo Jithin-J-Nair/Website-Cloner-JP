@@ -22,7 +22,7 @@ const BUDGET_TIERS = ["$50K – $90K", "$90K – $160K", "$160K – $250K+", "Ad
 
 const FAQ_ITEMS = [
   {
-    q: "How early should we bring KINETA into a product or brand launch?",
+    q: "How early should we bring Lusion into a product or brand launch?",
     a: "Ideally 8 to 14 weeks before launch. Bringing creative direction and shader prototyping together early lets us shape narrative and engineering around a single big interactive idea without last-minute compromises.",
   },
   {
@@ -97,7 +97,7 @@ export function ContactPageView() {
       <SurfaceSection
         surface="ice"
         webglMode="contact-beacon"
-        ariaLabel="Contact KINETA and configure project brief"
+        ariaLabel="Contact Lusion and configure project brief"
         className="pt-32 pb-24 md:pt-40 md:pb-32"
       >
         <div className="kn-container">

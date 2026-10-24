@@ -1619,7 +1619,7 @@ export function GoalTunnelSection() {
           <h2
             ref={titleHeadingRef}
             id="home-goal-title"
-            className="max-w-[14ch] pl-0 min-[820px]:pl-[13.5vw] font-sans text-[clamp(2.25rem,6.1vw,5.65rem)] font-normal leading-[1.02] tracking-[-0.03em] text-[#0c0e14] will-change-transform"
+            className="max-w-[14ch] pl-0 min-[820px]:pl-[13.5vw] font-sans text-[16vw] min-[813px]:text-[8vw] font-normal leading-[1.0] tracking-[-0.01em] text-[#0c0e14] will-change-transform"
           >
             {LUSION_HOME.goal.heading}
           </h2>
