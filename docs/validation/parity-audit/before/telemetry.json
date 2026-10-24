@@ -1,0 +1,627 @@
+{
+  "mode": "before",
+  "commit": "44423dc6216fa296f75181509f785edbd70fa2d1",
+  "capturedAt": "2026-10-23T09:41:47.487Z",
+  "viewports": {
+    "1440x900": {
+      "consoleErrors": [],
+      "networkFailures": [],
+      "stats": [
+        {
+          "id": "01-hero",
+          "y": 0,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "02-reel-intro",
+          "y": 972,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "03-reel-stage",
+          "y": 1673,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "04-featured-top",
+          "y": 2629,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "08-emergence-end",
+          "y": 10886,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 6,
+            "triangles": 55518,
+            "lastFrameMs": 1,
+            "emergenceProgress": 0.91,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "09-tunnel-entry",
+          "y": 12063,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 6,
+            "triangles": 62236,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "10-tunnel-dark-truss",
+          "y": 15477,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "12-tunnel-red-teal",
+          "y": 20729,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 1.1,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "13-tunnel-emerald-twist",
+          "y": 24930,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "14-tunnel-pink-vortex",
+          "y": 29132,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 1.2,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "15-blue-arch-tunnel",
+          "y": 33333,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 42,
+            "triangles": 55968,
+            "lastFrameMs": 0.6,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "16-monitor-glass-shatter",
+          "y": 38708,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 45,
+            "triangles": 57216,
+            "lastFrameMs": 1.1,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "17-astronaut-stickers-wait",
+          "y": 39761,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 35,
+            "triangles": 56280,
+            "lastFrameMs": 0.5,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "19-cta-lets-work-together",
+          "y": 40536,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 28,
+            "triangles": 55670,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "18-footer-white-wipe",
+          "y": 41063,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 20,
+            "triangles": 55612,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "20-footer-portal",
+          "y": 41501,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "desktop",
+            "renderWidth": 1440,
+            "renderHeight": 900,
+            "pixelRatio": 1,
+            "textureMaxDim": 2048,
+            "drawCalls": 20,
+            "triangles": 55612,
+            "lastFrameMs": 0.7,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        }
+      ]
+    },
+    "390x844": {
+      "consoleErrors": [],
+      "networkFailures": [],
+      "stats": [
+        {
+          "id": "01-hero",
+          "y": 0,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "02-reel-intro",
+          "y": 912,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "03-reel-stage",
+          "y": 1454,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "04-featured-top",
+          "y": 2165,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 0,
+            "triangles": 0,
+            "lastFrameMs": 0,
+            "emergenceProgress": 0,
+            "portalStencilActive": true,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "08-emergence-end",
+          "y": 10375,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 6,
+            "triangles": 55518,
+            "lastFrameMs": 3.8,
+            "emergenceProgress": 0.9101,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "09-tunnel-entry",
+          "y": 11477,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 6,
+            "triangles": 62236,
+            "lastFrameMs": 1.2,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "10-tunnel-dark-truss",
+          "y": 14675,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 0.9,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "12-tunnel-red-teal",
+          "y": 19595,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 1.2,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "13-tunnel-emerald-twist",
+          "y": 23531,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "14-tunnel-pink-vortex",
+          "y": 27466,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 22,
+            "triangles": 284292,
+            "lastFrameMs": 1.1,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "15-blue-arch-tunnel",
+          "y": 31402,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 38,
+            "triangles": 55928,
+            "lastFrameMs": 0.9,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "16-monitor-glass-shatter",
+          "y": 36606,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 45,
+            "triangles": 57216,
+            "lastFrameMs": 1.1,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "17-astronaut-stickers-wait",
+          "y": 37395,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 30,
+            "triangles": 56240,
+            "lastFrameMs": 2.1,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "19-cta-lets-work-together",
+          "y": 37910,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 28,
+            "triangles": 55664,
+            "lastFrameMs": 0.9,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "18-footer-white-wipe",
+          "y": 38140,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 25,
+            "triangles": 55646,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        },
+        {
+          "id": "20-footer-portal",
+          "y": 38545,
+          "tel": {
+            "glbLoaded": true,
+            "glbError": null,
+            "qualityTier": "mobile",
+            "renderWidth": 390,
+            "renderHeight": 844,
+            "pixelRatio": 1,
+            "textureMaxDim": 1024,
+            "drawCalls": 16,
+            "triangles": 55592,
+            "lastFrameMs": 0.8,
+            "emergenceProgress": 1,
+            "portalStencilActive": false,
+            "fallbackVisible": false
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,54 +1,50 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import "./jrp.css";
-
-export const metadata: Metadata = {
-  metadataBase: new URL("https://jithinrp.com"),
-  title: "Jithin RP — Senior Product Designer",
-  description:
-    "I designed products used by 5M+ people, turning complex workflows into measurable business growth.",
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    siteName: "Jithin RP",
-    url: "/",
-    title: "I design products used by 5M+ people",
-    description:
-      "Senior Product Designer in Melbourne. I turn complex workflows into measurable business growth.",
-    images: [
-      {
-        url: "/sites/jithinrp/assets/og-cover.jpg",
-        type: "image/jpeg",
-        width: 1200,
-        height: 630,
-        alt: "Dark keyboard key with a white J — Jithin RP portfolio",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "I design products used by 5M+ people",
-    description:
-      "Senior Product Designer in Melbourne. I turn complex workflows into measurable business growth.",
-    images: ["/sites/jithinrp/assets/og-cover.jpg"],
-  },
-  icons: {
-    icon: [
-      { url: "/sites/jithinrp/assets/32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/sites/jithinrp/assets/48x48.png", sizes: "48x48", type: "image/png" },
-    ],
-    apple: [{ url: "/sites/jithinrp/assets/180x180.png", sizes: "180x180" }],
-  },
-};
+import { StudioShell } from "@/components/foundation/StudioShell";
+import { LUSION_HOME } from "@/data/reference";
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f0f1fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
-/* Marks the document as scripted before first paint (the reference does the same):
-   without JS the clone stays readable instead of waiting behind the loader. */
-const BOOT = "document.documentElement.classList.add('jrp-js','is-loading');";
+export const metadata: Metadata = {
+  metadataBase: new URL("https://lusion.co"),
+  alternates: {
+    canonical: "/",
+  },
+  title: {
+    default: LUSION_HOME.meta.title,
+    template: "Lusion - %s",
+  },
+  description: LUSION_HOME.meta.description,
+  keywords: [
+    "Lusion",
+    "Creative Production Studio",
+    "WebGL",
+    "3D Visual Storytelling",
+    "Interactive Web Experiences",
+    "Bristol",
+  ],
+  authors: [{ name: "Lusion Creative Studio" }],
+  openGraph: {
+    title: LUSION_HOME.meta.title,
+    description: LUSION_HOME.meta.description,
+    type: "website",
+    siteName: "Lusion",
+    locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@lusionltd",
+    title: LUSION_HOME.meta.title,
+    description: LUSION_HOME.meta.description,
+  },
+};
 
 export default function RootLayout({
   children,
@@ -56,32 +52,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
-      <head>
-        <link
-          rel="preload"
-          href="/sites/jithinrp/fonts/Aeonik-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/sites/jithinrp/fonts/GeistPixel-VF.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/sites/jithinrp/fonts/AwesomeSerifItalic-VF.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <script dangerouslySetInnerHTML={{ __html: BOOT }} />
-      </head>
-      <body className="jrp jrp-page min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="is-white-bg">
+      <body className="bg-[#f0f1fa] font-sans text-[#000000] antialiased selection:bg-[#1a2ffb] selection:text-white">
+        <StudioShell>{children}</StudioShell>
+      </body>
     </html>
   );
 }

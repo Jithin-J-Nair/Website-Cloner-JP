@@ -1,5 +1,6 @@
-import { Landing } from "@/components/sites/jithinrp/Landing";
+import React from "react";
+import { HomePageView } from "@/components/home/HomePageView";
 
-export default function Home() {
-  return <Landing />;
+export default function HomePage() {
+  return <HomePageView />;
 }

@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-10-21T19:28:58.574Z",
+  "phase": "Phase B — Shared Design System, Licensed Typography & Lusion Shell",
+  "viewports": [
+    "1440x900",
+    "390x844"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "httpErrors": [],
+  "checks": [
+    {
+      "viewport": "1440x900",
+      "check": "Preloader cold-start (#preloader + #preloader-percent-digits)",
+      "passed": true,
+      "detail": "Captured digits=\"024\""
+    },
+    {
+      "viewport": "1440x900",
+      "check": "Preloader unmounts cleanly + Lusion CSS tokens & calibrated font active",
+      "passed": true,
+      "detail": "{\"bodyFont\":\"LusionSansCalibrated, \\\"Instrument Sans\\\", ui-sans-serif, system-ui, -apple-system, sans-serif\",\"rootVars\":{\"offWhite\":\"#f0f1fa\",\"blue\":\"#1a2ffb\",\"green\":\"#c1ff00\"},\"fontsLoaded\":5}"
+    },
+    {
+      "viewport": "1440x900",
+      "check": "Keyboard Tab focuses Skip-to-main-content link",
+      "passed": true,
+      "detail": "activeElement.kn-skip-link=true"
+    },
+    {
+      "viewport": "1440x900",
+      "check": "Floating #header-menu opens with 4 Lusion routes + Labs card + Lucy SVG",
+      "passed": true,
+      "detail": "{\"opened\":true,\"linksCount\":4,\"lucy\":true,\"labsHref\":\"https://labs.lusion.co/\"}"
+    },
+    {
+      "viewport": "1440x900",
+      "check": "Escape closes #header-menu cleanly",
+      "passed": true,
+      "detail": "closedOnEsc=true"
+    },
+    {
+      "viewport": "1440x900",
+      "check": "Footer local-only newsletter form validates and displays honest status",
+      "passed": true,
+      "detail": "Saved locally (static reconstruction — write hello@lusion.co for studio dispatch)."
+    },
+    {
+      "viewport": "1440x900",
+      "check": "Shared #video-overlay streams responsive local MP4 & closes on Escape",
+      "passed": true,
+      "detail": "{\"src\":\"/assets/textures/reel/desktop.mp4\",\"readyState\":4,\"videoWidth\":1920,\"videoHeight\":960}"
+    },
+    {
+      "viewport": "1440x900",
+      "check": "Case-study #header-center-project-back-btn renders theme highlight & responsive geometry",
+      "passed": true,
+      "detail": "{\"exists\":true,\"width\":99,\"height\":45,\"logoColor\":\"rgb(220, 80, 0)\"}"
+    },
+    {
+      "viewport": "1440x900",
+      "check": "prefers-reduced-motion: reduce bypasses preloader immediately",
+      "passed": true,
+      "detail": "countAfterLoad450ms=0"
+    },
+    {
+      "viewport": "390x844",
+      "check": "Preloader cold-start (#preloader + #preloader-percent-digits)",
+      "passed": true,
+      "detail": "Captured digits=\"066\""
+    },
+    {
+      "viewport": "390x844",
+      "check": "Preloader unmounts cleanly + Lusion CSS tokens & calibrated font active",
+      "passed": true,
+      "detail": "{\"bodyFont\":\"LusionSansCalibrated, \\\"Instrument Sans\\\", ui-sans-serif, system-ui, -apple-system, sans-serif\",\"rootVars\":{\"offWhite\":\"#f0f1fa\",\"blue\":\"#1a2ffb\",\"green\":\"#c1ff00\"},\"fontsLoaded\":5}"
+    },
+    {
+      "viewport": "390x844",
+      "check": "Keyboard Tab focuses Skip-to-main-content link",
+      "passed": true,
+      "detail": "activeElement.kn-skip-link=true"
+    },
+    {
+      "viewport": "390x844",
+      "check": "Floating #header-menu opens with 4 Lusion routes + Labs card + Lucy SVG",
+      "passed": true,
+      "detail": "{\"opened\":true,\"linksCount\":4,\"lucy\":true,\"labsHref\":\"https://labs.lusion.co/\"}"
+    },
+    {
+      "viewport": "390x844",
+      "check": "Escape closes #header-menu cleanly",
+      "passed": true,
+      "detail": "closedOnEsc=true"
+    },
+    {
+      "viewport": "390x844",
+      "check": "Footer local-only newsletter form validates and displays honest status",
+      "passed": true,
+      "detail": "Saved locally (static reconstruction — write hello@lusion.co for studio dispatch)."
+    },
+    {
+      "viewport": "390x844",
+      "check": "Shared #video-overlay streams responsive local MP4 & closes on Escape",
+      "passed": true,
+      "detail": "{\"src\":\"/assets/textures/reel/mobile.mp4\",\"readyState\":4,\"videoWidth\":720,\"videoHeight\":960}"
+    },
+    {
+      "viewport": "390x844",
+      "check": "Case-study #header-center-project-back-btn renders theme highlight & responsive geometry",
+      "passed": true,
+      "detail": "{\"exists\":true,\"width\":45,\"height\":45,\"logoColor\":\"rgb(220, 80, 0)\"}"
+    },
+    {
+      "viewport": "390x844",
+      "check": "prefers-reduced-motion: reduce bypasses preloader immediately",
+      "passed": true,
+      "detail": "countAfterLoad450ms=0"
+    }
+  ]
+}
