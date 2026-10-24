@@ -1464,3 +1464,93 @@ function createPopArtStickerAtlas(): THREE.CanvasTexture {
   tex.anisotropy = 4;
   return tex;
 }
+
+import { Tesseract } from "@/components/three/Tesseract";
+
+export function buildTesseractTunnel(
+  track: <T extends THREE.Object3D | THREE.Material | THREE.Texture | THREE.BufferGeometry>(obj: T) => T,
+  isMobile: boolean
+) {
+  const group = new THREE.Group();
+  
+  // S6 dark world: a corridor of 14 to 18 tesseracts
+  const tesseracts = [];
+  const edgeMat = track(new THREE.MeshStandardMaterial({
+    color: 0x0b0e12,
+    metalness: 1,
+    roughness: 0.35,
+    transparent: true,
+  }));
+  const nodeMat = track(new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+  }));
+  
+  for (let i = 0; i < 16; i++) {
+    const t = new Tesseract({ edgeMaterial: edgeMat, nodeMaterial: nodeMat, radius: 3.6, tube: 0.035, node: 0.09, d: 2.6 });
+    t.position.z = -i * 6;
+    group.add(t);
+    tesseracts.push({ t, i, zOffset: -i * 6 });
+  }
+
+  // Pink glass world (S8) uses a separate set or we just swap materials?
+  const glassMat = track(new THREE.MeshPhysicalMaterial({ 
+    color: 0xff5fd2, 
+    metalness: 0, 
+    roughness: 0.04, 
+    transmission: 1, 
+    thickness: 0.35, 
+    ior: 1.45, 
+    dispersion: 0.25, 
+    clearcoat: 1, 
+    emissive: 0xff2fbf, 
+    emissiveIntensity: 0.35, 
+    envMapIntensity: 2,
+    transparent: true,
+  }));
+  
+  const cheapMat = track(new THREE.MeshStandardMaterial({
+    color: 0xff5fd2,
+    roughness: 0.2,
+    metalness: 0.8,
+    transparent: true,
+  }));
+
+  const pinkGroup = new THREE.Group();
+  const pinkTesseracts = [];
+  // Keep transmissive instances limited to nearest 4
+  for (let i = 0; i < 10; i++) {
+    const mat = i < 4 ? glassMat : cheapMat;
+    const t1 = new Tesseract({ edgeMaterial: mat, nodeMaterial: nodeMat, radius: 1.0, tube: 0.02, node: 0.05, d: 2.6 });
+    const t2 = new Tesseract({ edgeMaterial: mat, nodeMaterial: nodeMat, radius: 0.62, tube: 0.015, node: 0.04, d: 2.6 });
+    const t3 = new Tesseract({ edgeMaterial: mat, nodeMaterial: nodeMat, radius: 0.38, tube: 0.01, node: 0.03, d: 2.6 });
+    const cell = new THREE.Group();
+    cell.add(t1, t2, t3);
+    cell.position.z = -i * 4;
+    pinkGroup.add(cell);
+    pinkTesseracts.push({ t1, t2, t3, i, zOffset: -i * 4, cell });
+  }
+  
+  // Vortex core for the pink world
+  const vortexCoreMat = track(new THREE.ShaderMaterial({
+    uniforms: { uMode: { value: 0 }, uIntensity: { value: 0 } },
+    vertexShader: `void main(){ gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `void main(){ gl_FragColor=vec4(0.0); }`
+  }));
+  const flashVeilMat = track(new THREE.ShaderMaterial({
+    uniforms: { uFlash: { value: 0 } },
+    vertexShader: `void main(){ gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `uniform float uFlash; void main(){ gl_FragColor=vec4(1.0, 1.0, 1.0, uFlash); }`,
+    transparent: true
+  }));
+  
+  const flashMesh = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), flashVeilMat);
+  flashMesh.position.z = -5;
+  group.add(flashMesh);
+  
+  // Add pinkGroup to main group but hide initially
+  pinkGroup.visible = false;
+  group.add(pinkGroup);
+
+  return { group, tesseracts, pinkGroup, pinkTesseracts, edgeMat, nodeMat, glassMat, cheapMat, vortexCoreMat, flashVeilMat };
+}

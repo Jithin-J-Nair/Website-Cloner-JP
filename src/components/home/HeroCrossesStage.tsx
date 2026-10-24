@@ -425,6 +425,7 @@ export function HeroCrossesStage() {
     const search = new URLSearchParams(window.location.search);
     const forceQuality = search.get("quality");
     
+    const isMobileInit = window.innerWidth < 680;
     let useHighQuality = !isMobileInit && !isSoftwareRenderer;
     if (forceQuality === "high") {
       useHighQuality = true;
@@ -497,8 +498,7 @@ export function HeroCrossesStage() {
     scene.add(keyLight);
 
     // Shared Polar-Radial + Analytical-Fillet Hollow Cross Geometry
-    const isMobileInit = initialW < 680;
-    const crossGeometry = createHollowCrossGeometry(isMobileInit ? 48 : 64);
+        const crossGeometry = createHollowCrossGeometry(isMobileInit ? 48 : 64);
 
     // Studio MeshPhysicalMaterial instances (roughness ~0.35, clearcoat 1, clearcoatRoughness ~0.03)
     const disposableMaterials: THREE.MeshPhysicalMaterial[] = [];

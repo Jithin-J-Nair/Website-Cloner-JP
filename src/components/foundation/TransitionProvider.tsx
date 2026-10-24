@@ -24,7 +24,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   const [clipPath, setClipPath] = useState("circle(0px at 50% 50%)");
   const [label, setLabel] = useState("LUSION");
   const [phase, setPhase] = useState<"idle" | "opening" | "covered" | "closing">("idle");
-  const originRef = useRef<{ x: number; y: number }>({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const originRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const timeoutRef = useRef<number>(0);
 
   const isTransitioning = useStudioStore((s) => s.isTransitioning);
@@ -83,7 +83,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
       
       // Fallback if route change hangs
       timeoutRef.current = window.setTimeout(() => {
-        if (phase === "covered") startClose();
+        startClose();
       }, 2500);
     }, 520);
   };

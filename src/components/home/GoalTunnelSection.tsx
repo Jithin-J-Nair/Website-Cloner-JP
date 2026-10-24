@@ -6,8 +6,12 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
+import { RadialSpeedBlurShader, ChromaticAberrationShader, VignetteGrainShader } from "@/components/three/CinematicPass";
+import { buildFracture, FRACTURE_VERT, FRACTURE_FRAG } from "@/components/three/Fracture";
+import { Tesseract } from "@/components/three/Tesseract";
 import { LUSION_HOME } from "@/data/reference";
-import { useStudioStore } from "@/lib/store";
+import { useStudioStore, STAGE_TELEMETRY } from "@/lib/store";
 import {
   applySuitJointPose,
   blendSuitPose,
@@ -24,7 +28,7 @@ import {
   type SuitJointPose,
 } from "@/components/home/AstronautEmergenceAssets";
 import {
-  buildArchitecturalTrussTunnel,
+  buildTesseractTunnel,
   buildBlueArchCorridor,
   buildDiamondsAndPopStickers,
   buildHologramEchoMaterial,
@@ -195,6 +199,12 @@ export function GoalTunnelSection() {
     const rendererLabel = dbgExt ? String(glCtx.getParameter(dbgExt.UNMASKED_RENDERER_WEBGL)) : "";
     const isSoftwareRenderer = /swiftshader|llvmpipe|software/i.test(rendererLabel);
 
+    
+    const initW = Math.max(2, window.innerWidth);
+    const initH = Math.max(2, window.innerHeight);
+    const isMobileInit = initW < 820;
+    const initDpr = Math.min(2, window.devicePixelRatio || 1);
+
     const search = new URLSearchParams(window.location.search);
     const forceQuality = search.get("quality");
     
@@ -215,11 +225,7 @@ export function GoalTunnelSection() {
       software: isSoftwareRenderer
     };
 
-    const initW = Math.max(2, window.innerWidth);
-    const initH = Math.max(2, window.innerHeight);
-    const isMobileInit = initW < 820;
-    const initDpr = Math.min(2, window.devicePixelRatio || 1);
-
+                
     glRenderer.setPixelRatio(initDpr);
     glRenderer.setSize(initW, initH, false);
     glRenderer.setClearColor(0x000000, 0);
@@ -325,7 +331,7 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     // 5. High-Fidelity Single-Draw-Call Downstream Worlds (`Frames 09–20`)
     // -------------------------------------------------------------------------
-    const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit);
+    const trussSystem = buildTesseractTunnel(track, isMobileInit);
     trussSystem.group.visible = false;
     scene.add(trussSystem.group);
 
@@ -359,103 +365,35 @@ export function GoalTunnelSection() {
       .then(([{ primary, createClone }, [bg, bga]]) => {
         if (unmounted) return;
 
-        const maxPiece = Math.max(...bg.attributes.piece);
-        numShards = maxPiece + 1;
-        framesPerShard = Math.floor(bga.header.vertexCount / numShards);
         
-        // Assemble authentic pieces into a master geometry
-        const baseGeo = bg.geometry;
-        const geom = new THREE.InstancedBufferGeometry();
-        geom.index = baseGeo.index;
-        geom.setAttribute("position", baseGeo.attributes.position);
-        geom.setAttribute("aPiece", baseGeo.attributes.piece);
-        
-        // We will pass the animation frames as a uniform data texture or uniform array if possible, 
-        // OR we can just update a single vertex attribute per frame. Given 946 pieces, passing an array of matrices/positions is fine.
-        // Actually, to keep it simple, since the shader just needs to read the current frame, 
-        // we can instance it? Wait, broken_glass.buf is ONE continuous mesh with a "piece" attribute (0..945).
-        // It's NOT an InstancedMesh, it is a single Mesh, but each vertex belongs to a piece.
-        // We can upload a DataTexture with the positions of the 946 pieces for the current frame,
-        // or we can pass a uniform array of 946 vec3s... but WebGL max uniforms might be exceeded.
-        // A floating point DataTexture is safer!
-        
-        const animData = new Float32Array(bga.attributes.position);
-        const animOrient = new Float32Array(bga.attributes.orient);
-        
-        const mat = track(
-          new THREE.ShaderMaterial({
-            defines: { USE_SHARDS: 1 },
-            transparent: true,
-            side: THREE.DoubleSide,
-            depthWrite: false,
-            uniforms: { 
-              uOpacity: { value: 0 },
-              uFrameData: { value: null }, 
-              uOrientData: { value: null } 
-            },
-            vertexShader: [
-              "attribute float aPiece;",
-              "uniform sampler2D uFrameData;",
-              "uniform sampler2D uOrientData;",
-              "varying vec3 vNormalV;",
-              "varying vec3 vPosV;",
-              "vec3 applyQuat(vec3 v, vec4 q) {",
-              "  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);",
-              "}",
-              "void main() {",
-              "  float p = aPiece;",
-              "  float u = (mod(p, 32.0) + 0.5) / 32.0;",
-              "  float v = (floor(p / 32.0) + 0.5) / 30.0;",
-              "  vec3 center = texture2D(uFrameData, vec2(u, v)).xyz;",
-              "  vec4 q = texture2D(uOrientData, vec2(u, v));",
-              "  vec3 pos = center + applyQuat(position, q);",
-              "  vec4 mv = modelViewMatrix * vec4(pos, 1.0);",
-              "  vPosV = mv.xyz;",
-              "  // Approx normal",
-              "  vNormalV = normalize(normalMatrix * applyQuat(normal, q));",
-              "  gl_Position = projectionMatrix * mv;",
-              "}",
-            ].join("\n"),
-            fragmentShader: [
-              "varying vec3 vNormalV;",
-              "varying vec3 vPosV;",
-              "uniform float uOpacity;",
-              "void main() {",
-              "  vec3 N = normalize(vNormalV);",
-              "  vec3 V = normalize(-vPosV);",
-              "  float fres = pow(1.0 - abs(dot(N, V)), 1.75);",
-              "  float spec = pow(max(dot(N, normalize(vec3(-0.45, 0.72, 0.55))), 0.0), 12.0);",
-              "  vec3 glassTint = mix(vec3(0.42, 0.62, 0.98), vec3(0.92, 0.96, 1.0), fres);",
-              "  vec3 col = glassTint + vec3(1.9) * spec;",
-              "  float alpha = clamp(0.30 + fres * 0.66 + spec, 0.0, 1.0) * uOpacity;",
-              "  gl_FragColor = vec4(col, alpha);",
-              "}",
-            ].join("\n"),
-          })
-        );
-        
-        shardsMesh = new THREE.Mesh(geom, mat);
-        shardsMesh.visible = false;
-        shardsMesh.frustumCulled = false;
-        shardsMesh.renderOrder = 12;
-        // The data is 946 items. 32x30 texture is 960 items.
-        const frameData = new Float32Array(32 * 30 * 4);
-        const orientData = new Float32Array(32 * 30 * 4);
-        const texFrame = track(new THREE.DataTexture(frameData, 32, 30, THREE.RGBAFormat, THREE.FloatType));
-        const texOrient = track(new THREE.DataTexture(orientData, 32, 30, THREE.RGBAFormat, THREE.FloatType));
-        texFrame.needsUpdate = true;
-        texOrient.needsUpdate = true;
-        mat.uniforms.uFrameData.value = texFrame;
-        mat.uniforms.uOrientData.value = texOrient;
-        
-        shardsMesh.userData = { animData, animOrient, texFrame, texOrient, framesPerShard, numShards };
+        const fractGeo = buildFracture(4, 3, {x: 0, y: 0});
+        const fractMat = new THREE.ShaderMaterial({
+          uniforms: {
+            uMap: { value: roomTarget?.texture },
+            uBreak: { value: 0 },
+            uCrack: { value: 0 },
+            uBulge: { value: 0.06 },
+            uImpact: { value: new THREE.Vector2(0, 0) }
+          },
+          vertexShader: FRACTURE_VERT,
+          fragmentShader: FRACTURE_FRAG,
+          transparent: true,
+          side: THREE.DoubleSide
+        });
+        shardsMesh = track(new THREE.Mesh(fractGeo, fractMat));
+        shardsMesh.position.z = 0.01;
         scene.add(shardsMesh);
-
+        
         if (unmounted) return;
         mainAstro = primary;
         portalMaskedMaterials.push(...primary.materials);
 
-        // Attach curved dot-matrix LED emoticon display inside `Head` bone (`Frames 18–20`)
+        if (primary.bones.Head) {
+          primary.bones.Head.add(visorLed.mesh);
+        } else {
+          primary.root.add(visorLed.mesh);
+        }
+
         if (primary.bones.Head) {
           primary.bones.Head.add(visorLed.mesh);
         } else {
@@ -534,7 +472,12 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     let composer: EffectComposer | null = null;
     let bloomPass: UnrealBloomPass | null = null;
+    let radialBlurPass: ShaderPass | null = null;
+    let chromaPass: ShaderPass | null = null;
+    let vignettePass: ShaderPass | null = null;
+    let roomTarget: THREE.WebGLRenderTarget | null = null;
 
+    
     if (useHighQuality) {
       const bufW = Math.max(2, Math.floor(initW * initDpr));
       const bufH = Math.max(2, Math.floor(initH * initDpr));
@@ -559,11 +502,24 @@ export function GoalTunnelSection() {
       const renderPass = new RenderPass(scene, camera);
       composer.addPass(renderPass);
 
+      
       bloomPass = new UnrealBloomPass(new THREE.Vector2(initW, initH), 0.16, 0.46, 1.48);
       composer.addPass(bloomPass);
 
+      radialBlurPass = new ShaderPass(RadialSpeedBlurShader);
+      composer.addPass(radialBlurPass);
+
+      chromaPass = new ShaderPass(ChromaticAberrationShader);
+      composer.addPass(chromaPass);
+
       const outputPass = new OutputPass();
       composer.addPass(outputPass);
+
+      vignettePass = new ShaderPass(VignetteGrainShader);
+      composer.addPass(vignettePass);
+      
+      roomTarget = new THREE.WebGLRenderTarget(initW, initH);
+
     }
 
     // -------------------------------------------------------------------------
@@ -1134,38 +1090,69 @@ export function GoalTunnelSection() {
         optics.chromaticRingMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
       }
 
-      // 1. Downstream Single-Draw-Call GPU-Twisted Architectural Truss & Vortex (`Frames 09 -> 14`)
+      
+      // 1. Tesseract Tunnel (Dark World -> Pink Glass World)
       const blackIn = !inEmergencePhase ? smoothstep(0.065, 0.135, tTunnel) : 0;
       const blackOut = 1 - smoothstep(0.80, 0.845, tTunnel);
       const blackVis = blackIn * blackOut;
       trussSystem.group.visible = blackVis > 0.005;
 
-      // Seamless white-lavender portal flash bridging `Frame 14 -> Frame 15` (`tTunnel ~ 0.82`)
-      const portalFlash =
-        !inEmergencePhase
-          ? smoothstep(0.785, 0.822, tTunnel) * (1 - smoothstep(0.822, 0.865, tTunnel))
-          : 0;
+      const portalFlash = !inEmergencePhase ? smoothstep(0.785, 0.822, tTunnel) * (1 - smoothstep(0.822, 0.865, tTunnel)) : 0;
       trussSystem.flashVeilMat.uniforms.uFlash.value = portalFlash;
 
+      // Parallax rig / Flight rig
+      const speed = STAGE_TELEMETRY.scrollVelocity;
+      const fov = THREE.MathUtils.lerp(52, 78, Math.min(1, Math.abs(speed)));
+      camera.fov = fov; camera.updateProjectionMatrix();
+      const roll = Math.sin(elapsedSec * 0.35) * 0.05 + speed * Math.sin(elapsedSec * 0.9) * 0.03;
+      const shake = Math.abs(speed) * 0.015;
+      camera.rotation.z = roll;
+      camera.position.x = (Math.sin(elapsedSec * 1.3) - 0.5) * shake + pxParallax * 0.18;
+      camera.position.y = (Math.sin(elapsedSec * 1.7 + 9.0) - 0.5) * shake + pyParallax * 0.12;
+
+      if (radialBlurPass) radialBlurPass.uniforms.uSpeed.value = Math.abs(speed);
+      if (chromaPass) chromaPass.uniforms.uAmount.value = Math.abs(speed) * 0.015;
+      if (vignettePass) vignettePass.uniforms.uTime.value = elapsedSec;
+
       if (trussSystem.group.visible) {
-        const uPhase = clamp01((tTunnel - 0.10) / 0.68);
-        const twistAmt = reducedMotion
-          ? smoothstep(0.46, 0.78, tTunnel) * 0.14
-          : smoothstep(0.46, 0.62, tTunnel) * 0.092 + smoothstep(0.64, 0.79, tTunnel) * 0.145;
-        const vortexPinch = smoothstep(0.67, 0.76, tTunnel);
-        trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis;
-        trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
-        trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
-        trussSystem.tunnelMaterial.uniforms.uVortexPinch.value = vortexPinch;
-        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = (tTunnel * 44) % trussSystem.baySpacing;
-        const emeraldGlow =
-          smoothstep(0.47, 0.53, tTunnel) * (1 - smoothstep(0.62, 0.68, tTunnel)) * 0.92;
-        const pinkVortexGlow = smoothstep(0.69, 0.755, tTunnel);
-        trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.66, 0.71, tTunnel);
-        trussSystem.vortexCoreMat.uniforms.uIntensity.value =
-          Math.max(emeraldGlow, pinkVortexGlow) * blackVis;
+        trussSystem.edgeMat.opacity = blackVis;
+        trussSystem.nodeMat.opacity = blackVis;
+        
+        const pinkPhase = smoothstep(0.5, 0.8, tTunnel);
+        trussSystem.pinkGroup.visible = pinkPhase > 0.05;
+        
+        const travelSpeed = tTunnel * 40; // Forward movement
+
+        // Update dark tesseracts
+        trussSystem.tesseracts.forEach((td) => {
+          // Recycle behind camera
+          const z = (td.zOffset + travelSpeed) % (18 * 6);
+          td.t.position.z = z > 6 ? z - (18 * 6) : z;
+          
+          td.t.update({
+            xw: elapsedSec * 0.12 + td.i * 0.35,
+            yw: elapsedSec * 0.09 + td.i * 0.2,
+            zw: elapsedSec * 0.07,
+          });
+        });
+
+        // Update pink tesseracts
+        if (trussSystem.pinkGroup.visible) {
+          trussSystem.glassMat.opacity = pinkPhase;
+          trussSystem.cheapMat.opacity = pinkPhase;
+          
+          trussSystem.pinkTesseracts.forEach((td) => {
+             const z = (td.zOffset + travelSpeed) % (10 * 4);
+             td.cell.position.z = z > 4 ? z - (10 * 4) : z;
+             
+             td.t1.update({ xw: elapsedSec * 0.2, yw: elapsedSec * 0.1, zw: elapsedSec * 0.15 });
+             td.t2.update({ xw: -elapsedSec * 0.3, yw: elapsedSec * 0.15, zw: -elapsedSec * 0.1 });
+             td.t3.update({ xw: elapsedSec * 0.4, yw: -elapsedSec * 0.2, zw: elapsedSec * 0.25 });
+          });
+        }
+        
         if (bloomPass) {
-          bloomPass.strength = lerp(0.16, 0.34, smoothstep(0.68, 0.76, tTunnel));
+          bloomPass.strength = lerp(0.16, 0.6, pinkPhase);
         }
       } else if (bloomPass) {
         bloomPass.strength = 0.16;
@@ -1215,45 +1202,50 @@ export function GoalTunnelSection() {
         blueCorridor.endGlowMat.uniforms.uOpacity.value = whiteVis;
       }
 
-      // 3. Authentic Plate-Glass Shatter Burst (`Frame 16`)
+      
+      
+      // 3. Monitor Reveal, Match-Cut, & Glass Shatter
       if (shardsMesh) {
-        const shardVis = smoothstep(0.18, 0.42, tShatter) * (1 - smoothstep(0.85, 0.97, tShatter)) * (tWait > 0.001 ? 0 : 1);
-        shardsMesh.visible = shardVis > 0.005;
-        if (shardsMesh.visible) {
-          const mat = shardsMesh.material as THREE.ShaderMaterial;
-          mat.uniforms.uOpacity.value = shardVis;
-          
-          const burst = smoothstep(0.18, 0.82, tShatter);
-          const { animData, animOrient, texFrame, texOrient, framesPerShard, numShards } = shardsMesh.userData;
-          
-          // burst 0..1 maps to frame 0..framesPerShard-1
-          const targetFrame = clamp01(burst) * (framesPerShard - 1);
-          const iF = Math.floor(targetFrame);
-          const iN = Math.min(framesPerShard - 1, iF + 1);
-          const fT = targetFrame - iF;
-          
-          const fd = texFrame.image.data;
-          const od = texOrient.image.data;
-          
-          for (let p = 0; p < numShards; p++) {
-            // The animation buffer appears to be piece-major: piece 0 frames 0..N, piece 1 frames 0..N
-            const idx0 = (p * framesPerShard + iF);
-            const idx1 = (p * framesPerShard + iN);
-            
-            fd[p*4+0] = lerp(animData[idx0*3+0], animData[idx1*3+0], fT);
-            fd[p*4+1] = lerp(animData[idx0*3+1], animData[idx1*3+1], fT);
-            fd[p*4+2] = lerp(animData[idx0*3+2], animData[idx1*3+2], fT) + 1.25; // Z offset
-            
-            // simple slerp approximation for orientation since it's just debris
-            od[p*4+0] = lerp(animOrient[idx0*4+0], animOrient[idx1*4+0], fT);
-            od[p*4+1] = lerp(animOrient[idx0*4+1], animOrient[idx1*4+1], fT);
-            od[p*4+2] = lerp(animOrient[idx0*4+2], animOrient[idx1*4+2], fT);
-            od[p*4+3] = lerp(animOrient[idx0*4+3], animOrient[idx1*4+3], fT);
-          }
-          texFrame.needsUpdate = true;
-          texOrient.needsUpdate = true;
+        const mat = shardsMesh.material as THREE.ShaderMaterial;
+        
+        // 0.18 to 0.30: contact, cracks grow
+        const uCrack = smoothstep(0.18, 0.30, tShatter);
+        // 0.30 to 0.75: break, shards launch
+        const uBreak = smoothstep(0.30, 0.75, tShatter);
+        
+        mat.uniforms.uCrack.value = uCrack;
+        mat.uniforms.uBreak.value = uBreak;
+        mat.uniforms.uBulge.value = uCrack * (1.0 - smoothstep(0.30, 0.35, tShatter)) * 0.06;
+        
+        // Render room into target if monitor is visible
+        if (tShatter > 0.001 && tShatter < 0.99) {
+           shardsMesh.visible = false;
+           endDecor.group.visible = false;
+           
+           const matchCutActive = tShatter > 0.30;
+           
+           // Hide astronaut from room if he jumped out
+           if (mainAstro) {
+             mainAstro.root.visible = !matchCutActive;
+           }
+           
+           glRenderer.setRenderTarget(roomTarget);
+           glRenderer.clear();
+           glRenderer.render(scene, camera);
+           glRenderer.setRenderTarget(null);
+           
+           // Now set up for main pass
+           if (mainAstro) {
+             mainAstro.root.visible = matchCutActive;
+           }
+           blueCorridor.group.visible = false; // Room is already inside roomTarget
+           shardsMesh.visible = true;
+        } else {
+           shardsMesh.visible = false;
         }
       }
+
+
 
       // 4. Faceted Glass Diamonds + Star Flares + 18 Die-Cut Pop-Art Stickers (`Frames 17–20`)
       const waitVis = smoothstep(0.92, 0.99, tShatter);

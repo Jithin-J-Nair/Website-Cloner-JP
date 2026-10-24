@@ -35,8 +35,8 @@ const tick = () => {
   for (const [el, visible] of registry) {
     if (!visible) continue
     const r = el.getBoundingClientRect()
-    el.style.setProperty("--x", \`\${px - r.left}px\`)
-    el.style.setProperty("--y", \`\${py - r.top}px\`)
+    el.style.setProperty("--x", `${px - r.left}px`)
+    el.style.setProperty("--y", `${py - r.top}px`)
   }
 }
 
@@ -100,12 +100,12 @@ export function GlowCard({
   }, [])
 
   const colorConfig = glowColorMap[glowColor]
-  const glowStr = \`hsl(\${colorConfig.base} 100% 50% / 0.5)\`
+  const glowStr = `hsl(${colorConfig.base} 100% 50% / 0.5)`
 
   const style: CSSProperties = {
-    "--radius": \`\${radius}px\`,
+    "--radius": `${radius}px`,
     "--spotlight-color": glowStr,
-    "--spotlight-spread": \`\${colorConfig.spread}px\`,
+    "--spotlight-spread": `${colorConfig.spread}px`,
     width: customSize ? width : undefined,
     height: customSize ? height : undefined,
   } as CSSProperties & Record<string, string>
