@@ -4,7 +4,7 @@ import { ContactPageView } from "@/components/pages/ContactPageView";
 export const metadata: Metadata = {
   title: "Contact & Project Brief Planner",
   description:
-    "Start a conversation with KINETA's producers and creative directors in Osaka, Bristol, and New York.",
+    "Start a conversation with Lusion's producers and creative directors in Osaka, Bristol, and New York.",
 };
 
 export default function ContactPage() {

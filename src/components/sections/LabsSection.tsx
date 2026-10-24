@@ -19,12 +19,12 @@ export function LabsSection() {
       id="labs"
       surface="void"
       webglMode="labs-sandbox"
-      ariaLabel="KINETA R&D shader experiments"
+      ariaLabel="Lusion R&D shader experiments"
       className="!bg-[#090b10]/72 py-24 md:py-36"
     >
       <div className="kn-container">
         <CrosshairRow
-          labelLeft="04 // KINETA LABS R&D"
+          labelLeft="04 // Lusion LABS R&D"
           labelRight="LIVE SHADER UNIFORMS ACTIVE"
         />
 

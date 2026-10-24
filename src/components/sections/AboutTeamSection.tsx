@@ -54,7 +54,7 @@ export function AboutTeamSection({ compactCta = false }: AboutTeamSectionProps) 
           {compactCta && (
             <MagneticPill
               href="/about"
-              transitionLabel="ABOUT KINETA"
+              transitionLabel="ABOUT Lusion"
               variant="dark"
               size="md"
               cursorText="STUDIO STORY"

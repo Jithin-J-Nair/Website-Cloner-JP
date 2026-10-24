@@ -45,7 +45,7 @@ export const STUDIO_PROJECTS: StudioProject[] = [
     slug: "monolith-one",
     index: "01",
     title: "Monolith One",
-    client: "Kineta Internal Campaign",
+    client: "Lusion Internal Campaign",
     year: "2026",
     category: "R&D Concept",
     disciplines: ["concept", "web", "design", "webgl", "3d", "satire"],
@@ -83,7 +83,7 @@ export const STUDIO_PROJECTS: StudioProject[] = [
       { org: "Awwwards", award: "Developer Award" },
       { org: "FWA", award: "FWA of the Day" },
     ],
-    liveUrlLabel: "monolith.kineta.studio",
+    liveUrlLabel: "monolith.lusion.studio",
     gallery: [
       {
         id: "m-01",
@@ -160,7 +160,7 @@ export const STUDIO_PROJECTS: StudioProject[] = [
       { org: "FWA", award: "FWA of the Day" },
       { org: "CSSDA", award: "Best UI / UX / Innovation" },
     ],
-    liveUrlLabel: "kestrel.kineta.studio",
+    liveUrlLabel: "kestrel.lusion.studio",
     gallery: [
       {
         id: "k-01",
@@ -235,7 +235,7 @@ export const STUDIO_PROJECTS: StudioProject[] = [
       { org: "Awwwards", award: "Site of the Day" },
       { org: "Webby Awards", award: "Best Technical Achievement" },
     ],
-    liveUrlLabel: "meridian.kineta.studio",
+    liveUrlLabel: "meridian.lusion.studio",
     gallery: [
       {
         id: "mr-01",
@@ -311,7 +311,7 @@ export const STUDIO_PROJECTS: StudioProject[] = [
       { org: "Awwwards", award: "Site of the Day" },
       { org: "CommArts", award: "Award of Excellence" },
     ],
-    liveUrlLabel: "sylva.kineta.studio",
+    liveUrlLabel: "sylva.lusion.studio",
     gallery: [
       {
         id: "s-01",
@@ -386,7 +386,7 @@ export const STUDIO_PROJECTS: StudioProject[] = [
       { org: "D&AD", award: "Wood Pencil — Digital Design" },
       { org: "FWA", award: "FWA of the Month" },
     ],
-    liveUrlLabel: "hyperion.kineta.studio",
+    liveUrlLabel: "hyperion.lusion.studio",
     gallery: [
       {
         id: "h-01",
@@ -461,7 +461,7 @@ export const STUDIO_PROJECTS: StudioProject[] = [
       { org: "Awwwards", award: "Site of the Day" },
       { org: "Lovie Awards", award: "Gold — XR & Spatial" },
     ],
-    liveUrlLabel: "aether.kineta.studio",
+    liveUrlLabel: "aether.lusion.studio",
     gallery: [
       {
         id: "ae-01",

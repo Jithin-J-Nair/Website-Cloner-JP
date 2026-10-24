@@ -27,12 +27,12 @@ export function LabsPageView() {
       <SurfaceSection
         surface="void"
         webglMode="labs-sandbox"
-        ariaLabel="KINETA interactive shader laboratory"
+        ariaLabel="Lusion interactive shader laboratory"
         className="!bg-transparent pt-28 pb-24 md:pt-36"
       >
         <div className="kn-container">
           <CrosshairRow
-            labelLeft="LABS.KINETA.STUDIO // R&D DIVISION"
+            labelLeft="LABS.Lusion.STUDIO // R&D DIVISION"
             labelRight={`LIVE GPU · ${fps} FPS · DPR [${dpr[0]}, ${dpr[1]}]`}
           />
 
@@ -44,7 +44,7 @@ export function LabsPageView() {
                 <SplitTextReveal
                   as="h1"
                   immediate
-                  lines={["KINETA LABS", "OPTICAL SANDBOX"]}
+                  lines={["Lusion LABS", "OPTICAL SANDBOX"]}
                   className="kn-section-title mt-3 text-white"
                 />
                 <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#c2cbde] md:text-base">
