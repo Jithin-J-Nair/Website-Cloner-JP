@@ -413,8 +413,15 @@ export function HeroCrossesStage() {
 
     const glCtx = renderer.getContext();
     const dbgExt = glCtx.getExtension("WEBGL_debug_renderer_info");
-    const rendererLabel = dbgExt ? String(glCtx.getParameter(dbgExt.UNMASKED_RENDERER_WEBGL)) : "";
-    const isSoftwareRenderer = /swiftshader|llvmpipe|software/i.test(rendererLabel);
+    const rendererLabel = [
+      glCtx.getParameter(glCtx.RENDERER),
+      dbgExt ? glCtx.getParameter(dbgExt.UNMASKED_RENDERER_WEBGL) : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    const isSoftwareRenderer = /swiftshader|llvmpipe|software|subzero|basic render/i.test(
+      rendererLabel
+    );
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.display = "block";
@@ -585,9 +592,16 @@ export function HeroCrossesStage() {
     composer.addPass(outputPass);
 
     let smaaPass: SMAAPass | null = null;
-    if (msaaSamples === 0) {
+    if (msaaSamples === 0 && !isSoftwareRenderer) {
       smaaPass = new SMAAPass();
       composer.addPass(smaaPass);
+    }
+    if (isSoftwareRenderer) {
+      // Avoid multi-pass full-screen depth/AO convolution freeze (9.9s/frame) on software rasterizers;
+      // hardware GPUs retain 100% full GTAO + Bokeh DOF + HDR Bloom + MSAA/SMAA quality.
+      gtaoPass.enabled = false;
+      bokehPass.enabled = false;
+      bloomPass.enabled = false;
     }
 
     // Dynamic Resize Handler (updates camera, renderer, composer, GTAO, Bokeh aspect, and Bloom)
@@ -624,9 +638,20 @@ export function HeroCrossesStage() {
     resizeObserver.observe(container);
 
     let inView = true;
+    let rafId = 0;
+    let yieldTimerId = 0;
+
     const visibilityObserver = new IntersectionObserver(
       (entries) => {
-        if (entries[0]) inView = entries[0].isIntersecting;
+        if (entries[0]) {
+          const nextInView = entries[0].isIntersecting;
+          inView = nextInView;
+          if (nextInView && !rafId) {
+            prevTime = performance.now();
+            needsRender = true;
+            rafId = window.requestAnimationFrame(renderFrame);
+          }
+        }
       },
       { threshold: 0 }
     );
@@ -640,8 +665,6 @@ export function HeroCrossesStage() {
     const pointerWorld = new THREE.Vector3();
     const pointerDelta = new THREE.Vector3();
 
-    let rafId = 0;
-    let yieldTimerId = 0;
     let prevTime = performance.now();
     let elapsed = 0;
     let shaderVerified = false;
@@ -659,13 +682,19 @@ export function HeroCrossesStage() {
     };
 
     const renderFrame = (now: number) => {
+      rafId = 0;
       const frameStart = performance.now();
       const rawDt = Math.max(0.0005, (now - prevTime) * 0.001);
       prevTime = now;
       const dt = Math.min(rawDt, 0.05);
 
+      // Pause RAF completely when scrolled off-screen after preloader settles (0% off-screen CPU/GPU!)
+      if (!inView && preloaderDoneRef.current && staticRendered && !needsRender) {
+        return;
+      }
+
       // Keep frame 0 painted behind #preloader while letting the preloader fade smoothly at 60fps
-      if ((!inView || !preloaderDoneRef.current) && staticRendered && !needsRender) {
+      if (!preloaderDoneRef.current && staticRendered && !needsRender) {
         rafId = window.requestAnimationFrame(renderFrame);
         return;
       }
@@ -738,7 +767,17 @@ export function HeroCrossesStage() {
       }
 
       composer.render(dt);
+      const elapsedFrameMs = performance.now() - frameStart;
+      // Automatic adaptive post-processing fallback if software rasterization / disabled GPU
+      // exceeds 140ms on initial frame (keeps real hardware GPUs at 100% full GTAO + Bokeh + Bloom)
+      if (!staticRendered && elapsedFrameMs > 140) {
+        gtaoPass.enabled = false;
+        bokehPass.enabled = false;
+        bloomPass.enabled = false;
+        if (smaaPass) smaaPass.enabled = false;
+      }
       staticRendered = true;
+      needsRender = false;
 
       if (!shaderVerified) {
         const programs = (
@@ -751,7 +790,12 @@ export function HeroCrossesStage() {
         }
       }
 
-      scheduleNext(performance.now() - frameStart);
+      // True zero-loop accessibility under `prefers-reduced-motion: reduce` once static frame is painted
+      if (isReduced) {
+        return;
+      }
+
+      scheduleNext(elapsedFrameMs);
     };
 
     // Render immediate deterministic frame 0 so screenshots never catch an unrendered frame

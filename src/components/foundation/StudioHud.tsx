@@ -457,8 +457,8 @@ export function StudioHud() {
               aria-label={audioEnabled ? "Mute studio sound" : "Enable studio sound"}
               title={audioEnabled ? "Mute sound" : "Enable sound"}
               className={`relative flex h-[3.2em] w-[3.2em] cursor-pointer items-center justify-center overflow-hidden rounded-full text-[0.875em] transition-colors duration-300 max-[812px]:hidden ${
-                navMenuOpen || audioEnabled
-                  ? "bg-white text-black shadow-xs"
+                navMenuOpen || audioEnabled || isDarkSurface
+                  ? "bg-white text-black shadow-xs hover:bg-[#eaecf6]"
                   : "bg-[#e4e6ef] text-black hover:bg-white"
               }`}
             >
@@ -495,7 +495,11 @@ export function StudioHud() {
                 setNavMenuOpen(!navMenuOpen);
               }}
               className={`group relative flex h-[3.2em] cursor-pointer items-center justify-center rounded-full text-[0.875em] font-medium tracking-[0.02em] text-black uppercase transition-colors duration-300 max-[812px]:w-[3.2em] max-[812px]:px-0 min-[813px]:px-[1.45em] ${
-                navMenuOpen ? "--opened bg-white" : "bg-[#e4e6ef] hover:bg-white"
+                navMenuOpen
+                  ? "--opened bg-white"
+                  : isDarkSurface
+                    ? "bg-white hover:bg-[#eaecf6]"
+                    : "bg-[#e4e6ef] hover:bg-white"
               }`}
             >
               <span id="header-right-menu-btn-inner" className="flex items-center gap-[0.625em] overflow-hidden">

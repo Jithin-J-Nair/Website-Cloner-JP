@@ -12,6 +12,8 @@ import { ShowreelModal } from "@/components/foundation/ShowreelModal";
 import { Preloader } from "@/components/foundation/Preloader";
 import { useStudioStore } from "@/lib/store";
 
+import { ShaderAnimation } from "@/components/ui/ShaderAnimation";
+
 export function StudioShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const activeSurface = useStudioStore((s) => s.activeSurface);
@@ -72,6 +74,7 @@ export function StudioShell({ children }: { children: React.ReactNode }) {
 
         {/* Route Transition Curtain & Cold-Start Preloader (`#preloader`, z-index: 90–200) */}
         <PageTransitionCurtain />
+        <ShaderAnimation />
         <Preloader />
 
         {/* Reactive Pointer (auto-disabled on coarse touch devices & reduced motion) */}
