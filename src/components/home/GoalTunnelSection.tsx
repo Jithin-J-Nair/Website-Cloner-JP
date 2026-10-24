@@ -291,7 +291,7 @@ export function GoalTunnelSection() {
     ];
 
     // -------------------------------------------------------------------------
-    // 4. Lazy-Load Licensed Public-Domain GLB Astronaut (`/models/astronaut.glb`)
+    // 4. Load captured Lusion astronaut meshes first; the unrelated GLB is last-resort fallback only.
     // -------------------------------------------------------------------------
     let mainAstro: LoadedAstronautRig | null = null;
     const clones: LoadedAstronautRig[] = [];
