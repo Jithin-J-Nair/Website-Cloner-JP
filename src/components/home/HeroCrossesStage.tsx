@@ -422,6 +422,26 @@ export function HeroCrossesStage() {
     const isSoftwareRenderer = /swiftshader|llvmpipe|software|subzero|basic render/i.test(
       rendererLabel
     );
+    const search = new URLSearchParams(window.location.search);
+    const forceQuality = search.get("quality");
+    
+    let useHighQuality = !isMobileInit && !isSoftwareRenderer;
+    if (forceQuality === "high") {
+      useHighQuality = true;
+    } else if (forceQuality === "medium" || forceQuality === "low") {
+      useHighQuality = false;
+    }
+
+    (window as any).__pipeline = {
+      tier: forceQuality || (useHighQuality ? "high" : "low"),
+      msaa: useHighQuality ? 4 : 0,
+      bloom: useHighQuality,
+      shadows: useHighQuality,
+      ao: useHighQuality,
+      dof: useHighQuality,
+      software: isSoftwareRenderer
+    };
+
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.display = "block";
@@ -596,12 +616,12 @@ export function HeroCrossesStage() {
       smaaPass = new SMAAPass();
       composer.addPass(smaaPass);
     }
-    if (isSoftwareRenderer) {
-      // Avoid multi-pass full-screen depth/AO convolution freeze (9.9s/frame) on software rasterizers;
-      // hardware GPUs retain 100% full GTAO + Bokeh DOF + HDR Bloom + MSAA/SMAA quality.
+    if (!useHighQuality) {
+      // Avoid multi-pass full-screen depth/AO convolution freeze on software rasterizers;
       gtaoPass.enabled = false;
       bokehPass.enabled = false;
       bloomPass.enabled = false;
+      if (smaaPass) smaaPass.enabled = false;
     }
 
     // Dynamic Resize Handler (updates camera, renderer, composer, GTAO, Bokeh aspect, and Bloom)
@@ -770,7 +790,7 @@ export function HeroCrossesStage() {
       const elapsedFrameMs = performance.now() - frameStart;
       // Automatic adaptive post-processing fallback if software rasterization / disabled GPU
       // exceeds 140ms on initial frame (keeps real hardware GPUs at 100% full GTAO + Bokeh + Bloom)
-      if (!staticRendered && elapsedFrameMs > 140) {
+      if (!staticRendered && elapsedFrameMs > 140 && forceQuality !== "high") {
         gtaoPass.enabled = false;
         bokehPass.enabled = false;
         bloomPass.enabled = false;

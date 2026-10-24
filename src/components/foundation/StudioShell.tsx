@@ -26,6 +26,14 @@ export function StudioShell({ children }: { children: React.ReactNode }) {
     };
     syncViewportUnit();
     window.addEventListener("resize", syncViewportUnit, { passive: true });
+    
+    // Parse ?quality= flag and expose window.__pipeline
+    const search = new URLSearchParams(window.location.search);
+    const q = search.get("quality");
+    if (q === "high" || q === "medium" || q === "low") {
+      useStudioStore.getState().setQualityTier(q);
+    }
+    
     return () => window.removeEventListener("resize", syncViewportUnit);
   }, []);
 

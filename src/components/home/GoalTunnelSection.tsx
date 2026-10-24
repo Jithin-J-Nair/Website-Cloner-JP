@@ -195,6 +195,26 @@ export function GoalTunnelSection() {
     const rendererLabel = dbgExt ? String(glCtx.getParameter(dbgExt.UNMASKED_RENDERER_WEBGL)) : "";
     const isSoftwareRenderer = /swiftshader|llvmpipe|software/i.test(rendererLabel);
 
+    const search = new URLSearchParams(window.location.search);
+    const forceQuality = search.get("quality");
+    
+    let useHighQuality = !isMobileInit && !isSoftwareRenderer;
+    if (forceQuality === "high") {
+      useHighQuality = true;
+    } else if (forceQuality === "medium" || forceQuality === "low") {
+      useHighQuality = false;
+    }
+
+    (window as any).__pipeline = {
+      tier: forceQuality || (useHighQuality ? "high" : "low"),
+      msaa: useHighQuality ? 4 : 0,
+      bloom: useHighQuality,
+      shadows: useHighQuality,
+      ao: false, // not used here
+      dof: false, // not used here
+      software: isSoftwareRenderer
+    };
+
     const initW = Math.max(2, window.innerWidth);
     const initH = Math.max(2, window.innerHeight);
     const isMobileInit = initW < 820;
@@ -206,7 +226,7 @@ export function GoalTunnelSection() {
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.02;
-    glRenderer.shadowMap.enabled = !isMobileInit && !isSoftwareRenderer;
+    glRenderer.shadowMap.enabled = useHighQuality;
     glRenderer.shadowMap.type = THREE.PCFShadowMap;
     glRenderer.domElement.style.width = "100%";
     glRenderer.domElement.style.height = "100%";
@@ -236,7 +256,7 @@ export function GoalTunnelSection() {
     // Rakes across quilted folds so left shoulder/helmet glow crisp off-white while viewer-right torso falls into rich space shadow!
     const sunKeyLight = new THREE.DirectionalLight(0xffffff, 2.15);
     sunKeyLight.position.set(-3.65, 2.15, 0.48);
-    if (!isMobileInit && !isSoftwareRenderer) {
+    if (useHighQuality) {
       sunKeyLight.castShadow = true;
       sunKeyLight.shadow.mapSize.set(2048, 2048);
       sunKeyLight.shadow.radius = 4;
@@ -515,7 +535,7 @@ export function GoalTunnelSection() {
     let composer: EffectComposer | null = null;
     let bloomPass: UnrealBloomPass | null = null;
 
-    if (!isMobileInit && !isSoftwareRenderer) {
+    if (useHighQuality) {
       const bufW = Math.max(2, Math.floor(initW * initDpr));
       const bufH = Math.max(2, Math.floor(initH * initDpr));
       const msaaSamples = glRenderer.capabilities.isWebGL2
