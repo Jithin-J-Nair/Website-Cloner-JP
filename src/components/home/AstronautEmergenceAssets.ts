@@ -670,6 +670,8 @@ export async function loadLusionAstronautParts(
   const root = new THREE.Group();
   const modelRoot = new THREE.Group();
   modelRoot.name = "LusionAstronautBufModel";
+  // Center the captured 0..1.8m suit around the root origin expected by the scroll choreography.
+  modelRoot.position.y = -0.9;
   modelRoot.add(
     createPart(helmetData.geometry, helmetMaterial),
     createPart(visorData.geometry, visorMaterial),
@@ -693,7 +695,7 @@ export async function loadLusionAstronautParts(
     visorMaterial,
     visorEarthUniform,
     // The captured model's visor is centred near y=1.68 in the shared suit coordinate space.
-    visorAnchorLocal: new THREE.Vector3(-0.076, 1.70, 0.132),
+    visorAnchorLocal: new THREE.Vector3(-0.076, 0.80, 0.132),
     drawCalls,
     triangles,
   };
