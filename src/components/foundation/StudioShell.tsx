@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { MotionConfig } from "framer-motion";
 import { SmoothScrollProvider } from "@/components/foundation/SmoothScrollProvider";
-import { GlobalStage } from "@/components/webgl/GlobalStage";
 import { StudioHud } from "@/components/foundation/StudioHud";
 import { CustomCursor } from "@/components/foundation/CustomCursor";
 import { PageTransitionCurtain } from "@/components/foundation/PageTransitionCurtain";
@@ -55,8 +54,8 @@ export function StudioShell({ children }: { children: React.ReactNode }) {
           Skip to main content
         </a>
 
-        {/* The home route owns its dedicated WebGL sections; other routes use the shared stage. */}
-        {pathname !== "/" && <GlobalStage />}
+        {/* Each captured Lusion route owns its own scene. Do not inject the unrelated
+            generic optical-sphere demo behind About, Projects, or project-detail pages. */}
         <StudioHud />
 
         <div id="main-content" className="relative z-10 min-h-dvh">
