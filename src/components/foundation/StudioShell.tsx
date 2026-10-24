@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { usePathname } from "next/navigation";
 import { MotionConfig } from "framer-motion";
 import { SmoothScrollProvider } from "@/components/foundation/SmoothScrollProvider";
 import { StudioHud } from "@/components/foundation/StudioHud";
@@ -12,7 +11,6 @@ import { Preloader } from "@/components/foundation/Preloader";
 import { useStudioStore } from "@/lib/store";
 
 export function StudioShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const activeSurface = useStudioStore((s) => s.activeSurface);
   const activeProjectTheme = useStudioStore((s) => s.activeProjectTheme);
 
