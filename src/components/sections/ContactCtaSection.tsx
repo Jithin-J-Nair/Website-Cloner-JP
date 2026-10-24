@@ -368,7 +368,7 @@ export function ContactCtaSection({
               <div id="end-section-subtitle" className="overflow-hidden">
                 <p
                   id="end-section-subtitle-text"
-                  className="mx-auto max-w-[26ch] font-sans text-[clamp(0.84rem,1.06vw,1.08rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white sm:max-w-none sm:whitespace-nowrap"
+                  className="mx-auto max-w-[26ch] font-sans text-[clamp(0.84rem,1.06vw,1.08rem)] font-normal uppercase leading-[1.35] tracking-normal text-white sm:max-w-none sm:whitespace-nowrap"
                 >
                   {LUSION_GLOBAL_CHROME.endSection.subtitle}
                 </p>
@@ -380,7 +380,7 @@ export function ContactCtaSection({
                   href={`mailto:${LUSION_GLOBAL_CHROME.footer.businessEmail}`}
                   onClick={handleEmailTrigger}
                   onMouseEnter={() => soundEngine.playHover()}
-                  className="block font-sans text-[17.2vw] font-normal leading-[0.98] tracking-[-0.03em] text-white drop-shadow-[0_6px_28px_rgba(0,0,0,0.45)] sm:text-[8.2vw] min-[1800px]:text-[9.5rem]"
+                  className="block font-sans text-[17.2vw] font-normal leading-[0.98] tracking-normal text-white drop-shadow-[0_6px_28px_rgba(0,0,0,0.45)] sm:text-[8.2vw] min-[1800px]:text-[9.5rem]"
                 >
                   Let&apos;s work
                   <br />
@@ -477,7 +477,7 @@ export function ContactCtaSection({
             <div id="end-section-subtitle" className="overflow-hidden">
               <p
                 id="end-section-subtitle-text"
-                className="mx-auto max-w-[18ch] font-sans text-[clamp(0.75rem,0.98vw,0.95rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white/95"
+                className="mx-auto max-w-[18ch] font-sans text-[clamp(0.75rem,0.98vw,0.95rem)] font-normal uppercase leading-[1.35] tracking-normal text-white/95"
               >
                 {LUSION_GLOBAL_CHROME.endSection.subtitle}
               </p>
@@ -489,7 +489,7 @@ export function ContactCtaSection({
                 href={`mailto:${LUSION_GLOBAL_CHROME.footer.businessEmail}`}
                 onClick={handleEmailTrigger}
                 onMouseEnter={() => soundEngine.playHover()}
-                className="block font-sans text-[17.5vw] font-normal leading-[0.98] tracking-[-0.03em] text-white sm:text-[8.6vw] min-[1800px]:text-[9.5rem]"
+                className="block font-sans text-[17.5vw] font-normal leading-[0.98] tracking-normal text-white sm:text-[8.6vw] min-[1800px]:text-[9.5rem]"
               >
                 Let&apos;s work
                 <br />

@@ -332,7 +332,7 @@ export function HomePageView() {
               id="home-reel-title-line-1"
               ref={reelTitleLine1Ref}
               style={{ wordSpacing: "0.52em" }}
-              className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*0.92+var(--grid-gap))]"
+              className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*2+var(--grid-gap)*2)]"
             >
               {LUSION_HOME.reel.eyebrowLine1}
             </span>
