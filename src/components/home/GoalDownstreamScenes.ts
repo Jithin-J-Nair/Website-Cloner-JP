@@ -463,7 +463,6 @@ export function buildArchitecturalTrussTunnel(
       const m4 = new THREE.Matrix4();
       const pos = new THREE.Vector3();
       const quat = new THREE.Quaternion();
-      const euler = new THREE.Euler();
       const scl = new THREE.Vector3(1, 1, 1);
 
       let rng = 20261023;
@@ -499,22 +498,27 @@ export function buildArchitecturalTrussTunnel(
           
           quat.setFromEuler(new THREE.Euler(0, 0, angle));
           
-          // `grid_base_hd` is the corners/frame.
-          // Translate outwards from center so the hole in the middle forms a corridor.
-          // If X: 0..3, Y: 0..1, then translating it so X=1.48, Y=1.48 puts the origin at the inner corner.
+          // grid_base_hd is X: -0.025 to 3.025, Y: 0 to 1
+          // we want its Y=0 axis to touch the hole corner, extending outwards in X and Y
+          // The center hole is maybe 1.5 radius.
           pos.set(1.48, 1.48, z);
-          pos.applyEuler(new THREE.Euler(0, 0, angle)); // rotate position too!
+          pos.applyEuler(new THREE.Euler(0, 0, angle));
           m4.compose(pos, quat, scl);
           
           baseInstMesh.setMatrixAt(idx, m4);
           baseSeeds[idx] = rand();
           baseKinds[idx] = 0; // structural
           
-          // `tunnel_block_wall` X is -0.63..0.63, Y is -0.5..0.5.
-          // We can put it along the walls, e.g. at Y=1.48 + 0.5 = 1.98.
-          const wPos = new THREE.Vector3(0, 1.48 + 0.5, z);
-          wPos.applyEuler(new THREE.Euler(0, 0, angle));
-          m4.compose(wPos, quat, scl);
+          // tunnel_block_wall is X: -0.63 to 0.63, Y: -0.5 to 0.5.
+          // It forms the walls connecting the corners.
+          // We can put it halfway between the corners:
+          // angle + PI/4? Or angle is the wall face.
+          // Let's place it at Y=1.48, rotated so it spans the X axis.
+          const wPos = new THREE.Vector3(1.48, 0, z); // shift wall out
+          wPos.applyEuler(new THREE.Euler(0, 0, angle + Math.PI/2)); // face inward
+          // tunnel_block_wall actually spans X axis. 
+          const wQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI/2, 0, angle));
+          m4.compose(wPos, wQuat, scl);
           
           wallInstMesh.setMatrixAt(idx, m4);
           wallSeeds[idx] = rand();

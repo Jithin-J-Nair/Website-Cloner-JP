@@ -3,6 +3,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { TransitionLink } from "@/components/studio/TransitionLink";
+import { GlowCard } from "@/components/ui/GlowCard";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 import { getCanonicalProjectTitle } from "@/lib/clean-media-synthesizer";
@@ -168,6 +169,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
       } ${index >= 1 ? "max-[812px]:mt-[2em]" : ""}`}
     >
       {/* Thumbnail Stage (`.project-item-main`, 65% aspect ratio, 15px border radius) */}
+      <GlowCard>
       <div
         ref={cardStageRef}
         onPointerMove={handlePointerMove}
@@ -223,6 +225,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
           className="pointer-events-none absolute inset-0 transition-opacity duration-300"
         />
       </div>
+      </GlowCard>
 
       {/* Metadata Footer (`.project-item-footer`: uppercase bullet categories + title with slide-in arrow on desktop & permanent arrow on mobile) */}
       <div className="project-item-footer relative w-full text-[#000000]">

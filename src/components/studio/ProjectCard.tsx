@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { StudioProject } from "@/data/studio";
 import { TransitionLink } from "@/components/studio/TransitionLink";
 import { ProceduralMediaCanvas } from "@/components/studio/ProceduralMediaCanvas";
+import { GlowCard } from "@/components/ui/GlowCard";
 import { useStudioStore } from "@/lib/store";
 
 interface ProjectCardProps {
@@ -30,6 +31,7 @@ export function ProjectCard({ project, staggerOffset = false }: ProjectCardProps
         className="group block focus:outline-none"
       >
         {/* Rounded Optical Stage Card */}
+        <GlowCard>
         <div
           className="relative aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white/12 bg-[#0e121c] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-white/30"
           style={{
@@ -74,6 +76,7 @@ export function ProjectCard({ project, staggerOffset = false }: ProjectCardProps
             {project.tagline}
           </p>
         </div>
+        </GlowCard>
       </TransitionLink>
     </article>
   );
