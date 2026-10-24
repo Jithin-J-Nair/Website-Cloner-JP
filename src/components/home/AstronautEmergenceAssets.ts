@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
+import { loadLusionBuf } from "@/lib/lusion-buf-loader";
 
 export interface AstronautBoneMap {
   Hips?: THREE.Bone;
@@ -559,6 +560,167 @@ export async function loadLicensedAstronautGlb(
 
   const primary = buildRigFromScene(gltf.scene);
   const createClone = () => buildRigFromScene(SkeletonUtils.clone(gltf.scene));
+
+  return { primary, createClone };
+}
+
+/**
+ * Loads the captured Lusion astronaut parts from the repository's approved .buf asset bundle.
+ * These source meshes are preferred over the unrelated generic GLB placeholder; the parts share
+ * the original model coordinate space, so the suit silhouette and visor line up without guessed
+ * per-part offsets. The original baked joint animation is handled by the scene timeline when present;
+ * this static rig still supports the existing root-level emergence and zero-G choreography.
+ */
+export async function loadLusionAstronautParts(
+  visorEnvTex: THREE.Texture,
+  _isMobile: boolean,
+  track: <T extends { dispose: () => void }>(item: T) => T
+): Promise<{
+  primary: LoadedAstronautRig;
+  createClone: () => LoadedAstronautRig;
+}> {
+  const assetRoot = "/assets/models/tunnels/";
+  const textureRoot = "/assets/textures/tunnels/astronaut/";
+  const [helmetData, visorData, glovesData, packData, helmetBase, helmetNormal, helmetArm,
+    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm] = await Promise.all([
+    loadLusionBuf(`${assetRoot}astronaut_helmet.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_helmet_glass.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_glove_shoes.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_wearpack.buf`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_helmet_base.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_helmet_nor.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_helmet_arm.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_glove_shoes_base.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_glove_shoes_nor.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_glove_shoes_arm.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_wearpack_base.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_wearpack_nor.webp`),
+    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_wearpack_arm.webp`),
+  ]);
+
+  const textures = [
+    helmetBase, helmetNormal, helmetArm, glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm,
+  ];
+  for (const tex of textures) track(tex);
+  for (const tex of [helmetBase, glovesBase, packBase]) tex.colorSpace = THREE.SRGBColorSpace;
+  for (const tex of [helmetNormal, helmetArm, glovesNormal, glovesArm, packNormal, packArm]) {
+    tex.colorSpace = THREE.NoColorSpace;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+  }
+
+  const materials: THREE.Material[] = [];
+  const makeSuitMaterial = (
+    baseMap: THREE.Texture,
+    normalMap: THREE.Texture,
+    armMap: THREE.Texture,
+    roughness: number,
+    metalness: number
+  ) => {
+    const material = track(new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      map: baseMap,
+      normalMap,
+      normalScale: new THREE.Vector2(0.85, 0.85),
+      aoMap: armMap,
+      roughnessMap: armMap,
+      metalnessMap: armMap,
+      aoMapIntensity: 0.9,
+      roughness,
+      metalness,
+      clearcoat: 0.18,
+      clearcoatRoughness: 0.35,
+      envMap: visorEnvTex,
+      envMapIntensity: 0.18,
+    }));
+    materials.push(material);
+    return material;
+  };
+
+  const helmetMaterial = makeSuitMaterial(helmetBase, helmetNormal, helmetArm, 0.38, 0.18);
+  const glovesMaterial = makeSuitMaterial(glovesBase, glovesNormal, glovesArm, 0.56, 0.06);
+  const packMaterial = makeSuitMaterial(packBase, packNormal, packArm, 0.62, 0.04);
+  const visorEarthUniform = { value: 0 };
+  const visorMaterial = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color("#03070d"),
+    roughness: 0.045,
+    metalness: 0.78,
+    clearcoat: 1,
+    clearcoatRoughness: 0.025,
+    ior: 1.52,
+    envMap: visorEnvTex,
+    envMapIntensity: 1.1,
+  }));
+  materials.push(visorMaterial);
+
+  const createPart = (source: THREE.BufferGeometry, material: THREE.Material) => {
+    // The loader caches parsed buffers. Clone geometry before lifecycle tracking so one scene's
+    // cleanup cannot dispose the shared cached source used by a later mount.
+    const geometry = track(source.clone());
+    const uv = geometry.getAttribute("uv");
+    if (uv) geometry.setAttribute("uv2", uv);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.frustumCulled = false;
+    mesh.renderOrder = 4;
+    return mesh;
+  };
+
+  const root = new THREE.Group();
+  const modelRoot = new THREE.Group();
+  modelRoot.name = "LusionAstronautBufModel";
+  modelRoot.add(
+    createPart(helmetData.geometry, helmetMaterial),
+    createPart(visorData.geometry, visorMaterial),
+    createPart(glovesData.geometry, glovesMaterial),
+    createPart(packData.geometry, packMaterial)
+  );
+  root.add(modelRoot);
+
+  const drawCalls = 4;
+  const triangles = [helmetData, visorData, glovesData, packData].reduce(
+    (sum, part) => sum + (part.geometry.index?.count ?? part.geometry.getAttribute("position").count) / 3,
+    0
+  );
+
+  const primary: LoadedAstronautRig = {
+    root,
+    modelRoot,
+    bones: {},
+    restQuats: {},
+    materials,
+    visorMaterial,
+    visorEarthUniform,
+    // The captured model's visor is centred near y=1.68 in the shared suit coordinate space.
+    visorAnchorLocal: new THREE.Vector3(-0.076, 1.70, 0.132),
+    drawCalls,
+    triangles,
+  };
+
+  const createClone = (): LoadedAstronautRig => {
+    const cloneRoot = root.clone(true) as THREE.Group;
+    const cloneModel = cloneRoot.getObjectByName("LusionAstronautBufModel") ?? cloneRoot;
+    cloneModel.traverse((node) => {
+      if ((node as THREE.Mesh).isMesh) {
+        const mesh = node as THREE.Mesh;
+        mesh.castShadow = false;
+        mesh.receiveShadow = false;
+      }
+    });
+    return {
+      root: cloneRoot,
+      modelRoot: cloneModel,
+      bones: {},
+      restQuats: {},
+      materials: [],
+      visorMaterial: null,
+      visorEarthUniform: { value: 0 },
+      visorAnchorLocal: primary.visorAnchorLocal.clone(),
+      drawCalls,
+      triangles,
+    };
+  };
 
   return { primary, createClone };
 }
