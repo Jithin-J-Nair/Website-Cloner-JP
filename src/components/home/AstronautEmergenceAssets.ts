@@ -567,9 +567,9 @@ export async function loadLicensedAstronautGlb(
 /**
  * Loads the captured Lusion astronaut parts from the repository's approved .buf asset bundle.
  * These source meshes are preferred over the unrelated generic GLB placeholder; the parts share
- * the original model coordinate space, so the suit silhouette and visor line up without guessed
- * per-part offsets. The original baked joint animation is handled by the scene timeline when present;
- * this static rig still supports the existing root-level emergence and zero-G choreography.
+ * the captured model coordinate space, so the suit silhouette and visor line up without guessed
+ * per-part offsets. This loader preserves the source geometry and materials but does not yet decode
+ * the baked per-bone animation buffer; existing root-level emergence and zero-G motion still applies.
  */
 export async function loadLusionAstronautParts(
   visorEnvTex: THREE.Texture,
