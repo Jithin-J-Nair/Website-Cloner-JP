@@ -1,0 +1,1538 @@
+{
+  "phase": "phase-a",
+  "capturedAt": "2026-10-21T18:05:57.952Z",
+  "referenceBaseUrl": "http://127.0.0.1:4173",
+  "localBaseUrl": "http://127.0.0.1:3000",
+  "viewports": [
+    {
+      "id": "1440x900",
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false
+    },
+    {
+      "id": "390x844",
+      "width": 390,
+      "height": 844,
+      "deviceScaleFactor": 1,
+      "isMobile": true,
+      "hasTouch": true
+    }
+  ],
+  "runs": {
+    "1440x900": {
+      "reference": {
+        "home-hero": {
+          "scenarioId": "home-hero",
+          "route": "/",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-home-hero-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+            "h1Text": "We create 3D visual storytellingand interactive web experiencesthat help brands stand out",
+            "h2Text": "We combine design, motion, 3D, and development to create digital experiences that feel visually striking and technically seamless. From campaign launches to immersive brand worlds, we build work that captures attention and invites interaction.",
+            "scrollY": 0,
+            "docHeight": 900,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#header": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 146
+              },
+              "#home-hero": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 900
+              },
+              "#home-hero-title": {
+                "present": true,
+                "count": 1,
+                "x": 403,
+                "y": 50,
+                "width": 523,
+                "height": 119
+              },
+              "#home-hero-visual-container": {
+                "present": true,
+                "count": 1,
+                "x": 72,
+                "y": 199,
+                "width": 1296,
+                "height": 651
+              },
+              "#scroll-indicator": {
+                "present": true,
+                "count": 1,
+                "x": 1418,
+                "y": 360,
+                "width": 6,
+                "height": 180
+              }
+            }
+          }
+        },
+        "home-featured": {
+          "scenarioId": "home-featured",
+          "route": "/",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-home-featured-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+            "h1Text": "We create 3D visual storytellingand interactive web experiencesthat help brands stand out",
+            "h2Text": "We combine design, motion, 3D, and development to create digital experiences that feel visually striking and technically seamless. From campaign launches to immersive brand worlds, we build work that captures attention and invites interaction.",
+            "scrollY": 0,
+            "docHeight": 900,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#home-featured": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 3433,
+                "width": 1440,
+                "height": 3904
+              },
+              "#home-featured-title": {
+                "present": true,
+                "count": 1,
+                "x": 64,
+                "y": 3483,
+                "width": 735,
+                "height": 161
+              },
+              ".project-item": {
+                "present": true,
+                "count": 31,
+                "x": 72,
+                "y": 3716,
+                "width": 634,
+                "height": 502
+              }
+            }
+          }
+        },
+        "home-footer": {
+          "scenarioId": "home-footer",
+          "route": "/",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-home-footer-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+            "h1Text": "We create 3D visual storytellingand interactive web experiencesthat help brands stand out",
+            "h2Text": "We combine design, motion, 3D, and development to create digital experiences that feel visually striking and technically seamless. From campaign launches to immersive brand worlds, we build work that captures attention and invites interaction.",
+            "scrollY": 0,
+            "docHeight": 900,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#end-section": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 60600,
+                "width": 1440,
+                "height": 3150
+              },
+              "#footer-section": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 63750,
+                "width": 1440,
+                "height": 900
+              },
+              "#scroll-nav-section": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 64650,
+                "width": 1440,
+                "height": 313
+              }
+            }
+          }
+        },
+        "about-hero": {
+          "scenarioId": "about-hero",
+          "route": "/about",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-about-hero-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [
+            "Upstream snapshot missing /assets/models/about/sphere_l.buf (HTTP 404 without fallback); fulfilled from sphere_m.buf to unblock /about preloader past 069."
+          ],
+          "telemetry": {
+            "title": "Lusion - About Us",
+            "h1Text": null,
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 900,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-who": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 14580
+              },
+              "#about-clients": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 14580,
+                "width": 1440,
+                "height": 1049
+              },
+              "#about-award": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 15629,
+                "width": 1440,
+                "height": 1875
+              },
+              "#about-capability": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 17504,
+                "width": 1440,
+                "height": 3871
+              }
+            }
+          }
+        },
+        "about-awards-capability": {
+          "scenarioId": "about-awards-capability",
+          "route": "/about",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-about-awards-capability-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [
+            "Upstream snapshot missing /assets/models/about/sphere_l.buf (HTTP 404 without fallback); fulfilled from sphere_m.buf to unblock /about preloader past 069."
+          ],
+          "telemetry": {
+            "title": "Lusion - About Us",
+            "h1Text": null,
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 900,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-award": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 15629,
+                "width": 1440,
+                "height": 1875
+              },
+              "#about-capability": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 17504,
+                "width": 1440,
+                "height": 3871
+              }
+            }
+          }
+        },
+        "projects-archive": {
+          "scenarioId": "projects-archive",
+          "route": "/projects",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-projects-archive-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Our Projects",
+            "h1Text": null,
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 900,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#projects": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 6383
+              },
+              "#projects-main": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 6383
+              },
+              "#projects-main-title": {
+                "present": true,
+                "count": 1,
+                "x": 55,
+                "y": 230,
+                "width": 1168,
+                "height": 245
+              },
+              ".project-item": {
+                "present": true,
+                "count": 19,
+                "x": 72,
+                "y": 590,
+                "width": 634,
+                "height": 502
+              }
+            }
+          }
+        },
+        "project-oryzo-ai": {
+          "scenarioId": "project-oryzo-ai",
+          "route": "/projects/oryzo_ai",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-project-oryzo-ai-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Oryzo AI",
+            "h1Text": null,
+            "h2Text": "Oryzo AI",
+            "scrollY": 0,
+            "docHeight": 900,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#project-details": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 1440,
+                "height": 900
+              },
+              "#project-details-title": {
+                "present": true,
+                "count": 1,
+                "x": 72,
+                "y": 226,
+                "width": 544,
+                "height": 68
+              },
+              "#project-details-preview": {
+                "present": true,
+                "count": 1,
+                "x": 1440,
+                "y": 0,
+                "width": 1440,
+                "height": 900
+              }
+            }
+          }
+        }
+      },
+      "local": {
+        "home-hero": {
+          "scenarioId": "home-hero",
+          "route": "/",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-home-hero-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "KINETA® — Real-Time 3D & Interactive Production Studio",
+            "h1Text": "We build 3D visual worldsand interactive experiencesthat set bold brands apart.",
+            "h2Text": "We fuse art direction, motion, 3D,and real-time engineering into webexperiences that feel alive underevery cursor and touch.",
+            "scrollY": 0,
+            "docHeight": 13441,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#header": {
+                "present": false,
+                "count": 0
+              },
+              "#home-hero": {
+                "present": false,
+                "count": 0
+              },
+              "#home-hero-title": {
+                "present": false,
+                "count": 0
+              },
+              "#home-hero-visual-container": {
+                "present": false,
+                "count": 0
+              },
+              "#scroll-indicator": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "home-featured": {
+          "scenarioId": "home-featured",
+          "route": "/",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-home-featured-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "KINETA® — Real-Time 3D & Interactive Production Studio",
+            "h1Text": "We build 3D visual worldsand interactive experiencesthat set bold brands apart.",
+            "h2Text": "We fuse art direction, motion, 3D,and real-time engineering into webexperiences that feel alive underevery cursor and touch.",
+            "scrollY": 4515,
+            "docHeight": 13441,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#home-featured": {
+                "present": false,
+                "count": 0
+              },
+              "#home-featured-title": {
+                "present": false,
+                "count": 0
+              },
+              ".project-item": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "home-footer": {
+          "scenarioId": "home-footer",
+          "route": "/",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-home-footer-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "KINETA® — Real-Time 3D & Interactive Production Studio",
+            "h1Text": "We build 3D visual worldsand interactive experiencesthat set bold brands apart.",
+            "h2Text": "We fuse art direction, motion, 3D,and real-time engineering into webexperiences that feel alive underevery cursor and touch.",
+            "scrollY": 11538,
+            "docHeight": 13441,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#end-section": {
+                "present": false,
+                "count": 0
+              },
+              "#footer-section": {
+                "present": false,
+                "count": 0
+              },
+              "#scroll-nav-section": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "about-hero": {
+          "scenarioId": "about-hero",
+          "route": "/about",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-about-hero-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "About Us | KINETA®",
+            "h1Text": "WE ARE A REAL-TIMEPRODUCTION STUDIOCRAFTING LIVINGDIGITAL WORLDS.",
+            "h2Text": "Senior artists, shader authors,and systems engineers working as one.",
+            "scrollY": 0,
+            "docHeight": 8242,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-who": {
+                "present": false,
+                "count": 0
+              },
+              "#about-clients": {
+                "present": false,
+                "count": 0
+              },
+              "#about-award": {
+                "present": false,
+                "count": 0
+              },
+              "#about-capability": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "about-awards-capability": {
+          "scenarioId": "about-awards-capability",
+          "route": "/about",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-about-awards-capability-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "About Us | KINETA®",
+            "h1Text": "WE ARE A REAL-TIMEPRODUCTION STUDIOCRAFTING LIVINGDIGITAL WORLDS.",
+            "h2Text": "Senior artists, shader authors,and systems engineers working as one.",
+            "scrollY": 4772,
+            "docHeight": 8242,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-award": {
+                "present": false,
+                "count": 0
+              },
+              "#about-capability": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "projects-archive": {
+          "scenarioId": "projects-archive",
+          "route": "/projects",
+          "viewport": "1440x900",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-projects-archive-1440x900.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Projects Archive | KINETA®",
+            "h1Text": "SELECTEDPROJECTS",
+            "h2Text": "Is your big idea readyto break the frame?",
+            "scrollY": 0,
+            "docHeight": 4954,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#projects": {
+                "present": false,
+                "count": 0
+              },
+              "#projects-main": {
+                "present": false,
+                "count": 0
+              },
+              "#projects-main-title": {
+                "present": false,
+                "count": 0
+              },
+              ".project-item": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "project-oryzo-ai": {
+          "scenarioId": "project-oryzo-ai",
+          "route": "/projects/oryzo_ai",
+          "viewport": "1440x900",
+          "httpStatus": 404,
+          "screenshot": "docs/validation/phase-a/raw/local-project-oryzo-ai-1440x900.png",
+          "consoleErrorCount": 1,
+          "consoleErrors": [
+            "Failed to load resource: the server responded with a status of 404 (Not Found)"
+          ],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 1,
+          "failedRequests": [
+            "404 http://127.0.0.1:3000/projects/oryzo_ai"
+          ],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Project Not Found | KINETA®",
+            "h1Text": "404 — THIS WORLDHAS NOT BEEN BUILT YET.",
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 1019,
+            "canvasPresent": true,
+            "canvasSize": "1440x900",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#project-details": {
+                "present": false,
+                "count": 0
+              },
+              "#project-details-title": {
+                "present": false,
+                "count": 0
+              },
+              "#project-details-preview": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "390x844": {
+      "reference": {
+        "home-hero": {
+          "scenarioId": "home-hero",
+          "route": "/",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-home-hero-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+            "h1Text": "We create 3D visual storytellingand interactive web experiencesthat help brands stand out",
+            "h2Text": "We combine design, motion, 3D, and development to create digital experiences that feel visually striking and technically seamless. From campaign launches to immersive brand worlds, we build work that captures attention and invites interaction.",
+            "scrollY": 0,
+            "docHeight": 844,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#header": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 76
+              },
+              "#home-hero": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 844
+              },
+              "#home-hero-title": {
+                "present": true,
+                "count": 1,
+                "x": 15,
+                "y": 62,
+                "width": 360,
+                "height": 77
+              },
+              "#home-hero-visual-container": {
+                "present": true,
+                "count": 1,
+                "x": 15,
+                "y": 148,
+                "width": 360,
+                "height": 651
+              },
+              "#scroll-indicator": {
+                "present": true,
+                "count": 1,
+                "x": 382,
+                "y": 338,
+                "width": 2,
+                "height": 169
+              }
+            }
+          }
+        },
+        "home-featured": {
+          "scenarioId": "home-featured",
+          "route": "/",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-home-featured-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+            "h1Text": "We create 3D visual storytellingand interactive web experiencesthat help brands stand out",
+            "h2Text": "We combine design, motion, 3D, and development to create digital experiences that feel visually striking and technically seamless. From campaign launches to immersive brand worlds, we build work that captures attention and invites interaction.",
+            "scrollY": 0,
+            "docHeight": 844,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#home-featured": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 2214,
+                "width": 390,
+                "height": 4368
+              },
+              "#home-featured-title": {
+                "present": true,
+                "count": 1,
+                "x": 11,
+                "y": 2229,
+                "width": 364,
+                "height": 135
+              },
+              ".project-item": {
+                "present": true,
+                "count": 31,
+                "x": 15,
+                "y": 2503,
+                "width": 360,
+                "height": 295
+              }
+            }
+          }
+        },
+        "home-footer": {
+          "scenarioId": "home-footer",
+          "route": "/",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-home-footer-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+            "h1Text": "We create 3D visual storytellingand interactive web experiencesthat help brands stand out",
+            "h2Text": "We combine design, motion, 3D, and development to create digital experiences that feel visually striking and technically seamless. From campaign launches to immersive brand worlds, we build work that captures attention and invites interaction.",
+            "scrollY": 0,
+            "docHeight": 844,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#end-section": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 55445,
+                "width": 390,
+                "height": 2954
+              },
+              "#footer-section": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 58399,
+                "width": 390,
+                "height": 844
+              },
+              "#scroll-nav-section": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 59243,
+                "width": 390,
+                "height": 254
+              }
+            }
+          }
+        },
+        "about-hero": {
+          "scenarioId": "about-hero",
+          "route": "/about",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-about-hero-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - About Us",
+            "h1Text": null,
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 844,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-who": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 10339
+              },
+              "#about-clients": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 10339,
+                "width": 390,
+                "height": 865
+              },
+              "#about-award": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 11204,
+                "width": 390,
+                "height": 1116
+              },
+              "#about-capability": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 12320,
+                "width": 390,
+                "height": 2742
+              }
+            }
+          }
+        },
+        "about-awards-capability": {
+          "scenarioId": "about-awards-capability",
+          "route": "/about",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-about-awards-capability-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - About Us",
+            "h1Text": null,
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 844,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-award": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 11204,
+                "width": 390,
+                "height": 1116
+              },
+              "#about-capability": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 12320,
+                "width": 390,
+                "height": 2742
+              }
+            }
+          }
+        },
+        "projects-archive": {
+          "scenarioId": "projects-archive",
+          "route": "/projects",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-projects-archive-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Our Projects",
+            "h1Text": null,
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 844,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#projects": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 6416
+              },
+              "#projects-main": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 6416
+              },
+              "#projects-main-title": {
+                "present": true,
+                "count": 1,
+                "x": 10,
+                "y": 111,
+                "width": 305,
+                "height": 66
+              },
+              ".project-item": {
+                "present": true,
+                "count": 19,
+                "x": 15,
+                "y": 222,
+                "width": 360,
+                "height": 295
+              }
+            }
+          }
+        },
+        "project-oryzo-ai": {
+          "scenarioId": "project-oryzo-ai",
+          "route": "/projects/oryzo_ai",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/reference-project-oryzo-ai-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Lusion - Oryzo AI",
+            "h1Text": null,
+            "h2Text": "Oryzo AI",
+            "scrollY": 0,
+            "docHeight": 844,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#project-details": {
+                "present": true,
+                "count": 1,
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 844
+              },
+              "#project-details-title": {
+                "present": true,
+                "count": 1,
+                "x": 15,
+                "y": 99,
+                "width": 360,
+                "height": 68
+              },
+              "#project-details-preview": {
+                "present": true,
+                "count": 1,
+                "x": 15,
+                "y": 844,
+                "width": 360,
+                "height": 844
+              }
+            }
+          }
+        }
+      },
+      "local": {
+        "home-hero": {
+          "scenarioId": "home-hero",
+          "route": "/",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-home-hero-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "KINETA® — Real-Time 3D & Interactive Production Studio",
+            "h1Text": "We build 3D visual worldsand interactive experiencesthat set bold brands apart.",
+            "h2Text": "We fuse art direction, motion, 3D,and real-time engineering into webexperiences that feel alive underevery cursor and touch.",
+            "scrollY": 0,
+            "docHeight": 16198,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#header": {
+                "present": false,
+                "count": 0
+              },
+              "#home-hero": {
+                "present": false,
+                "count": 0
+              },
+              "#home-hero-title": {
+                "present": false,
+                "count": 0
+              },
+              "#home-hero-visual-container": {
+                "present": false,
+                "count": 0
+              },
+              "#scroll-indicator": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "home-featured": {
+          "scenarioId": "home-featured",
+          "route": "/",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-home-featured-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "KINETA® — Real-Time 3D & Interactive Production Studio",
+            "h1Text": "We build 3D visual worldsand interactive experiencesthat set bold brands apart.",
+            "h2Text": "We fuse art direction, motion, 3D,and real-time engineering into webexperiences that feel alive underevery cursor and touch.",
+            "scrollY": 5527,
+            "docHeight": 16198,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#home-featured": {
+                "present": false,
+                "count": 0
+              },
+              "#home-featured-title": {
+                "present": false,
+                "count": 0
+              },
+              ".project-item": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "home-footer": {
+          "scenarioId": "home-footer",
+          "route": "/",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-home-footer-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "KINETA® — Real-Time 3D & Interactive Production Studio",
+            "h1Text": "We build 3D visual worldsand interactive experiencesthat set bold brands apart.",
+            "h2Text": "We fuse art direction, motion, 3D,and real-time engineering into webexperiences that feel alive underevery cursor and touch.",
+            "scrollY": 14126,
+            "docHeight": 16198,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#end-section": {
+                "present": false,
+                "count": 0
+              },
+              "#footer-section": {
+                "present": false,
+                "count": 0
+              },
+              "#scroll-nav-section": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "about-hero": {
+          "scenarioId": "about-hero",
+          "route": "/about",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-about-hero-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "About Us | KINETA®",
+            "h1Text": "WE ARE A REAL-TIMEPRODUCTION STUDIOCRAFTING LIVINGDIGITAL WORLDS.",
+            "h2Text": "Senior artists, shader authors,and systems engineers working as one.",
+            "scrollY": 0,
+            "docHeight": 10845,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-who": {
+                "present": false,
+                "count": 0
+              },
+              "#about-clients": {
+                "present": false,
+                "count": 0
+              },
+              "#about-award": {
+                "present": false,
+                "count": 0
+              },
+              "#about-capability": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "about-awards-capability": {
+          "scenarioId": "about-awards-capability",
+          "route": "/about",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-about-awards-capability-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "About Us | KINETA®",
+            "h1Text": "WE ARE A REAL-TIMEPRODUCTION STUDIOCRAFTING LIVINGDIGITAL WORLDS.",
+            "h2Text": "Senior artists, shader authors,and systems engineers working as one.",
+            "scrollY": 6501,
+            "docHeight": 10845,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#about-award": {
+                "present": false,
+                "count": 0
+              },
+              "#about-capability": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "projects-archive": {
+          "scenarioId": "projects-archive",
+          "route": "/projects",
+          "viewport": "390x844",
+          "httpStatus": 200,
+          "screenshot": "docs/validation/phase-a/raw/local-projects-archive-390x844.png",
+          "consoleErrorCount": 0,
+          "consoleErrors": [],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 0,
+          "failedRequests": [],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Projects Archive | KINETA®",
+            "h1Text": "SELECTEDPROJECTS",
+            "h2Text": "Is your big idea readyto break the frame?",
+            "scrollY": 0,
+            "docHeight": 5942,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#projects": {
+                "present": false,
+                "count": 0
+              },
+              "#projects-main": {
+                "present": false,
+                "count": 0
+              },
+              "#projects-main-title": {
+                "present": false,
+                "count": 0
+              },
+              ".project-item": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        },
+        "project-oryzo-ai": {
+          "scenarioId": "project-oryzo-ai",
+          "route": "/projects/oryzo_ai",
+          "viewport": "390x844",
+          "httpStatus": 404,
+          "screenshot": "docs/validation/phase-a/raw/local-project-oryzo-ai-390x844.png",
+          "consoleErrorCount": 1,
+          "consoleErrors": [
+            "Failed to load resource: the server responded with a status of 404 (Not Found)"
+          ],
+          "pageErrorCount": 0,
+          "pageErrors": [],
+          "failedRequestCount": 1,
+          "failedRequests": [
+            "404 http://127.0.0.1:3000/projects/oryzo_ai"
+          ],
+          "upstreamWorkarounds": [],
+          "telemetry": {
+            "title": "Project Not Found | KINETA®",
+            "h1Text": "404 — THIS WORLDHAS NOT BEEN BUILT YET.",
+            "h2Text": null,
+            "scrollY": 0,
+            "docHeight": 971,
+            "canvasPresent": true,
+            "canvasSize": "390x844",
+            "webglVendor": "Google Inc. (Google)",
+            "webglRenderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "selectors": {
+              "#project-details": {
+                "present": false,
+                "count": 0
+              },
+              "#project-details-title": {
+                "present": false,
+                "count": 0
+              },
+              "#project-details-preview": {
+                "present": false,
+                "count": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "scenarioId": "home-hero",
+      "viewport": "1440x900",
+      "route": "/",
+      "dimensions": "1440x900",
+      "maeRgb255": 112.02,
+      "rmseRgb255": 146.09,
+      "psnrDb": 4.84,
+      "percentPixelsDiffGt16": 68.13,
+      "compositeImage": "docs/validation/phase-a/composites/home-hero--1440x900.jpg"
+    },
+    {
+      "scenarioId": "home-featured",
+      "viewport": "1440x900",
+      "route": "/",
+      "dimensions": "1440x900",
+      "maeRgb255": 102.69,
+      "rmseRgb255": 135.07,
+      "psnrDb": 5.52,
+      "percentPixelsDiffGt16": 83.33,
+      "compositeImage": "docs/validation/phase-a/composites/home-featured--1440x900.jpg"
+    },
+    {
+      "scenarioId": "home-footer",
+      "viewport": "1440x900",
+      "route": "/",
+      "dimensions": "1440x900",
+      "maeRgb255": 106.54,
+      "rmseRgb255": 140.51,
+      "psnrDb": 5.18,
+      "percentPixelsDiffGt16": 83.92,
+      "compositeImage": "docs/validation/phase-a/composites/home-footer--1440x900.jpg"
+    },
+    {
+      "scenarioId": "about-hero",
+      "viewport": "1440x900",
+      "route": "/about",
+      "dimensions": "1440x900",
+      "maeRgb255": 181.08,
+      "rmseRgb255": 198.22,
+      "psnrDb": 2.19,
+      "percentPixelsDiffGt16": 93.71,
+      "compositeImage": "docs/validation/phase-a/composites/about-hero--1440x900.jpg"
+    },
+    {
+      "scenarioId": "about-awards-capability",
+      "viewport": "1440x900",
+      "route": "/about",
+      "dimensions": "1440x900",
+      "maeRgb255": 188.1,
+      "rmseRgb255": 203.55,
+      "psnrDb": 1.96,
+      "percentPixelsDiffGt16": 96.53,
+      "compositeImage": "docs/validation/phase-a/composites/about-awards-capability--1440x900.jpg"
+    },
+    {
+      "scenarioId": "projects-archive",
+      "viewport": "1440x900",
+      "route": "/projects",
+      "dimensions": "1440x900",
+      "maeRgb255": 163.01,
+      "rmseRgb255": 177.36,
+      "psnrDb": 3.15,
+      "percentPixelsDiffGt16": 97.9,
+      "compositeImage": "docs/validation/phase-a/composites/projects-archive--1440x900.jpg"
+    },
+    {
+      "scenarioId": "project-oryzo-ai",
+      "viewport": "1440x900",
+      "route": "/projects/oryzo_ai",
+      "dimensions": "1440x900",
+      "maeRgb255": 65.04,
+      "rmseRgb255": 84,
+      "psnrDb": 9.65,
+      "percentPixelsDiffGt16": 98.89,
+      "compositeImage": "docs/validation/phase-a/composites/project-oryzo-ai--1440x900.jpg"
+    },
+    {
+      "scenarioId": "home-hero",
+      "viewport": "390x844",
+      "route": "/",
+      "dimensions": "390x844",
+      "maeRgb255": 118.9,
+      "rmseRgb255": 149.53,
+      "psnrDb": 4.64,
+      "percentPixelsDiffGt16": 76.89,
+      "compositeImage": "docs/validation/phase-a/composites/home-hero--390x844.jpg"
+    },
+    {
+      "scenarioId": "home-featured",
+      "viewport": "390x844",
+      "route": "/",
+      "dimensions": "390x844",
+      "maeRgb255": 102.83,
+      "rmseRgb255": 130.03,
+      "psnrDb": 5.85,
+      "percentPixelsDiffGt16": 99.47,
+      "compositeImage": "docs/validation/phase-a/composites/home-featured--390x844.jpg"
+    },
+    {
+      "scenarioId": "home-footer",
+      "viewport": "390x844",
+      "route": "/",
+      "dimensions": "390x844",
+      "maeRgb255": 92.77,
+      "rmseRgb255": 128.28,
+      "psnrDb": 5.97,
+      "percentPixelsDiffGt16": 82.61,
+      "compositeImage": "docs/validation/phase-a/composites/home-footer--390x844.jpg"
+    },
+    {
+      "scenarioId": "about-hero",
+      "viewport": "390x844",
+      "route": "/about",
+      "dimensions": "390x844",
+      "maeRgb255": 166.05,
+      "rmseRgb255": 177.64,
+      "psnrDb": 3.14,
+      "percentPixelsDiffGt16": 97.15,
+      "compositeImage": "docs/validation/phase-a/composites/about-hero--390x844.jpg"
+    },
+    {
+      "scenarioId": "about-awards-capability",
+      "viewport": "390x844",
+      "route": "/about",
+      "dimensions": "390x844",
+      "maeRgb255": 184.47,
+      "rmseRgb255": 193.36,
+      "psnrDb": 2.4,
+      "percentPixelsDiffGt16": 97.4,
+      "compositeImage": "docs/validation/phase-a/composites/about-awards-capability--390x844.jpg"
+    },
+    {
+      "scenarioId": "projects-archive",
+      "viewport": "390x844",
+      "route": "/projects",
+      "dimensions": "390x844",
+      "maeRgb255": 143.89,
+      "rmseRgb255": 161.63,
+      "psnrDb": 3.96,
+      "percentPixelsDiffGt16": 99.55,
+      "compositeImage": "docs/validation/phase-a/composites/projects-archive--390x844.jpg"
+    },
+    {
+      "scenarioId": "project-oryzo-ai",
+      "viewport": "390x844",
+      "route": "/projects/oryzo_ai",
+      "dimensions": "390x844",
+      "maeRgb255": 59.98,
+      "rmseRgb255": 86.64,
+      "psnrDb": 9.38,
+      "percentPixelsDiffGt16": 99.24,
+      "compositeImage": "docs/validation/phase-a/composites/project-oryzo-ai--390x844.jpg"
+    }
+  ]
+}
