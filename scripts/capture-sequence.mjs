@@ -67,7 +67,7 @@ try {
   const maxScroll = await page.evaluate(() => Math.max(0, document.documentElement.scrollHeight - innerHeight));
   const records = [];
   const capture = async (index, progress, pass) => {
-    await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), Math.round(maxScroll * progress));
+    await page.evaluate((y) => window.scrollTo(0, y), Math.round(maxScroll * progress));
     await page.waitForTimeout(timeout);
     const diagnostics = await page.evaluate(() => {
       const canvases = [...document.querySelectorAll("canvas")].map((canvas) => {
@@ -80,10 +80,19 @@ try {
           visible: rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight,
         };
       });
+      const glCanvas = document.querySelector("canvas");
+      let rendererName = null;
+      if (glCanvas) {
+        const gl = glCanvas.getContext("webgl2") || glCanvas.getContext("webgl");
+        const extension = gl?.getExtension("WEBGL_debug_renderer_info");
+        if (gl && extension) rendererName = String(gl.getParameter(extension.UNMASKED_RENDERER_WEBGL));
+      }
       return {
         scrollY: window.scrollY,
         scrollHeight: document.documentElement.scrollHeight,
         pipeline: window.__pipeline ?? null,
+        rendererName,
+        softwareRenderer: rendererName ? /swiftshader|llvmpipe|software/i.test(rendererName) : null,
         canvasCount: canvases.length,
         canvases,
       };
