@@ -333,9 +333,9 @@ export function buildAstronautStudioEnv(renderer: THREE.WebGLRenderer): THREE.We
 }
 
 /**
- * Loads `/models/astronaut.glb` (`EXT_meshopt_compression` + `EXT_texture_webp`) lazily and constructs
- * studio-calibrated `THREE.MeshPhysicalMaterial` surfaces + curved visor Earth-limb reflection shader
- * (`detail_01`: curved cloudy blue Earth reflected in lower visor -> `detail_04/05`: pure black obsidian!).
+ * Legacy fallback loader for `/models/astronaut.glb`. The reconstruction prefers the captured Lusion
+ * `.buf` astronaut meshes above; this fallback remains only for environments where those assets fail
+ * to load. It constructs physical suit materials and a view-dependent visor reflection.
  */
 export async function loadLicensedAstronautGlb(
   visorEnvTex: THREE.Texture,
