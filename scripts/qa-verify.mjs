@@ -215,5 +215,5 @@ if (failures > 0) {
   console.error(`\nQA FAILED with ${failures} issue(s).`);
   process.exit(1);
 } else {
-  console.log("\nALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 CANONICAL ROUTES + 404 + ASSET SECURITY).");
+  console.log("\nALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).");
 }
