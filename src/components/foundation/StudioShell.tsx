@@ -12,14 +12,12 @@ import { ShowreelModal } from "@/components/foundation/ShowreelModal";
 import { Preloader } from "@/components/foundation/Preloader";
 import { useStudioStore } from "@/lib/store";
 
-import { ShaderAnimation } from "@/components/ui/ShaderAnimation";
-
 export function StudioShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const activeSurface = useStudioStore((s) => s.activeSurface);
   const activeProjectTheme = useStudioStore((s) => s.activeProjectTheme);
 
-  // Sync `--vh` custom property & root polarity classes (`is-white-bg` / `is-black-bg` / `is-blue-bg`)
+  // Keep the viewport-height unit synchronized with mobile browser chrome.
   useEffect(() => {
     const syncViewportUnit = () => {
       document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
@@ -53,31 +51,23 @@ export function StudioShell({ children }: { children: React.ReactNode }) {
   return (
     <MotionConfig reducedMotion="user">
       <SmoothScrollProvider>
-        {/* Keyboard Skip Link */}
         <a href="#main-content" className="kn-skip-link">
           Skip to main content
         </a>
 
-        {/* Persistent Viewport WebGL Stage (suppressed on `/` where dedicated Lusion stages run) */}
+        {/* The home route owns its dedicated WebGL sections; other routes use the shared stage. */}
         {pathname !== "/" && <GlobalStage />}
-
-        {/* Shared Lusion Header, Menu Popover, Back Control & Scroll Indicator (z-index: 52) */}
         <StudioHud />
 
-        {/* Main Scrollable Document Layer (z-index: 10) */}
         <div id="main-content" className="relative z-10 min-h-dvh">
           {children}
         </div>
 
-        {/* Shared Cinema Overlay (`#video-overlay`, z-index: 99) */}
         <ShowreelModal />
 
-        {/* Route Transition Curtain & Cold-Start Preloader (`#preloader`, z-index: 90–200) */}
+        {/* Keep one route-transition system: the reference transition must not be double-triggered. */}
         <PageTransitionCurtain />
-        <ShaderAnimation />
         <Preloader />
-
-        {/* Reactive Pointer (auto-disabled on coarse touch devices & reduced motion) */}
         <CustomCursor />
       </SmoothScrollProvider>
     </MotionConfig>
