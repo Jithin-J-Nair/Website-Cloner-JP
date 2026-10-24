@@ -2,7 +2,7 @@
 
 ## Evidence source
 
-**Version conflict resolved explicitly:** the public `lusion-decoded` screenshot atlas describes an older Lusion homepage version with a balloon hero. The current captured dataset in this repository (capture date `2026-09-23`) instead records `/assets/models/home/cross.buf` and `cross_ld.buf`, and the currently live homepage also presents the cross-shaped cluster. These are different site versions. For this branch, follow the current live site and current `lusion-ground-truth.json`; do not copy the older balloon hero into the current reconstruction.
+**Version conflict resolved explicitly:** the public `lusion-decoded` screenshot atlas describes an older Lusion homepage version with a balloon hero. The current captured dataset in this repository (capture date `2026-09-23`) instead records `/assets/models/home/cross.buf` and `cross_ld.buf`. These are different site versions. For this branch, follow the current live site and current `lusion-ground-truth.json`; do not copy the older balloon hero into the current reconstruction.
 
 The primary structured capture is `src/data/reference/lusion-ground-truth.json`, exposed through `src/data/reference/index.ts`. Its `home.hero` record specifies:
 
