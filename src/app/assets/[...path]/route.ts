@@ -277,7 +277,14 @@ async function resolveAssetPayload(
     }
   } else {
     // 2b. Self-contained repository `media-bundle/` directory (zero `/tmp` dependency; commercial fonts excluded)
-    const bundledLookup = await resolveSafeFileInRoot(BUNDLED_MEDIA_ROOT, checked.relPath);
+    // Public URLs are rooted at /assets/ but the checked-in media bundle stores the
+    // same files relative to that prefix (media-bundle/models/..., media-bundle/projects/...).
+    // Keep validation and public/local lookup paths unchanged; strip only the URL namespace
+    // when resolving the self-contained bundle.
+    const bundledRelPath = checked.relPath.startsWith("assets/")
+      ? checked.relPath.slice("assets/".length)
+      : checked.relPath;
+    const bundledLookup = await resolveSafeFileInRoot(BUNDLED_MEDIA_ROOT, bundledRelPath);
     if (bundledLookup.status === "escape") {
       return { kind: "error", status: 403, message: "Symlink escape forbidden" };
     }
