@@ -30,6 +30,7 @@ import {
   buildDiamondsAndPopStickers,
   buildHologramEchoMaterial,
   buildVisorLedMatrix,
+  createGlassFrameSampler,
   evaluateSuitWavePose,
   SUIT_POSE_CORRIDOR_FLY,
   SUIT_POSE_CTA_RELAXED,
@@ -72,6 +73,18 @@ declare global {
       emergenceProgress: number;
       portalStencilActive: boolean;
       fallbackVisible: boolean;
+      sceneState: {
+        tunnelProgress: number;
+        shatterProgress: number;
+        waitProgress: number;
+        bakedFrame: number;
+        astronautMatrix: number[];
+        cameraMatrix: number[];
+        trussLoaded: boolean;
+        shardsLoaded: boolean;
+        portalFlash: number;
+        flashVisible: boolean;
+      };
       scrollForEmergence: (u: number) => number;
     };
   }
@@ -214,9 +227,11 @@ export function GoalTunnelSection() {
     glRenderer.domElement.style.display = "block";
     hostEl.appendChild(glRenderer.domElement);
 
+    let unmounted = false;
     const disposables: Array<{ dispose: () => void }> = [];
     const track = <T extends { dispose: () => void }>(item: T): T => {
-      disposables.push(item);
+      if (unmounted) item.dispose();
+      else disposables.push(item);
       return item;
     };
 
@@ -297,7 +312,6 @@ export function GoalTunnelSection() {
     const clones: LoadedAstronautRig[] = [];
     const visorLed = buildVisorLedMatrix(track);
     const hologramEchoMat = buildHologramEchoMaterial(track);
-    let unmounted = false;
 
     const glbPromise = forceAssetFailure
       ? Promise.reject(new Error("Simulated astronaut asset failure (?simulateGlbError=1)"))
@@ -319,51 +333,45 @@ export function GoalTunnelSection() {
     scene.add(blueCorridor.group);
     scene.add(blueCorridor.monitorStencilMask);
 
-    // Sharp Polygonal Clear Plate-Glass Shards (`Frame 16` Studio Display Shatter!)
-    
-    // Authentic Lusion pre-calculated 3D glass shards & animation
+    // Authentic Lusion pre-calculated 3D glass shards & animation (`Frame 16`).
     let shardsMesh: THREE.Mesh | null = null;
     let numShards = 0;
     let framesPerShard = 0;
-
-
-    
 
     const endDecor = buildDiamondsAndPopStickers(track, isMobileInit);
     endDecor.group.visible = false;
     scene.add(endDecor.group);
 
-    
-    Promise.all([
-      glbPromise,
-      import("@/lib/lusion-buf-loader").then((m) => Promise.all([
+    // Glass is optional: a failed debris asset must not suppress the astronaut rig.
+    import("@/lib/lusion-buf-loader")
+      .then((m) => Promise.all([
         m.loadLusionBuf("/assets/models/tunnels/broken_glass.buf"),
         m.loadLusionBuf("/assets/models/tunnels/broken_glass_animation.buf"),
       ]))
-    ])
-      .then(([{ primary, createClone }, [bg, bga]]) => {
+      .then(([bg, bga]) => {
         if (unmounted) return;
 
         const maxPiece = Math.max(...bg.attributes.piece);
         numShards = maxPiece + 1;
         framesPerShard = Math.floor(bga.header.vertexCount / numShards);
         
-        // Assemble authentic pieces into a master geometry
-        const baseGeo = bg.geometry;
-        const geom = new THREE.InstancedBufferGeometry();
-        geom.index = baseGeo.index;
-        geom.setAttribute("position", baseGeo.attributes.position);
-        geom.setAttribute("aPiece", baseGeo.attributes.piece);
-        
-        // We will pass the animation frames as a uniform data texture or uniform array if possible, 
-        // OR we can just update a single vertex attribute per frame. Given 946 pieces, passing an array of matrices/positions is fine.
-        // Actually, to keep it simple, since the shader just needs to read the current frame, 
-        // we can instance it? Wait, broken_glass.buf is ONE continuous mesh with a "piece" attribute (0..945).
-        // It's NOT an InstancedMesh, it is a single Mesh, but each vertex belongs to a piece.
-        // We can upload a DataTexture with the positions of the 946 pieces for the current frame,
-        // or we can pass a uniform array of 946 vec3s... but WebGL max uniforms might be exceeded.
-        // A floating point DataTexture is safer!
-        
+        // This is one indexed mesh, not an instanced draw. Preserve normals for the glass shader.
+        const geom = track(bg.geometry.clone());
+        geom.setAttribute("aPiece", geom.getAttribute("piece"));
+        geom.computeVertexNormals();
+        const restBounds = new THREE.Box3();
+        const restVertex = new THREE.Vector3();
+        const positions = geom.getAttribute("position");
+        const pieces = geom.getAttribute("piece");
+        for (let i = 0; i < positions.count; i++) {
+          const piece = pieces.getX(i);
+          restVertex.fromBufferAttribute(positions, i);
+          restVertex.x += bga.attributes.position[piece * 3];
+          restVertex.y += bga.attributes.position[piece * 3 + 1];
+          restVertex.z += bga.attributes.position[piece * 3 + 2];
+          restBounds.expandByPoint(restVertex);
+        }
+
         const animData = new Float32Array(bga.attributes.position);
         const animOrient = new Float32Array(bga.attributes.orient);
         
@@ -396,7 +404,7 @@ export function GoalTunnelSection() {
               "  vec3 pos = center + applyQuat(position, q);",
               "  vec4 mv = modelViewMatrix * vec4(pos, 1.0);",
               "  vPosV = mv.xyz;",
-              "  // Approx normal",
+              "  // Source mesh normals follow each rigid shard rotation.",
               "  vNormalV = normalize(normalMatrix * applyQuat(normal, q));",
               "  gl_Position = projectionMatrix * mv;",
               "}",
@@ -433,9 +441,17 @@ export function GoalTunnelSection() {
         mat.uniforms.uFrameData.value = texFrame;
         mat.uniforms.uOrientData.value = texOrient;
         
-        shardsMesh.userData = { animData, animOrient, texFrame, texOrient, framesPerShard, numShards };
+        const sampleFrame = createGlassFrameSampler(animData, animOrient, numShards, framesPerShard, frameData, orientData);
+        shardsMesh.userData = { sampleFrame, texFrame, texOrient, framesPerShard, restBounds };
         scene.add(shardsMesh);
 
+      })
+      .catch((error: unknown) => {
+        if (!unmounted) console.warn("Goal glass assets unavailable", error);
+      });
+
+    glbPromise
+      .then(({ primary, createClone }) => {
         if (unmounted) return;
         mainAstro = primary;
         portalMaskedMaterials.push(...primary.materials);
@@ -444,7 +460,7 @@ export function GoalTunnelSection() {
         if (primary.bones.Head) {
           primary.bones.Head.add(visorLed.mesh);
         } else {
-          // Static captured .buf parts have no runtime skeleton; use their root-space visor anchor.
+          // Captured deformation palettes expose a root-space visor anchor rather than named joints.
           primary.root.add(visorLed.mesh);
           visorLed.mesh.position.copy(primary.visorAnchorLocal);
         }
@@ -557,6 +573,7 @@ export function GoalTunnelSection() {
     // Layout Measurement, Pointer Parallax, & Deterministic Scroll Choreography
     // -------------------------------------------------------------------------
     let metrics: GoalLayoutMetrics | null = null;
+    let ownedScrollManager: NonNullable<Window["__lusionInspector"]>["scrollManager"];
     let targetScrollY = typeof window !== "undefined" ? window.scrollY : 0;
     let smoothScrollY = targetScrollY;
     let docVisible = true;
@@ -581,6 +598,12 @@ export function GoalTunnelSection() {
       emergenceProgress: 0,
       portalStencilActive: true,
       fallbackVisible: false,
+      sceneState: {
+        tunnelProgress: 0, shatterProgress: 0, waitProgress: 0, bakedFrame: 0,
+        astronautMatrix: new Array<number>(16).fill(0),
+        cameraMatrix: new Array<number>(16).fill(0),
+        trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
+      },
       scrollForEmergence: (u: number) => {
         if (!metrics) measure();
         const m = metrics!;
@@ -717,7 +740,7 @@ export function GoalTunnelSection() {
       const blackTunnelTo = tunnelStart + tunnelSpan * 0.72;
       const whiteTunnelFrom = blackTunnelTo;
       const whiteTunnelTo = tunnelEnd;
-      const astroDropFrom = imgOutTop - H * 0.25;
+      const astroDropFrom = imgOutTop - H * 0.55;
       const astroDropTo = endTop;
       const astroWaitFrom = endTop;
       const astroWaitTo = endTop + endHeight;
@@ -781,10 +804,15 @@ export function GoalTunnelSection() {
           },
         },
       };
+      ownedScrollManager = window.__lusionInspector.scrollManager;
     };
 
     const _headWorld = new THREE.Vector3();
     const _camLook = new THREE.Vector3();
+    const _monitorCenter = new THREE.Vector3();
+    const _monitorRotation = new THREE.Quaternion();
+    const _screenRotation = new THREE.Quaternion();
+    const _zAxis = new THREE.Vector3(0, 0, 1);
 
     const renderSceneAtScroll = (sy: number, elapsedSec: number) => {
       const t0 = performance.now();
@@ -888,13 +916,17 @@ export function GoalTunnelSection() {
         // Dynamic camera FOV + clockwise banking roll in `Frame 15` (`-25.2°`), leveling smoothly into `16`!
         const inBlueCorridor = tTunnel > 0.81 && tShatter < 0.90 && tWait <= 0.001;
         const bankRoll = inBlueCorridor
-          ? lerp(-0.44, 0.0, smoothstep(0.05, 0.68, tOutPull)) * (reducedMotion ? 0.35 : 1.0)
+          ? lerp(-0.44, 0.0, smoothstep(0.05, 0.68, tOutPull)) *
+            smoothstep(0.81, 0.85, tTunnel) * (reducedMotion ? 0.35 : 1.0)
           : 0.0;
         const vortexFovBoost = smoothstep(0.68, 0.80, tTunnel) * (1 - smoothstep(0.81, 0.85, tTunnel)) * 10;
         camera.fov = (m.isMobile ? 54 : 45) + vortexFovBoost;
         camera.aspect = W / H;
         camera.up.set(Math.sin(bankRoll), Math.cos(bankRoll), 0);
-        camera.position.set(pxParallax * 0.06, pyParallax * 0.05, 5.2);
+        camera.position.set(
+          pxParallax * lerp(0.08, 0.06, smoothstep(0, 0.08, tTunnel)),
+          pyParallax * lerp(0.06, 0.05, smoothstep(0, 0.08, tTunnel)), 5.2
+        );
         camera.lookAt(0, 0, 0);
         camera.updateProjectionMatrix();
         camera.updateMatrixWorld();
@@ -1056,26 +1088,24 @@ export function GoalTunnelSection() {
       const earthVis = inEmergencePhase ? kf.earthOpacity : 0;
       earthSystem.group.visible = earthVis > 0.004;
 
-      // Preserve exact orbital high-contrast lighting across `Frames 01–08`, while giving
-      // downstream corridors & `#end-section` crisp bright studio spacesuit illumination!
+      // Keep orbital lighting unchanged. The captured shaft suit is in shadow, not
+      // studio-lit; blend that exposure into the bright blue corridor and CTA instead
+      // of switching fill lights abruptly at tTunnel=.80 / tWait=.001.
       if (inEmergencePhase) {
+        sunKeyLight.intensity = 2.15;
+        sunRimKicker.intensity = 1.35;
         spaceAmbient.intensity = 0.055;
         softFrontFill.intensity = 0.34;
         earthshineFill.intensity = 0.20 + earthVis * 0.24;
-      } else if (tTunnel > 0.80 && tWait <= 0.001) {
-        // Bright sky-blue window bounce inside the royal-blue arch corridor (`Frames 15 & 16`)
-        spaceAmbient.intensity = 0.62;
-        softFrontFill.intensity = 1.25;
-        earthshineFill.intensity = 0.95;
-      } else if (tWait > 0.001 || tShatter > 0.85) {
-        // Crisp front-lit Lusion studio spacesuit in `#end-section` (`Frames 17–20`)
-        spaceAmbient.intensity = 0.42;
-        softFrontFill.intensity = 1.05;
-        earthshineFill.intensity = 0.36;
       } else {
-        spaceAmbient.intensity = 0.14;
-        softFrontFill.intensity = 0.52;
-        earthshineFill.intensity = 0.34;
+        const shaftLight = smoothstep(0.065, 0.135, tTunnel) * (1 - smoothstep(0.80, 0.85, tTunnel));
+        const corridorLight = smoothstep(0.80, 0.85, tTunnel);
+        const studioLight = smoothstep(0.85, 1.0, tShatter);
+        sunKeyLight.intensity = lerp(2.15, 0.32, shaftLight);
+        sunRimKicker.intensity = lerp(1.35, 0.24, shaftLight);
+        spaceAmbient.intensity = lerp(lerp(lerp(0.055, 0.03, shaftLight), 0.62, corridorLight), 0.42, studioLight);
+        softFrontFill.intensity = lerp(lerp(lerp(0.34, 0.10, shaftLight), 1.25, corridorLight), 1.05, studioLight);
+        earthshineFill.intensity = lerp(lerp(lerp(0.20, 0.05, shaftLight), 0.95, corridorLight), 0.36, studioLight);
       }
 
       if (earthSystem.group.visible) {
@@ -1121,17 +1151,19 @@ export function GoalTunnelSection() {
         optics.chromaticRingMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
       }
 
-      // 1. Downstream Single-Draw-Call GPU-Twisted Architectural Truss & Vortex (`Frames 09 -> 14`)
+      // 1. Downstream Instanced GPU-Twisted Architectural Truss & Vortex (`Frames 09 -> 14`)
       const blackIn = !inEmergencePhase ? smoothstep(0.065, 0.135, tTunnel) : 0;
       const blackOut = 1 - smoothstep(0.80, 0.845, tTunnel);
       const blackVis = blackIn * blackOut;
-      trussSystem.group.visible = blackVis > 0.005;
 
       // Seamless white-lavender portal flash bridging `Frame 14 -> Frame 15` (`tTunnel ~ 0.82`)
       const portalFlash =
         !inEmergencePhase
           ? smoothstep(0.785, 0.822, tTunnel) * (1 - smoothstep(0.822, 0.865, tTunnel))
           : 0;
+      // The veil outlives the opaque shaft. Hiding its parent at blackOut's endpoint
+      // used to cut a still-bright transition flash off halfway through its fade.
+      trussSystem.group.visible = blackVis > 0.005 || portalFlash > 0.001;
       trussSystem.flashVeilMat.uniforms.uFlash.value = portalFlash;
 
       if (trussSystem.group.visible) {
@@ -1144,7 +1176,7 @@ export function GoalTunnelSection() {
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
         trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
         trussSystem.tunnelMaterial.uniforms.uVortexPinch.value = vortexPinch;
-        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = (tTunnel * 44) % trussSystem.baySpacing;
+        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = tTunnel * 44;
         const emeraldGlow =
           smoothstep(0.47, 0.53, tTunnel) * (1 - smoothstep(0.62, 0.68, tTunnel)) * 0.92;
         const pinkVortexGlow = smoothstep(0.69, 0.755, tTunnel);
@@ -1167,29 +1199,27 @@ export function GoalTunnelSection() {
       blueCorridor.setMonitorClip(clipToMonitor);
       blueCorridor.monitorStencilMask.visible = clipToMonitor;
 
+      // One camera-space aperture for both the stencil and the glass burst. Account for
+      // camera banking, CSS monitor rotation, aspect ratio and the actual inner border.
+      const monScale = lerp(2.15, 1.0, smoothstep(0.0, 0.82, tOutPull));
+      const monRot = lerp(-0.22, 0.0, smoothstep(0.0, 0.68, tOutPull));
+      const borderPx = W < 640 ? 14 : 22;
+      const screenWorldH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const monWorldW = Math.max(10, m.imgOutWidth - borderPx * 2) * monScale / H * screenWorldH;
+      const monWorldH = Math.max(10, m.imgOutHeight - borderPx * 2) * monScale / H * screenWorldH;
+      _monitorCenter.set(
+        (outCenterX / W * 2 - 1) * screenWorldH * camera.aspect / 2,
+        (1 - outBaseY / H * 2) * screenWorldH / 2,
+        -camera.position.z
+      ).applyMatrix4(camera.matrixWorld);
+      _screenRotation.setFromAxisAngle(_zAxis, -monRot);
+      _monitorRotation.copy(camera.quaternion).multiply(_screenRotation);
+
       if (blueCorridor.group.visible) {
         blueCorridor.wallTexture.offset.y = -tTunnel * 2.4;
-        const monScale =
-          tOutPull > 0.02 ? lerp(2.15, 1.0, smoothstep(0.0, 0.82, tOutPull)) : 1.0;
-        const monRot =
-          tOutPull > 0.02 ? lerp(-0.22, 0.0, smoothstep(0.0, 0.68, tOutPull)) : 0.0;
-
         if (clipToMonitor) {
-          // Project exact inner screen aperture (`m.imgOutWidth - border*2`) into 3D world space at `z = 0`!
-          const borderPx = W < 640 ? 14 : 22;
-          const innerW = Math.max(10, (m.imgOutWidth - borderPx * 2) * monScale);
-          const innerH = Math.max(10, (m.imgOutHeight - borderPx * 2) * monScale);
-          const distZ = camera.position.z;
-          const vHalfH = distZ * Math.tan((camera.fov * Math.PI) / 360);
-          const vHalfW = vHalfH * (W / H);
-          const monNdcX = (outCenterX / W) * 2 - 1;
-          const monNdcY = 1 - (outBaseY / H) * 2;
-          const monWorldX = camera.position.x + monNdcX * vHalfW;
-          const monWorldY = camera.position.y + monNdcY * vHalfH;
-          const monWorldW = (innerW / W) * (2 * vHalfW);
-          const monWorldH = (innerH / H) * (2 * vHalfH);
-          blueCorridor.monitorStencilMask.position.set(monWorldX, monWorldY, 0);
-          blueCorridor.monitorStencilMask.rotation.set(0, 0, -monRot);
+          blueCorridor.monitorStencilMask.position.copy(_monitorCenter);
+          blueCorridor.monitorStencilMask.quaternion.copy(_monitorRotation);
           blueCorridor.monitorStencilMask.scale.set(monWorldW, monWorldH, 1);
         }
 
@@ -1198,7 +1228,7 @@ export function GoalTunnelSection() {
         const tunnelShiftY =
           tOutPull > 0.01 ? ((H * 0.5 - outBaseY) / H) * 4.3 : 0;
         blueCorridor.group.scale.set(monShrink * (m.isMobile ? 0.90 : 1.08), monShrink * 0.95, monShrink);
-        blueCorridor.group.position.set(0, tunnelShiftY, tOutPull > 0.01 ? -2.2 : 0);
+        blueCorridor.group.position.set(0, tunnelShiftY, -2.2 * smoothstep(0.0, 0.08, tOutPull));
         blueCorridor.endGlowMat.uniforms.uOpacity.value = whiteVis;
       }
 
@@ -1211,32 +1241,14 @@ export function GoalTunnelSection() {
           mat.uniforms.uOpacity.value = shardVis;
           
           const burst = smoothstep(0.18, 0.82, tShatter);
-          const { animData, animOrient, texFrame, texOrient, framesPerShard, numShards } = shardsMesh.userData;
-          
-          // burst 0..1 maps to frame 0..framesPerShard-1
-          const targetFrame = clamp01(burst) * (framesPerShard - 1);
-          const iF = Math.floor(targetFrame);
-          const iN = Math.min(framesPerShard - 1, iF + 1);
-          const fT = targetFrame - iF;
-          
-          const fd = texFrame.image.data;
-          const od = texOrient.image.data;
-          
-          for (let p = 0; p < numShards; p++) {
-            // The animation buffer appears to be piece-major: piece 0 frames 0..N, piece 1 frames 0..N
-            const idx0 = (p * framesPerShard + iF);
-            const idx1 = (p * framesPerShard + iN);
-            
-            fd[p*4+0] = lerp(animData[idx0*3+0], animData[idx1*3+0], fT);
-            fd[p*4+1] = lerp(animData[idx0*3+1], animData[idx1*3+1], fT);
-            fd[p*4+2] = lerp(animData[idx0*3+2], animData[idx1*3+2], fT) + 1.25; // Z offset
-            
-            // simple slerp approximation for orientation since it's just debris
-            od[p*4+0] = lerp(animOrient[idx0*4+0], animOrient[idx1*4+0], fT);
-            od[p*4+1] = lerp(animOrient[idx0*4+1], animOrient[idx1*4+1], fT);
-            od[p*4+2] = lerp(animOrient[idx0*4+2], animOrient[idx1*4+2], fT);
-            od[p*4+3] = lerp(animOrient[idx0*4+3], animOrient[idx1*4+3], fT);
-          }
+          const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
+          sampleFrame(clamp01(burst) * (framesPerShard - 1));
+          const bounds = shardsMesh.userData.restBounds as THREE.Box3;
+          const scaleX = monWorldW / (bounds.max.x - bounds.min.x);
+          const scaleY = monWorldH / (bounds.max.y - bounds.min.y);
+          shardsMesh.position.copy(_monitorCenter);
+          shardsMesh.quaternion.copy(_monitorRotation);
+          shardsMesh.scale.set(scaleX, scaleY, Math.min(scaleX, scaleY));
           texFrame.needsUpdate = true;
           texOrient.needsUpdate = true;
         }
@@ -1285,7 +1297,7 @@ export function GoalTunnelSection() {
           aScale = lerp(kf.astroScale, Math.max(0.32, restScaleFactor * 0.74), portalFollow);
 
           // Whole-body zero-g sinusoidal drift (strictly zero under reducedMotion or inside resting tablet)
-          const driftAmp = reducedMotion || portalFollow > 0.05 ? 0 : 1;
+          const driftAmp = reducedMotion || portalFollow > 0.05 ? 0 : 1 - smoothstep(0.94, 1, uEmergence);
           const zeroGRoll = Math.sin(elapsedSec * 0.55) * 0.022 * driftAmp;
           const zeroGPitch = Math.cos(elapsedSec * 0.42) * 0.018 * driftAmp;
           const zeroGYaw = Math.sin(elapsedSec * 0.37) * 0.028 * driftAmp;
@@ -1315,22 +1327,24 @@ export function GoalTunnelSection() {
           );
           jointPose = blendSuitPose(trussPose, SUIT_POSE_CORRIDOR_FLY, inBlueDive);
 
-          ax = lerp(0.0, 0.04, inBlueDive);
-          ay = lerp(0.0, -0.02, inBlueDive);
-          az = lerp(-1.12 - vortexShrink * 4.2, -1.25, inBlueDive);
+          const entry = smoothstep(0.0, 0.08, tTunnel);
+          const entryPos = m.isMobile ? kf.astroPosMobile : kf.astroPosDesktop;
+          ax = lerp(entryPos[0], lerp(0.0, 0.04, inBlueDive), entry);
+          ay = lerp(entryPos[1], lerp(0.0, -0.02, inBlueDive), entry);
+          az = lerp(entryPos[2], lerp(-1.12 - vortexShrink * 4.2, -1.25, inBlueDive), entry);
 
-          const trussRy = lerp(-Math.PI, -Math.PI * 0.55, intoCurl);
+          const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
           const trussRz = intoCurl * (-1.15 - tTunnel * 3.1);
-          rx = lerp(0.18, 0.24, inBlueDive);
-          ry = lerp(trussRy, 0.14, inBlueDive);
-          rz = lerp(trussRz, -0.28, inBlueDive);
-          aScale = lerp(
+          rx = lerp(kf.astroRot[0] - pyParallax * 0.045, lerp(0.18, 0.24, inBlueDive), entry);
+          ry = lerp(kf.astroRot[1] + pxParallax * 0.065, lerp(trussRy, Math.PI * 2 + 0.14, inBlueDive), entry);
+          rz = lerp(kf.astroRot[2], lerp(trussRz, -Math.PI * 2 - 0.28, inBlueDive), entry);
+          aScale = lerp(kf.astroScale, lerp(
             lerp(0.62, 0.58, intoCurl) * (1 - vortexShrink * 0.60),
             0.66,
             inBlueDive
-          );
+          ), entry);
           visorFlareAmt = 0;
-        } else if (tWait <= 0.001) {
+        } else if (sy <= m.endTop) {
           // `Frame 16` (`16-monitor-glass-shatter`) -> `Frame 17` (`17-astronaut-stickers-wait`):
           // Astronaut bursts forward through the Studio Display screen with BOTH ARMS RAISED
           // (`SUIT_POSE_SHATTER_BREAK`) and settles smoothly into visor salute (`SUIT_POSE_VISOR_SALUTE`)!
@@ -1341,14 +1355,14 @@ export function GoalTunnelSection() {
             SUIT_POSE_VISOR_SALUTE,
             settleSalute
           );
-          ax = pxParallax * 0.05;
-          ay = lerp(-0.18, m.isMobile ? -0.18 : -0.32, lerp(burst * 0.65, 1.0, settleSalute));
+          ax = lerp(0.04, pxParallax * 0.05, burst);
+          ay = lerp(-0.02, m.isMobile ? -0.18 : -0.32, lerp(burst * 0.65, 1.0, settleSalute));
           az = lerp(-1.25, m.isMobile ? 0.68 : 1.72, burst);
           az = lerp(az, m.isMobile ? 1.24 : 2.66, settleSalute);
-          rx = lerp(0.18, 0.0, burst) - pyParallax * 0.04;
-          ry = lerp(0.10, 0.0, burst) + pxParallax * 0.06;
-          rz = lerp(-0.14, 0.0, burst);
-          aScale = lerp(0.72, 1.0, burst);
+          rx = lerp(0.24, -pyParallax * 0.04, burst);
+          ry = lerp(0.14, pxParallax * 0.07, burst);
+          rz = lerp(-0.28, 0.0, burst);
+          aScale = lerp(0.66, 1.0, burst);
         } else {
           // `#end-section` & `#footer-section` White Wipe (`Frames 17 -> 18 -> 19 -> 20`):
           // Exact Lusion medium-full portrait framing (`az = 2.66, ay = -0.32`), curved LED dot-matrix
@@ -1365,10 +1379,10 @@ export function GoalTunnelSection() {
           );
 
           ax = pxParallax * 0.05;
-          ay = (m.isMobile ? -0.18 : -0.32) + (reducedMotion ? 0 : Math.sin(elapsedSec * 1.1) * 0.018);
+          ay = (m.isMobile ? -0.18 : -0.32) + (reducedMotion ? 0 : Math.sin(elapsedSec * 1.1) * 0.018 * smoothstep(0.0, 0.04, tWait));
           az = m.isMobile ? 1.24 : 2.66;
           rx = -pyParallax * 0.04;
-          ry = pxParallax * 0.07 + (reducedMotion ? 0 : Math.sin(elapsedSec * 0.65) * 0.035);
+          ry = pxParallax * 0.07 + (reducedMotion ? 0 : Math.sin(elapsedSec * 0.65) * 0.035 * smoothstep(0.0, 0.04, tWait));
           rz = 0;
           aScale = 1.0;
 
@@ -1393,6 +1407,18 @@ export function GoalTunnelSection() {
         }
 
         applySuitJointPose(mainAstro, jointPose);
+        // Captured parts have deformation palettes, not the legacy GLB's named joints.
+        // Sample the actual float/drop/wait clips from scroll; never advance a mixer by wall time.
+        const bakedFrame = tWait > 0
+          ? lerp(139, 287, tWait)
+          : tShatter > 0
+            ? lerp(89, 139, tShatter)
+            : 89 * clamp01(tTunnel / 0.86);
+        mainAstro.sampleBakedPose?.(bakedFrame, inEmergencePhase ? 0 : smoothstep(0, 0.08, tTunnel));
+        if (window.__goalAstronautTelemetry) {
+          window.__goalAstronautTelemetry.sceneState.bakedFrame = bakedFrame;
+        }
+        if (mainAstro.sampleBakedPose) visorLed.mesh.position.copy(mainAstro.visorAnchorLocal);
         mainAstro.root.position.set(ax, ay, az);
         mainAstro.root.rotation.set(rx, ry, rz);
         mainAstro.root.scale.setScalar(aScale);
@@ -1433,6 +1459,7 @@ export function GoalTunnelSection() {
           const cl = clones[c];
           cl.root.visible = clonesActive;
           if (clonesActive) {
+            cl.sampleBakedPose?.(bakedFrame, 1);
             const spiralA = tTunnel * 8.5 + c * 1.57;
             cl.root.position.set(
               Math.cos(spiralA) * (1.05 + c * 0.24),
@@ -1461,6 +1488,16 @@ export function GoalTunnelSection() {
         window.__goalAstronautTelemetry.lastFrameMs = +dtMs.toFixed(2);
         window.__goalAstronautTelemetry.emergenceProgress = +uEmergence.toFixed(4);
         window.__goalAstronautTelemetry.portalStencilActive = portalMaskActive;
+        const state = window.__goalAstronautTelemetry.sceneState;
+        state.tunnelProgress = tTunnel;
+        state.shatterProgress = tShatter;
+        state.waitProgress = tWait;
+        mainAstro?.root.matrixWorld.toArray(state.astronautMatrix);
+        camera.matrixWorld.toArray(state.cameraMatrix);
+        state.trussLoaded = trussSystem.group.children.length > 2;
+        state.shardsLoaded = shardsMesh !== null;
+        state.portalFlash = portalFlash;
+        state.flashVisible = trussSystem.group.visible && portalFlash > 0.001;
       }
     };
 
@@ -1556,7 +1593,7 @@ export function GoalTunnelSection() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("resize", onResize);
-      document.addEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("visibilitychange", onVisibility);
 
       if (composer) {
         for (const pass of composer.passes) {
@@ -1573,6 +1610,10 @@ export function GoalTunnelSection() {
         hostEl.removeChild(glRenderer.domElement);
       }
       delete window.__goalAstronautTelemetry;
+      if (window.__lusionInspector?.scrollManager === ownedScrollManager) {
+        delete window.__lusionInspector?.scrollManager;
+        delete window.__lusionInspector?.homeGoalSectionRanges;
+      }
     };
   }, [setActiveSurface]);
 

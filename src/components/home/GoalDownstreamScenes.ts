@@ -285,6 +285,60 @@ export function buildHologramEchoMaterial(
   );
 }
 
+/** Frame-major captured debris transforms. Reuse outputs and quaternion scratch on every scroll sample. */
+export function createGlassFrameSampler(
+  positions: ArrayLike<number>,
+  orientations: ArrayLike<number>,
+  pieceCount: number,
+  frameCount: number,
+  outputPositions: Float32Array,
+  outputOrientations: Float32Array
+): (frame: number) => void {
+  const q0 = new THREE.Quaternion();
+  const q1 = new THREE.Quaternion();
+  return (frame: number) => {
+    const f = THREE.MathUtils.clamp(frame, 0, frameCount - 1);
+    const from = Math.floor(f);
+    const to = Math.min(frameCount - 1, from + 1);
+    const alpha = f - from;
+    for (let piece = 0; piece < pieceCount; piece++) {
+      const a = from * pieceCount + piece;
+      const b = to * pieceCount + piece;
+      for (let c = 0; c < 3; c++) {
+        outputPositions[piece * 4 + c] = THREE.MathUtils.lerp(positions[a * 3 + c], positions[b * 3 + c], alpha);
+      }
+      q0.fromArray(orientations, a * 4).normalize();
+      q1.fromArray(orientations, b * 4).normalize();
+      q0.slerp(q1, alpha).toArray(outputOrientations, piece * 4);
+    }
+  };
+}
+
+/** Decode the captured four unwrapped girder faces, verified against grid_base_ld's cross-section. */
+export function decodeCapturedGirder(source: THREE.BufferGeometry): THREE.BufferGeometry {
+  const geometry = source.clone();
+  const position = geometry.getAttribute("position");
+  const normal = geometry.getAttribute("normal");
+  const center = geometry.getAttribute("center");
+  const height = geometry.getAttribute("height");
+  const angles = [0, Math.PI, -Math.PI / 2, Math.PI / 2];
+  for (let i = 0; i < position.count; i++) {
+    const face = Math.round(center.getX(i));
+    const angle = angles[face];
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    const x = position.getX(i) - face;
+    const y = 0.025 + position.getY(i) * height.getX(i);
+    position.setXY(i, c * x - s * y, s * x + c * y);
+    const nx = normal.getX(i);
+    const ny = normal.getY(i);
+    normal.setXY(i, c * nx - s * ny, s * nx + c * ny);
+  }
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
 /**
  * Single-Draw-Call GPU-Twisted Architectural Square Truss + Micro-Greeble Panel Tunnel (`Frames 09–14`)
  *
@@ -308,21 +362,33 @@ export function buildArchitecturalTrussTunnel(
   baySpacing: number;
 } {
   const group = new THREE.Group();
-  const baySpacing = 1.0;
-  const bayCount = isMobile ? 32 : 45;
+  // Source structure cells are 20 units wide; keep the existing 2.96-unit flight aperture.
+  const sourceScale = 1.48 / 10;
+  const baySpacing = 20 * sourceScale;
+  const repeats = isMobile ? 2 : 3;
+  const tunnelLength = 120 * sourceScale * repeats;
+  let disposed = false;
+  track({ dispose: () => { disposed = true; } });
 
   const tunnelMaterial = track(
     new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
       uniforms: {
         uOpacity: { value: 1.0 },
         uPhase: { value: 0.0 },
         uTwist: { value: 0.0 },
         uVortexPinch: { value: 0.0 },
         uTravelZ: { value: 0.0 },
+        uTunnelLength: { value: tunnelLength },
       },
       vertexShader: [
         "attribute float aSeed;",
         "attribute float aKind;",
+        "attribute float aBayZ;",
+        "attribute float cluster;",
+        "attribute float ao;",
+        "varying float vAo;",
         "varying vec3 vNormalW;",
         "varying vec3 vWorldPos;",
         "varying vec2 vFaceUv;",
@@ -331,13 +397,17 @@ export function buildArchitecturalTrussTunnel(
         "uniform float uTwist;",
         "uniform float uVortexPinch;",
         "uniform float uTravelZ;",
+        "uniform float uTunnelLength;",
         "",
         "void main() {",
-        "  vSeed = aSeed;",
+        "  vSeed = aSeed + cluster * 0.173;",
+        "  vAo = ao;",
         "  vKind = aKind;",
         "  vFaceUv = uv * 2.0 - 1.0;",
         "  vec4 wp = instanceMatrix * vec4(position, 1.0);",
-        "  wp.z += uTravelZ;",
+        "  // Recycle a whole bay, never individual vertices or the entire seeded shaft.",
+        "  float bayZ = 3.9 - mod(3.9 - aBayZ - uTravelZ + uTunnelLength * 2.0, uTunnelLength);",
+        "  wp.z += bayZ - aBayZ;",
         "",
         "  // Continuous GPU helical spiral twist & vortex funnel (Frames 13 -> 14!)",
         "  float depthDist = max(0.0, 4.2 - wp.z);",
@@ -361,6 +431,7 @@ export function buildArchitecturalTrussTunnel(
         "varying vec2 vFaceUv;",
         "varying float vSeed;",
         "varying float vKind;",
+        "varying float vAo;",
         "uniform float uOpacity;",
         "uniform float uPhase;",
         "uniform float uVortexPinch;",
@@ -377,7 +448,7 @@ export function buildArchitecturalTrussTunnel(
         "  float wEmer  = smoothstep(0.49, 0.59, uPhase) * (1.0 - smoothstep(0.76, 0.86, uPhase));",
         "  float wPink  = smoothstep(0.76, 0.86, uPhase);",
         "",
-        "  vec3 cCool  = vec3(0.02, 0.04, 0.08) + vec3(0.3, 0.7, 1.0) * (ndl * 0.4 + rim * 0.2);",
+        "  vec3 cCool  = vec3(0.012, 0.016, 0.020) + vec3(0.16, 0.20, 0.22) * (ndl * 0.4 + rim * 0.2);",
         "  vec3 cWarm  = vec3(0.06, 0.03, 0.01) + vec3(1.0, 0.3, 0.1) * ndl * 0.5 + vec3(0.1, 0.8, 0.8) * rim * 0.3;",
         "  vec3 cEmer  = vec3(0.01, 0.08, 0.04) + vec3(0.2, 1.0, 0.5) * (ndl * 0.6 + rim * 0.4);",
         "  vec3 cPink  = vec3(0.15, 0.01, 0.08) + vec3(1.0, 0.1, 0.6) * (ndl * 0.8 + rim * 0.6) + vec3(0.1, 0.9, 1.0) * rim * 0.3;",
@@ -390,11 +461,14 @@ export function buildArchitecturalTrussTunnel(
         "  vec3 glintColor = mix(vec3(0.2, 0.8, 1.0), vec3(1.0, 0.4, 0.1), wWarm) * 4.0;",
         "  glintColor = mix(glintColor, vec3(0.4, 1.0, 0.6) * 5.0, wEmer);",
         "  glintColor = mix(glintColor, vec3(1.0, 0.2, 0.8) * 6.0, wPink);",
+        "  vec3 V = normalize(cameraPosition - vWorldPos);",
+        "  float spec = pow(max(dot(N, normalize(L1 + V)), 0.0), 32.0);",
+        "  baseCol = baseCol * mix(0.28, 1.0, vAo) + vec3(0.65, 0.78, 0.85) * spec;",
         "  baseCol += glintColor * isGlint * glintInt * (1.0 - uVortexPinch);",
         "",
         "  baseCol = mix(baseCol, vec3(2.0, 0.8, 1.5), uVortexPinch * 0.85);",
         "",
-        "  gl_FragColor = vec4(baseCol * depthFade * uOpacity, uOpacity);",
+        "  gl_FragColor = vec4(baseCol * depthFade, uOpacity);",
         "}"
       ].join("\n")
     })
@@ -450,96 +524,68 @@ export function buildArchitecturalTrussTunnel(
   flashVeil.frustumCulled = false;
   group.add(flashVeil);
 
-  import("@/lib/lusion-buf-loader").then((m) => {
-    Promise.all([
+  import("@/lib/lusion-buf-loader")
+    .then((m) => Promise.all([
       m.loadLusionBuf("/assets/models/tunnels/grid_base_hd.buf"),
-      m.loadLusionBuf("/assets/models/tunnels/tunnel_block_wall.buf")
-    ]).then(([baseData, wallData]) => {
-      const gBase = track(baseData.geometry);
-      const gWall = track(wallData.geometry);
-
-      const instancesPerBay = 4;
-      const totalInstances = bayCount * instancesPerBay;
-      const m4 = new THREE.Matrix4();
-      const pos = new THREE.Vector3();
-      const quat = new THREE.Quaternion();
-      const scl = new THREE.Vector3(1, 1, 1);
-
-      let rng = 20261023;
-      const rand = () => { rng = (rng * 1664525 + 1013904223) >>> 0; return rng / 4294967296; };
-
-      const baseInstGeo = track(new THREE.InstancedBufferGeometry());
-      baseInstGeo.index = gBase.index;
-      baseInstGeo.attributes.position = gBase.attributes.position;
-      baseInstGeo.attributes.normal = gBase.attributes.normal;
-      baseInstGeo.instanceCount = totalInstances;
-      
-      const wallInstGeo = track(new THREE.InstancedBufferGeometry());
-      wallInstGeo.index = gWall.index;
-      wallInstGeo.attributes.position = gWall.attributes.position;
-      wallInstGeo.attributes.normal = gWall.attributes.normal;
-      wallInstGeo.instanceCount = totalInstances;
-
-      const baseSeeds = new Float32Array(totalInstances);
-      const baseKinds = new Float32Array(totalInstances);
-      const wallSeeds = new Float32Array(totalInstances);
-      const wallKinds = new Float32Array(totalInstances);
-
-      const baseInstMesh = new THREE.InstancedMesh(baseInstGeo, tunnelMaterial, totalInstances);
-      baseInstMesh.frustumCulled = false;
-      const wallInstMesh = new THREE.InstancedMesh(wallInstGeo, tunnelMaterial, totalInstances);
-      wallInstMesh.frustumCulled = false;
-
-      let idx = 0;
-      for (let b = 0; b < bayCount; b++) {
-        const z = 3.9 - b * baySpacing;
-        for (let rot = 0; rot < instancesPerBay; rot++) {
-          const angle = rot * (Math.PI / 2);
-          
-          quat.setFromEuler(new THREE.Euler(0, 0, angle));
-          
-          // grid_base_hd is X: -0.025 to 3.025, Y: 0 to 1
-          // we want its Y=0 axis to touch the hole corner, extending outwards in X and Y
-          // The center hole is maybe 1.5 radius.
-          pos.set(1.48, 1.48, z);
-          pos.applyEuler(new THREE.Euler(0, 0, angle));
-          m4.compose(pos, quat, scl);
-          
-          baseInstMesh.setMatrixAt(idx, m4);
-          baseSeeds[idx] = rand();
-          baseKinds[idx] = 0; // structural
-          
-          // tunnel_block_wall is X: -0.63 to 0.63, Y: -0.5 to 0.5.
-          // It forms the walls connecting the corners.
-          // We can put it halfway between the corners:
-          // angle + PI/4? Or angle is the wall face.
-          // Let's place it at Y=1.48, rotated so it spans the X axis.
-          const wPos = new THREE.Vector3(1.48, 0, z); // shift wall out
-          wPos.applyEuler(new THREE.Euler(0, 0, angle + Math.PI/2)); // face inward
-          // tunnel_block_wall actually spans X axis. 
-          const wQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI/2, 0, angle));
-          m4.compose(wPos, wQuat, scl);
-          
-          wallInstMesh.setMatrixAt(idx, m4);
-          wallSeeds[idx] = rand();
-          wallKinds[idx] = rand() < 0.15 ? 2 : 1; // glint or dark panel
-          
-          idx++;
+      m.loadLusionBuf("/assets/models/tunnels/grid_base_ld.buf"),
+      m.loadLusionBuf("/assets/models/tunnels/grid_structure_hd.buf"),
+    ]))
+    .then(([detail, base, structure]) => {
+      if (disposed) return;
+      const detailGeometry = decodeCapturedGirder(detail.geometry);
+      const baseGeometry = base.geometry.clone();
+      // Only merge common attributes; preserve the capture's AO and per-cluster glints.
+      for (const g of [detailGeometry, baseGeometry]) {
+        for (const name of Object.keys(g.attributes)) {
+          if (!["position", "normal", "uv", "ao", "cluster"].includes(name)) g.deleteAttribute(name);
         }
       }
-
-      baseInstGeo.setAttribute("aSeed", new THREE.InstancedBufferAttribute(baseSeeds, 1));
-      baseInstGeo.setAttribute("aKind", new THREE.InstancedBufferAttribute(baseKinds, 1));
-      wallInstGeo.setAttribute("aSeed", new THREE.InstancedBufferAttribute(wallSeeds, 1));
-      wallInstGeo.setAttribute("aKind", new THREE.InstancedBufferAttribute(wallKinds, 1));
-
-      baseInstMesh.instanceMatrix.needsUpdate = true;
-      wallInstMesh.instanceMatrix.needsUpdate = true;
-
-      group.add(baseInstMesh);
-      group.add(wallInstMesh);
+      baseGeometry.setAttribute("ao", new THREE.Float32BufferAttribute(
+        new Float32Array(baseGeometry.getAttribute("position").count).fill(1), 1
+      ));
+      // The capture stores cluster as Uint8 on both source geometries.
+      const geometry = track(mergeGeometries([detailGeometry, baseGeometry], false)!);
+      detailGeometry.dispose();
+      baseGeometry.dispose();
+      const count = structure.header.vertexCount * repeats;
+      const seeds = new Float32Array(count);
+      const kinds = new Float32Array(count);
+      const bayZ = new Float32Array(count);
+      const mesh = track(new THREE.InstancedMesh(geometry, tunnelMaterial, count));
+      mesh.frustumCulled = false;
+      const matrix = new THREE.Matrix4();
+      const rotation = new THREE.Quaternion();
+      const position = new THREE.Vector3();
+      // Preserve the decoded girder's proportions when fitting it to the 20-unit source cell.
+      const scale = new THREE.Vector3().setScalar(baySpacing);
+      const axis = new THREE.Vector3();
+      const sourcePositions = structure.geometry.getAttribute("position");
+      const sourceAxes = structure.geometry.getAttribute("rotAxis");
+      let seed = 20261023;
+      for (let repeat = 0; repeat < repeats; repeat++) {
+        for (let j = 0; j < sourcePositions.count; j++) {
+          const i = repeat * sourcePositions.count + j;
+          axis.fromBufferAttribute(sourceAxes, j);
+          // X/Y axes rotate the Z-aligned source girder into the captured transverse beams.
+          rotation.setFromAxisAngle(axis, axis.z > 0.5 ? 0 : Math.PI / 2);
+          position.fromBufferAttribute(sourcePositions, j).multiplyScalar(sourceScale);
+          position.z += 3.9 - repeat * 120 * sourceScale;
+          mesh.setMatrixAt(i, matrix.compose(position, rotation, scale));
+          seed = (seed * 1664525 + 1013904223) >>> 0;
+          seeds[i] = seed / 4294967296;
+          kinds[i] = seeds[i] < 0.15 ? 2 : 0;
+          bayZ[i] = position.z;
+        }
+      }
+      geometry.setAttribute("aSeed", new THREE.InstancedBufferAttribute(seeds, 1));
+      geometry.setAttribute("aKind", new THREE.InstancedBufferAttribute(kinds, 1));
+      geometry.setAttribute("aBayZ", new THREE.InstancedBufferAttribute(bayZ, 1));
+      mesh.instanceMatrix.needsUpdate = true;
+      group.add(mesh);
+    })
+    .catch((error: unknown) => {
+      if (!disposed) console.warn("Goal truss asset unavailable", error);
     });
-  });
 
   return { group, tunnelMaterial, vortexCoreMat, flashVeilMat, baySpacing };
 }
