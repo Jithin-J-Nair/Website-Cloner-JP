@@ -1,4 +1,31 @@
-# Cinematic repair — visible-playback investigation remains incomplete
+# Cinematic repair — GPU isolation remains blocked
+
+**2026-10-26 · PR #12 · entry 0464dfa · no production correction shipped.** The normal desktop/mobile definition of done is still not met. Do not merge.
+
+## Latest GPU isolation and target-hardware follow-up
+
+**Measured cause in this environment:** warm raster/fragment work dominates the actual SwiftShader scene. With the goal queue drained, desktop blue .94 completion is about **568 ms** versus **172 ms** with rasterization discarded only for the two blue instance batches; CPU submission stays around **1 ms**. At the white-flash overlap both corridors really draw: matched completion is **1310 ms**, falling to **112 ms** with all rasterization discarded. These are deliberately output-changing controls, not fixes or physical-GPU benchmarks.
+
+**Quality-preserving candidates rejected:** per-mesh depth prepass matches all five checked images exactly but slows blue **547→690 ms**. Reordering the opaque batches has no consistent sufficient desktop/mobile gain and changes two desktop image channels at one checkpoint. Neither was installed. No scheduler/culling retry, reduced DPR, effects/layers, AA/filter quality or authored-timing change is shipped. An initial cloned-atlas control and an initial discard-image path were found invalid, excluded and corrected in the new diagnostic only; original gates/native observer remain unchanged.
+
+**Actual capture evidence:** after deliberate drain/dwell, all seven requested states at each width reach compositor capture with independently checksum-decoded GL IDs matching source IDs before/after capture. This is not autonomous acceptance. Fresh complete native runs retain **107 desktop / 133 mobile** valid matching GL/DOM captures, including blue/glass and CTA, but only **5/5 captured blue source IDs and 3/1 mid-glass IDs**. A narrow fresh fence/image example again proves multi-second pre-completion delay; full queue drain and physical scanout are not claimed.
+
+| Fresh ORIGINAL normal test configuration | Desktop 1440 | Mobile 390 |
+| --- | --- | --- |
+| Bundled defaults, assertions unchanged | **FAIL**, line 124: intermediate stages | **FAIL**, line 126: advancing blue pose |
+| Previous-baseline multiprocess wrapper | **FAIL**, line 126 | **FAIL**, line 126 |
+
+The fresh preservation runner records **19 commands: 15 pass, four normal failures**. Both reduced/clock suites, fallback/context-loss/asset/unit checks and audits pass; full/production vulnerabilities remain zero. Fresh lint/types/production build pass; two existing lint warnings remain unsuppressed. Paused draws remain **192→192**; approximately 650 ms stalls advance **0.6700/0.6711 authored seconds**. Early failed normal tests do not certify their unexecuted later assertions. Original acceptance SHA is unchanged.
+
+**Hardware uncertainty remains explicit:** Debian 12, Chrome 153.0.8010.0, ANGLE Vulkan **SwiftShader**, two exposed CPU cores, no `/dev/dri`/display session. Context has four samples; viewport 1440×900 renders to the existing 960×600 software buffer, mobile emulation 390×844. No actual laptop GPU/phone, physical dropped-frame count, reference parity, smoothness, 60 FPS or 4K60 certification is available. The app's existing hardware path also has different compile/composer work; software timings cannot be labeled hardware performance.
+
+[Detailed current report and evidence index](mission-repair/gpu-isolation-2026-10-26/README.md) · [Machine-readable blocked outcome](mission-repair/gpu-isolation-2026-10-26/summary.json) · [Original commands/results](mission-repair/gpu-isolation-2026-10-26/regression-summary.json) · [Desktop timestamped preview](mission-repair/gpu-isolation-2026-10-26/native-1440/native-preview.mp4) · [Mobile timestamped preview](mission-repair/gpu-isolation-2026-10-26/native-390/native-preview.mp4) · [Exact target-laptop procedure — UNEXECUTED](mission-repair/gpu-isolation-2026-10-26/HARDWARE.md)
+
+**Stop / blocker:** no verified minimal quality-preserving correction satisfies the original normal gates plus genuine visible cadence, and target-hardware validation cannot be executed in this sandbox. Production source/assets/dependencies/timing are byte-identical to entry. PR #12 stays open; no merge is authorized.
+
+---
+
+## Previous visible-playback investigation (preserved)
 
 Date: **2026-10-26**. Continuing existing [PR #12](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/12) on `arena/6d83ea00-website-cloner-jp`. Investigation entry **8da3550**. **Do not merge: the definition of done is not met.**
 
@@ -40,7 +67,7 @@ Date: **2026-10-25**. Existing [PR #12](https://github.com/Jithin-J-Nair/Website
 - **Patched dependencies, not animation quality:** Next/eslint config `16.3.5 → 16.4.3` (pinned matching versions), shadcn generator `4.1.0 → 4.22.1` moved to development scope; compatible remaining transitive patches via ordinary `npm audit fix`, no force/override. React and Three unchanged. Node minimum corrected to Next's actual >=20.9 requirement.
 - Added cold/replay/GL/long-task observation and a post-completion recording tail. Split opt-in GPU phase tagging and profiling into separate **pre-burst glass** and **shatter**. Observer RAF rate, submission-count changes, CPU and asynchronous GPU execution are explicitly separate. The sole active scene source change is that opt-in phase **label**, not its render content or clock.
 
-**Preservation proof:** [SHA-256 comparison](mission-repair/followup-2026-10-25/preserved-source-sha256.json) confirms the original autonomous script, trajectory/glass sampler, captured actor/poses, clock, hero/card resets and Contact CTA are byte-identical to verified entry. [Scene diff](mission-repair/followup-2026-10-25/application-scene-diff.patch.gz) is the one phase-label change. No whole-sequence stretch, dt truncation, competing playhead, resolution/quality reduction, speculative warm-up or acceptance expectation change was applied.
+**Preservation proof:** [SHA-256 comparison](mission-repair/followup-2026-10-25/preserved-source-sha256.json) confirms the original autonomous script, trajectory/glass sampler, captured actor/poses, clock, hero/card resets and Contact CTA are byte-identical to verified entry. [Scene diff](mission-repair/followup-2026-10-25/application-scene-diff.patch) is the one phase-label change. No whole-sequence stretch, dt truncation, competing playhead, resolution/quality reduction, speculative warm-up or acceptance expectation change was applied.
 
 ## 2. Original failures: reproduced, not hidden or waived
 

@@ -1,0 +1,1675 @@
+{
+  "1440": {
+    "runs": [
+      {
+        "run": 0,
+        "start": 21070.60000000149,
+        "end": 47525
+      }
+    ],
+    "runSeconds": 26.45439999999851,
+    "recordingSeconds": 48.350247859954834,
+    "firstCaptureMs": 21044.0009765625,
+    "playingRenders": 38,
+    "capturedBlueIds": [
+      46,
+      47,
+      48,
+      49,
+      50
+    ],
+    "capturedMidglassIds": [
+      52,
+      53,
+      54
+    ],
+    "unobservedPlayingSourceIds": [
+      26,
+      30
+    ],
+    "captures": 107,
+    "validMatchingCodes": 107,
+    "errors": [],
+    "pendingAtEnd": [
+      {
+        "id": 122,
+        "submittedAt": 65858.80000000075,
+        "previousPoll": 69529.10000000149
+      },
+      {
+        "id": 123,
+        "submittedAt": 66131.10000000149,
+        "previousPoll": 69529.10000000149
+      },
+      {
+        "id": 126,
+        "submittedAt": 67225.70000000112,
+        "previousPoll": 69529.10000000149
+      },
+      {
+        "id": 128,
+        "submittedAt": 67750.90000000037,
+        "previousPoll": 69529.10000000149
+      },
+      {
+        "id": 129,
+        "submittedAt": 68045.90000000037,
+        "previousPoll": 69529.10000000149
+      },
+      {
+        "id": 132,
+        "submittedAt": 68858.70000000112,
+        "previousPoll": 69529.10000000149
+      },
+      {
+        "id": 133,
+        "submittedAt": 69133.20000000112,
+        "previousPoll": 69529.10000000149
+      },
+      {
+        "id": 134,
+        "submittedAt": 69413.5,
+        "previousPoll": 69529.10000000149
+      }
+    ],
+    "playingCallbackMs": {
+      "n": 38,
+      "min": 1.199999999254942,
+      "p50": 2.400000000372529,
+      "p95": 1687.3250000011174,
+      "max": 3623.800000000745
+    },
+    "playingDispatchGapMs": {
+      "n": 37,
+      "min": 5.5,
+      "p50": 448.80000000074506,
+      "p95": 1737.7399999991053,
+      "max": 2272.5
+    },
+    "capturedImageReplacementGapMs": {
+      "n": 101,
+      "min": 56.2080078125,
+      "p50": 357.4951171875,
+      "p95": 1091.081787109375,
+      "max": 1602.149169921875
+    },
+    "correlatedExamples": [
+      {
+        "source": {
+          "id": 45,
+          "authoredAt": 33967.5,
+          "sceneStartedAt": 33967.70000000112,
+          "submittedAt": 33968.60000000149,
+          "virtualScroll": 32062.790238622445,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        "fence": {
+          "id": 45,
+          "submittedAt": 33969.5,
+          "observedAt": 43879.60000000149,
+          "previousPoll": 43828.60000000149,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0038.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 32063,
+            "timestamp": 1792948289.060122
+          },
+          "receivedHostMs": 44708.652335,
+          "domId": 45,
+          "glId": 45,
+          "pageCaptureMs": 44027.322021484375
+        }
+      },
+      {
+        "source": {
+          "id": 46,
+          "authoredAt": 35487.70000000112,
+          "sceneStartedAt": 35487.800000000745,
+          "submittedAt": 36757.90000000037,
+          "virtualScroll": 34081.017562171146,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1.08,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2.6576176499993376,
+            1
+          ]
+        },
+        "fence": {
+          "id": 46,
+          "submittedAt": 36758.800000000745,
+          "observedAt": 47523,
+          "previousPoll": 43879.60000000149,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0039.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 34081,
+            "timestamp": 1792948290.300917
+          },
+          "receivedHostMs": 45944.766796,
+          "domId": 46,
+          "glId": 46,
+          "pageCaptureMs": 45268.116943359375
+        }
+      },
+      {
+        "source": {
+          "id": 48,
+          "authoredAt": 36775.40000000037,
+          "sceneStartedAt": 36775.60000000149,
+          "submittedAt": 36776.800000000745,
+          "virtualScroll": 35457.93384260932,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1.08,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            8.001278452943016,
+            1
+          ]
+        },
+        "fence": {
+          "id": 48,
+          "submittedAt": 36778.300000000745,
+          "observedAt": 47523,
+          "previousPoll": 43879.60000000149,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0041.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 35458,
+            "timestamp": 1792948291.523341
+          },
+          "receivedHostMs": 47168.968412,
+          "domId": 48,
+          "glId": 48,
+          "pageCaptureMs": 46490.540771484375
+        }
+      },
+      {
+        "source": {
+          "id": 49,
+          "authoredAt": 36805.800000000745,
+          "sceneStartedAt": 36805.800000000745,
+          "submittedAt": 36806.90000000037,
+          "virtualScroll": 35487.82103951517,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1.08,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            8.14548633335261,
+            1
+          ]
+        },
+        "fence": {
+          "id": 49,
+          "submittedAt": 36807.60000000149,
+          "observedAt": 47523,
+          "previousPoll": 43879.60000000149,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0042.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 35488,
+            "timestamp": 1792948292.567711
+          },
+          "receivedHostMs": 48215.89372,
+          "domId": 49,
+          "glId": 49,
+          "pageCaptureMs": 47534.9111328125
+        }
+      },
+      {
+        "source": {
+          "id": 50,
+          "authoredAt": 37853.60000000149,
+          "sceneStartedAt": 37853.70000000112,
+          "submittedAt": 37854.70000000112,
+          "virtualScroll": 36450.570857093895,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1.08,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            13.432219544565015,
+            1
+          ]
+        },
+        "fence": {
+          "id": 50,
+          "submittedAt": 37855.40000000037,
+          "observedAt": 47523,
+          "previousPoll": 43879.60000000149,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0043.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 36451,
+            "timestamp": 1792948292.663942
+          },
+          "receivedHostMs": 48308.004129,
+          "domId": 50,
+          "glId": 50,
+          "pageCaptureMs": 47631.14208984375
+        }
+      },
+      {
+        "source": {
+          "id": 51,
+          "authoredAt": 39557,
+          "sceneStartedAt": 39557.10000000149,
+          "submittedAt": 41418.90000000037,
+          "virtualScroll": 37736.14450934431,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9072,
+            0,
+            0,
+            0,
+            0,
+            0.7979999999999999,
+            0,
+            0,
+            0,
+            0,
+            0.84,
+            0,
+            0,
+            -0.0645,
+            17.404514986714275,
+            1
+          ]
+        },
+        "fence": {
+          "id": 51,
+          "submittedAt": 41421.800000000745,
+          "observedAt": 48178.70000000112,
+          "previousPoll": 48128.70000000112,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0044.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 37736,
+            "timestamp": 1792948293.576585
+          },
+          "receivedHostMs": 49226.78163,
+          "domId": 51,
+          "glId": 51,
+          "pageCaptureMs": 48543.784912109375
+        }
+      },
+      {
+        "source": {
+          "id": 52,
+          "authoredAt": 41432.10000000149,
+          "sceneStartedAt": 41433,
+          "submittedAt": 41586.70000000112,
+          "virtualScroll": 39079.28131540998,
+          "glassMatrix": [
+            3.020806366296863,
+            0,
+            0,
+            0,
+            0,
+            3.1397625324725853,
+            0,
+            0,
+            0,
+            0,
+            3.020806366296863,
+            0,
+            -0.0009722512783479679,
+            -0.06461731573020288,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9072,
+            0,
+            0,
+            0,
+            0,
+            0.7979999999999999,
+            0,
+            0,
+            0,
+            0,
+            0.84,
+            0,
+            0,
+            -0.0645,
+            22.0182024779321,
+            1
+          ]
+        },
+        "fence": null,
+        "capture": {
+          "file": "frame-0045.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 39079,
+            "timestamp": 1792948294.526618
+          },
+          "receivedHostMs": 50179.898079,
+          "domId": 52,
+          "glId": 52,
+          "pageCaptureMs": 49493.81787109375
+        }
+      },
+      {
+        "source": {
+          "id": 53,
+          "authoredAt": 41599.70000000112,
+          "sceneStartedAt": 41601,
+          "submittedAt": 41603.60000000149,
+          "virtualScroll": 39178.69939940838,
+          "glassMatrix": [
+            3.020806366296863,
+            0,
+            0,
+            0,
+            0,
+            3.1397625324725853,
+            0,
+            0,
+            0,
+            0,
+            3.020806366296863,
+            0,
+            -0.0009722512783479679,
+            -0.06461731573020288,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9072,
+            0,
+            0,
+            0,
+            0,
+            0.7979999999999999,
+            0,
+            0,
+            0,
+            0,
+            0.84,
+            0,
+            0,
+            -0.0645,
+            22.378628860045623,
+            1
+          ]
+        },
+        "fence": {
+          "id": 53,
+          "submittedAt": 41605.5,
+          "observedAt": 50128.60000000149,
+          "previousPoll": 50078.70000000112,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0046.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 39179,
+            "timestamp": 1792948295.792157
+          },
+          "receivedHostMs": 51445.661371,
+          "domId": 53,
+          "glId": 53,
+          "pageCaptureMs": 50759.35693359375
+        }
+      },
+      {
+        "source": {
+          "id": 54,
+          "authoredAt": 41610.300000000745,
+          "sceneStartedAt": 41610.5,
+          "submittedAt": 41613.5,
+          "virtualScroll": 39184.55806298031,
+          "glassMatrix": [
+            3.020806366296863,
+            0,
+            0,
+            0,
+            0,
+            3.1397625324725853,
+            0,
+            0,
+            0,
+            0,
+            3.020806366296863,
+            0,
+            -0.0009722512783479679,
+            -0.06461731573020288,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9072,
+            0,
+            0,
+            0,
+            0,
+            0.7979999999999999,
+            0,
+            0,
+            0,
+            0,
+            0.84,
+            0,
+            0,
+            -0.0645,
+            22.399950013582256,
+            1
+          ]
+        },
+        "fence": {
+          "id": 54,
+          "submittedAt": 41614.300000000745,
+          "observedAt": 50678.70000000112,
+          "previousPoll": 50628.70000000112,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0047.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 39185,
+            "timestamp": 1792948296.069855
+          },
+          "receivedHostMs": 51712.658349,
+          "domId": 54,
+          "glId": 54,
+          "pageCaptureMs": 51037.054931640625
+        }
+      },
+      {
+        "source": {
+          "id": 55,
+          "authoredAt": 43882.800000000745,
+          "sceneStartedAt": 43883.300000000745,
+          "submittedAt": 47505.800000000745,
+          "virtualScroll": 40719.95035767491,
+          "glassMatrix": [
+            3.020806366296863,
+            0,
+            0,
+            0,
+            0,
+            3.1397625324725853,
+            0,
+            0,
+            0,
+            0,
+            3.020806366296863,
+            0,
+            -0.0009722512783479679,
+            -0.06461731573020288,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9072,
+            0,
+            0,
+            0,
+            0,
+            0.7979999999999999,
+            0,
+            0,
+            0,
+            0,
+            0.84,
+            0,
+            0,
+            -0.0645,
+            22.399950013582256,
+            1
+          ]
+        },
+        "fence": {
+          "id": 55,
+          "submittedAt": 47507,
+          "observedAt": 51478.60000000149,
+          "previousPoll": 51428.70000000112,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0052.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 40720,
+            "timestamp": 1792948296.546673
+          },
+          "receivedHostMs": 52188.279426,
+          "domId": 55,
+          "glId": 55,
+          "pageCaptureMs": 51513.873046875
+        }
+      },
+      {
+        "source": {
+          "id": 56,
+          "authoredAt": 47512.300000000745,
+          "sceneStartedAt": 47513.300000000745,
+          "submittedAt": 47515.60000000149,
+          "virtualScroll": 40733.44,
+          "glassMatrix": [
+            3.020806366296863,
+            0,
+            0,
+            0,
+            0,
+            3.1397625324725853,
+            0,
+            0,
+            0,
+            0,
+            3.020806366296863,
+            0,
+            -0.0009722512783479679,
+            -0.06461731573020288,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9072,
+            0,
+            0,
+            0,
+            0,
+            0.7979999999999999,
+            0,
+            0,
+            0,
+            0,
+            0.84,
+            0,
+            0,
+            -0.0645,
+            22.399950013582256,
+            1
+          ]
+        },
+        "fence": null,
+        "capture": {
+          "file": "frame-0053.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 1440,
+            "deviceHeight": 900,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 40733,
+            "timestamp": 1792948296.848643
+          },
+          "receivedHostMs": 52495.30844,
+          "domId": 56,
+          "glId": 56,
+          "pageCaptureMs": 51815.843017578125
+        }
+      }
+    ],
+    "finalResources": {
+      "geometries": 35,
+      "textures": 25,
+      "programs": 30
+    }
+  },
+  "390": {
+    "runs": [
+      {
+        "run": 0,
+        "start": 18013.5,
+        "end": 41539.300000000745
+      }
+    ],
+    "runSeconds": 23.525800000000746,
+    "recordingSeconds": 45.43628811836243,
+    "firstCaptureMs": 17995.239013671875,
+    "playingRenders": 41,
+    "capturedBlueIds": [
+      49,
+      50,
+      51,
+      52,
+      53
+    ],
+    "capturedMidglassIds": [
+      56
+    ],
+    "unobservedPlayingSourceIds": [
+      18,
+      30,
+      43,
+      47
+    ],
+    "captures": 133,
+    "validMatchingCodes": 133,
+    "errors": [],
+    "pendingAtEnd": [
+      {
+        "id": 157,
+        "submittedAt": 61032.10000000149,
+        "previousPoll": 63535.800000000745
+      },
+      {
+        "id": 160,
+        "submittedAt": 61572.5,
+        "previousPoll": 63535.70000000112
+      },
+      {
+        "id": 162,
+        "submittedAt": 61939.20000000112,
+        "previousPoll": 63535.70000000112
+      },
+      {
+        "id": 163,
+        "submittedAt": 61955.90000000037,
+        "previousPoll": 63535.70000000112
+      },
+      {
+        "id": 165,
+        "submittedAt": 62505.800000000745,
+        "previousPoll": 63535.70000000112
+      },
+      {
+        "id": 166,
+        "submittedAt": 62876.20000000112,
+        "previousPoll": 63535.70000000112
+      },
+      {
+        "id": 167,
+        "submittedAt": 63073.20000000112,
+        "previousPoll": 63535.70000000112
+      },
+      {
+        "id": 169,
+        "submittedAt": 63434.40000000037,
+        "previousPoll": 63535.70000000112
+      }
+    ],
+    "playingCallbackMs": {
+      "n": 41,
+      "min": 1.199999999254942,
+      "p50": 1.900000000372529,
+      "p95": 1912.8999999985099,
+      "max": 3076.5999999996275
+    },
+    "playingDispatchGapMs": {
+      "n": 40,
+      "min": 5.599999999627471,
+      "p50": 347.04999999981374,
+      "p95": 1362.4300000010041,
+      "max": 2286.2999999988824
+    },
+    "capturedImageReplacementGapMs": {
+      "n": 131,
+      "min": 3.6640625,
+      "p50": 197.968994140625,
+      "p95": 800.04345703125,
+      "max": 1539.03466796875
+    },
+    "correlatedExamples": [
+      {
+        "source": {
+          "id": 45,
+          "authoredAt": 29839.10000000149,
+          "sceneStartedAt": 29839.200000001118,
+          "submittedAt": 29840.10000000149,
+          "virtualScroll": 28617.632794421508,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        "fence": null,
+        "capture": {
+          "file": "frame-0039.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 28618,
+            "timestamp": 1792948361.410489
+          },
+          "receivedHostMs": 39092.033324,
+          "domId": 45,
+          "glId": 45,
+          "pageCaptureMs": 38411.089111328125
+        }
+      },
+      {
+        "source": {
+          "id": 46,
+          "authoredAt": 29879.60000000149,
+          "sceneStartedAt": 29879.700000001118,
+          "submittedAt": 29880.60000000149,
+          "virtualScroll": 28682.326978521967,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        "fence": null,
+        "capture": {
+          "file": "frame-0040.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 28682,
+            "timestamp": 1792948362.090163
+          },
+          "receivedHostMs": 39774.140797,
+          "domId": 46,
+          "glId": 46,
+          "pageCaptureMs": 39090.76318359375
+        }
+      },
+      {
+        "source": {
+          "id": 48,
+          "authoredAt": 31027.5,
+          "sceneStartedAt": 31027.60000000149,
+          "submittedAt": 31028.400000000373,
+          "virtualScroll": 30384.29206517412,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        "fence": {
+          "id": 48,
+          "submittedAt": 31029.10000000149,
+          "observedAt": 41526.90000000037,
+          "previousPoll": 37735.90000000037,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0041.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 30384,
+            "timestamp": 1792948363.365532
+          },
+          "receivedHostMs": 41047.07381,
+          "domId": 48,
+          "glId": 48,
+          "pageCaptureMs": 40366.132080078125
+        }
+      },
+      {
+        "source": {
+          "id": 49,
+          "authoredAt": 32360.700000001118,
+          "sceneStartedAt": 32360.800000000745,
+          "submittedAt": 33229.20000000112,
+          "virtualScroll": 32067.860614503552,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2.827411178031143,
+            1
+          ]
+        },
+        "fence": {
+          "id": 49,
+          "submittedAt": 33230.10000000149,
+          "observedAt": 41526.90000000037,
+          "previousPoll": 37735.90000000037,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0042.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 32068,
+            "timestamp": 1792948363.942406
+          },
+          "receivedHostMs": 41627.464134,
+          "domId": 49,
+          "glId": 49,
+          "pageCaptureMs": 40943.006103515625
+        }
+      },
+      {
+        "source": {
+          "id": 50,
+          "authoredAt": 33232.800000000745,
+          "sceneStartedAt": 33232.90000000037,
+          "submittedAt": 33234,
+          "virtualScroll": 33077.68877230988,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            6.876888620009414,
+            1
+          ]
+        },
+        "fence": null,
+        "capture": {
+          "file": "frame-0043.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 33078,
+            "timestamp": 1792948364.483616
+          },
+          "receivedHostMs": 42165.272031,
+          "domId": 50,
+          "glId": 50,
+          "pageCaptureMs": 41484.21630859375
+        }
+      },
+      {
+        "source": {
+          "id": 51,
+          "authoredAt": 33239,
+          "sceneStartedAt": 33239.20000000112,
+          "submittedAt": 33240.90000000037,
+          "virtualScroll": 33084.643403205395,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.9,
+            0,
+            0,
+            0,
+            0,
+            0.95,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            6.910185764091345,
+            1
+          ]
+        },
+        "fence": {
+          "id": 51,
+          "submittedAt": 33241.70000000112,
+          "observedAt": 42035.800000000745,
+          "previousPoll": 41985.800000000745,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0044.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 33085,
+            "timestamp": 1792948365.426214
+          },
+          "receivedHostMs": 43109.332156,
+          "domId": 51,
+          "glId": 51,
+          "pageCaptureMs": 42426.81396484375
+        }
+      },
+      {
+        "source": {
+          "id": 52,
+          "authoredAt": 33987.10000000149,
+          "sceneStartedAt": 33987.20000000112,
+          "submittedAt": 33988.10000000149,
+          "virtualScroll": 33890.623332633884,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.899609512129677,
+            0,
+            0,
+            0,
+            0,
+            0.9495878183591034,
+            0,
+            0,
+            0,
+            0,
+            0.99956612458853,
+            0,
+            0,
+            -0.0010386405862147516,
+            11.03375984720777,
+            1
+          ]
+        },
+        "fence": {
+          "id": 52,
+          "submittedAt": 33988.800000000745,
+          "observedAt": 42435.70000000112,
+          "previousPoll": 42385.800000000745,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0045.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 33891,
+            "timestamp": 1792948365.429878
+          },
+          "receivedHostMs": 43112.677802,
+          "domId": 52,
+          "glId": 52,
+          "pageCaptureMs": 42430.47802734375
+        }
+      },
+      {
+        "source": {
+          "id": 53,
+          "authoredAt": 34717.10000000149,
+          "sceneStartedAt": 34717.20000000112,
+          "submittedAt": 36997.60000000149,
+          "virtualScroll": 34596.3754194764,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.5653616555385017,
+            0,
+            0,
+            0,
+            0,
+            0.5967706364017517,
+            0,
+            0,
+            0,
+            0,
+            0.6281796172650018,
+            0,
+            0,
+            -0.04827357531495684,
+            7.790577518838476,
+            1
+          ]
+        },
+        "fence": null,
+        "capture": {
+          "file": "frame-0046.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 34596,
+            "timestamp": 1792948366.139298
+          },
+          "receivedHostMs": 43819.754805,
+          "domId": 53,
+          "glId": 53,
+          "pageCaptureMs": 43139.89794921875
+        }
+      },
+      {
+        "source": {
+          "id": 54,
+          "authoredAt": 37003.40000000037,
+          "sceneStartedAt": 37003.70000000112,
+          "submittedAt": 37005.20000000112,
+          "virtualScroll": 36056.21038264763,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.558,
+            0,
+            0,
+            0,
+            0,
+            0.589,
+            0,
+            0,
+            0,
+            0,
+            0.62,
+            0,
+            0,
+            -0.06450000000000013,
+            13.186596200137814,
+            1
+          ]
+        },
+        "fence": null,
+        "capture": {
+          "file": "frame-0047.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 36056,
+            "timestamp": 1792948366.948448
+          },
+          "receivedHostMs": 44631.931905,
+          "domId": 54,
+          "glId": 54,
+          "pageCaptureMs": 43949.048095703125
+        }
+      },
+      {
+        "source": {
+          "id": 55,
+          "authoredAt": 37010.60000000149,
+          "sceneStartedAt": 37010.70000000112,
+          "submittedAt": 37011.60000000149,
+          "virtualScroll": 36060.107510003836,
+          "glassMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.558,
+            0,
+            0,
+            0,
+            0,
+            0.589,
+            0,
+            0,
+            0,
+            0,
+            0.62,
+            0,
+            0,
+            -0.06450000000000013,
+            13.198968738043217,
+            1
+          ]
+        },
+        "fence": {
+          "id": 55,
+          "submittedAt": 37012.800000000745,
+          "observedAt": 43885.800000000745,
+          "previousPoll": 43835.800000000745,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0048.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 36060,
+            "timestamp": 1792948367.430369
+          },
+          "receivedHostMs": 45111.683759,
+          "domId": 55,
+          "glId": 55,
+          "pageCaptureMs": 44430.968994140625
+        }
+      },
+      {
+        "source": {
+          "id": 56,
+          "authoredAt": 37762.20000000112,
+          "sceneStartedAt": 37762.40000000037,
+          "submittedAt": 40837.800000000745,
+          "virtualScroll": 36515.73991041544,
+          "glassMatrix": [
+            1.1830864134048114,
+            0,
+            0,
+            0,
+            0,
+            1.5632698043701538,
+            0,
+            0,
+            0,
+            0,
+            1.1830864134048114,
+            0,
+            0.0009810176012186712,
+            -0.07948597012113097,
+            0,
+            1
+          ],
+          "blueMatrix": [
+            0.558,
+            0,
+            0,
+            0,
+            0,
+            0.589,
+            0,
+            0,
+            0,
+            0,
+            0.62,
+            0,
+            0,
+            -0.06450000000000013,
+            14.678971051820511,
+            1
+          ]
+        },
+        "fence": {
+          "id": 56,
+          "submittedAt": 40839.300000000745,
+          "observedAt": 44535.70000000112,
+          "previousPoll": 44485.800000000745,
+          "status": 37148,
+          "pollMs": 0
+        },
+        "capture": {
+          "file": "frame-0049.jpg",
+          "metadata": {
+            "offsetTop": 0,
+            "pageScaleFactor": 1,
+            "deviceWidth": 390,
+            "deviceHeight": 844,
+            "scrollOffsetX": 0,
+            "scrollOffsetY": 36516,
+            "timestamp": 1792948367.587815
+          },
+          "receivedHostMs": 45269.232583,
+          "domId": 56,
+          "glId": 56,
+          "pageCaptureMs": 44588.4150390625
+        }
+      }
+    ],
+    "finalResources": {
+      "geometries": 33,
+      "textures": 23,
+      "programs": 30
+    }
+  }
+}

@@ -1,0 +1,322 @@
+{
+  "accepted": false,
+  "productionCorrection": null,
+  "physicalGpuValidated": false,
+  "normalGatesPassed": false,
+  "softwareRenderer": "ANGLE Vulkan SwiftShader",
+  "entry": "0464dfa35c7d887eb08361d0671b5548543ca848",
+  "reasons": [
+    "Original normal desktop/mobile defaults and baseline-matched configurations fail.",
+    "Quality-preserving prepass/order candidates rejected; no implementation shipped.",
+    "Actual physical GPU unavailable; target procedure unexecuted."
+  ],
+  "gates": [
+    {
+      "name": "default-normal-1440",
+      "command": "node scripts/validate-goal-sequence.mjs",
+      "env": {
+        "GOAL_MOTION": "normal",
+        "GOAL_VIEWPORT_WIDTH": "1440"
+      },
+      "exit": 1,
+      "timedOut": false,
+      "seconds": 39.546,
+      "telemetry": {
+        "seconds": 24.048,
+        "playing": 154,
+        "shaft": 21,
+        "blue": 30,
+        "midglass": 0,
+        "uniqueBlueValues": 6,
+        "errors": [],
+        "failedAssets": []
+      }
+    },
+    {
+      "name": "default-normal-390",
+      "command": "node scripts/validate-goal-sequence.mjs",
+      "env": {
+        "GOAL_MOTION": "normal",
+        "GOAL_VIEWPORT_WIDTH": "390"
+      },
+      "exit": 1,
+      "timedOut": false,
+      "seconds": 38.989,
+      "telemetry": {
+        "seconds": 24.411,
+        "playing": 171,
+        "shaft": 30,
+        "blue": 17,
+        "midglass": 14,
+        "uniqueBlueValues": 2,
+        "errors": [],
+        "failedAssets": []
+      }
+    },
+    {
+      "name": "matched-normal-1440",
+      "command": "node scripts/validate-goal-sequence.mjs",
+      "env": {
+        "GOAL_MOTION": "normal",
+        "GOAL_VIEWPORT_WIDTH": "1440",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 1,
+      "timedOut": false,
+      "seconds": 55.599,
+      "telemetry": {
+        "seconds": 25.684,
+        "playing": 166,
+        "shaft": 20,
+        "blue": 41,
+        "midglass": 10,
+        "uniqueBlueValues": 3,
+        "errors": [],
+        "failedAssets": []
+      }
+    },
+    {
+      "name": "reduced-1440",
+      "command": "node scripts/validate-goal-sequence.mjs",
+      "env": {
+        "GOAL_MOTION": "reduce",
+        "GOAL_VIEWPORT_WIDTH": "1440",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 132.862
+    },
+    {
+      "name": "clock-1440",
+      "command": "node scripts/validate-playback-clock.mjs",
+      "env": {
+        "AUDIT_WIDTH": "1440",
+        "AUDIT_TAG": "gpu-isolation-clock",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 80.024
+    },
+    {
+      "name": "context-loss-1440",
+      "command": "node scripts/validate-context-loss.mjs",
+      "env": {
+        "AUDIT_WIDTH": "1440",
+        "AUDIT_TAG": "gpu-isolation-context-loss",
+        "AUDIT_FAILURE": "context-loss",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 24.191
+    },
+    {
+      "name": "webgl-1440",
+      "command": "node scripts/validate-context-loss.mjs",
+      "env": {
+        "AUDIT_WIDTH": "1440",
+        "AUDIT_TAG": "gpu-isolation-webgl",
+        "AUDIT_FAILURE": "webgl",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 4.284
+    },
+    {
+      "name": "astronaut-1440",
+      "command": "node scripts/validate-context-loss.mjs",
+      "env": {
+        "AUDIT_WIDTH": "1440",
+        "AUDIT_TAG": "gpu-isolation-astronaut",
+        "AUDIT_FAILURE": "astronaut",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 18.129
+    },
+    {
+      "name": "matched-normal-390",
+      "command": "node scripts/validate-goal-sequence.mjs",
+      "env": {
+        "GOAL_MOTION": "normal",
+        "GOAL_VIEWPORT_WIDTH": "390",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 1,
+      "timedOut": false,
+      "seconds": 47.213,
+      "telemetry": {
+        "seconds": 25.074,
+        "playing": 156,
+        "shaft": 24,
+        "blue": 16,
+        "midglass": 12,
+        "uniqueBlueValues": 3,
+        "errors": [],
+        "failedAssets": []
+      }
+    },
+    {
+      "name": "reduced-390",
+      "command": "node scripts/validate-goal-sequence.mjs",
+      "env": {
+        "GOAL_MOTION": "reduce",
+        "GOAL_VIEWPORT_WIDTH": "390",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 87.283
+    },
+    {
+      "name": "clock-390",
+      "command": "node scripts/validate-playback-clock.mjs",
+      "env": {
+        "AUDIT_WIDTH": "390",
+        "AUDIT_TAG": "gpu-isolation-clock",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 71.322
+    },
+    {
+      "name": "context-loss-390",
+      "command": "node scripts/validate-context-loss.mjs",
+      "env": {
+        "AUDIT_WIDTH": "390",
+        "AUDIT_TAG": "gpu-isolation-context-loss",
+        "AUDIT_FAILURE": "context-loss",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 20.424
+    },
+    {
+      "name": "webgl-390",
+      "command": "node scripts/validate-context-loss.mjs",
+      "env": {
+        "AUDIT_WIDTH": "390",
+        "AUDIT_TAG": "gpu-isolation-webgl",
+        "AUDIT_FAILURE": "webgl",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 3.775
+    },
+    {
+      "name": "astronaut-390",
+      "command": "node scripts/validate-context-loss.mjs",
+      "env": {
+        "AUDIT_WIDTH": "390",
+        "AUDIT_TAG": "gpu-isolation-astronaut",
+        "AUDIT_FAILURE": "astronaut",
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 15.639
+    },
+    {
+      "name": "goal-units",
+      "command": "node scripts/test-goal-sequence.mjs",
+      "env": {
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 0.971
+    },
+    {
+      "name": "home-units",
+      "command": "node scripts/test-home-motion.mjs",
+      "env": {
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 0.516
+    },
+    {
+      "name": "assets",
+      "command": "node scripts/test-asset-route.mjs",
+      "env": {
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 0.616
+    },
+    {
+      "name": "audit",
+      "command": "npm audit --json",
+      "env": {
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 0.515
+    },
+    {
+      "name": "audit-production",
+      "command": "npm audit --omit=dev --json",
+      "env": {
+        "CHROMIUM_EXECUTABLE_PATH": "/home/user/Website-Cloner-JP/temp/chromium-multiprocess.py",
+        "CHROMIUM_MULTIPROCESS": "1"
+      },
+      "exit": 0,
+      "timedOut": false,
+      "seconds": 0.516
+    }
+  ],
+  "videoValidation": [
+    {
+      "width": 1440,
+      "sourceImages": 107,
+      "sourceSeconds": 48.350247859954834,
+      "bytes": 1715781,
+      "previewSize": [
+        960,
+        600
+      ],
+      "decodeExit": 0,
+      "decodeStderr": "",
+      "encoding": "VFR timestamp-paced, no interpolation; JPEG demux timebase quantization; final <=0.2s encoding bookend; CRF26 lossy preview"
+    },
+    {
+      "width": 390,
+      "sourceImages": 133,
+      "sourceSeconds": 45.43628811836243,
+      "bytes": 1807770,
+      "previewSize": [
+        390,
+        844
+      ],
+      "decodeExit": 0,
+      "decodeStderr": "",
+      "encoding": "VFR timestamp-paced, no interpolation; JPEG demux timebase quantization; final <=0.2s encoding bookend; CRF26 lossy preview"
+    }
+  ]
+}

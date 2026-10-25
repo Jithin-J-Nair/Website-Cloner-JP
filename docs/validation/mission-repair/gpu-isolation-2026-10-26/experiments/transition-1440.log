@@ -1,0 +1,12 @@
+{"phase":"solar-wide","variant":"baseline","repeat":0,"cpu":1.300000000745058,"fence":425.40000000037253,"gpu":415.05142}
+{"phase":"solar-wide","variant":"discard","repeat":0,"cpu":2.5,"fence":42.29999999888241,"gpu":15.971028999999998}
+{"phase":"solar-wide","variant":"discard","repeat":1,"cpu":3,"fence":32,"gpu":17.130590999999995}
+{"phase":"solar-wide","variant":"baseline","repeat":1,"cpu":1.5,"fence":560.4000000003725,"gpu":545.187964}
+{"phase":"solar-wide","variant":"baseline","repeat":2,"cpu":1.400000000372529,"fence":456.2999999988824,"gpu":438.25963300000006}
+{"phase":"solar-wide","variant":"discard","repeat":2,"cpu":1.299999998882413,"fence":30.59999999962747,"gpu":12.819384999999999}
+{"phase":"white-transition","variant":"baseline","repeat":0,"cpu":1.200000001117587,"fence":1186.7999999988824,"gpu":1170.867165}
+{"phase":"white-transition","variant":"discard","repeat":0,"cpu":1.3999999985098839,"fence":132.30000000074506,"gpu":120.77487699999999}
+{"phase":"white-transition","variant":"discard","repeat":1,"cpu":1.300000000745058,"fence":111.59999999962747,"gpu":88.722787}
+{"phase":"white-transition","variant":"baseline","repeat":1,"cpu":1.400000000372529,"fence":1327.7999999988824,"gpu":1315.2664529999997}
+{"phase":"white-transition","variant":"baseline","repeat":2,"cpu":1.400000000372529,"fence":1310.4000000003725,"gpu":1289.8958790000001}
+{"phase":"white-transition","variant":"discard","repeat":2,"cpu":1.299999998882413,"fence":101.5,"gpu":83.62567800000001}

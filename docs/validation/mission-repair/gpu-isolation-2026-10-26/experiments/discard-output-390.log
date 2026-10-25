@@ -1,0 +1,10 @@
+{"phase":"blue-entry","variant":"baseline","repeat":0,"cpu":2,"fence":396.1000000014901,"gpu":392.8280690000001}
+{"phase":"blue-entry","variant":"discard","repeat":0,"cpu":1.199999999254942,"fence":151.90000000037253,"gpu":144.72290999999998}
+{"phase":"blue","variant":"baseline","repeat":0,"cpu":1.1000000014901161,"fence":405.69999999925494,"gpu":396.024423}
+{"phase":"blue","variant":"discard","repeat":0,"cpu":1.1000000014901161,"fence":151.7999999988824,"gpu":143.00133599999998}
+{"phase":"glass","variant":"baseline","repeat":0,"cpu":1.099999999627471,"fence":293.90000000037253,"gpu":285.4744840000001}
+{"phase":"glass","variant":"discard","repeat":0,"cpu":1.700000001117587,"fence":131.7999999988824,"gpu":125.82540899999998}
+{"phase":"fracture","variant":"baseline","repeat":0,"cpu":1.199999999254942,"fence":435.5,"gpu":421.5654820000001}
+{"phase":"fracture","variant":"discard","repeat":0,"cpu":1.200000001117587,"fence":243,"gpu":237.539165}
+{"phase":"shatter-exit","variant":"baseline","repeat":0,"cpu":1.3999999985098839,"fence":395,"gpu":389.51824}
+{"phase":"shatter-exit","variant":"discard","repeat":0,"cpu":1.099999999627471,"fence":286,"gpu":279.252189}
