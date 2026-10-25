@@ -1,0 +1,45 @@
+## UI Pro Max Stack Guidelines
+**Stack:** threejs | **Query:** gpu dispose render loop
+**Source:** stacks/threejs.csv | **Found:** 3 results
+
+### Result 1
+- **Category:** Geometry
+- **Guideline:** dispose on Scene Removal
+- **Description:** Call geometry.dispose() and material.dispose() and texture.dispose() for every texture map when removing objects from the scene. Three.js never releases GPU resources automatically — they stay in VRAM until explicitly freed.
+- **Do:** Dispose of geometry + material + every texture map before calling scene.remove()
+- **Don't:** Call scene.remove() alone without any dispose calls
+- **Code Good:** function removeMesh(mesh) { scene.remove(mesh); mesh.geometry.dispose(); if (mesh.material.map) mesh.material.map.dispose(); if (mesh.material.normalMap) mesh.material.normalMap.dispose(); mesh.material.dispose(); }
+- **Code Bad:** scene.remove(mesh); // geometry and all texture maps stay in GPU VRAM forever
+- **Severity:** Critical
+- **Docs URL:** https://threejs.org/docs/#api/en/core/BufferGeometry.dispose
+- **Applies To:** threejs 0.185.1
+- **Status:** active
+- **Verified At:** 2026-08-13
+
+### Result 2
+- **Category:** Materials
+- **Guideline:** Dispose Textures Explicitly
+- **Description:** Textures are the single largest consumer of GPU VRAM in most Three.js scenes. Call texture.dispose() when switching scenes or removing objects — Three.js does not garbage-collect GPU resources automatically.
+- **Do:** Track all loaded textures and call dispose() on each one during scene teardown or on object removal
+- **Don't:** Load textures without any cleanup path — they persist in VRAM for the entire page lifetime
+- **Code Good:** const tex = new THREE.TextureLoader().load('img.jpg'); mesh.material.map = tex; // on teardown: tex.dispose(); mesh.material.dispose();
+- **Code Bad:** const tex = new THREE.TextureLoader().load('img.jpg'); scene.remove(mesh); // tex occupies GPU VRAM until page reload
+- **Severity:** High
+- **Docs URL:** https://threejs.org/docs/#api/en/textures/Texture.dispose
+- **Applies To:** threejs 0.185.1
+- **Status:** active
+- **Verified At:** 2026-08-13
+
+### Result 3
+- **Category:** Animation
+- **Guideline:** Pause Render Loop on Tab Hidden
+- **Description:** Use renderer.setAnimationLoop() as the loop driver so you can pass null to pause and a function to resume. Continuous rendering in a hidden tab wastes CPU GPU and battery with no user benefit.
+- **Do:** Use renderer.setAnimationLoop(animate) to drive the loop; pass null to pause on visibilitychange
+- **Don't:** Drive with internal requestAnimationFrame and never stop the loop when the tab is hidden
+- **Code Good:** const timer = new THREE.Timer(); timer.connect(document); // resets on tab return so the first delta after resume is not huge renderer.setAnimationLoop(animate); // use setAnimationLoop as the driver — not requestAnimationFrame inside animate function animate(timestamp) { timer.update(timestamp); const dt = timer.getDelta(); renderer.render(scene, camera); } document.addEventListener('visibilitychange', () => { if (document.hidden) renderer.setAnimationLoop(null); else renderer.setAnimationLoop(animate); });
+- **Code Bad:** function animate() { requestAnimationFrame(animate); // self-referencing RAF cannot be stopped externally renderer.render(scene, camera); } animate(); // runs forever in background tab — drains battery
+- **Severity:** High
+- **Docs URL:** https://threejs.org/docs/#api/en/renderers/WebGLRenderer.setAnimationLoop
+- **Applies To:** threejs 0.185.1
+- **Status:** active
+- **Verified At:** 2026-09-26

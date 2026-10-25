@@ -1,0 +1,123 @@
+{
+  "viewport": {
+    "width": 3840,
+    "height": 2160
+  },
+  "reduced": true,
+  "touch": false,
+  "errors": [],
+  "failedAssets": [],
+  "states": [],
+  "viewportMetrics": {
+    "width": 3840,
+    "height": 2160,
+    "visualWidth": 3840,
+    "visualHeight": 2160
+  },
+  "solar": {
+    "telemetry": {
+      "glbLoaded": true,
+      "glbError": null,
+      "qualityTier": "desktop",
+      "renderWidth": 3840,
+      "renderHeight": 2160,
+      "pixelRatio": 1,
+      "textureMaxDim": 2048,
+      "drawCalls": 6,
+      "triangles": 13241,
+      "lastFrameMs": 1.8,
+      "renderCount": 2,
+      "resources": {
+        "geometries": 14,
+        "textures": 15,
+        "programs": 10
+      },
+      "gpuTiming": {
+        "enabled": false,
+        "lastMs": null,
+        "phase": "",
+        "samples": 0,
+        "disjoints": 0
+      },
+      "solar": {
+        "x": -0.4069862409263728,
+        "y": 1.4645476651065967,
+        "facing": 0.5495116492913108,
+        "visibility": 0.40261084367121713,
+        "occlusion": 1,
+        "focalScale": 0.9992862059131066
+      },
+      "emergenceProgress": 0.8,
+      "portalStencilActive": false,
+      "fallbackVisible": false,
+      "sceneState": {
+        "tunnelProgress": 0,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 0,
+        "astronautMatrix": [
+          0.18147938241376982,
+          0.02175577405946253,
+          -0.9156445397539906,
+          0,
+          0.010549246067473643,
+          0.9333342556419505,
+          0.024266927704203665,
+          0,
+          0.9158422081852484,
+          -0.015061761778317057,
+          0.18116069155865092,
+          0,
+          0.05659018317554014,
+          -0.5944913671162755,
+          0.9363434209656973,
+          1
+        ],
+        "cameraMatrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0.9999292690389135,
+          -0.011893566298805894,
+          0,
+          0,
+          0.011893566298805894,
+          0.9999292690389135,
+          0,
+          0,
+          0,
+          3.3031745624668076,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": true
+      },
+      "playback": {
+        "state": "completed",
+        "progress": 0,
+        "virtualScroll": 23914,
+        "activation": 18813.344,
+        "end": 96237.94,
+        "runs": 0
+      }
+    },
+    "canvasSize": [
+      3840,
+      2160
+    ],
+    "drawingBuffer": [
+      3840,
+      2160
+    ],
+    "webglError": 0
+  }
+}

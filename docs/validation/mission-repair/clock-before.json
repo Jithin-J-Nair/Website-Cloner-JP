@@ -1,0 +1,37 @@
+{
+  "errors": [],
+  "issues": [
+    "Paused cinematic continues submitting identical GPU draws",
+    "Visible frame stall is discarded by cinematic clock (slow motion)"
+  ],
+  "pause": {
+    "before": {
+      "draws": 300,
+      "progress": 0.005111111111111111
+    },
+    "after": {
+      "draws": 309,
+      "progress": 0.005111111111111111
+    }
+  },
+  "stall": {
+    "before": 0.01622222222222222,
+    "blockedMs": 650,
+    "after": 0.027333333333333334,
+    "advancedSeconds": 0.25000000000000006
+  },
+  "completion": {
+    "wallSeconds": 74.391,
+    "authoredSeconds": 22.5,
+    "includesDeliberatePause": true,
+    "deliberateMainThreadStallMs": 650,
+    "final": {
+      "state": "completed",
+      "progress": 1,
+      "virtualScroll": 40733.44,
+      "activation": 8431.56,
+      "end": 40733.44,
+      "runs": 1
+    }
+  }
+}

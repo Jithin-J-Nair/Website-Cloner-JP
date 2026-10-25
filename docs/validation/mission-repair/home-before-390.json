@@ -1,0 +1,3371 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "reduced": false,
+  "errors": [],
+  "warnings": [],
+  "failed": [],
+  "issues": [
+    "Featured pointercancel leaves a displaced thumbnail",
+    "Featured touch pointer applies desktop parallax",
+    "Featured reduced-motion change retains inline parallax"
+  ],
+  "states": [
+    {
+      "name": "hero-initial",
+      "y": 0,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 0,
+        "triangles": 0,
+        "lastFrameMs": 0,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": 0,
+          "y": 0,
+          "facing": 0,
+          "visibility": 0,
+          "occlusion": 1,
+          "focalScale": 1
+        },
+        "emergenceProgress": 0,
+        "portalStencilActive": true,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cameraMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "trussLoaded": false,
+          "shardsLoaded": false,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "armed",
+          "progress": 0,
+          "virtualScroll": 0,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "hero-hover",
+      "y": 0,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 0,
+        "triangles": 0,
+        "lastFrameMs": 0,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": 0,
+          "y": 0,
+          "facing": 0,
+          "visibility": 0,
+          "occlusion": 1,
+          "focalScale": 1
+        },
+        "emergenceProgress": 0,
+        "portalStencilActive": true,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cameraMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "trussLoaded": false,
+          "shardsLoaded": false,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "armed",
+          "progress": 0,
+          "virtualScroll": 0,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "reel-small",
+      "y": 743,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 0,
+        "triangles": 0,
+        "lastFrameMs": 0,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": 0,
+          "y": 0,
+          "facing": 0,
+          "visibility": 0,
+          "occlusion": 1,
+          "focalScale": 1
+        },
+        "emergenceProgress": 0,
+        "portalStencilActive": true,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cameraMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "trussLoaded": false,
+          "shardsLoaded": false,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 743,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "reel-expanded",
+      "y": 1435,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 0,
+        "triangles": 0,
+        "lastFrameMs": 0,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": 0,
+          "y": 0,
+          "facing": 0,
+          "visibility": 0,
+          "occlusion": 1,
+          "focalScale": 1
+        },
+        "emergenceProgress": 0,
+        "portalStencilActive": true,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cameraMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "trussLoaded": false,
+          "shardsLoaded": false,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 1435,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "reel-reverse",
+      "y": 743,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 0,
+        "triangles": 0,
+        "lastFrameMs": 0,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": 0,
+          "y": 0,
+          "facing": 0,
+          "visibility": 0,
+          "occlusion": 1,
+          "focalScale": 1
+        },
+        "emergenceProgress": 0,
+        "portalStencilActive": true,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cameraMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "trussLoaded": false,
+          "shardsLoaded": false,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 743,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "featured",
+      "y": 2298,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 0,
+        "triangles": 0,
+        "lastFrameMs": 0,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": 0,
+          "y": 0,
+          "facing": 0,
+          "visibility": 0,
+          "occlusion": 1,
+          "focalScale": 1
+        },
+        "emergenceProgress": 0,
+        "portalStencilActive": true,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "cameraMatrix": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "trussLoaded": false,
+          "shardsLoaded": false,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 2298,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "solar-6",
+      "y": 9330,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 6,
+        "triangles": 13241,
+        "lastFrameMs": 0.8,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 0.6401,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            1.0220179019178046,
+            0.003931626753206404,
+            0.06551283243708397,
+            0,
+            -0.0025428678153706905,
+            1.0238883070678473,
+            -0.021777263747737308,
+            0,
+            -0.06558142058639414,
+            0.021569833196815255,
+            1.021793423502549,
+            0,
+            -0.0005041458659087781,
+            -0.5288278634963941,
+            0.9727978272711091,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.9999136128033345,
+            -0.013144083482057046,
+            0,
+            0,
+            0.013144083482057046,
+            0.9999136128033345,
+            0,
+            0,
+            0,
+            3.042931412200216,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": true
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 9330,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "solar-7",
+      "y": 9654,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 6,
+        "triangles": 13241,
+        "lastFrameMs": 0.8,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.6108386029005684,
+          "y": 1.3602218704733988,
+          "facing": 0.5268672629755248,
+          "visibility": 0.1492326783849647,
+          "occlusion": 1,
+          "focalScale": 0.9125146478879639
+        },
+        "emergenceProgress": 0.72,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0.8639662958871392,
+            -0.019944323667138296,
+            -0.4786556845495469,
+            0,
+            0.03820034584385169,
+            0.9867688422201658,
+            0.02783498568281345,
+            0,
+            0.4775455726687716,
+            -0.0428518004757412,
+            0.8637480825145263,
+            0,
+            0.010247957977833386,
+            -0.5481952214638165,
+            0.8837687940873634,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.9999164963291473,
+            -0.012922862254255978,
+            0,
+            0,
+            0.012922862254255978,
+            0.9999164963291473,
+            0,
+            0,
+            0,
+            3.1447636303289617,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": true
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 9654,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "solar-8",
+      "y": 9978,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 6,
+        "triangles": 13241,
+        "lastFrameMs": 0.8,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.388494984560684,
+          "y": 1.2984331785275545,
+          "facing": 0.5495309134042629,
+          "visibility": 0.19198112819002514,
+          "occlusion": 1,
+          "focalScale": 0.9050944361221235
+        },
+        "emergenceProgress": 0.8,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0.1787056934946244,
+            0.02182533381805983,
+            -0.916151503272522,
+            0,
+            0.009258046268772361,
+            0.933317741121845,
+            0.024040168856893345,
+            0,
+            0.9163646712548761,
+            -0.013685610805255587,
+            0.17842124415269742,
+            0,
+            0.01885472284681409,
+            -0.5483772994653526,
+            0.7395142974854989,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.9999292913612221,
+            -0.011891689444486668,
+            0,
+            0,
+            0.011891689444486668,
+            0.9999292913612221,
+            0,
+            0,
+            0,
+            3.30330973790103,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": true
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 9978,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "solar-9",
+      "y": 9654,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 6,
+        "triangles": 13241,
+        "lastFrameMs": 1,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.6108386029005684,
+          "y": 1.3602218704733988,
+          "facing": 0.5268672629755248,
+          "visibility": 0.1492326783849647,
+          "occlusion": 1,
+          "focalScale": 0.9125146478879639
+        },
+        "emergenceProgress": 0.72,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0.8659176891349185,
+            0.012366429897078899,
+            -0.4753739873845876,
+            0,
+            0.0037605351930409202,
+            0.9873571383889979,
+            0.032535218985434,
+            0,
+            0.4755199415854012,
+            -0.030327438252659548,
+            0.8653946108398911,
+            0,
+            0.010247957977833386,
+            -0.5516808308162233,
+            0.8837687940873634,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.9999164963291473,
+            -0.012922862254255978,
+            0,
+            0,
+            0.012922862254255978,
+            0.9999164963291473,
+            0,
+            0,
+            0,
+            3.1447636303289617,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": true
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 9654,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "solar-10",
+      "y": 9330,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 6,
+        "triangles": 13241,
+        "lastFrameMs": 0.7,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 0.6401,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            1.0226757150973005,
+            0.013137815290723269,
+            0.05281818155653417,
+            0,
+            -0.013621437012991233,
+            1.0239925684268225,
+            0.00903642648768354,
+            0,
+            -0.05269553061933508,
+            -0.009726168791103416,
+            1.0227201784636504,
+            0,
+            -0.0005041458659087781,
+            -0.5396678470105551,
+            0.9727978272711091,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.9999136128033345,
+            -0.013144083482057046,
+            0,
+            0,
+            0.013144083482057046,
+            0.9999136128033345,
+            0,
+            0,
+            0,
+            3.042931412200216,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": true
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 9330,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "tunnel-0.16",
+      "y": 14724,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 10,
+        "triangles": 143545,
+        "lastFrameMs": 0.7,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.1599996747808836,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 14.180708941930884,
+          "astronautMatrix": [
+            0.5013632876918899,
+            0.10035626209876715,
+            0.2737945843413329,
+            0,
+            -0.13037907395807022,
+            -0.40996351614785465,
+            0.3890131263901313,
+            0,
+            0.2608374030520082,
+            -0.3978172144183202,
+            -0.3318212065010809,
+            0,
+            -0.031241688429687765,
+            -0.1535446027470448,
+            -1.1619997913178879,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 2,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 14724,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "tunnel-0.28",
+      "y": 17676,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 10,
+        "triangles": 143545,
+        "lastFrameMs": 0.7,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.2800055287249784,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 24.816781099200046,
+          "astronautMatrix": [
+            0.578902237516595,
+            -0.034550412408131975,
+            0.008858239142620728,
+            0,
+            -0.033833455059866895,
+            -0.4863235407514154,
+            0.31423671177906387,
+            0,
+            -0.011291444415654946,
+            -0.31415869033568766,
+            -0.4874185271094788,
+            0,
+            -0.1260459193118875,
+            -0.1317419682415732,
+            -1.260005482696847,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 2,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 17676,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "tunnel-0.42",
+      "y": 21120,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 10,
+        "triangles": 143545,
+        "lastFrameMs": 0.7,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.4200123583264224,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 37.225531949347406,
+          "astronautMatrix": [
+            0.5799999999158502,
+            -0.0000013971723856191161,
+            -0.000009780681384146866,
+            0,
+            0.0000051864620717300056,
+            -0.445640752582726,
+            0.37122004203787584,
+            0,
+            -0.000008409187249184057,
+            -0.37122004207147763,
+            -0.44564075250557594,
+            0,
+            -0.0000019294580852147193,
+            -0.1198787410491899,
+            -1.4274339685463868,
+            1
+          ],
+          "cameraMatrix": [
+            0.9936738627828824,
+            0.11230429387225307,
+            0,
+            0,
+            -0.11230429387225307,
+            0.9936738627828824,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 2,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 21120,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "tunnel-0.57",
+      "y": 24810,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 18,
+        "triangles": 170019,
+        "lastFrameMs": 1.4,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.570019675756541,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 50.52062214593386,
+          "astronautMatrix": [
+            0.5799999999158472,
+            -7.344502481692589e-7,
+            -0.000009852805885642502,
+            0,
+            0.000004607667403870035,
+            -0.49153978433045753,
+            0.3078776386799413,
+            0,
+            -0.000008739942910711772,
+            -0.30787763871354423,
+            -0.4915397842533049,
+            0,
+            -0.0000019294580852147193,
+            -0.14816202575762719,
+            -1.6702653214338834,
+            1
+          ],
+          "cameraMatrix": [
+            0.7718178066399876,
+            0.6358437491659714,
+            0,
+            0,
+            -0.6358437491659714,
+            0.7718178066399876,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 2,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 24810,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "tunnel-0.88",
+      "y": 32435,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 9,
+        "triangles": 103161,
+        "lastFrameMs": 8.3,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.8799941460559052,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 77.99353888007253,
+          "astronautMatrix": [
+            -0.12729419124874822,
+            0.358036292470191,
+            0.0024904113168472694,
+            0,
+            0.35557313214187203,
+            0.1261022946962907,
+            0.04545282137721186,
+            0,
+            0.04199924491161768,
+            0.01755632497220773,
+            -0.3772636198738547,
+            0,
+            0.04,
+            -0.0012344359000844962,
+            -3.712161812409253,
+            1
+          ],
+          "cameraMatrix": [
+            0.9047516632199634,
+            0.4259394650659997,
+            0,
+            0,
+            -0.4259394650659997,
+            0.9047516632199634,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 4.119189918084597,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 32435,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "tunnel-0.97",
+      "y": 34649,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 10,
+        "triangles": 103163,
+        "lastFrameMs": 0.8,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.9699985365139763,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 85.9705929980244,
+          "astronautMatrix": [
+            0.03315344591648564,
+            0.37836519717668043,
+            0.011858608236819545,
+            0,
+            -0.3784488073998114,
+            0.03285166562888636,
+            0.009862466378563514,
+            0,
+            0.008794839482509507,
+            -0.012670660237712635,
+            0.3796868514547447,
+            0,
+            0.04,
+            -0.02306234747893711,
+            -3.474716864171927,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 16.28006270105136,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 34649,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "glass-0.3",
+      "y": 36054,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 10,
+        "triangles": 103163,
+        "lastFrameMs": 2.5,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 1,
+          "shatterProgress": 0.2999149479055911,
+          "waitProgress": 0,
+          "bakedFrame": 103.99574739527955,
+          "astronautMatrix": [
+            0.5347062106459783,
+            0.04429681806376077,
+            0.06610020810802798,
+            0,
+            -0.07900716108410198,
+            0.24222651791524294,
+            0.4767875415968492,
+            0,
+            0.00945061373294299,
+            -0.48125490463366966,
+            0.24606214656461917,
+            0,
+            0.029639078606018412,
+            -0.09442532193593062,
+            -2.39505440537441,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 24.80577559739741,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0.9125021330326224,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 36054,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "glass-0.5",
+      "y": 36430,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 11,
+        "triangles": 115193,
+        "lastFrameMs": 0.9,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 1,
+          "shatterProgress": 0.49978736976397964,
+          "waitProgress": 0,
+          "bakedFrame": 113.98936848819898,
+          "astronautMatrix": [
+            0.9019516516298529,
+            0.014763987698958573,
+            -0.036628984188043445,
+            0,
+            0.008683236358279132,
+            0.7427259785700292,
+            0.5131853094709371,
+            0,
+            0.038526084952525304,
+            -0.5130463771606425,
+            0.7418730318280974,
+            0,
+            0.006269945851531469,
+            -0.06336072273765768,
+            0.02949311790360959,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 26.76677101807365,
+          "glazingLayers": 0,
+          "glassOpacity": 1,
+          "crackProgress": 1,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 36430,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "glass-0.65",
+      "y": 36713,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 11,
+        "triangles": 115193,
+        "lastFrameMs": 1,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 1,
+          "shatterProgress": 0.65022326174782,
+          "waitProgress": 0,
+          "bakedFrame": 121.511163087391,
+          "astronautMatrix": [
+            0.9884501577880324,
+            0,
+            0.1515463149298389,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -0.1515463149298389,
+            0,
+            0.9884501577880324,
+            0,
+            0.006308351220877234,
+            -0.12333104035268651,
+            0.6799999999999997,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 28.29081466994799,
+          "glazingLayers": 0,
+          "glassOpacity": 1,
+          "crackProgress": 1,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 36713,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    },
+    {
+      "name": "contact",
+      "y": 38187,
+      "overflow": 0,
+      "goal": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "mobile",
+        "renderWidth": 390,
+        "renderHeight": 844,
+        "pixelRatio": 1,
+        "textureMaxDim": 1024,
+        "drawCalls": 8,
+        "triangles": 15253,
+        "lastFrameMs": 0.9,
+        "gpuTiming": {
+          "enabled": false,
+          "lastMs": null,
+          "phase": "",
+          "samples": 0,
+          "disjoints": 0
+        },
+        "solar": {
+          "x": -2.7754548842058457,
+          "y": 1.4054290880795421,
+          "facing": 0.5118940304520425,
+          "visibility": 0.1223778057330063,
+          "occlusion": 1,
+          "focalScale": 0.9184675207444599
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 1,
+          "shatterProgress": 1,
+          "waitProgress": 0.4434782608695652,
+          "bakedFrame": 204.63478260869564,
+          "astronautMatrix": [
+            0.999798883571716,
+            0,
+            0.020054735319875845,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -0.020054735319875845,
+            0,
+            0.999798883571716,
+            0,
+            0,
+            -0.17881284116175009,
+            1.24,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 1,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 38187,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 0
+        }
+      },
+      "focus": ""
+    }
+  ],
+  "frames": [
+    {
+      "file": "motion-0000.jpg",
+      "time": 1792931280.036674
+    },
+    {
+      "file": "motion-0001.jpg",
+      "time": 1792931280.08343
+    },
+    {
+      "file": "motion-0002.jpg",
+      "time": 1792931280.097105
+    },
+    {
+      "file": "motion-0003.jpg",
+      "time": 1792931280.198558
+    },
+    {
+      "file": "motion-0004.jpg",
+      "time": 1792931280.214708
+    },
+    {
+      "file": "motion-0005.jpg",
+      "time": 1792931280.22864
+    },
+    {
+      "file": "motion-0006.jpg",
+      "time": 1792931280.242055
+    },
+    {
+      "file": "motion-0007.jpg",
+      "time": 1792931281.505181
+    },
+    {
+      "file": "motion-0008.jpg",
+      "time": 1792931281.895344
+    },
+    {
+      "file": "motion-0009.jpg",
+      "time": 1792931282.29875
+    },
+    {
+      "file": "motion-0010.jpg",
+      "time": 1792931282.627562
+    },
+    {
+      "file": "motion-0011.jpg",
+      "time": 1792931284.340358
+    },
+    {
+      "file": "motion-0012.jpg",
+      "time": 1792931284.737986
+    },
+    {
+      "file": "motion-0013.jpg",
+      "time": 1792931285.069455
+    },
+    {
+      "file": "motion-0014.jpg",
+      "time": 1792931285.400243
+    },
+    {
+      "file": "motion-0015.jpg",
+      "time": 1792931285.795351
+    },
+    {
+      "file": "motion-0016.jpg",
+      "time": 1792931286.157698
+    },
+    {
+      "file": "motion-0017.jpg",
+      "time": 1792931286.506205
+    },
+    {
+      "file": "motion-0018.jpg",
+      "time": 1792931287.244409
+    },
+    {
+      "file": "motion-0019.jpg",
+      "time": 1792931287.574042
+    },
+    {
+      "file": "motion-0020.jpg",
+      "time": 1792931287.901251
+    },
+    {
+      "file": "motion-0021.jpg",
+      "time": 1792931291.243002
+    },
+    {
+      "file": "motion-0022.jpg",
+      "time": 1792931291.914772
+    },
+    {
+      "file": "motion-0023.jpg",
+      "time": 1792931292.325347
+    },
+    {
+      "file": "motion-0024.jpg",
+      "time": 1792931292.62456
+    },
+    {
+      "file": "motion-0025.jpg",
+      "time": 1792931292.964965
+    },
+    {
+      "file": "motion-0026.jpg",
+      "time": 1792931293.305259
+    },
+    {
+      "file": "motion-0027.jpg",
+      "time": 1792931293.947265
+    },
+    {
+      "file": "motion-0028.jpg",
+      "time": 1792931294.622155
+    },
+    {
+      "file": "motion-0029.jpg",
+      "time": 1792931294.935742
+    },
+    {
+      "file": "motion-0030.jpg",
+      "time": 1792931295.245533
+    },
+    {
+      "file": "motion-0031.jpg",
+      "time": 1792931298.150598
+    },
+    {
+      "file": "motion-0032.jpg",
+      "time": 1792931298.467789
+    },
+    {
+      "file": "motion-0033.jpg",
+      "time": 1792931299.084368
+    },
+    {
+      "file": "motion-0034.jpg",
+      "time": 1792931299.458412
+    },
+    {
+      "file": "motion-0035.jpg",
+      "time": 1792931299.990451
+    },
+    {
+      "file": "motion-0036.jpg",
+      "time": 1792931300.250197
+    },
+    {
+      "file": "motion-0037.jpg",
+      "time": 1792931300.550267
+    },
+    {
+      "file": "motion-0038.jpg",
+      "time": 1792931300.850587
+    },
+    {
+      "file": "motion-0039.jpg",
+      "time": 1792931301.16919
+    },
+    {
+      "file": "motion-0040.jpg",
+      "time": 1792931301.428257
+    },
+    {
+      "file": "motion-0041.jpg",
+      "time": 1792931303.893856
+    },
+    {
+      "file": "motion-0042.jpg",
+      "time": 1792931304.200022
+    },
+    {
+      "file": "motion-0043.jpg",
+      "time": 1792931304.753777
+    },
+    {
+      "file": "motion-0044.jpg",
+      "time": 1792931305.01658
+    },
+    {
+      "file": "motion-0045.jpg",
+      "time": 1792931305.591531
+    },
+    {
+      "file": "motion-0046.jpg",
+      "time": 1792931305.858244
+    },
+    {
+      "file": "motion-0047.jpg",
+      "time": 1792931306.119035
+    },
+    {
+      "file": "motion-0048.jpg",
+      "time": 1792931306.385154
+    },
+    {
+      "file": "motion-0049.jpg",
+      "time": 1792931306.95796
+    },
+    {
+      "file": "motion-0050.jpg",
+      "time": 1792931307.218115
+    },
+    {
+      "file": "motion-0051.jpg",
+      "time": 1792931310.154793
+    },
+    {
+      "file": "motion-0052.jpg",
+      "time": 1792931310.586003
+    },
+    {
+      "file": "motion-0053.jpg",
+      "time": 1792931310.894264
+    },
+    {
+      "file": "motion-0054.jpg",
+      "time": 1792931311.207584
+    },
+    {
+      "file": "motion-0055.jpg",
+      "time": 1792931311.878043
+    },
+    {
+      "file": "motion-0056.jpg",
+      "time": 1792931312.189414
+    },
+    {
+      "file": "motion-0057.jpg",
+      "time": 1792931312.506633
+    },
+    {
+      "file": "motion-0058.jpg",
+      "time": 1792931312.869994
+    },
+    {
+      "file": "motion-0059.jpg",
+      "time": 1792931313.489098
+    },
+    {
+      "file": "motion-0060.jpg",
+      "time": 1792931313.843176
+    },
+    {
+      "file": "motion-0061.jpg",
+      "time": 1792931317.447994
+    },
+    {
+      "file": "motion-0062.jpg",
+      "time": 1792931318.153878
+    },
+    {
+      "file": "motion-0063.jpg",
+      "time": 1792931318.483237
+    },
+    {
+      "file": "motion-0064.jpg",
+      "time": 1792931318.925133
+    },
+    {
+      "file": "motion-0065.jpg",
+      "time": 1792931319.239171
+    },
+    {
+      "file": "motion-0066.jpg",
+      "time": 1792931319.564024
+    },
+    {
+      "file": "motion-0067.jpg",
+      "time": 1792931319.903845
+    },
+    {
+      "file": "motion-0068.jpg",
+      "time": 1792931320.328971
+    },
+    {
+      "file": "motion-0069.jpg",
+      "time": 1792931321.228171
+    },
+    {
+      "file": "motion-0070.jpg",
+      "time": 1792931321.661798
+    },
+    {
+      "file": "motion-0071.jpg",
+      "time": 1792931325.58913
+    },
+    {
+      "file": "motion-0072.jpg",
+      "time": 1792931326.337952
+    },
+    {
+      "file": "motion-0073.jpg",
+      "time": 1792931326.69333
+    },
+    {
+      "file": "motion-0074.jpg",
+      "time": 1792931327.886562
+    },
+    {
+      "file": "motion-0075.jpg",
+      "time": 1792931327.894452
+    },
+    {
+      "file": "motion-0076.jpg",
+      "time": 1792931329.203647
+    },
+    {
+      "file": "motion-0077.jpg",
+      "time": 1792931329.790232
+    },
+    {
+      "file": "motion-0078.jpg",
+      "time": 1792931330.338374
+    },
+    {
+      "file": "motion-0079.jpg",
+      "time": 1792931331.044272
+    },
+    {
+      "file": "motion-0080.jpg",
+      "time": 1792931331.621525
+    },
+    {
+      "file": "motion-0081.jpg",
+      "time": 1792931332.901811
+    },
+    {
+      "file": "motion-0082.jpg",
+      "time": 1792931333.477954
+    },
+    {
+      "file": "motion-0083.jpg",
+      "time": 1792931334.026941
+    },
+    {
+      "file": "motion-0084.jpg",
+      "time": 1792931337.060135
+    },
+    {
+      "file": "motion-0085.jpg",
+      "time": 1792931337.705908
+    },
+    {
+      "file": "motion-0086.jpg",
+      "time": 1792931339.620942
+    },
+    {
+      "file": "motion-0087.jpg",
+      "time": 1792931340.82454
+    },
+    {
+      "file": "motion-0088.jpg",
+      "time": 1792931341.402223
+    },
+    {
+      "file": "motion-0089.jpg",
+      "time": 1792931342.452634
+    },
+    {
+      "file": "motion-0090.jpg",
+      "time": 1792931343.000347
+    },
+    {
+      "file": "motion-0091.jpg",
+      "time": 1792931345.211538
+    },
+    {
+      "file": "motion-0092.jpg",
+      "time": 1792931345.777998
+    },
+    {
+      "file": "motion-0093.jpg",
+      "time": 1792931347.043739
+    },
+    {
+      "file": "motion-0094.jpg",
+      "time": 1792931348.827564
+    },
+    {
+      "file": "motion-0095.jpg",
+      "time": 1792931349.488672
+    },
+    {
+      "file": "motion-0096.jpg",
+      "time": 1792931350.571019
+    },
+    {
+      "file": "motion-0097.jpg",
+      "time": 1792931351.694291
+    },
+    {
+      "file": "motion-0098.jpg",
+      "time": 1792931352.260095
+    },
+    {
+      "file": "motion-0099.jpg",
+      "time": 1792931353.413155
+    },
+    {
+      "file": "motion-0100.jpg",
+      "time": 1792931353.951735
+    },
+    {
+      "file": "motion-0101.jpg",
+      "time": 1792931356.82923
+    },
+    {
+      "file": "motion-0102.jpg",
+      "time": 1792931358.181455
+    },
+    {
+      "file": "motion-0103.jpg",
+      "time": 1792931358.193433
+    },
+    {
+      "file": "motion-0104.jpg",
+      "time": 1792931361.566101
+    },
+    {
+      "file": "motion-0105.jpg",
+      "time": 1792931362.736012
+    },
+    {
+      "file": "motion-0106.jpg",
+      "time": 1792931363.883119
+    },
+    {
+      "file": "motion-0107.jpg",
+      "time": 1792931365.880487
+    },
+    {
+      "file": "motion-0108.jpg",
+      "time": 1792931366.551293
+    },
+    {
+      "file": "motion-0109.jpg",
+      "time": 1792931367.292877
+    },
+    {
+      "file": "motion-0110.jpg",
+      "time": 1792931367.975957
+    },
+    {
+      "file": "motion-0111.jpg",
+      "time": 1792931369.803082
+    },
+    {
+      "file": "motion-0112.jpg",
+      "time": 1792931370.41333
+    },
+    {
+      "file": "motion-0113.jpg",
+      "time": 1792931371.055852
+    },
+    {
+      "file": "motion-0114.jpg",
+      "time": 1792931374.792458
+    },
+    {
+      "file": "motion-0115.jpg",
+      "time": 1792931375.522965
+    },
+    {
+      "file": "motion-0116.jpg",
+      "time": 1792931376.920589
+    },
+    {
+      "file": "motion-0117.jpg",
+      "time": 1792931379.030841
+    },
+    {
+      "file": "motion-0118.jpg",
+      "time": 1792931380.537773
+    },
+    {
+      "file": "motion-0119.jpg",
+      "time": 1792931381.295056
+    },
+    {
+      "file": "motion-0120.jpg",
+      "time": 1792931382.916917
+    },
+    {
+      "file": "motion-0121.jpg",
+      "time": 1792931384.380886
+    },
+    {
+      "file": "motion-0122.jpg",
+      "time": 1792931385.252563
+    },
+    {
+      "file": "motion-0123.jpg",
+      "time": 1792931385.994367
+    },
+    {
+      "file": "motion-0124.jpg",
+      "time": 1792931388.259581
+    },
+    {
+      "file": "motion-0125.jpg",
+      "time": 1792931389.164759
+    },
+    {
+      "file": "motion-0126.jpg",
+      "time": 1792931390.706258
+    },
+    {
+      "file": "motion-0127.jpg",
+      "time": 1792931392.199758
+    },
+    {
+      "file": "motion-0128.jpg",
+      "time": 1792931393.727267
+    },
+    {
+      "file": "motion-0129.jpg",
+      "time": 1792931395.246722
+    },
+    {
+      "file": "motion-0130.jpg",
+      "time": 1792931396.77697
+    },
+    {
+      "file": "motion-0131.jpg",
+      "time": 1792931398.310056
+    },
+    {
+      "file": "motion-0132.jpg",
+      "time": 1792931399.044786
+    },
+    {
+      "file": "motion-0133.jpg",
+      "time": 1792931400.530272
+    },
+    {
+      "file": "motion-0134.jpg",
+      "time": 1792931403.658351
+    },
+    {
+      "file": "motion-0135.jpg",
+      "time": 1792931406.087121
+    },
+    {
+      "file": "motion-0136.jpg",
+      "time": 1792931406.85373
+    },
+    {
+      "file": "motion-0137.jpg",
+      "time": 1792931407.964347
+    },
+    {
+      "file": "motion-0138.jpg",
+      "time": 1792931408.46613
+    },
+    {
+      "file": "motion-0139.jpg",
+      "time": 1792931409.009508
+    },
+    {
+      "file": "motion-0140.jpg",
+      "time": 1792931409.534745
+    },
+    {
+      "file": "motion-0141.jpg",
+      "time": 1792931410.598145
+    },
+    {
+      "file": "motion-0142.jpg",
+      "time": 1792931411.042833
+    },
+    {
+      "file": "motion-0143.jpg",
+      "time": 1792931411.530973
+    },
+    {
+      "file": "motion-0144.jpg",
+      "time": 1792931413.036459
+    },
+    {
+      "file": "motion-0145.jpg",
+      "time": 1792931414.505171
+    },
+    {
+      "file": "motion-0146.jpg",
+      "time": 1792931414.989959
+    },
+    {
+      "file": "motion-0147.jpg",
+      "time": 1792931416.499061
+    },
+    {
+      "file": "motion-0148.jpg",
+      "time": 1792931417.464774
+    },
+    {
+      "file": "motion-0149.jpg",
+      "time": 1792931418.430822
+    },
+    {
+      "file": "motion-0150.jpg",
+      "time": 1792931419.392927
+    },
+    {
+      "file": "motion-0151.jpg",
+      "time": 1792931421.331221
+    },
+    {
+      "file": "motion-0152.jpg",
+      "time": 1792931421.932952
+    },
+    {
+      "file": "motion-0153.jpg",
+      "time": 1792931421.955289
+    },
+    {
+      "file": "motion-0154.jpg",
+      "time": 1792931423.535284
+    },
+    {
+      "file": "motion-0155.jpg",
+      "time": 1792931424.687729
+    },
+    {
+      "file": "motion-0156.jpg",
+      "time": 1792931425.11704
+    },
+    {
+      "file": "motion-0157.jpg",
+      "time": 1792931425.957967
+    },
+    {
+      "file": "motion-0158.jpg",
+      "time": 1792931426.76845
+    },
+    {
+      "file": "motion-0159.jpg",
+      "time": 1792931427.543658
+    },
+    {
+      "file": "motion-0160.jpg",
+      "time": 1792931428.362515
+    },
+    {
+      "file": "motion-0161.jpg",
+      "time": 1792931429.868391
+    },
+    {
+      "file": "motion-0162.jpg",
+      "time": 1792931430.267051
+    },
+    {
+      "file": "motion-0163.jpg",
+      "time": 1792931430.639267
+    },
+    {
+      "file": "motion-0164.jpg",
+      "time": 1792931431.376467
+    },
+    {
+      "file": "motion-0165.jpg",
+      "time": 1792931432.395051
+    },
+    {
+      "file": "motion-0166.jpg",
+      "time": 1792931433.124234
+    },
+    {
+      "file": "motion-0167.jpg",
+      "time": 1792931433.863382
+    },
+    {
+      "file": "motion-0168.jpg",
+      "time": 1792931435.036498
+    },
+    {
+      "file": "motion-0169.jpg",
+      "time": 1792931435.369382
+    },
+    {
+      "file": "motion-0170.jpg",
+      "time": 1792931436.050596
+    },
+    {
+      "file": "motion-0171.jpg",
+      "time": 1792931437.149515
+    },
+    {
+      "file": "motion-0172.jpg",
+      "time": 1792931437.898663
+    },
+    {
+      "file": "motion-0173.jpg",
+      "time": 1792931437.907228
+    },
+    {
+      "file": "motion-0174.jpg",
+      "time": 1792931438.629345
+    },
+    {
+      "file": "motion-0175.jpg",
+      "time": 1792931439.98433
+    },
+    {
+      "file": "motion-0176.jpg",
+      "time": 1792931440.63137
+    },
+    {
+      "file": "motion-0177.jpg",
+      "time": 1792931441.333719
+    },
+    {
+      "file": "motion-0178.jpg",
+      "time": 1792931442.364921
+    },
+    {
+      "file": "motion-0179.jpg",
+      "time": 1792931442.724528
+    },
+    {
+      "file": "motion-0180.jpg",
+      "time": 1792931443.796686
+    },
+    {
+      "file": "motion-0181.jpg",
+      "time": 1792931445.110256
+    },
+    {
+      "file": "motion-0182.jpg",
+      "time": 1792931445.544116
+    },
+    {
+      "file": "motion-0183.jpg",
+      "time": 1792931446.071416
+    },
+    {
+      "file": "motion-0184.jpg",
+      "time": 1792931446.485777
+    },
+    {
+      "file": "motion-0185.jpg",
+      "time": 1792931447.398159
+    },
+    {
+      "file": "motion-0186.jpg",
+      "time": 1792931447.801736
+    },
+    {
+      "file": "motion-0187.jpg",
+      "time": 1792931448.302752
+    },
+    {
+      "file": "motion-0188.jpg",
+      "time": 1792931449.696569
+    },
+    {
+      "file": "motion-0189.jpg",
+      "time": 1792931450.61953
+    },
+    {
+      "file": "motion-0190.jpg",
+      "time": 1792931451.459773
+    },
+    {
+      "file": "motion-0191.jpg",
+      "time": 1792931453.260904
+    },
+    {
+      "file": "motion-0192.jpg",
+      "time": 1792931453.685694
+    },
+    {
+      "file": "motion-0193.jpg",
+      "time": 1792931454.629767
+    },
+    {
+      "file": "motion-0194.jpg",
+      "time": 1792931455.556113
+    },
+    {
+      "file": "motion-0195.jpg",
+      "time": 1792931456.852015
+    },
+    {
+      "file": "motion-0196.jpg",
+      "time": 1792931457.260617
+    },
+    {
+      "file": "motion-0197.jpg",
+      "time": 1792931457.684657
+    },
+    {
+      "file": "motion-0198.jpg",
+      "time": 1792931459.240141
+    },
+    {
+      "file": "motion-0199.jpg",
+      "time": 1792931460.166561
+    }
+  ],
+  "cardCancel": {
+    "neutral": false,
+    "transform": "transform: scale(1.045) translate3d(-7.2px, -4.2px, 0px);"
+  },
+  "cardTouch": {
+    "neutral": false,
+    "transform": "transform: scale(1.045) translate3d(-7.2px, -4.2px, 0px);"
+  },
+  "cardReduced": {
+    "neutral": false,
+    "transform": "transform: scale(1.045) translate3d(-5.4px, -1.4px, 0px);"
+  },
+  "contact": {
+    "href": "mailto:business@lusion.co",
+    "name": "Let's worktogether!",
+    "focus": true,
+    "outline": "rgb(26, 47, 251) solid 2px",
+    "rect": {
+      "x": 56.578125,
+      "y": 421.734375,
+      "width": 276.828125,
+      "height": 131.46875,
+      "top": 421.734375,
+      "right": 333.40625,
+      "bottom": 553.203125,
+      "left": 56.578125
+    },
+    "nextFocus": {
+      "id": "end-bottom",
+      "name": "↓CONTINUE TO SCROLLCONTINUE TO SCROLL↓",
+      "outline": "rgb(26, 47, 251) solid 2px"
+    }
+  },
+  "metrics": {
+    "shifts": [
+      {
+        "value": 0.00017353892566308852,
+        "time": 68964.40000000037
+      },
+      {
+        "value": 0.0010742545055573538,
+        "time": 77796.80000000075
+      },
+      {
+        "value": 0.0008511168164851143,
+        "time": 86612.5
+      },
+      {
+        "value": 0.00014486051746965707,
+        "time": 95004.20000000019
+      }
+    ],
+    "longTasks": [
+      {
+        "duration": 58,
+        "time": 57.30000000074506
+      },
+      {
+        "duration": 75,
+        "time": 118.80000000074506
+      },
+      {
+        "duration": 824,
+        "time": 399.80000000074506
+      },
+      {
+        "duration": 75,
+        "time": 1224.5
+      },
+      {
+        "duration": 61,
+        "time": 1366.4000000003725
+      },
+      {
+        "duration": 214,
+        "time": 13688
+      },
+      {
+        "duration": 50,
+        "time": 62910.40000000037
+      },
+      {
+        "duration": 849,
+        "time": 63281.5
+      }
+    ],
+    "resources": [
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/oryzo_ai/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 14
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/atlas_motion/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 39.200000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/devin_ai/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 40.60000000055879
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/of_the_oak/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 42.299999999813735
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/0hiakm2nklk7g.css",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 30.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/310vm2bl3xxpt.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 36.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/2mmpezlrfmbu5.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 28.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/27t_qfc-3_lzs.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 85.90000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/turbopack-17_pvygprndfa.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 62.700000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/2e_lrwr-bf1eq.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 81.30000000074506
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/2et0xj7zkdy2b.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 67.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/2_nq4n1k3p68g.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 81.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/1pjs1t28iemt1.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 86.3999999994412
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/3kffptujvxjer.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 98.20000000018626
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/3aok_ubgnpfn0.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 97.79999999981374
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/3x_88deiy4zog.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 98.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/0w9-k2-m56ke0.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 98.40000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/42vxpdnd207nj.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 155.8999999994412
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/00ker2x0bv6lw.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 157.79999999981374
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/2fxwregtgf10c.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 158.69999999925494
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/reel/desktop.mp4",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 149
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/reel/desktop.mp4",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 151.70000000018626
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/fonts/InstrumentSans-Variable.woff2",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 76
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/fonts/IBMPlexMono-Medium.woff2",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 113.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/everswap/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 25.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/home/cross.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 6.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/astronaut_helmet.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 34.10000000055879
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/astronaut_helmet_glass.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 34.799999999813735
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/astronaut_glove_shoes.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 43.80000000074506
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/astronaut_wearpack.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 45.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/astronaut_animations.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 44.09999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/astronaut_in_animation.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 39.90000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/astronaut_out_animation.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 41.799999999813735
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_helmet_base.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 56.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_helmet_nor.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 64.79999999981374
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_helmet_arm.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 71.90000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_glove_shoes_base.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 81.40000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_glove_shoes_nor.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 85.70000000018626
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_glove_shoes_arm.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 91.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_wearpack_base.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 265.09999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_wearpack_nor.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 272.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/astronaut/astronaut_wearpack_arm.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 271.29999999981374
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/tunnel_block_base.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 174.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/tunnel_block_wall.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 186.8999999994412
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/grid_base_hd.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 183.09999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/grid_base_ld.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 189.79999999981374
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/grid_structure_hd.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 198.3999999994412
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/grid_structure_ld.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 221.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/broken_glass.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 258.70000000018626
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/models/tunnels/broken_glass_animation.buf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 259.70000000018626
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/white_block.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 281.29999999981374
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/grids/greeble_base.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 299.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/grids/greeble_arm.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 302.09999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/tunnels/grids/greeble_nor.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 306.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/?_rsc=5CB68i4pnAekjehf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 39.299999999813735
+      },
+      {
+        "name": "http://127.0.0.1:3000/about?_rsc=5CB68i4pnAekjehf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 39.90000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/projects?_rsc=5CB68i4pnAekjehf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 42.40000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/reel/mobile.mp4",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 67.40000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/reel/mobile.mp4",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 87.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/?_rsc=8nTjltbQWvg6NcbE",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 5.8999999994412065
+      },
+      {
+        "name": "http://127.0.0.1:3000/about?_rsc=hzcUC6YqarYE9pKE",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 10.199999999254942
+      },
+      {
+        "name": "http://127.0.0.1:3000/projects?_rsc=BZPL-4BkS0RUjLBR",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 8.700000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/1ksdmp6pad40w.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 5
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/1i1kcwg0j6ah-.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 2.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/porsche_dream_machine/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 9.200000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/synthetic_human/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 9.900000000372529
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/spatial_fusion/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 34.799999999813735
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/spaace/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 35.5
+      },
+      {
+        "name": "http://127.0.0.1:3000/projects/oryzo_ai?_rsc=5CB68i4pnAekjehf",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 27.90000000037253
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/textures/reel/mobile.mp4",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 33.700000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/projects/oryzo_ai?_rsc=IzG2vSx8BWRfnZdm",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 9.200000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/_next/static/chunks/39vyog00c54y1.js",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 6.6000000005587935
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/ddd_2024/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 49.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/choo_choo_world/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 52.700000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/assets/projects/soda_experience/home.webp",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 52.700000000186265
+      },
+      {
+        "name": "http://127.0.0.1:3000/projects/atlas_motion?_rsc=IzG2vSx8BWRfnZdm",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 39.59999999962747
+      },
+      {
+        "name": "http://127.0.0.1:3000/projects/devin_ai?_rsc=IzG2vSx8BWRfnZdm",
+        "bytes": 0,
+        "decodedBytes": 0,
+        "duration": 39.90000000037253
+      }
+    ],
+    "memory": {
+      "used": 27600000,
+      "total": 29400000
+    },
+    "cls": 0.0022437707651752135
+  },
+  "duplicateIds": []
+}

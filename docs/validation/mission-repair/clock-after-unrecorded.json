@@ -1,0 +1,34 @@
+{
+  "errors": [],
+  "issues": [],
+  "pause": {
+    "before": {
+      "draws": 201,
+      "progress": 0.0079422222222305
+    },
+    "after": {
+      "draws": 201,
+      "progress": 0.0079422222222305
+    }
+  },
+  "stall": {
+    "before": 0.0079422222222305,
+    "blockedMs": 650.9000000003725,
+    "after": 0.03792888888890544,
+    "advancedSeconds": 0.6747000000001863
+  },
+  "completion": {
+    "wallSeconds": 28.341,
+    "authoredSeconds": 22.5,
+    "includesDeliberatePause": true,
+    "deliberateMainThreadStallMs": 650,
+    "final": {
+      "state": "completed",
+      "progress": 1,
+      "virtualScroll": 40733.44,
+      "activation": 8431.56,
+      "end": 40733.44,
+      "runs": 1
+    }
+  }
+}

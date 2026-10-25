@@ -1,0 +1,37 @@
+{
+  "errors": [],
+  "issues": [
+    "Live reduced-motion leaves the hero visually displaced instead of restoring its neutral pose",
+    "Reduced-motion hero reports responding/active after its loop stops"
+  ],
+  "hover": {
+    "colorIndex": "0",
+    "accentColor": "#1b24e6",
+    "webglStatus": "ready",
+    "pointerInteractions": "1",
+    "motionState": "responding",
+    "activeRaf": "true",
+    "renderPixels": "1296x607",
+    "offsetEnergy": "0.20119",
+    "renderCount": "7",
+    "frameCpuMs": "1.00",
+    "drawCalls": "23"
+  },
+  "reduced": {
+    "colorIndex": "0",
+    "accentColor": "#1b24e6",
+    "webglStatus": "ready",
+    "pointerInteractions": "1",
+    "motionState": "responding",
+    "activeRaf": "true",
+    "renderPixels": "1296x607",
+    "offsetEnergy": "0.00000",
+    "renderCount": "41",
+    "frameCpuMs": "3.00",
+    "drawCalls": "23"
+  },
+  "pixelComparison": {
+    "meanAbsoluteChannelError": 6.2529112857374916,
+    "fractionChannelsDifferentOver3": 0.15380869950725579
+  }
+}
