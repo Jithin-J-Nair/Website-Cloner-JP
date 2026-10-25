@@ -196,8 +196,15 @@ const referenceSceneAssets = [
   "/assets/textures/tunnels/astronaut/astronaut_glove_shoes_base.webp",
   "/assets/textures/tunnels/astronaut/astronaut_wearpack_base.webp",
 ];
+// All 12 homepage project cards depend on their captured local thumbnail and depth map.
+const projectMediaAssets = GROUND_TRUTH.home.featured.projects.flatMap((project) => [
+  project.thumbnail,
+  project.depthMap,
+]);
+const requiredAssets = [...new Set([...referenceSceneAssets, ...projectMediaAssets])];
+
 const sceneAssetResults = await Promise.all(
-  referenceSceneAssets.map(async (url) => {
+  requiredAssets.map(async (url) => {
     try {
       const response = await fetch(`${BASE_URL}${url}`);
       const bytes = response.ok ? await response.arrayBuffer() : null;
@@ -209,7 +216,7 @@ const sceneAssetResults = await Promise.all(
 );
 const sceneAssetsOk = sceneAssetResults.every((result) => result.status === 200 && result.bytes > 0);
 console.log(
-  `  ${sceneAssetsOk ? "PASS" : "FAIL"} Captured Lusion scene assets: ${sceneAssetResults.filter((result) => result.status === 200 && result.bytes > 0).length}/${referenceSceneAssets.length} delivered with non-empty bodies`
+  `  ${sceneAssetsOk ? "PASS" : "FAIL"} Captured Lusion scene + project media assets: ${sceneAssetResults.filter((result) => result.status === 200 && result.bytes > 0).length}/${requiredAssets.length} delivered with non-empty bodies`
 );
 for (const result of sceneAssetResults) {
   if (result.status !== 200 || result.bytes === 0) {
