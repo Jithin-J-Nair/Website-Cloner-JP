@@ -17,6 +17,8 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build",
     "test:assets": "node scripts/test-asset-route.mjs",
+    "test:motion": "node scripts/test-home-motion.mjs",
+    "validate:home-motion": "node scripts/validate-home-motion.mjs",
     "qa": "node scripts/qa-verify.mjs",
     "validate:browser": "node scripts/phase-c-home-validate.mjs",
     "audit:phase-e": "node scripts/phase-e-audit.mjs"

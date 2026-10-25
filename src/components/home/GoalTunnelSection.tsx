@@ -5,7 +5,9 @@ import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { acceleratedFall, GOAL_CINEMATIC_SECONDS, homeRenderDpr } from "@/lib/home-motion";
 import { LUSION_HOME } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
 import {
@@ -19,6 +21,7 @@ import {
   evaluateSuitPoseStage,
   loadLicensedAstronautGlb,
   loadLusionAstronautParts,
+  applyCapturedDualQuaternionSkinning,
   setPortalStencilMask,
   SUIT_POSE_TABLET_FLOAT,
   type LoadedAstronautRig,
@@ -226,7 +229,7 @@ export function GoalTunnelSection() {
     const initW = Math.max(2, window.innerWidth);
     const initH = Math.max(2, window.innerHeight);
     const isMobileInit = initW < 820;
-    const initDpr = Math.min(2, window.devicePixelRatio || 1);
+    const initDpr = homeRenderDpr(initW,initH,window.devicePixelRatio || 1);
 
     glRenderer.setPixelRatio(initDpr);
     glRenderer.setSize(initW, initH, false);
@@ -338,23 +341,41 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     // 5. High-Fidelity Single-Draw-Call Downstream Worlds (`Frames 09–20`)
     // -------------------------------------------------------------------------
-    const blueCorridor = buildBlueArchCorridor(track);
+    const corridorEnvironment = track(new THREE.WebGLCubeRenderTarget(isMobileInit ? 64 : 128));
+    const captureCorridorEnvironment = (world: THREE.Group) => {
+      if (unmounted) return;
+      const reflectionScene = new THREE.Scene();
+      reflectionScene.background = new THREE.Color(0x0a104a);
+      reflectionScene.add(new THREE.HemisphereLight(0xe5efff,0x162e9a,1.2));
+      const reflectionKey = new THREE.DirectionalLight(0xffffff,1.1);
+      reflectionKey.position.set(-2,3,4);
+      reflectionScene.add(reflectionKey);
+      const reflected = world.clone(true);
+      reflected.visible = true;
+      reflectionScene.add(reflected);
+      const stencilStates = new Map<THREE.Material,boolean>();
+      reflected.traverse((node) => {
+        if (!(node instanceof THREE.Mesh)) return;
+        for (const mat of Array.isArray(node.material) ? node.material : [node.material]) {
+          if (!stencilStates.has(mat)) stencilStates.set(mat,mat.stencilWrite);
+          mat.stencilWrite = false;
+        }
+      });
+      const cubeCamera = new THREE.CubeCamera(0.1,80,corridorEnvironment);
+      cubeCamera.position.set(0,0,1.5);
+      try { cubeCamera.update(glRenderer,reflectionScene); }
+      finally {
+        for (const [mat,stencilWrite] of stencilStates) mat.stencilWrite = stencilWrite;
+        reflectionScene.clear();
+      }
+    };
+    const blueCorridor = buildBlueArchCorridor(track,captureCorridorEnvironment);
     blueCorridor.group.visible = false;
     scene.add(blueCorridor.group);
     scene.add(blueCorridor.monitorStencilMask);
-
-    // Capture the actual blue architecture once for local glass reflection/refraction.
-    // No dynamic cube render, PMREM rebuild or physics is added to the frame loop.
-    const corridorEnvironment = track(new THREE.WebGLCubeRenderTarget(isMobileInit ? 64 : 128));
-    const reflectionScene = new THREE.Scene();
-    reflectionScene.background = new THREE.Color(0x0a104a);
-    const reflectedCorridor = blueCorridor.group.clone(true);
-    reflectedCorridor.visible = true;
-    reflectionScene.add(reflectedCorridor);
-    const reflectionCamera = new THREE.CubeCamera(0.1, 80, corridorEnvironment);
-    reflectionCamera.position.set(0, 0, 1.5);
-    reflectionCamera.update(glRenderer, reflectionScene);
-    reflectionScene.clear();
+    // Initial fallback capture; refresh once when authoritative architecture is ready.
+    // No cube renders or PMREM generation occur in the animation loop.
+    captureCorridorEnvironment(blueCorridor.group);
     const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit, corridorEnvironment.texture);
     trussSystem.group.visible = false;
     scene.add(trussSystem.group);
@@ -507,6 +528,7 @@ export function GoalTunnelSection() {
         applySuitJointPose(primary, SUIT_POSE_TABLET_FLOAT);
         scene.add(primary.root);
 
+        if (primary.sampleBakedPose) applyCapturedDualQuaternionSkinning(hologramEchoMat);
         const cloneCount = isMobileInit ? 2 : 4;
         for (let c = 0; c < cloneCount; c++) {
           const cl = createClone();
@@ -576,6 +598,7 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     let composer: EffectComposer | null = null;
     let bloomPass: UnrealBloomPass | null = null;
+    let lensPass: ShaderPass | null = null;
 
     if (!isMobileInit && !isSoftwareRenderer) {
       const bufW = Math.max(2, Math.floor(initW * initDpr));
@@ -604,6 +627,30 @@ export function GoalTunnelSection() {
       bloomPass = new UnrealBloomPass(new THREE.Vector2(initW, initH), 0.16, 0.46, 1.48);
       composer.addPass(bloomPass);
 
+      // Single bounded spatial lens pass: no history buffer/ghosts on reverse, navigation or pause.
+      // Linear HDR input; OutputPass alone owns tone mapping and output color conversion.
+      lensPass = new ShaderPass({
+        uniforms: { tDiffuse: { value: null }, uAmount: { value: 0 } },
+        vertexShader: `varying vec2 vUv; void main() { vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+        fragmentShader: `
+          uniform sampler2D tDiffuse;
+          uniform float uAmount;
+          varying vec2 vUv;
+          void main() {
+            vec2 ray = vUv-0.5;
+            float edge = dot(ray,ray);
+            vec2 stepUv = ray*uAmount*edge;
+            vec3 col = texture2D(tDiffuse,vUv).rgb * 0.4;
+            col += texture2D(tDiffuse,clamp(vUv-stepUv,0.0,1.0)).rgb * 0.25;
+            col += texture2D(tDiffuse,clamp(vUv-stepUv*2.0,0.0,1.0)).rgb * 0.20;
+            col += texture2D(tDiffuse,clamp(vUv-stepUv*3.0,0.0,1.0)).rgb * 0.15;
+            // Restrained edge dispersion; the central subject remains sharp and achromatic.
+            col.r += (texture2D(tDiffuse,clamp(vUv+stepUv*0.5,0.0,1.0)).r-texture2D(tDiffuse,vUv).r)*0.25;
+            col.b += (texture2D(tDiffuse,clamp(vUv-stepUv*0.5,0.0,1.0)).b-texture2D(tDiffuse,vUv).b)*0.25;
+            gl_FragColor=vec4(max(col,0.0),texture2D(tDiffuse,vUv).a);
+          }`,
+      });
+      composer.addPass(lensPass);
       const outputPass = new OutputPass();
       composer.addPass(outputPass);
     }
@@ -646,7 +693,7 @@ export function GoalTunnelSection() {
         syncDocument(y);
         targetScrollY = smoothScrollY = y;
       }
-      cinematicTimeOffset = (performance.now() - startClock) * 0.001 - (playbackTimeOrigin + playbackProgress * 26);
+      cinematicTimeOffset = (performance.now() - startClock) * 0.001 - (playbackTimeOrigin + playbackProgress * GOAL_CINEMATIC_SECONDS);
       playbackState = "completed";
       userPaused = false;
       if (complete && controls?.contains(document.activeElement)) {
@@ -809,7 +856,7 @@ export function GoalTunnelSection() {
         window.__goalAstronautTelemetry.playback.end = playbackPath(1);
       }
 
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const dpr = homeRenderDpr(W,H,window.devicePixelRatio || 1);
       glRenderer.setPixelRatio(dpr);
       glRenderer.setSize(W, H, false);
       camera.aspect = W / H;
@@ -903,6 +950,12 @@ export function GoalTunnelSection() {
       ownedScrollManager = window.__lusionInspector.scrollManager;
     };
 
+    const _sunClip = new THREE.Vector3();
+    const _rootPosition = new THREE.Vector3();
+    const _outPosition = new THREE.Vector3();
+    const _rootOrientation = new THREE.Quaternion();
+    const _outOrientation = new THREE.Quaternion();
+    const _invertedBasis = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),Math.PI);
     const _headWorld = new THREE.Vector3();
     const _camLook = new THREE.Vector3();
     const _monitorCenter = new THREE.Vector3();
@@ -911,7 +964,7 @@ export function GoalTunnelSection() {
     const _zAxis = new THREE.Vector3(0, 0, 1);
 
     const renderSceneAtScroll = (sy: number, wallElapsedSec: number) => {
-      const elapsedSec = playing() ? playbackTimeOrigin + playbackProgress * 26 : wallElapsedSec - cinematicTimeOffset;
+      const elapsedSec = playing() ? playbackTimeOrigin + playbackProgress * GOAL_CINEMATIC_SECONDS : wallElapsedSec - cinematicTimeOffset;
       const t0 = performance.now();
       if (!metrics) measure();
       const m = metrics;
@@ -1012,7 +1065,7 @@ export function GoalTunnelSection() {
         const bankRoll = inBlueCorridor
           ? lerp(-0.44, 0.0, smoothstep(0.05, 0.68, tOutPull)) *
             smoothstep(0.81, 0.85, tTunnel) * (reducedMotion ? 0.35 : 1.0)
-          : 0.0;
+          : -smoothstep(0.36,0.60,tTunnel) * 0.72 * (1-smoothstep(0.75,0.81,tTunnel)) * (reducedMotion ? 0.15 : 1.0);
         const vortexFovBoost = smoothstep(0.68, 0.80, tTunnel) * (1 - smoothstep(0.81, 0.85, tTunnel)) * 10;
         camera.fov = (m.isMobile ? 54 : 45) + vortexFovBoost;
         camera.aspect = W / H;
@@ -1225,20 +1278,17 @@ export function GoalTunnelSection() {
         optics.spaceHaloMat.uniforms.uOpacity.value = haloVis;
       }
 
-      // The downstream full-screen ring is an independent additive overlay, not bloom or light.
-      // Remove it locally; preserve the established orbital optics before the shaft.
-      const ringVis = inEmergencePhase ? kf.ringFlare * 0.34 : 0;
+      // Source-driven open spectral arcs during emergence only, never a filled tunnel halo.
+      const ringVis = inEmergencePhase ? kf.ringFlare * 0.30 : 0;
       optics.chromaticRingMesh.visible = ringVis > 0.002;
       if (optics.chromaticRingMesh.visible) {
+        _sunClip.copy(sunKeyLight.position).project(camera);
+        optics.chromaticRingMat.uniforms.uSource.value.set(_sunClip.x*0.5+0.5,_sunClip.y*0.5+0.5);
+        optics.chromaticRingMat.uniforms.uResolution.value.set(glRenderer.domElement.width,glRenderer.domElement.height);
         optics.chromaticRingMat.uniforms.uOpacity.value = ringVis;
         optics.chromaticRingMat.uniforms.uAspect.value = W / H;
-        optics.chromaticRingMat.uniforms.uRadius.value = inEmergencePhase
-          ? m.isMobile
-            ? 0.385
-            : 0.625
-          : m.isMobile
-            ? 0.44
-            : 0.56;
+        // Height-normalized shader coordinates: fit the two arcs to portrait width too.
+        optics.chromaticRingMat.uniforms.uRadius.value = m.isMobile ? Math.min(0.64, 0.45 * W / H) : 0.72;
         optics.chromaticRingMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
       }
 
@@ -1268,13 +1318,11 @@ export function GoalTunnelSection() {
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
         trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
         trussSystem.tunnelMaterial.uniforms.uVortexPinch.value = vortexPinch;
-        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = tTunnel * 44;
-        const emeraldGlow =
-          smoothstep(0.47, 0.53, tTunnel) * (1 - smoothstep(0.62, 0.68, tTunnel)) * 0.92;
+        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = acceleratedFall(tTunnel) * 44;
         const pinkVortexGlow = smoothstep(0.69, 0.755, tTunnel);
         trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.66, 0.71, tTunnel);
         trussSystem.vortexCoreMat.uniforms.uIntensity.value =
-          Math.max(emeraldGlow, pinkVortexGlow) * blackVis;
+          pinkVortexGlow * blackVis;
         if (bloomPass) {
           bloomPass.strength = lerp(0.16, 0.34, smoothstep(0.68, 0.76, tTunnel));
         }
@@ -1334,7 +1382,7 @@ export function GoalTunnelSection() {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
           
-          const burst = smoothstep(0.32, 0.84, tShatter);
+          const burst = acceleratedFall(clamp01((tShatter-0.32)/0.52));
           const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
           sampleFrame(clamp01(burst) * (framesPerShard - 1));
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
@@ -1425,7 +1473,7 @@ export function GoalTunnelSection() {
           const entryPos = m.isMobile ? kf.astroPosMobile : kf.astroPosDesktop;
           ax = lerp(entryPos[0], lerp(0.0, 0.04, inBlueDive), entry);
           ay = lerp(entryPos[1], lerp(0.0, -0.02, inBlueDive), entry);
-          az = lerp(entryPos[2], lerp(-1.12 - vortexShrink * 4.2, -1.25, inBlueDive), entry);
+          az = lerp(entryPos[2], lerp(-1.12 - vortexShrink * 4.2, -3.75, inBlueDive), entry);
 
           const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
           const trussRz = intoCurl * (-1.15 - tTunnel * 3.1);
@@ -1434,7 +1482,7 @@ export function GoalTunnelSection() {
           rz = lerp(kf.astroRot[2], lerp(trussRz, -Math.PI * 2 - 0.28, inBlueDive), entry);
           aScale = lerp(kf.astroScale, lerp(
             lerp(0.62, 0.58, intoCurl) * (1 - vortexShrink * 0.60),
-            0.66,
+            0.38,
             inBlueDive
           ), entry);
           visorFlareAmt = 0;
@@ -1450,13 +1498,14 @@ export function GoalTunnelSection() {
             settleSalute
           );
           ax = lerp(0.04, pxParallax * 0.05, burst);
-          ay = lerp(-0.02, m.isMobile ? -0.18 : -0.32, lerp(burst * 0.65, 1.0, settleSalute));
-          az = lerp(-1.25, m.isMobile ? 0.68 : 1.72, burst);
+          const gravityDrop = acceleratedFall(clamp01((tShatter-0.14)/0.70));
+          ay = lerp(-0.02,m.isMobile ? -0.18 : -0.32,gravityDrop);
+          az = lerp(-3.75, m.isMobile ? 0.68 : 1.72, burst);
           az = lerp(az, m.isMobile ? 1.24 : 2.66, settleSalute);
           rx = lerp(0.24, -pyParallax * 0.04, burst);
           ry = lerp(0.14, pxParallax * 0.07, burst);
           rz = lerp(-0.28, 0.0, burst);
-          aScale = lerp(0.66, 1.0, burst);
+          aScale = lerp(0.38, 1.0, burst);
         } else {
           // `#end-section` & `#footer-section` White Wipe (`Frames 17 -> 18 -> 19 -> 20`):
           // Exact Lusion medium-full portrait framing (`az = 2.66, ay = -0.32`), curved LED dot-matrix
@@ -1521,6 +1570,24 @@ export function GoalTunnelSection() {
         if (mainAstro.sampleBakedPose) visorLed.mesh.position.copy(mainAstro.visorAnchorLocal);
         mainAstro.root.position.set(ax, ay, az);
         mainAstro.root.rotation.set(rx, ry, rz);
+        if (!inEmergencePhase && mainAstro.sampleCapturedRoot) {
+          // Source root attitude, not a second Euler tumble on top of the bone palette.
+          // Phase mapping/basis are calibrated to our camera; the source timing is not available.
+          mainAstro.sampleCapturedRoot("in",clamp01(tTunnel/0.80)*99,_rootPosition,_rootOrientation);
+          _rootOrientation.multiply(_invertedBasis);
+          const blue = smoothstep(0.80,0.86,tTunnel);
+          if (blue > 0) {
+            const flightFrame = lerp(0,36,smoothstep(0.815,1,tTunnel));
+            const frame = lerp(flightFrame,99,smoothstep(0,0.84,tShatter));
+            mainAstro.sampleCapturedRoot("out",frame,_outPosition,_outOrientation);
+            _rootOrientation.slerp(_outOrientation,blue);
+            _rootPosition.lerp(_outPosition,blue);
+          }
+          const weight = smoothstep(0.04,0.12,tTunnel) * (1-smoothstep(0.78,0.95,tShatter)) * (1-smoothstep(0,0.02,tWait));
+          mainAstro.root.quaternion.slerp(_rootOrientation,weight);
+          mainAstro.root.position.x += _rootPosition.x * 0.8 * weight;
+          mainAstro.root.position.y += _rootPosition.y * 0.18 * weight;
+        }
         mainAstro.root.scale.setScalar(aScale);
         mainAstro.root.updateMatrixWorld(true);
 
@@ -1575,6 +1642,12 @@ export function GoalTunnelSection() {
         visorLed.mesh.visible = false;
       }
 
+      if (lensPass) {
+        const shaftVelocity = smoothstep(0.13,0.70,tTunnel)*(1-smoothstep(0.79,0.84,tTunnel));
+        const blueVelocity = smoothstep(0.815,0.97,tTunnel)*(1-smoothstep(0,0.12,tOutPull));
+        lensPass.uniforms.uAmount.value = inEmergencePhase || reducedMotion ? 0 : Math.max(shaftVelocity,blueVelocity)*0.012;
+        lensPass.enabled = lensPass.uniforms.uAmount.value > 0.00001;
+      }
       if (composer) {
         composer.render(1 / 60);
       } else {
@@ -1635,7 +1708,7 @@ export function GoalTunnelSection() {
         } else if (playing()) {
           const paused = userPaused || blockedByChrome();
           playbackState = paused ? "paused" : "playing";
-          if (!paused) playbackProgress = Math.min(1, playbackProgress + deltaSeconds / 26);
+          if (!paused) playbackProgress = Math.min(1, playbackProgress + deltaSeconds / GOAL_CINEMATIC_SECONDS);
         }
         if (playing()) {
           // Only this clock drives both scene pose and document placement during playback.
@@ -1672,15 +1745,15 @@ export function GoalTunnelSection() {
       if (Math.abs(diff) > vhNow * 0.42 || reducedMotion) {
         smoothScrollY = targetScrollY;
       } else {
-        smoothScrollY += diff * 0.34;
+        smoothScrollY += diff * (1-Math.exp(-25*deltaSeconds));
         if (Math.abs(targetScrollY - smoothScrollY) < 0.12) {
           smoothScrollY = targetScrollY;
         }
       }
 
       if (playbackState !== "paused") {
-        pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * 0.075;
-        pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * 0.075;
+        pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * (1-Math.exp(-4.7*deltaSeconds));
+        pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * (1-Math.exp(-4.7*deltaSeconds));
       }
 
       renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);

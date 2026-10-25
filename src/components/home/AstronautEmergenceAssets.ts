@@ -35,6 +35,7 @@ export interface LoadedAstronautRig {
   triangles: number;
   /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
   sampleBakedPose?: (frame: number, influence: number) => void;
+  sampleCapturedRoot?: (stage: "in" | "out", frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void;
 }
 
 export interface SuitJointPose {
@@ -566,6 +567,84 @@ export async function loadLicensedAstronautGlb(
   return { primary, createClone };
 }
 
+/** Allocation-free sampler for the separately captured whole-body trajectories (100 frames). */
+export function createCapturedRootSampler(data: ParsedBufData): (frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void {
+  const frames = data.header.vertexCount;
+  if (frames !== 100 || data.header.attributes.find((a) => a.id === "orient")?.componentSize !== 4) {
+    throw new Error("Unexpected captured root animation layout");
+  }
+  const q1 = new THREE.Quaternion();
+  return (frame, position, orientation) => {
+    const f = THREE.MathUtils.clamp(frame,0,frames-1);
+    const a = Math.floor(f), b = Math.min(frames-1,a+1), t = f-a;
+    const p = data.attributes.position, q = data.attributes.orient;
+    position.set(THREE.MathUtils.lerp(p[a*3],p[b*3],t),THREE.MathUtils.lerp(p[a*3+1],p[b*3+1],t),THREE.MathUtils.lerp(p[a*3+2],p[b*3+2],t));
+    orientation.fromArray(q,a*4).normalize();
+    q1.fromArray(q,b*4).normalize();
+    orientation.slerp(q1,t);
+  };
+}
+
+/** Rigid two-influence dual-quaternion skinning using Three's per-skeleton bone texture.
+ * Preserve the existing bind/palette ownership: shared materials must never close over a
+ * particular rig. Only the captured astronaut uses this patch, not the legacy GLB fallback.
+ */
+export function applyCapturedDualQuaternionSkinning(material: THREE.Material): void {
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace("#include <skinning_pars_vertex>", `
+      #include <skinning_pars_vertex>
+      vec4 capturedQuat(mat3 m) {
+        float trace = m[0][0]+m[1][1]+m[2][2];
+        vec4 q;
+        if (trace > 0.0) {
+          float s = 2.0 * sqrt(trace+1.0);
+          q = vec4((m[1][2]-m[2][1])/s, (m[2][0]-m[0][2])/s, (m[0][1]-m[1][0])/s, 0.25*s);
+        } else if (m[0][0] > m[1][1] && m[0][0] > m[2][2]) {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[0][0]-m[1][1]-m[2][2]));
+          q = vec4(0.25*s,(m[1][0]+m[0][1])/s,(m[2][0]+m[0][2])/s,(m[1][2]-m[2][1])/s);
+        } else if (m[1][1] > m[2][2]) {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[1][1]-m[0][0]-m[2][2]));
+          q = vec4((m[1][0]+m[0][1])/s,0.25*s,(m[2][1]+m[1][2])/s,(m[2][0]-m[0][2])/s);
+        } else {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[2][2]-m[0][0]-m[1][1]));
+          q = vec4((m[2][0]+m[0][2])/s,(m[2][1]+m[1][2])/s,0.25*s,(m[0][1]-m[1][0])/s);
+        }
+        return normalize(q);
+      }
+      vec4 capturedDual(vec4 r, vec3 t) {
+        return 0.5 * vec4(r.w*t + cross(t,r.xyz),-dot(t,r.xyz));
+      }
+      vec3 capturedRotate(vec4 q, vec3 p) {
+        return p + 2.0 * cross(q.xyz,cross(q.xyz,p)+q.w*p);
+      }
+    `).replace("#include <skinbase_vertex>", `
+      mat4 dqBone0 = getBoneMatrix(skinIndex.x);
+      mat4 dqBone1 = getBoneMatrix(skinIndex.y);
+      vec4 dqR0 = capturedQuat(mat3(dqBone0));
+      vec4 dqR1 = capturedQuat(mat3(dqBone1));
+      vec4 dqD0 = capturedDual(dqR0,dqBone0[3].xyz);
+      vec4 dqD1 = capturedDual(dqR1,dqBone1[3].xyz);
+      float dqSign = dot(dqR0,dqR1) < 0.0 ? -1.0 : 1.0;
+      vec4 dqR = skinWeight.x*dqR0 + skinWeight.y*dqSign*dqR1;
+      vec4 dqD = skinWeight.x*dqD0 + skinWeight.y*dqSign*dqD1;
+      float dqLength = max(length(dqR),0.000001);
+      dqR /= dqLength;
+      dqD /= dqLength;
+      dqD -= dqR * dot(dqR,dqD);
+    `).replace("#include <skinnormal_vertex>", `
+      objectNormal = capturedRotate(dqR,objectNormal);
+      #ifdef USE_TANGENT
+        objectTangent = capturedRotate(dqR,objectTangent);
+      #endif
+    `).replace("#include <skinning_vertex>", `
+      transformed = capturedRotate(dqR,transformed) +
+        2.0 * (dqR.w*dqD.xyz - dqD.w*dqR.xyz + cross(dqR.xyz,dqD.xyz));
+    `);
+  };
+  material.customProgramCacheKey = () => "captured-two-weight-dq-v1";
+  material.needsUpdate = true;
+}
+
 /** Sample the capture's model-space (inverse-bind-applied) transforms without advancing wall time. */
 export function createCapturedPoseSampler(
   animation: ParsedBufData,
@@ -635,7 +714,7 @@ export async function loadLusionAstronautParts(
   const textureLoader = new THREE.TextureLoader();
   const loadTexture = (name: string) => textureLoader.loadAsync(`${textureRoot}${name}`).then(track);
   const [helmetData, visorData, glovesData, packData, helmetBase, helmetNormal, helmetArm,
-    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm, animation] = await Promise.all([
+    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm, animation, inAnimation, outAnimation] = await Promise.all([
     loadLusionBuf(`${assetRoot}astronaut_helmet.buf`),
     loadLusionBuf(`${assetRoot}astronaut_helmet_glass.buf`),
     loadLusionBuf(`${assetRoot}astronaut_glove_shoes.buf`),
@@ -650,6 +729,8 @@ export async function loadLusionAstronautParts(
     loadTexture("astronaut_wearpack_nor.webp"),
     loadTexture("astronaut_wearpack_arm.webp"),
     loadLusionBuf(`${assetRoot}astronaut_animations.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_in_animation.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_out_animation.buf`),
   ]);
 
   for (const tex of [helmetBase, glovesBase, packBase]) tex.colorSpace = THREE.SRGBColorSpace;
@@ -712,6 +793,7 @@ export async function loadLusionAstronautParts(
   }
   const parts = [helmetData, visorData, glovesData, packData];
   const partMaterials = [helmetMaterial, visorMaterial, glovesMaterial, packMaterial];
+  partMaterials.forEach(applyCapturedDualQuaternionSkinning);
   const geometries = parts.map(({ geometry: source }) => {
     const geometry = track(source.clone());
     const indices = source.getAttribute("boneIndices");
@@ -736,6 +818,11 @@ export async function loadLusionAstronautParts(
     0
   );
 
+  const sampleIn = createCapturedRootSampler(inAnimation);
+  const sampleOut = createCapturedRootSampler(outAnimation);
+  const sampleCapturedRoot: NonNullable<LoadedAstronautRig["sampleCapturedRoot"]> = (stage,frame,position,orientation) => {
+    (stage === "in" ? sampleIn : sampleOut)(frame,position,orientation);
+  };
   const buildCapturedRig = (): LoadedAstronautRig => {
     const root = new THREE.Group();
     const modelRoot = new THREE.Group();
@@ -764,7 +851,7 @@ export async function loadLusionAstronautParts(
     for (const bone of bones) bone.matrixWorldAutoUpdate = false;
     return {
       root, modelRoot, bones: {}, restQuats: {}, materials: partMaterials,
-      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose,
+      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose, sampleCapturedRoot,
     };
   };
   const primary = buildCapturedRig();
@@ -1316,7 +1403,7 @@ export function buildSpaceOpticalOverlays(
   spaceHaloMesh.position.set(0, -0.35, -0.85);
   spaceHaloMesh.renderOrder = 2;
 
-  // 3. Screen-Space Optical Chromatic Dispersion Ring (`Frames 05–08` — silky circumference + zero alpha overwrite!)
+  // 3. Analytic off-axis solar lens scatter. Keep the public mesh handle for controller ownership.
   const chromaticRingMat = track(
     new THREE.ShaderMaterial({
       transparent: true,
@@ -1332,6 +1419,8 @@ export function buildSpaceOpticalOverlays(
         uAspect: { value: 1.6 },
         uRadius: { value: 0.625 },
         uTime: { value: 0.0 },
+        uSource: { value: new THREE.Vector2(-0.25,0.90) },
+        uResolution: { value: new THREE.Vector2(1440,900) },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -1346,41 +1435,42 @@ export function buildSpaceOpticalOverlays(
         uniform float uAspect;
         uniform float uRadius;
         uniform float uTime;
-
+        uniform vec2 uSource;
+        uniform vec2 uResolution;
+        // Off-axis lens scattering. A thin spectral caustic, NOT a filled circle or texture.
+        float spectralBand(float distanceToBand, float width) {
+          return exp(-distanceToBand*distanceToBand/(width*width));
+        }
         void main() {
-          // Height-normalized screen coords centered slightly left-low matching Frame 07/08 (cx = 47.2%)
-          vec2 p = (vUv - vec2(0.472, 0.495)) * vec2(uAspect, 1.0);
-          float ang = atan(p.y, p.x);
-
-          // Gentle organic lower-arc caustics matching 07_t08.4s & 08_t09.8s!
-          float lowerMask = smoothstep(-0.05, -0.75, sin(ang));
-          float wobble = lowerMask * (0.018 * sin(ang * 5.0 + 0.6) + 0.010 * cos(ang * 9.0 - 0.4));
-          float rLocal = uRadius + wobble;
-
-          float r = length(p);
-          float dr = r - rLocal;
-
-          // Smooth optical azimuthal intensity envelope (softly brighter on left & right arcs, zero moiré banding!)
-          float azim = 0.76 + 0.24 * cos(ang * 2.0 + 0.45);
-
-          // Authentic spectral dispersion: inner warm amber -> middle soft cream -> outer cyan/royal-blue
-          float disp = 0.026;
-          float w = 17.5;
-          float rAmber = exp(-pow((dr + disp) * w, 2.0));
-          float rCream = exp(-pow(dr * (w * 1.25), 2.0));
-          float rBlue  = exp(-pow((dr - disp) * w, 2.0));
-          float veil   = exp(-pow(dr * 5.6, 2.0)) * 0.14;
-
-          vec3 col = (
-            vec3(1.00, 0.50, 0.14) * rAmber * 1.05 +
-            vec3(0.95, 0.93, 0.86) * rCream * 0.30 +
-            vec3(0.16, 0.56, 1.05) * rBlue * 1.10 +
-            vec3(0.32, 0.44, 0.72) * veil
-          ) * azim * uOpacity;
-
-          // Note: CustomBlending (RGB: ONE+ONE, Alpha: ZERO+ONE) preserves canvas alpha = 0 in empty space
-          // so behind-astronaut white headline at z=6 shines through space while astronaut silhouette occludes LET!
-          gl_FragColor = vec4(col, 0.0);
+          vec2 source = (uSource-0.5)*vec2(uAspect,1.0);
+          vec2 axis = normalize(source+vec2(-0.0001,0.0001));
+          // Camera/light coupling plus a slow, bounded optical-axis drift.
+          vec2 center = vec2(0.50,0.48) - clamp(source,vec2(-1.0),vec2(1.0))*0.025;
+          center += vec2(sin(uTime*0.18),sin(uTime*0.13+0.7))*0.004;
+          vec2 p = (vUv-center)*vec2(uAspect,1.0);
+          float radius = length(p);
+          vec2 direction = p/max(radius,0.0001);
+          float angle = atan(p.y,p.x);
+          float offAxis = clamp(length(source)*0.18,0.0,0.035);
+          float causticRadius = uRadius + offAxis*cos(angle-atan(axis.y,axis.x));
+          float d = radius-causticRadius;
+          float pixel = max(fwidth(radius),1.0/max(uResolution.y,1.0));
+          // Spectral splitting of the same caustic: blue outside, muted gold inside.
+          float blue = spectralBand(d-0.025,0.034+pixel);
+          float green = spectralBand(d,0.028+pixel);
+          float red = spectralBand(d+0.022,0.036+pixel);
+          // Aperture/film interference: filtered fine fringes; stable at native UHD resolution.
+          float cycles = min(170.0,0.22/max(pixel,0.00001));
+          float fringe = 0.86+0.14*cos(d*cycles*6.28318 + 1.2*sin(angle*2.0)-uTime*0.22);
+          float radialRays = 0.91+0.09*sin(angle*118.0+sin(angle*17.0));
+          // The reference has two open arcs, with no luminous top/bottom circumference.
+          float sector = pow(abs(cos(angle+0.22+axis.y*0.06)),6.0);
+          vec3 spectrum = vec3(red*0.20,green*0.30,blue*0.57);
+          spectrum += vec3(0.16,0.20,0.24)*spectralBand(d,0.018+pixel);
+          vec3 col = spectrum*sector*fringe*radialRays*uOpacity;
+          gl_FragColor = vec4(col,0.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
         }
       `,
     })

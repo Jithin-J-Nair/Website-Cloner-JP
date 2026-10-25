@@ -249,7 +249,7 @@ export function buildHologramEchoMaterial(
       blending: THREE.AdditiveBlending,
       uniforms: {
         uOpacity: { value: 0.0 },
-        uTint: { value: new THREE.Color("#6bffb8") },
+        uTint: { value: new THREE.Color("#ff72c5") },
       },
       vertexShader: [
         "#include <common>",
@@ -277,8 +277,10 @@ export function buildHologramEchoMaterial(
         "  vec3 V = normalize(-vPosV);",
         "  float fres = pow(1.0 - abs(dot(normalize(vNormalV), V)), 1.75);",
         "  float core = 0.14 + 0.86 * fres;",
-        "  vec3 col = mix(vec3(0.45, 0.92, 0.78), uTint, fres) * core * 1.15;",
+        "  vec3 col = mix(vec3(0.55, 0.82, 1.0), uTint, fres) * core * 3.2;",
         "  gl_FragColor = vec4(col * uOpacity, core * uOpacity);",
+        "  #include <tonemapping_fragment>",
+        "  #include <colorspace_fragment>",
         "}",
       ].join("\n"),
     })
@@ -356,6 +358,7 @@ export function decodeCapturedGirder(source: THREE.BufferGeometry): THREE.Buffer
   const geometry = source.clone();
   const position = geometry.getAttribute("position");
   const normal = geometry.getAttribute("normal");
+  const tangent = geometry.getAttribute("tangent");
   const center = geometry.getAttribute("center");
   const height = geometry.getAttribute("height");
   const angles = [0, Math.PI, -Math.PI / 2, Math.PI / 2];
@@ -370,6 +373,10 @@ export function decodeCapturedGirder(source: THREE.BufferGeometry): THREE.Buffer
     const nx = normal.getX(i);
     const ny = normal.getY(i);
     normal.setXY(i, c * nx - s * ny, s * nx + c * ny);
+    if (tangent) {
+      const tx = tangent.getX(i), ty = tangent.getY(i);
+      tangent.setXY(i, c * tx - s * ty, s * tx + c * ty);
+    }
   }
   geometry.computeBoundingBox();
   geometry.computeBoundingSphere();
@@ -455,17 +462,8 @@ export function buildTunnelGlazing(
   } };
 }
 
-/**
- * Single-Draw-Call GPU-Twisted Architectural Square Truss + Micro-Greeble Panel Tunnel (`Frames 09–14`)
- *
- * Reconstructs every visual phase verified directly from Google Drive Frames `09–14`:
- *   - Wide 3x3 rectangular steel scaffolding frames spanning full viewport width (`09->10->11`)
- *   - Dense micro-greeble rectangular panel clusters along the 4 inner corner rails (`10, 11, 12`)
- *   - Smooth 4-stage HDR glint palette shift:
- *       0.00..0.34 (`10–11`): Dark gunmetal steel + crisp ice-cyan & pure-white star-bloom glints
- *       0.34..0.56 (`12`):    Warm bronze steel + fiery red-orange (`#ff4c18`, `#ffb238`) & teal (`#2bf5e8`) glints
- *       0.56..0.74 (`13`):    Helical twist begins + emerald-mint (`#52ff9e`) & cyan glints
- *       0.74..1.00 (`14`):    Intense helical vortex + blazing neon magenta/pink & cyan beams + white core crescendo!
+/** Captured inner/outer lattice, greeble PBR and a depth-dependent helical deformation.
+ * Both LOD placement sets are part of the source asset, not decorative random cubes.
  */
 export function buildArchitecturalTrussTunnel(
   track: <T extends { dispose: () => void }>(item: T) => T,
@@ -490,7 +488,7 @@ export function buildArchitecturalTrussTunnel(
   const tunnelMaterial = track(
     new THREE.ShaderMaterial({
       transparent: true,
-      depthWrite: false,
+      depthWrite: true, // Opaque metal must self-occlude; only its phase fade is transparent.
       uniforms: {
         uOpacity: { value: 1.0 },
         uPhase: { value: 0.0 },
@@ -499,103 +497,119 @@ export function buildArchitecturalTrussTunnel(
         uTravelZ: { value: 0.0 },
         uTunnelLength: { value: tunnelLength },
         uEnvironment: { value: environment },
+        uBase: { value: null },
+        uArm: { value: null },
+        uNormal: { value: null },
       },
-      vertexShader: [
-        "attribute float aSeed;",
-        "attribute float aKind;",
-        "attribute float aBayZ;",
-        "attribute float cluster;",
-        "attribute float ao;",
-        "varying float vAo;",
-        "varying vec3 vNormalW;",
-        "varying vec3 vWorldPos;",
-        "varying vec2 vFaceUv;",
-        "varying float vSeed;",
-        "varying float vKind;",
-        "uniform float uTwist;",
-        "uniform float uVortexPinch;",
-        "uniform float uTravelZ;",
-        "uniform float uTunnelLength;",
-        "",
-        "void main() {",
-        "  vSeed = aSeed + cluster * 0.173;",
-        "  vAo = ao;",
-        "  vKind = aKind;",
-        "  vFaceUv = uv * 2.0 - 1.0;",
-        "  vec4 wp = instanceMatrix * vec4(position, 1.0);",
-        "  // Recycle a whole bay, never individual vertices or the entire seeded shaft.",
-        "  float bayZ = 3.9 - mod(3.9 - aBayZ - uTravelZ + uTunnelLength * 2.0, uTunnelLength);",
-        "  wp.z += bayZ - aBayZ;",
-        "",
-        "  // Continuous GPU helical spiral twist & vortex funnel (Frames 13 -> 14!)",
-        "  float depthDist = max(0.0, 4.2 - wp.z);",
-        "  float ang = depthDist * uTwist;",
-        "  float ca = cos(ang);",
-        "  float sa = sin(ang);",
-        "  vec2 rotXY = mat2(ca, -sa, sa, ca) * wp.xy;",
-        "  float pinch = mix(1.0, 1.0 / (1.0 + depthDist * 0.075), uVortexPinch);",
-        "  wp.xy = rotXY * pinch;",
-        "",
-        "  vec3 nrm = mat3(instanceMatrix) * normal;",
-        "  nrm.xy = mat2(ca, -sa, sa, ca) * nrm.xy;",
-        "  vNormalW = normalize(nrm);",
-        "  vWorldPos = wp.xyz;",
-        "  gl_Position = projectionMatrix * viewMatrix * wp;",
-        "}"
-      ].join("\n"),
-      fragmentShader: [
-        "varying vec3 vNormalW;",
-        "varying vec3 vWorldPos;",
-        "varying vec2 vFaceUv;",
-        "varying float vSeed;",
-        "varying float vKind;",
-        "varying float vAo;",
-        "uniform float uOpacity;",
-        "uniform float uPhase;",
-        "uniform float uVortexPinch;",
-        "uniform samplerCube uEnvironment;",
-        "",
-        "void main() {",
-        "  vec3 N = normalize(vNormalW);",
-        "  vec3 L1 = normalize(vec3(0.0, 0.0, 1.0) - vWorldPos * vec3(0.28, 0.28, 0.04));",
-        "  float ndl = max(dot(N, L1), 0.0);",
-        "  vec3 V = normalize(cameraPosition - vWorldPos);",
-        "  float rim = pow(1.0 - abs(dot(N, V)), 4.0);",
-        "  float depthFade = smoothstep(-36.0, -3.5, vWorldPos.z);",
-        "",
-        "  float wCool  = 1.0 - smoothstep(0.24, 0.36, uPhase);",
-        "  float wWarm  = smoothstep(0.24, 0.36, uPhase) * (1.0 - smoothstep(0.49, 0.59, uPhase));",
-        "  float wEmer  = smoothstep(0.49, 0.59, uPhase) * (1.0 - smoothstep(0.76, 0.86, uPhase));",
-        "  float wPink  = smoothstep(0.76, 0.86, uPhase);",
-        "",
-        "  vec3 cCool  = vec3(0.012, 0.018, 0.026) + vec3(0.055, 0.085, 0.12) * ndl;",
-        "  vec3 cWarm  = vec3(0.035, 0.018, 0.012) + vec3(0.18, 0.055, 0.025) * ndl;",
-        "  vec3 cEmer  = vec3(0.012, 0.026, 0.022) + vec3(0.045, 0.16, 0.10) * ndl;",
-        "  vec3 cPink  = vec3(0.035, 0.012, 0.028) + vec3(0.19, 0.035, 0.12) * ndl;",
-        "",
-        "  vec3 baseCol = cCool * wCool + cWarm * wWarm + cEmer * wEmer + cPink * wPink;",
-        "",
-        "  float isGlint = step(1.5, vKind);",
-        "  float glintPhase = fract(vSeed * 7.31 + uPhase * 14.0);",
-        "  float glintInt = smoothstep(0.7, 0.95, glintPhase) * (1.0 - smoothstep(0.95, 1.0, glintPhase));",
-        "  vec3 glintColor = mix(vec3(0.2, 0.8, 1.0), vec3(1.0, 0.4, 0.1), wWarm) * 4.0;",
-        "  glintColor = mix(glintColor, vec3(0.4, 1.0, 0.6) * 5.0, wEmer);",
-        "  glintColor = mix(glintColor, vec3(1.0, 0.2, 0.8) * 6.0, wPink);",
-        "  float spec = pow(max(dot(N, normalize(L1 + V)), 0.0), 56.0);",
-        "  vec3 reflected = textureCube(uEnvironment, reflect(-V, N)).rgb;",
-        "  vec3 reflectionTint = vec3(0.55, 0.78, 0.95) * wCool + vec3(1.0, 0.32, 0.17) * wWarm;",
-        "  reflectionTint += vec3(0.28, 0.95, 0.65) * wEmer + vec3(1.0, 0.27, 0.65) * wPink;",
-        "  baseCol = (baseCol + reflected * reflectionTint * (0.18 + rim * 0.35)) * mix(0.28, 1.0, vAo);",
-        "  baseCol += vec3(0.65, 0.78, 0.85) * spec;",
-        "  // Confine glints instead of flooding entire structural beams with HDR color.",
-        "  float glintMask = pow(max(0.0, sin(vWorldPos.z * 2.7 + vSeed * 8.0)), 24.0);",
-        "  baseCol += glintColor * isGlint * glintInt * glintMask * 0.4 * (1.0 - uVortexPinch);",
-        "",
-        "  baseCol = mix(baseCol, baseCol + vec3(0.26, 0.08, 0.22), uVortexPinch * 0.65);",
-        "",
-        "  gl_FragColor = vec4(baseCol * depthFade, uOpacity);",
-        "}"
-      ].join("\n")
+      vertexShader: `
+        attribute float aSeed;
+        attribute float aKind;
+        attribute float aBayZ;
+        attribute float cluster;
+        attribute float ao;
+        attribute vec4 tangent;
+        varying float vAo;
+        varying vec3 vNormalW;
+        varying vec4 vTangentW;
+        varying vec3 vWorldPos;
+        varying vec2 vUv;
+        varying float vDetail;
+        uniform float uTwist;
+        uniform float uVortexPinch;
+        uniform float uTravelZ;
+        uniform float uTunnelLength;
+        void main() {
+          vAo = ao;
+          vUv = uv;
+          vDetail = aKind;
+          vec4 wp = instanceMatrix * vec4(position, 1.0);
+          float bayZ = 3.9 - mod(3.9 - aBayZ - uTravelZ + uTunnelLength * 2.0, uTunnelLength);
+          wp.z += bayZ - aBayZ;
+          float depth = max(0.0, 4.2 - wp.z);
+          float angle = depth * uTwist;
+          mat2 rotation = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+          vec2 planar = rotation * wp.xy;
+          float pinch = mix(1.0, 1.0 / (1.0 + depth * 0.075), uVortexPinch);
+          float ds = wp.z < 4.2 ? uVortexPinch * 0.075 / pow(1.0 + depth * 0.075, 2.0) : 0.0;
+          // GLSL's column-major rotation above has d(angle)/dz = -uTwist.
+          vec2 dz = planar * ds + vec2(planar.y, -planar.x) * (-uTwist) * pinch;
+          mat3 inst = mat3(instanceMatrix);
+          vec3 scale2 = vec3(dot(inst[0], inst[0]), dot(inst[1], inst[1]), dot(inst[2], inst[2]));
+          vec3 N = inst * (normal / scale2);
+          N.xy = rotation * N.xy / pinch;
+          N.z -= dot(N.xy, dz);
+          vec3 T = inst * tangent.xyz;
+          T.xy = rotation * T.xy * pinch + dz * T.z;
+          vNormalW = normalize(N);
+          vTangentW = vec4(normalize(T), tangent.w);
+          wp.xy = planar * pinch;
+          vWorldPos = wp.xyz;
+          gl_Position = projectionMatrix * viewMatrix * wp;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormalW;
+        varying vec4 vTangentW;
+        varying vec3 vWorldPos;
+        varying vec2 vUv;
+        varying float vAo;
+        varying float vDetail;
+        uniform float uOpacity;
+        uniform float uPhase;
+        uniform samplerCube uEnvironment;
+        uniform sampler2D uBase;
+        uniform sampler2D uArm;
+        uniform sampler2D uNormal;
+        #include <common>
+        vec3 lightBRDF(vec3 N, vec3 V, vec3 L, vec3 radiance, vec3 base, float roughness, float metal) {
+          vec3 H = normalize(V + L);
+          float nl = max(dot(N, L), 0.0);
+          float nv = max(dot(N, V), 0.001);
+          float nh = max(dot(N, H), 0.0);
+          float vh = max(dot(V, H), 0.0);
+          float a2 = pow(roughness, 4.0);
+          float d = a2 / max(PI * pow(nh * nh * (a2 - 1.0) + 1.0, 2.0), 0.00001);
+          float k = pow(roughness + 1.0, 2.0) * 0.125;
+          float g = nv / (nv * (1.0-k) + k) * nl / (nl * (1.0-k) + k);
+          vec3 f0 = mix(vec3(0.04), base, metal);
+          vec3 f = f0 + (1.0 - f0) * pow(1.0 - vh, 5.0);
+          return ((1.0-f) * base * (1.0-metal) / PI + d*g*f / max(4.0*nv*nl, 0.001)) * nl * radiance;
+        }
+        void main() {
+          vec3 N = normalize(vNormalW);
+          vec3 T = normalize(vTangentW.xyz - N * dot(N, vTangentW.xyz));
+          vec3 B = normalize(cross(N, T)) * vTangentW.w;
+          vec3 mapN = texture2D(uNormal, vUv).xyz * 2.0 - 1.0;
+          mapN.xy *= 0.75 * vDetail;
+          N = normalize(mat3(T, B, N) * mapN);
+          vec3 V = normalize(cameraPosition - vWorldPos);
+          vec3 arm = texture2D(uArm, vUv).rgb;
+          vec3 base = mix(vec3(0.19), texture2D(uBase, vUv).rgb * 1.55, vDetail);
+          float roughness = mix(0.32, clamp(arm.g * 0.45, 0.16, 0.40), vDetail);
+          float metal = mix(0.85, max(arm.b, 0.72), vDetail);
+          float warm = smoothstep(0.24, 0.36, uPhase);
+          float pink = smoothstep(0.49, 0.59, uPhase);
+          vec3 primary = mix(vec3(0.72, 0.9, 1.0), vec3(1.0, 0.10, 0.055), warm);
+          primary = mix(primary, vec3(1.0, 0.075, 0.40), pink);
+          vec3 secondary = mix(vec3(0.14, 0.85, 1.0), vec3(0.18, 0.72, 1.0), pink);
+          // Shaft-mounted strips: lighting follows depth, never random per-frame glint flashes.
+          vec3 L1 = normalize(vec3(-2.0, 2.1, 2.5) - vWorldPos * vec3(1.0, 1.0, 0.18));
+          vec3 L2 = normalize(vec3(2.2, -1.5, 0.0) - vWorldPos * vec3(1.0, 1.0, 0.12));
+          vec3 col = lightBRDF(N,V,L1,primary*3.5,base,roughness,metal);
+          col += lightBRDF(N,V,L2,secondary*2.5,base,roughness,metal);
+          vec3 reflected = textureCube(uEnvironment, reflect(-V, N)).rgb;
+          float luminance = dot(reflected, vec3(0.2126,0.7152,0.0722));
+          float fresnel = pow(1.0 - max(dot(N,V),0.0),5.0);
+          col += (vec3(luminance)*0.75 + reflected*0.25) * mix(vec3(0.82,0.92,1.0),primary,pink*0.65) * (0.025+fresnel*0.22);
+          col += base * 0.025;
+          col *= mix(0.16,1.0,vDetail);
+          col *= mix(0.28,1.0,clamp(vAo * mix(1.0,arm.r,vDetail),0.0,1.0));
+          float depthFade = smoothstep(-51.0,-3.5,vWorldPos.z);
+          gl_FragColor = vec4(col * depthFade, uOpacity);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }
+      `
     })
   );
 
@@ -620,7 +634,7 @@ export function buildArchitecturalTrussTunnel(
         "  vec2 p = vUv * 2.0 - 1.0;",
         "  float r = length(p);",
         "  float core = exp(-r * 6.0) * 1.5 + exp(-r * 18.0) * 2.0;",
-        "  vec3 cE = vec3(0.3, 1.0, 0.7);",
+        "  vec3 cE = vec3(0.28, 0.85, 1.0);",
         "  vec3 cP = vec3(1.0, 0.4, 0.9);",
         "  vec3 col = mix(cE, cP, uMode) * core;",
         "  gl_FragColor = vec4(col * uIntensity, clamp(core * uIntensity, 0.0, 1.0));",
@@ -629,7 +643,7 @@ export function buildArchitecturalTrussTunnel(
     })
   );
 
-  const corePlane = new THREE.Mesh(track(new THREE.PlaneGeometry(16, 16)), vortexCoreMat);
+  const corePlane = new THREE.Mesh(track(new THREE.PlaneGeometry(8, 8)), vortexCoreMat);
   corePlane.position.z = -12.0;
   corePlane.renderOrder = 2;
   group.add(corePlane);
@@ -649,64 +663,66 @@ export function buildArchitecturalTrussTunnel(
   flashVeil.frustumCulled = false;
   group.add(flashVeil);
 
-  import("@/lib/lusion-buf-loader")
-    .then((m) => Promise.all([
-      m.loadLusionBuf("/assets/models/tunnels/grid_base_hd.buf"),
-      m.loadLusionBuf("/assets/models/tunnels/grid_base_ld.buf"),
-      m.loadLusionBuf("/assets/models/tunnels/grid_structure_hd.buf"),
+  const textures = new THREE.TextureLoader();
+  const loadMap = async (name: string, colorSpace: THREE.ColorSpace) => {
+    const texture = track(await textures.loadAsync(`/assets/textures/tunnels/grids/greeble_${name}.webp`));
+    texture.colorSpace = colorSpace;
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.anisotropy = isMobile ? 2 : 4;
+    return texture;
+  };
+  void import("@/lib/lusion-buf-loader")
+    .then(async ({ loadLusionBuf }) => Promise.all([
+      loadLusionBuf("/assets/models/tunnels/grid_base_hd.buf"),
+      loadLusionBuf("/assets/models/tunnels/grid_base_ld.buf"),
+      loadLusionBuf("/assets/models/tunnels/grid_structure_hd.buf"),
+      loadLusionBuf("/assets/models/tunnels/grid_structure_ld.buf"),
+      loadMap("base", THREE.SRGBColorSpace), loadMap("arm", THREE.NoColorSpace), loadMap("nor", THREE.NoColorSpace),
     ]))
-    .then(([detail, base, structure]) => {
+    .then(([hd, ld, inner, outer, base, arm, normal]) => {
       if (disposed) return;
-      const detailGeometry = decodeCapturedGirder(detail.geometry);
-      const baseGeometry = base.geometry.clone();
-      // Only merge common attributes; preserve the capture's AO and per-cluster glints.
-      for (const g of [detailGeometry, baseGeometry]) {
-        for (const name of Object.keys(g.attributes)) {
-          if (!["position", "normal", "uv", "ao", "cluster"].includes(name)) g.deleteAttribute(name);
+      tunnelMaterial.uniforms.uBase.value = base;
+      tunnelMaterial.uniforms.uArm.value = arm;
+      tunnelMaterial.uniforms.uNormal.value = normal;
+      const detail = decodeCapturedGirder(hd.geometry);
+      const core = ld.geometry.clone();
+      for (const [source, structure, detailed] of [[detail, inner, true], [core, outer, false]] as const) {
+        // Two immutable instanced batches: detailed inner 96 + lightweight outer 456 per repeat.
+        const geometry = track(source);
+        if (!geometry.hasAttribute("ao")) geometry.setAttribute("ao", new THREE.Float32BufferAttribute(new Float32Array(geometry.getAttribute("position").count).fill(1),1));
+        const count = structure.header.vertexCount * repeats;
+        const seeds = new Float32Array(count);
+        const kinds = new Float32Array(count).fill(detailed ? 1 : 0);
+        const bayZ = new Float32Array(count);
+        const mesh = track(new THREE.InstancedMesh(geometry, tunnelMaterial, count));
+        mesh.name = detailed ? "CapturedInnerLattice" : "CapturedOuterLattice";
+        mesh.frustumCulled = false;
+        const matrix = new THREE.Matrix4();
+        const rotation = new THREE.Quaternion();
+        const position = new THREE.Vector3();
+        const thickness = detailed ? 0.62 : 0.22;
+        const scale = new THREE.Vector3(baySpacing * thickness, baySpacing * thickness, baySpacing);
+        const axis = new THREE.Vector3();
+        const positions = structure.geometry.getAttribute("position");
+        const axes = structure.geometry.getAttribute("rotAxis");
+        for (let repeat = 0; repeat < repeats; repeat++) {
+          for (let j = 0; j < positions.count; j++) {
+            const i = repeat * positions.count + j;
+            axis.fromBufferAttribute(axes,j);
+            rotation.setFromAxisAngle(axis,axis.z > 0.5 ? 0 : Math.PI/2);
+            position.fromBufferAttribute(positions,j).multiplyScalar(sourceScale);
+            position.z += 3.9 - repeat * 120 * sourceScale;
+            mesh.setMatrixAt(i,matrix.compose(position,rotation,scale));
+            seeds[i] = j / positions.count;
+            bayZ[i] = position.z;
+          }
         }
+        geometry.setAttribute("aSeed",new THREE.InstancedBufferAttribute(seeds,1));
+        geometry.setAttribute("aKind",new THREE.InstancedBufferAttribute(kinds,1));
+        geometry.setAttribute("aBayZ",new THREE.InstancedBufferAttribute(bayZ,1));
+        mesh.instanceMatrix.needsUpdate = true;
+        group.add(mesh);
       }
-      baseGeometry.setAttribute("ao", new THREE.Float32BufferAttribute(
-        new Float32Array(baseGeometry.getAttribute("position").count).fill(1), 1
-      ));
-      // The capture stores cluster as Uint8 on both source geometries.
-      const geometry = track(mergeGeometries([detailGeometry, baseGeometry], false)!);
-      detailGeometry.dispose();
-      baseGeometry.dispose();
-      const count = structure.header.vertexCount * repeats;
-      const seeds = new Float32Array(count);
-      const kinds = new Float32Array(count);
-      const bayZ = new Float32Array(count);
-      const mesh = track(new THREE.InstancedMesh(geometry, tunnelMaterial, count));
-      mesh.frustumCulled = false;
-      const matrix = new THREE.Matrix4();
-      const rotation = new THREE.Quaternion();
-      const position = new THREE.Vector3();
-      // Preserve the decoded girder's proportions when fitting it to the 20-unit source cell.
-      const scale = new THREE.Vector3().setScalar(baySpacing);
-      const axis = new THREE.Vector3();
-      const sourcePositions = structure.geometry.getAttribute("position");
-      const sourceAxes = structure.geometry.getAttribute("rotAxis");
-      let seed = 20261023;
-      for (let repeat = 0; repeat < repeats; repeat++) {
-        for (let j = 0; j < sourcePositions.count; j++) {
-          const i = repeat * sourcePositions.count + j;
-          axis.fromBufferAttribute(sourceAxes, j);
-          // X/Y axes rotate the Z-aligned source girder into the captured transverse beams.
-          rotation.setFromAxisAngle(axis, axis.z > 0.5 ? 0 : Math.PI / 2);
-          position.fromBufferAttribute(sourcePositions, j).multiplyScalar(sourceScale);
-          position.z += 3.9 - repeat * 120 * sourceScale;
-          mesh.setMatrixAt(i, matrix.compose(position, rotation, scale));
-          seed = (seed * 1664525 + 1013904223) >>> 0;
-          seeds[i] = seed / 4294967296;
-          kinds[i] = seeds[i] < 0.15 ? 2 : 0;
-          bayZ[i] = position.z;
-        }
-      }
-      geometry.setAttribute("aSeed", new THREE.InstancedBufferAttribute(seeds, 1));
-      geometry.setAttribute("aKind", new THREE.InstancedBufferAttribute(kinds, 1));
-      geometry.setAttribute("aBayZ", new THREE.InstancedBufferAttribute(bayZ, 1));
-      mesh.instanceMatrix.needsUpdate = true;
-      group.add(mesh);
     })
     .catch((error: unknown) => {
       if (!disposed) console.warn("Goal truss asset unavailable", error);
@@ -715,7 +731,8 @@ export function buildArchitecturalTrussTunnel(
   return { group, tunnelMaterial, vortexCoreMat, flashVeilMat, baySpacing };
 }
 export function buildBlueArchCorridor(
-  track: <T extends { dispose: () => void }>(item: T) => T
+  track: <T extends { dispose: () => void }>(item: T) => T,
+  onAssetsReady?: (group: THREE.Group) => void
 ): {
   group: THREE.Group;
   travelGroup: THREE.Group;
@@ -932,6 +949,107 @@ export function buildBlueArchCorridor(
       mat.needsUpdate = true;
     }
   };
+
+  // Captured architectural base/wall modules plus reference-reconstructed extruded motifs.
+  // The procedural corridor above remains an asset-failure fallback, never a second visible layer.
+  let disposed = false;
+  track({ dispose: () => { disposed = true; } });
+  const capturedCorridor = new THREE.Group();
+  capturedCorridor.name = "CapturedBlueCorridor";
+  const loader = new THREE.TextureLoader();
+  void import("@/lib/lusion-buf-loader")
+    .then(async ({ loadLusionBuf }) => Promise.all([
+      loadLusionBuf("/assets/models/tunnels/tunnel_block_base.buf"),
+      loadLusionBuf("/assets/models/tunnels/tunnel_block_wall.buf"),
+      loader.loadAsync("/assets/textures/tunnels/white_block.webp").then(track),
+    ]))
+    .then(([base, wall, atlas]) => {
+      if (disposed) return;
+      atlas.colorSpace = THREE.SRGBColorSpace;
+      atlas.anisotropy = 4;
+      const floorMaterial = track(new THREE.MeshBasicMaterial({ color: "#283cff", map: atlas, side: THREE.DoubleSide }));
+      const wallMaterial = track(new THREE.MeshBasicMaterial({ color: "#283cff", map: atlas, side: THREE.DoubleSide }));
+      // Baked atlas carries the sculpted recess shadows; a small lift preserves cobalt in shadow.
+      const liftAtlas: THREE.MeshBasicMaterial["onBeforeCompile"] = (shader) => {
+        shader.fragmentShader = shader.fragmentShader.replace("#include <map_fragment>", `
+          vec4 baked = texture2D(map, vMapUv);
+          diffuseColor.rgb *= mix(vec3(0.58), baked.rgb, 0.42);
+        `);
+      };
+      floorMaterial.onBeforeCompile = wallMaterial.onBeforeCompile = liftAtlas;
+      floorMaterial.customProgramCacheKey = wallMaterial.customProgramCacheKey = () => "captured-cobalt-atlas-v1";
+      const count = 9;
+      const matrix = new THREE.Matrix4();
+      for (const [data, material] of [[base,floorMaterial],[wall,wallMaterial]] as const) {
+        const geometry = track(data.geometry.clone());
+        const mesh = track(new THREE.InstancedMesh(geometry,material,count));
+        mesh.frustumCulled = false;
+        for (let i = 0; i < count; i++) {
+          matrix.makeScale(7.6,7.6,7.2);
+          matrix.setPosition(0,0,4.0-i*7.2);
+          mesh.setMatrixAt(i,matrix);
+        }
+        capturedCorridor.add(mesh);
+      }
+      // Fixed reference motifs: rounded heart/club outlines and circular rings have actual
+      // extruded edges. Do not paint the earlier cloud approximation onto a flat box.
+      const heart = new THREE.Shape();
+      heart.moveTo(0,-0.9);
+      heart.bezierCurveTo(-0.18,-0.78,-1.0,-0.12,-1.0,0.42);
+      heart.bezierCurveTo(-1.0,1.10,-0.24,1.15,0,0.62);
+      heart.bezierCurveTo(0.24,1.15,1.0,1.10,1.0,0.42);
+      heart.bezierCurveTo(1.0,-0.12,0.18,-0.78,0,-0.9);
+      const heartHole = new THREE.Path(heart.getPoints(24).map((p) => p.multiplyScalar(0.68)));
+      heart.holes.push(heartHole);
+      const ring = new THREE.Shape();
+      ring.absarc(0,0,0.82,0,Math.PI*2,false);
+      const ringHole = new THREE.Path();
+      ringHole.absarc(0,0,0.57,0,Math.PI*2,true);
+      ring.holes.push(ringHole);
+      const motifs = [heart,ring].map((shape) => new THREE.ExtrudeGeometry(shape,{depth:0.07,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:0.008,bevelThickness:0.008,curveSegments:24}));
+      const motifParts: THREE.BufferGeometry[] = [];
+      for (let bay = 0; bay < 8; bay++) {
+        for (let side = 0; side < 4; side++) {
+          for (let item = 0; item < 2; item++) {
+            const part = motifs[(bay+side+item)%2].clone();
+            const size = item === 0 ? 2.0 : 1.4;
+            part.scale(size,size,1);
+            part.rotateZ((side%2 ? -0.35 : 0.40) + (bay%2)*0.6);
+            part.rotateX(Math.PI/2);
+            part.translate(item === 0 ? -0.65 : 1.75,-3.74,2.3-bay*7.2-item*3.1);
+            part.rotateZ(side*Math.PI/2);
+            motifParts.push(part);
+          }
+        }
+      }
+      const motifGeometry = track(mergeGeometries(motifParts,false)!);
+      motifParts.forEach((g) => g.dispose());
+      motifs.forEach((g) => g.dispose());
+      const motifMaterial = track(new THREE.MeshStandardMaterial({color:"#f4f7ff",roughness:0.42,metalness:0.06}));
+      capturedCorridor.add(new THREE.Mesh(motifGeometry,motifMaterial));
+      // White environment outside the source cutouts: a real recess, not a painted white arch.
+      const lightbox = new THREE.Mesh(track(new THREE.BoxGeometry(10.0,7.65,70)),track(new THREE.MeshBasicMaterial({color:new THREE.Color(2.0,2.15,2.4),side:THREE.BackSide})));
+      lightbox.position.z = -27;
+      capturedCorridor.add(lightbox);
+      corridorMaterials.push(floorMaterial,wallMaterial,lightbox.material,motifMaterial);
+      if (clippedState) for (const material of [floorMaterial,wallMaterial,lightbox.material,motifMaterial]) {
+        material.stencilWrite = true;
+        material.stencilFunc = THREE.EqualStencilFunc;
+        material.stencilRef = 2;
+        material.needsUpdate = true;
+      }
+      shaftMesh.visible = false;
+      // Existing travelGroup owns corridor travel and its stencil handoff.
+      for (const child of travelGroup.children) child.visible = false;
+      // Seal the actual far cross-section, not a smaller floating rectangle halfway down it.
+      endCap.position.z = -60.8;
+      endCap.scale.set(7.6/8.2,7.6/6.2,1);
+      endCap.visible = true;
+      travelGroup.add(endCap);
+      travelGroup.add(capturedCorridor);
+      onAssetsReady?.(group);
+    })
+    .catch((error: unknown) => { if (!disposed) console.warn("Goal blue corridor asset unavailable",error); });
 
   return { group, travelGroup, wallTexture, endGlowMat, monitorStencilMask, setMonitorClip };
 }

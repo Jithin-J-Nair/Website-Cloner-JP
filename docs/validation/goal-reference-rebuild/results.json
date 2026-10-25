@@ -1,0 +1,204 @@
+{
+  "engine": "Chromium / ANGLE SwiftShader; not physical GPU performance",
+  "suites": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "motion": "reduce",
+      "states": 11,
+      "errors": [],
+      "failedAssets": [],
+      "continuity": [
+        {
+          "y": 11422,
+          "delta": 6.249768627064611e-07,
+          "cameraDelta": 0
+        },
+        {
+          "y": 32691.600000000002,
+          "delta": 0.00016702478416923128,
+          "cameraDelta": 7.730059971273872e-07
+        },
+        {
+          "y": 36618.97451,
+          "delta": 0.000534797110788944,
+          "cameraDelta": 0
+        },
+        {
+          "y": 39796,
+          "delta": 1.8933179533942024e-05,
+          "cameraDelta": 0
+        }
+      ],
+      "reversible": true,
+      "cleanup": {
+        "retained": 0,
+        "goalCanvas": false,
+        "staleGoalRanges": false
+      },
+      "maximumDraws": 27,
+      "maximumTriangles": 261645
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "motion": "reduce",
+      "states": 11,
+      "errors": [],
+      "failedAssets": [],
+      "continuity": [
+        {
+          "y": 10789.2,
+          "delta": 0.00022340336094828217,
+          "cameraDelta": 0.0002081750499618451
+        },
+        {
+          "y": 30713.228000000003,
+          "delta": 0.00017788350811506586,
+          "cameraDelta": 6.008433115788134e-08
+        },
+        {
+          "y": 33824.068492000006,
+          "delta": 0.0006658538490736388,
+          "cameraDelta": 0
+        },
+        {
+          "y": 37371,
+          "delta": 1.850275470416385e-05,
+          "cameraDelta": 0
+        }
+      ],
+      "reversible": true,
+      "cleanup": {
+        "retained": 0,
+        "goalCanvas": false,
+        "staleGoalRanges": false
+      },
+      "maximumDraws": 18,
+      "maximumTriangles": 170019
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "motion": "no-preference",
+      "states": 11,
+      "errors": [],
+      "failedAssets": [],
+      "continuity": [
+        {
+          "y": 11422,
+          "delta": 6.249768627064611e-07,
+          "cameraDelta": 0
+        },
+        {
+          "y": 32691.600000000002,
+          "delta": 0.00016702478416923128,
+          "cameraDelta": 2.029645037530656e-06
+        },
+        {
+          "y": 36618.97451,
+          "delta": 0.000534797110788944,
+          "cameraDelta": 0
+        },
+        {
+          "y": 39796,
+          "delta": 1.8933179533942024e-05,
+          "cameraDelta": 0
+        }
+      ],
+      "reversible": true,
+      "cleanup": {
+        "retained": 0,
+        "goalCanvas": false,
+        "staleGoalRanges": false
+      },
+      "maximumDraws": 27,
+      "maximumTriangles": 261645,
+      "autonomous": {
+        "seconds": 107.084,
+        "telemetrySamples": 926,
+        "end": {
+          "state": "completed",
+          "progress": 1,
+          "virtualScroll": 40733.44,
+          "activation": 8431.56,
+          "end": 40733.44,
+          "runs": 1,
+          "y": 40733,
+          "wait": 0.42000000000000104,
+          "ctaTop": 504.359375,
+          "stopped": false
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "motion": "no-preference",
+      "states": 11,
+      "errors": [],
+      "failedAssets": [],
+      "continuity": [
+        {
+          "y": 10789.2,
+          "delta": 0.00022340336094828217,
+          "cameraDelta": 0.0002081750499618451
+        },
+        {
+          "y": 30713.228000000003,
+          "delta": 0.00017788350811506586,
+          "cameraDelta": 6.82297566652257e-07
+        },
+        {
+          "y": 33824.068492000006,
+          "delta": 0.0006658538490736388,
+          "cameraDelta": 0
+        },
+        {
+          "y": 37371,
+          "delta": 1.850275470416385e-05,
+          "cameraDelta": 0
+        }
+      ],
+      "reversible": true,
+      "cleanup": {
+        "retained": 0,
+        "goalCanvas": false,
+        "staleGoalRanges": false
+      },
+      "maximumDraws": 18,
+      "maximumTriangles": 170019,
+      "autonomous": {
+        "seconds": 51.539,
+        "telemetrySamples": 445,
+        "end": {
+          "state": "completed",
+          "progress": 1,
+          "virtualScroll": 38143.8,
+          "activation": 7984.7696,
+          "end": 38143.8,
+          "runs": 1,
+          "y": 38144,
+          "wait": 0.42003695652174033,
+          "ctaTop": 464.734375,
+          "stopped": false
+        }
+      }
+    }
+  ],
+  "compositorProbe": {
+    "viewport": "1024x900",
+    "motion": "normal",
+    "mode": "software renderer label overridden only to exercise existing desktop compositor path",
+    "errors": [],
+    "webglError": 0
+  }
+}
