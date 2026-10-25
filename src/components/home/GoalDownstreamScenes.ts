@@ -285,6 +285,43 @@ export function buildHologramEchoMaterial(
   );
 }
 
+/** One monotone virtual-document path; created on measurement, allocation-free when sampled.
+ * Timing is an art-directed local enhancement, not extracted Lusion source timing.
+ */
+export function createGoalPlaybackPath(m: {
+  emergenceStart: number; emergenceSpan: number; tunnelStart: number; tunnelSpan: number;
+  imgOutTop: number; endTop: number; endHeight: number; viewportH: number;
+}): (progress: number) => number {
+  const drop = m.imgOutTop - m.viewportH * 0.55;
+  const span = m.endTop - drop;
+  const times = [0, 0.16, 0.23, 0.47, 0.61, 0.78, 0.83, 0.89, 0.95, 1];
+  const positions = [
+    m.emergenceStart + m.emergenceSpan * 0.308, m.tunnelStart,
+    m.tunnelStart + m.tunnelSpan * 0.135, m.tunnelStart + m.tunnelSpan * 0.66,
+    m.tunnelStart + m.tunnelSpan * 0.85, drop,
+    drop + span * 0.30, drop + span * 0.72, m.endTop, m.endTop + m.endHeight * 0.42,
+  ];
+  const slopes = times.slice(1).map((t, i) => (positions[i + 1] - positions[i]) / (t - times[i]));
+  const tangents = positions.map((_, i) => {
+    if (i === 0 || i === positions.length - 1) return 0;
+    const a = slopes[i - 1], b = slopes[i];
+    if (a <= 0 || b <= 0) return 0;
+    const h0 = times[i] - times[i - 1], h1 = times[i + 1] - times[i];
+    const w0 = 2 * h1 + h0, w1 = h1 + 2 * h0;
+    return (w0 + w1) / (w0 / a + w1 / b);
+  });
+  return (progress) => {
+    const u = THREE.MathUtils.clamp(progress, 0, 1);
+    let i = 0;
+    while (i < times.length - 2 && u > times[i + 1]) i++;
+    const h = times[i + 1] - times[i];
+    const t = (u - times[i]) / h;
+    const t2 = t * t, t3 = t2 * t;
+    return (2 * t3 - 3 * t2 + 1) * positions[i] + (t3 - 2 * t2 + t) * h * tangents[i]
+      + (-2 * t3 + 3 * t2) * positions[i + 1] + (t3 - t2) * h * tangents[i + 1];
+  };
+}
+
 /** Frame-major captured debris transforms. Reuse outputs and quaternion scratch on every scroll sample. */
 export function createGlassFrameSampler(
   positions: ArrayLike<number>,
@@ -339,6 +376,85 @@ export function decodeCapturedGirder(source: THREE.BufferGeometry): THREE.Buffer
   return geometry;
 }
 
+/** Open-ended, nested glazing fitted to the existing shaft; never replaces captured girders.
+ * Shared pane geometry, two mobile / three desktop draws, no per-frame allocations.
+ */
+export function buildTunnelGlazing(
+  track: <T extends { dispose: () => void }>(item: T) => T,
+  environment: THREE.CubeTexture,
+  isMobile: boolean
+): { group: THREE.Group; update: (phase: number, opacity: number, reduced: boolean) => void } {
+  const group = new THREE.Group();
+  const panes: THREE.BufferGeometry[] = [];
+  for (let bay = 0; bay < 8; bay++) {
+    for (let side = 0; side < 4; side++) {
+      const pane = new THREE.PlaneGeometry(3.12, 4.4);
+      pane.rotateX(Math.PI / 2);
+      pane.translate(0, 1.56, -bay * 4.8);
+      pane.rotateZ(side * Math.PI / 2);
+      panes.push(pane);
+    }
+  }
+  const geometry = track(mergeGeometries(panes, false)!);
+  panes.forEach((pane) => pane.dispose());
+  const layers: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>[] = [];
+  for (let layer = 0; layer < (isMobile ? 2 : 3); layer++) {
+    const material = track(new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      uniforms: { uEnvironment: { value: environment }, uOpacity: { value: 0 }, uPhase: { value: 0 }, uLayer: { value: layer } },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vWorldPos;
+        varying vec3 vNormalW;
+        void main() {
+          vUv = uv;
+          vec4 world = modelMatrix * vec4(position, 1.0);
+          vWorldPos = world.xyz;
+          vNormalW = normalize(mat3(modelMatrix) * normal);
+          gl_Position = projectionMatrix * viewMatrix * world;
+        }`,
+      fragmentShader: `
+        uniform samplerCube uEnvironment;
+        uniform float uOpacity, uPhase, uLayer;
+        varying vec2 vUv;
+        varying vec3 vWorldPos, vNormalW;
+        void main() {
+          vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);
+          vec3 V = normalize(cameraPosition - vWorldPos);
+          float fres = pow(1.0 - abs(dot(N, V)), 4.0);
+          vec3 reflection = textureCube(uEnvironment, reflect(-V, N)).rgb;
+          vec3 refracted = textureCube(uEnvironment, refract(-V, N, 1.0 / 1.46)).rgb;
+          float border = min(min(vUv.x, 1.0 - vUv.x), min(vUv.y, 1.0 - vUv.y));
+          float edge = 1.0 - smoothstep(0.003, 0.017, border);
+          float sweep = pow(0.5 + 0.5 * sin(vWorldPos.z * 0.35 + uPhase * 10.0 - uLayer * 0.7), 8.0);
+          float depth = smoothstep(-40.0, -5.0, vWorldPos.z);
+          vec3 tint = vec3(0.16, 0.58, 0.73);
+          vec3 col = reflection * (0.16 + fres * 0.48) + refracted * tint * 0.18;
+          col += tint * edge * (0.18 + sweep * 0.08);
+          float alpha = (0.035 + fres * 0.13 + edge * 0.14) * uOpacity * depth;
+          gl_FragColor = vec4(col, alpha);
+        }`,
+    }));
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.setScalar(1 + layer * 0.13);
+    mesh.position.z = -layer * 1.35;
+    mesh.renderOrder = 1;
+    mesh.frustumCulled = false;
+    group.add(mesh);
+    layers.push(mesh);
+  }
+  return { group, update: (phase, opacity, reduced) => {
+    group.visible = opacity > 0.005;
+    for (let i = 0; i < layers.length; i++) {
+      const mesh = layers[i];
+      mesh.material.uniforms.uOpacity.value = opacity;
+      mesh.material.uniforms.uPhase.value = phase;
+      mesh.rotation.z = reduced ? 0 : Math.sin(phase * 2.8 + i * 0.45) * (0.025 + i * 0.018);
+      mesh.position.z = -i * 1.35 + phase * (1.6 + i * 0.4);
+    }
+  } };
+}
+
 /**
  * Single-Draw-Call GPU-Twisted Architectural Square Truss + Micro-Greeble Panel Tunnel (`Frames 09–14`)
  *
@@ -353,7 +469,8 @@ export function decodeCapturedGirder(source: THREE.BufferGeometry): THREE.Buffer
  */
 export function buildArchitecturalTrussTunnel(
   track: <T extends { dispose: () => void }>(item: T) => T,
-  isMobile: boolean
+  isMobile: boolean,
+  environment: THREE.CubeTexture
 ): {
   group: THREE.Group;
   tunnelMaterial: THREE.ShaderMaterial;
@@ -381,6 +498,7 @@ export function buildArchitecturalTrussTunnel(
         uVortexPinch: { value: 0.0 },
         uTravelZ: { value: 0.0 },
         uTunnelLength: { value: tunnelLength },
+        uEnvironment: { value: environment },
       },
       vertexShader: [
         "attribute float aSeed;",
@@ -435,12 +553,14 @@ export function buildArchitecturalTrussTunnel(
         "uniform float uOpacity;",
         "uniform float uPhase;",
         "uniform float uVortexPinch;",
+        "uniform samplerCube uEnvironment;",
         "",
         "void main() {",
         "  vec3 N = normalize(vNormalW);",
         "  vec3 L1 = normalize(vec3(0.0, 0.0, 1.0) - vWorldPos * vec3(0.28, 0.28, 0.04));",
         "  float ndl = max(dot(N, L1), 0.0);",
-        "  float rim = pow(1.0 - abs(N.z), 1.6);",
+        "  vec3 V = normalize(cameraPosition - vWorldPos);",
+        "  float rim = pow(1.0 - abs(dot(N, V)), 4.0);",
         "  float depthFade = smoothstep(-36.0, -3.5, vWorldPos.z);",
         "",
         "  float wCool  = 1.0 - smoothstep(0.24, 0.36, uPhase);",
@@ -448,10 +568,10 @@ export function buildArchitecturalTrussTunnel(
         "  float wEmer  = smoothstep(0.49, 0.59, uPhase) * (1.0 - smoothstep(0.76, 0.86, uPhase));",
         "  float wPink  = smoothstep(0.76, 0.86, uPhase);",
         "",
-        "  vec3 cCool  = vec3(0.012, 0.016, 0.020) + vec3(0.16, 0.20, 0.22) * (ndl * 0.4 + rim * 0.2);",
-        "  vec3 cWarm  = vec3(0.06, 0.03, 0.01) + vec3(1.0, 0.3, 0.1) * ndl * 0.5 + vec3(0.1, 0.8, 0.8) * rim * 0.3;",
-        "  vec3 cEmer  = vec3(0.01, 0.08, 0.04) + vec3(0.2, 1.0, 0.5) * (ndl * 0.6 + rim * 0.4);",
-        "  vec3 cPink  = vec3(0.15, 0.01, 0.08) + vec3(1.0, 0.1, 0.6) * (ndl * 0.8 + rim * 0.6) + vec3(0.1, 0.9, 1.0) * rim * 0.3;",
+        "  vec3 cCool  = vec3(0.012, 0.018, 0.026) + vec3(0.055, 0.085, 0.12) * ndl;",
+        "  vec3 cWarm  = vec3(0.035, 0.018, 0.012) + vec3(0.18, 0.055, 0.025) * ndl;",
+        "  vec3 cEmer  = vec3(0.012, 0.026, 0.022) + vec3(0.045, 0.16, 0.10) * ndl;",
+        "  vec3 cPink  = vec3(0.035, 0.012, 0.028) + vec3(0.19, 0.035, 0.12) * ndl;",
         "",
         "  vec3 baseCol = cCool * wCool + cWarm * wWarm + cEmer * wEmer + cPink * wPink;",
         "",
@@ -461,12 +581,17 @@ export function buildArchitecturalTrussTunnel(
         "  vec3 glintColor = mix(vec3(0.2, 0.8, 1.0), vec3(1.0, 0.4, 0.1), wWarm) * 4.0;",
         "  glintColor = mix(glintColor, vec3(0.4, 1.0, 0.6) * 5.0, wEmer);",
         "  glintColor = mix(glintColor, vec3(1.0, 0.2, 0.8) * 6.0, wPink);",
-        "  vec3 V = normalize(cameraPosition - vWorldPos);",
-        "  float spec = pow(max(dot(N, normalize(L1 + V)), 0.0), 32.0);",
-        "  baseCol = baseCol * mix(0.28, 1.0, vAo) + vec3(0.65, 0.78, 0.85) * spec;",
-        "  baseCol += glintColor * isGlint * glintInt * (1.0 - uVortexPinch);",
+        "  float spec = pow(max(dot(N, normalize(L1 + V)), 0.0), 56.0);",
+        "  vec3 reflected = textureCube(uEnvironment, reflect(-V, N)).rgb;",
+        "  vec3 reflectionTint = vec3(0.55, 0.78, 0.95) * wCool + vec3(1.0, 0.32, 0.17) * wWarm;",
+        "  reflectionTint += vec3(0.28, 0.95, 0.65) * wEmer + vec3(1.0, 0.27, 0.65) * wPink;",
+        "  baseCol = (baseCol + reflected * reflectionTint * (0.18 + rim * 0.35)) * mix(0.28, 1.0, vAo);",
+        "  baseCol += vec3(0.65, 0.78, 0.85) * spec;",
+        "  // Confine glints instead of flooding entire structural beams with HDR color.",
+        "  float glintMask = pow(max(0.0, sin(vWorldPos.z * 2.7 + vSeed * 8.0)), 24.0);",
+        "  baseCol += glintColor * isGlint * glintInt * glintMask * 0.4 * (1.0 - uVortexPinch);",
         "",
-        "  baseCol = mix(baseCol, vec3(2.0, 0.8, 1.5), uVortexPinch * 0.85);",
+        "  baseCol = mix(baseCol, baseCol + vec3(0.26, 0.08, 0.22), uVortexPinch * 0.65);",
         "",
         "  gl_FragColor = vec4(baseCol * depthFade, uOpacity);",
         "}"
@@ -593,6 +718,7 @@ export function buildBlueArchCorridor(
   track: <T extends { dispose: () => void }>(item: T) => T
 ): {
   group: THREE.Group;
+  travelGroup: THREE.Group;
   wallTexture: THREE.CanvasTexture;
   endGlowMat: THREE.ShaderMaterial;
   monitorStencilMask: THREE.Mesh;
@@ -736,12 +862,14 @@ export function buildBlueArchCorridor(
   const archHdrMat = track(
     new THREE.MeshBasicMaterial({ color: new THREE.Color(2.15, 2.22, 2.35) }) // triggers realistic window bloom!
   );
-  group.add(new THREE.Mesh(mergedArchGeo, archHdrMat));
+  const travelGroup = new THREE.Group();
+  group.add(travelGroup);
+  travelGroup.add(new THREE.Mesh(mergedArchGeo, archHdrMat));
 
   const mergedPilGeo = track(mergeGeometries(pilasterParts, false)!);
   pilasterParts.forEach((g) => g.dispose());
   const pilMat = track(new THREE.MeshBasicMaterial({ color: 0x2648f8 }));
-  group.add(new THREE.Mesh(mergedPilGeo, pilMat));
+  travelGroup.add(new THREE.Mesh(mergedPilGeo, pilMat));
 
   const endGlowMat = track(
     new THREE.ShaderMaterial({
@@ -805,7 +933,7 @@ export function buildBlueArchCorridor(
     }
   };
 
-  return { group, wallTexture, endGlowMat, monitorStencilMask, setMonitorClip };
+  return { group, travelGroup, wallTexture, endGlowMat, monitorStencilMask, setMonitorClip };
 }
 
 /**

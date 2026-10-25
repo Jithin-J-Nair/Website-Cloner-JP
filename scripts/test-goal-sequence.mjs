@@ -16,12 +16,34 @@ try {
     fs.writeFileSync(path.join(dir, `${path.basename(name)}.mjs`), compiled);
   }
   const { parseLusionBuf } = await import(pathToFileURL(path.join(dir, 'lusion-buf-loader.mjs')));
-  const { decodeCapturedGirder, createGlassFrameSampler } = await import(pathToFileURL(path.join(dir, 'GoalDownstreamScenes.mjs')));
+  const { decodeCapturedGirder, createGlassFrameSampler, createGoalPlaybackPath } = await import(pathToFileURL(path.join(dir, 'GoalDownstreamScenes.mjs')));
   const { createCapturedPoseSampler } = await import(pathToFileURL(path.join(dir, 'AstronautEmergenceAssets.mjs')));
   const load = (name) => {
     const data = fs.readFileSync(`media-bundle/models/tunnels/${name}.buf`);
     return parseLusionBuf(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
   };
+
+  for (const height of [844, 900, 1200]) {
+    const m = { emergenceStart: height * 8, emergenceSpan: height * 2.5,
+      tunnelStart: height * 10.5, tunnelSpan: height * 29.2, imgOutTop: height * 39.9,
+      endTop: height * 42, endHeight: height * 2.48, viewportH: height };
+    const path = createGoalPlaybackPath(m);
+    assert.equal(path(0), m.emergenceStart + m.emergenceSpan * 0.308);
+    assert.equal(path(1), m.endTop + m.endHeight * 0.42);
+    assert.equal(path(-1), path(0)); assert.equal(path(2), path(1));
+    let previous = path(0);
+    for (let i = 1; i <= 10000; i++) {
+      const y = path(i / 10000);
+      assert.ok(Number.isFinite(y) && y >= previous, 'playhead may never reverse or overshoot');
+      previous = y;
+    }
+    for (const u of [0.16, 0.23, 0.47, 0.61, 0.78, 0.83, 0.89, 0.95]) {
+      const e = 1e-7;
+      const a = (path(u) - path(u - e)) / e, b = (path(u + e) - path(u)) / e;
+      assert.ok(Math.abs(a - b) / Math.max(1, a, b) < 0.0001, 'C1 velocity continuity between cinematic beats');
+    }
+  }
+  console.log('PASS: monotone cinematic activation/end, clamping, 30,000 samples and continuous beat velocity');
 
   const source = load('grid_base_hd');
   const original = source.attributes.position.slice();

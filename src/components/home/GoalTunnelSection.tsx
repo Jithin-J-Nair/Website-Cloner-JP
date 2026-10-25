@@ -27,10 +27,12 @@ import {
 import {
   buildArchitecturalTrussTunnel,
   buildBlueArchCorridor,
+  buildTunnelGlazing,
   buildDiamondsAndPopStickers,
   buildHologramEchoMaterial,
   buildVisorLedMatrix,
   createGlassFrameSampler,
+  createGoalPlaybackPath,
   evaluateSuitWavePose,
   SUIT_POSE_CORRIDOR_FLY,
   SUIT_POSE_CTA_RELAXED,
@@ -84,6 +86,15 @@ declare global {
         shardsLoaded: boolean;
         portalFlash: number;
         flashVisible: boolean;
+        corridorTravel: number;
+        glazingLayers: number;
+        glassOpacity: number;
+        crackProgress: number;
+        ringVisible: boolean;
+      };
+      playback: {
+        state: "armed" | "playing" | "paused" | "completed";
+        progress: number; virtualScroll: number; activation: number; end: number; runs: number;
       };
       scrollForEmergence: (u: number) => number;
     };
@@ -151,6 +162,9 @@ export function GoalTunnelSection() {
   const titleLineRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
+  const playbackControlsRef = useRef<HTMLDivElement | null>(null);
+  const pausePlaybackRef = useRef<HTMLButtonElement | null>(null);
+  const skipPlaybackRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const goalEl = goalRef.current;
@@ -180,7 +194,7 @@ export function GoalTunnelSection() {
       return;
     }
 
-    const reducedMotion =
+    let reducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -324,14 +338,29 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     // 5. High-Fidelity Single-Draw-Call Downstream Worlds (`Frames 09–20`)
     // -------------------------------------------------------------------------
-    const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit);
-    trussSystem.group.visible = false;
-    scene.add(trussSystem.group);
-
     const blueCorridor = buildBlueArchCorridor(track);
     blueCorridor.group.visible = false;
     scene.add(blueCorridor.group);
     scene.add(blueCorridor.monitorStencilMask);
+
+    // Capture the actual blue architecture once for local glass reflection/refraction.
+    // No dynamic cube render, PMREM rebuild or physics is added to the frame loop.
+    const corridorEnvironment = track(new THREE.WebGLCubeRenderTarget(isMobileInit ? 64 : 128));
+    const reflectionScene = new THREE.Scene();
+    reflectionScene.background = new THREE.Color(0x0a104a);
+    const reflectedCorridor = blueCorridor.group.clone(true);
+    reflectedCorridor.visible = true;
+    reflectionScene.add(reflectedCorridor);
+    const reflectionCamera = new THREE.CubeCamera(0.1, 80, corridorEnvironment);
+    reflectionCamera.position.set(0, 0, 1.5);
+    reflectionCamera.update(glRenderer, reflectionScene);
+    reflectionScene.clear();
+    const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit, corridorEnvironment.texture);
+    trussSystem.group.visible = false;
+    scene.add(trussSystem.group);
+    const glazing = buildTunnelGlazing(track, corridorEnvironment.texture, isMobileInit);
+    scene.add(glazing.group);
+    glazing.group.visible = false;
 
     // Authentic Lusion pre-calculated 3D glass shards & animation (`Frame 16`).
     let shardsMesh: THREE.Mesh | null = null;
@@ -383,6 +412,7 @@ export function GoalTunnelSection() {
             depthWrite: false,
             uniforms: { 
               uOpacity: { value: 0 },
+              uEnvironment: { value: corridorEnvironment.texture },
               uFrameData: { value: null }, 
               uOrientData: { value: null } 
             },
@@ -392,6 +422,8 @@ export function GoalTunnelSection() {
               "uniform sampler2D uOrientData;",
               "varying vec3 vNormalV;",
               "varying vec3 vPosV;",
+              "varying vec3 vWorldPos;",
+              "varying vec3 vNormalW;",
               "vec3 applyQuat(vec3 v, vec4 q) {",
               "  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);",
               "}",
@@ -404,23 +436,30 @@ export function GoalTunnelSection() {
               "  vec3 pos = center + applyQuat(position, q);",
               "  vec4 mv = modelViewMatrix * vec4(pos, 1.0);",
               "  vPosV = mv.xyz;",
-              "  // Source mesh normals follow each rigid shard rotation.",
+              "  vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;",
+              "  // Inverse-transpose handles the non-uniform monitor aperture scale.",
               "  vNormalV = normalize(normalMatrix * applyQuat(normal, q));",
+              "  vNormalW = normalize((vec4(vNormalV, 0.0) * viewMatrix).xyz);",
               "  gl_Position = projectionMatrix * mv;",
               "}",
             ].join("\n"),
             fragmentShader: [
               "varying vec3 vNormalV;",
               "varying vec3 vPosV;",
+              "varying vec3 vWorldPos;",
+              "varying vec3 vNormalW;",
               "uniform float uOpacity;",
+              "uniform samplerCube uEnvironment;",
               "void main() {",
-              "  vec3 N = normalize(vNormalV);",
-              "  vec3 V = normalize(-vPosV);",
-              "  float fres = pow(1.0 - abs(dot(N, V)), 1.75);",
-              "  float spec = pow(max(dot(N, normalize(vec3(-0.45, 0.72, 0.55))), 0.0), 12.0);",
-              "  vec3 glassTint = mix(vec3(0.42, 0.62, 0.98), vec3(0.92, 0.96, 1.0), fres);",
-              "  vec3 col = glassTint + vec3(1.9) * spec;",
-              "  float alpha = clamp(0.30 + fres * 0.66 + spec, 0.0, 1.0) * uOpacity;",
+              "  vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);",
+              "  vec3 V = normalize(cameraPosition - vWorldPos);",
+              "  float fres = 0.04 + 0.96 * pow(1.0 - abs(dot(N, V)), 5.0);",
+              "  vec3 reflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
+              "  vec3 transmission = textureCube(uEnvironment, refract(-V, N, 1.0 / 1.46)).rgb;",
+              "  float spec = pow(max(dot(normalize(vNormalV), normalize(vec3(-0.45, 0.72, 0.55))), 0.0), 28.0);",
+              "  vec3 col = mix(transmission * vec3(0.42, 0.58, 0.94), reflection, 0.24 + fres * 0.70);",
+              "  col += vec3(0.15, 0.38, 0.65) * spec;",
+              "  float alpha = clamp(0.12 + fres * 0.56 + spec * 0.12, 0.0, 0.82) * uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
             ].join("\n"),
@@ -573,10 +612,56 @@ export function GoalTunnelSection() {
     // Layout Measurement, Pointer Parallax, & Deterministic Scroll Choreography
     // -------------------------------------------------------------------------
     let metrics: GoalLayoutMetrics | null = null;
+    let playbackPath: ((u: number) => number) | null = null;
+    let playbackState: "armed" | "playing" | "paused" | "completed" = "armed";
+    let playbackProgress = 0;
+    let playbackRuns = 0;
+    let playbackTimeOrigin = 0;
+    let cinematicTimeOffset = 0;
+    let frameClock = performance.now();
+    let userPaused = false;
+    // Reduced motion avoids involuntary travel entirely: the established scrub remains available.
+    // A live preference change also releases playback immediately (handled below).
+    const controls = playbackControlsRef.current;
+    const pauseButton = pausePlaybackRef.current;
+    const skipButton = skipPlaybackRef.current;
+    type ScrollDriver = { stop: () => void; start: () => void;
+      scrollTo: (y: number, o: { immediate: boolean; force: boolean }) => void };
+    const scrollDriver = () => (window as unknown as { __lenis?: ScrollDriver }).__lenis;
+    const syncDocument = (y: number) => {
+      const driver = scrollDriver();
+      if (driver) driver.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo({ top: y, behavior: "instant" });
+    };
+    const playing = () => playbackState === "playing" || playbackState === "paused";
+    const blockedByChrome = () => {
+      const store = useStudioStore.getState();
+      return store.menuOpen || store.reelOpen || store.isTransitioning;
+    };
+    const releasePlayback = (complete: boolean) => {
+      if (!playing()) return;
+      if (complete && playbackPath) {
+        playbackProgress = 1;
+        const y = playbackPath(1);
+        syncDocument(y);
+        targetScrollY = smoothScrollY = y;
+      }
+      cinematicTimeOffset = (performance.now() - startClock) * 0.001 - (playbackTimeOrigin + playbackProgress * 26);
+      playbackState = "completed";
+      userPaused = false;
+      if (complete && controls?.contains(document.activeElement)) {
+        document.getElementById("end-section-title-link")?.focus({ preventScroll: true });
+      }
+      if (controls) controls.hidden = true;
+      // Do not reopen scrolling behind an open navigation/reel overlay.
+      const chrome = useStudioStore.getState();
+      if (!chrome.menuOpen && !chrome.reelOpen) scrollDriver()?.start();
+    };
     let ownedScrollManager: NonNullable<Window["__lusionInspector"]>["scrollManager"];
     let targetScrollY = typeof window !== "undefined" ? window.scrollY : 0;
     let smoothScrollY = targetScrollY;
-    let docVisible = true;
+    let lastObservedScrollY = targetScrollY;
+    let docVisible = document.visibilityState === "visible";
     let wasInBand = true;
     let rafId = 0;
     const startClock = performance.now();
@@ -603,7 +688,9 @@ export function GoalTunnelSection() {
         astronautMatrix: new Array<number>(16).fill(0),
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
+        corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, crackProgress: 0, ringVisible: false,
       },
+      playback: { state: "armed", progress: 0, virtualScroll: 0, activation: 0, end: 0, runs: 0 },
       scrollForEmergence: (u: number) => {
         if (!metrics) measure();
         const m = metrics!;
@@ -716,6 +803,12 @@ export function GoalTunnelSection() {
         baseWordGapPx,
       };
 
+      playbackPath = createGoalPlaybackPath(metrics);
+      if (window.__goalAstronautTelemetry) {
+        window.__goalAstronautTelemetry.playback.activation = playbackPath(0);
+        window.__goalAstronautTelemetry.playback.end = playbackPath(1);
+      }
+
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       glRenderer.setPixelRatio(dpr);
       glRenderer.setSize(W, H, false);
@@ -753,6 +846,9 @@ export function GoalTunnelSection() {
           contentSizePixel: Math.max(0, document.documentElement.scrollHeight - H),
           scrollLimit: Math.max(0, document.documentElement.scrollHeight - H),
           scrollToPixel: (y: number) => {
+            // Explicit inspector seeking cancels autonomous playback; normal native scroll activates it.
+            releasePlayback(false);
+            playbackState = "completed";
             const win = window as unknown as {
               __lenis?: {
                 resize: () => void;
@@ -814,7 +910,8 @@ export function GoalTunnelSection() {
     const _screenRotation = new THREE.Quaternion();
     const _zAxis = new THREE.Vector3(0, 0, 1);
 
-    const renderSceneAtScroll = (sy: number, elapsedSec: number) => {
+    const renderSceneAtScroll = (sy: number, wallElapsedSec: number) => {
+      const elapsedSec = playing() ? playbackTimeOrigin + playbackProgress * 26 : wallElapsedSec - cinematicTimeOffset;
       const t0 = performance.now();
       if (!metrics) measure();
       const m = metrics;
@@ -863,7 +960,6 @@ export function GoalTunnelSection() {
       const shatterEnd = m.endTop;
       const tShatter = clamp01((sy - shatterStart) / Math.max(1, shatterEnd - shatterStart));
       const tWait = clamp01((sy - m.endTop) / Math.max(1, m.endHeight));
-      const inWhiteStudioWall = tOutPull > 0.35 && tShatter < 0.88 && tWait <= 0.001;
       const footerWipingMost = sy > m.endTop + m.endHeight - H * 0.45;
       const endBottomEl = document.getElementById("end-bottom");
       if (endBottomEl) {
@@ -876,10 +972,8 @@ export function GoalTunnelSection() {
         endBottomEl.style.pointerEvents = footerEnter > 0.6 ? "none" : "auto";
       }
 
-      // Exact header polarity:
-      // - `ice` (jet-black wordmark) in Frames `01..04`, `16` (white Studio Display wall!), and `#footer-section`
-      // - `void` (crisp white wordmark + white sound/menu pills) across `05..15` and `17..19`!
-      const wantDarkHeader = uEmergence > 0.45 && !inWhiteStudioWall && !footerWipingMost;
+      // Keep white chrome across the blue monitor environment; restore dark chrome at footer.
+      const wantDarkHeader = uEmergence > 0.45 && !footerWipingMost;
       if (lastSurfaceDarkRef.current !== wantDarkHeader) {
         lastSurfaceDarkRef.current = wantDarkHeader;
         setActiveSurface(wantDarkHeader ? "void" : "ice");
@@ -1023,12 +1117,11 @@ export function GoalTunnelSection() {
       if (portalMaskActive) {
         backdropEl.style.opacity = "0";
       } else if (tOutPull > 0.02 && tWait <= 0.001) {
-        // Pure bright studio wall (`#f7f8fc`) surrounding the Apple Studio Display (`Frame 16`),
-        // transitioning cleanly into deep `#000000` space as the astronaut bursts through (`16 -> 17`)!
-        const whiteWall = smoothstep(0.14, 0.55, tOutPull) * (1 - smoothstep(0.84, 0.96, tShatter));
-        const rCh = Math.round(247 * whiteWall);
-        const gCh = Math.round(248 * whiteWall);
-        const bCh = Math.round(252 * whiteWall);
+        // Deep indigo surroundings keep the break inside the same blue environment.
+        const blueWall = smoothstep(0.14, 0.55, tOutPull) * (1 - smoothstep(0.84, 0.96, tShatter));
+        const rCh = Math.round(10 * blueWall);
+        const gCh = Math.round(16 * blueWall);
+        const bCh = Math.round(74 * blueWall);
         backdropEl.style.opacity = "1";
         backdropEl.style.background = `rgb(${rCh}, ${gCh}, ${bCh})`;
       } else {
@@ -1050,6 +1143,10 @@ export function GoalTunnelSection() {
       } else {
         monitorBezelEl.style.display = "none";
       }
+
+      const crackProgress = smoothstep(0.12, 0.34, tShatter);
+      monitorBezelEl.style.setProperty("--goal-crack-opacity", String(crackProgress * (1 - smoothstep(0.52, 0.72, tShatter))));
+      monitorBezelEl.style.setProperty("--goal-crack-dash", String(1 - crackProgress));
 
       // -----------------------------------------------------------------------
       // C. "STEP INTO A NEW WORLD / AND LET YOUR / IMAGINATION RUN WILD" (`Frames 06–08`)
@@ -1128,15 +1225,9 @@ export function GoalTunnelSection() {
         optics.spaceHaloMat.uniforms.uOpacity.value = haloVis;
       }
 
-      // Chromatic dispersion lens-ring flare:
-      // - Preserved untouched in `Frames 05–08` (`kf.ringFlare * 0.34`)
-      // - Delicate translucent rainbow spectral rim in `Frame 09` (`0.29`) and gentle corridor dispersion (`0.14`)!
-      const entryRing = !inEmergencePhase ? 0.29 * (1 - smoothstep(0.06, 0.16, tTunnel)) : 0;
-      const shaftRing =
-        !inEmergencePhase
-          ? 0.14 * smoothstep(0.12, 0.20, tTunnel) * (1 - smoothstep(0.58, 0.66, tTunnel))
-          : 0;
-      const ringVis = inEmergencePhase ? kf.ringFlare * 0.34 : Math.max(entryRing, shaftRing);
+      // The downstream full-screen ring is an independent additive overlay, not bloom or light.
+      // Remove it locally; preserve the established orbital optics before the shaft.
+      const ringVis = inEmergencePhase ? kf.ringFlare * 0.34 : 0;
       optics.chromaticRingMesh.visible = ringVis > 0.002;
       if (optics.chromaticRingMesh.visible) {
         optics.chromaticRingMat.uniforms.uOpacity.value = ringVis;
@@ -1155,6 +1246,7 @@ export function GoalTunnelSection() {
       const blackIn = !inEmergencePhase ? smoothstep(0.065, 0.135, tTunnel) : 0;
       const blackOut = 1 - smoothstep(0.80, 0.845, tTunnel);
       const blackVis = blackIn * blackOut;
+      glazing.update(tTunnel, blackVis, reducedMotion);
 
       // Seamless white-lavender portal flash bridging `Frame 14 -> Frame 15` (`tTunnel ~ 0.82`)
       const portalFlash =
@@ -1216,7 +1308,9 @@ export function GoalTunnelSection() {
       _monitorRotation.copy(camera.quaternion).multiply(_screenRotation);
 
       if (blueCorridor.group.visible) {
-        blueCorridor.wallTexture.offset.y = -tTunnel * 2.4;
+        const blueFlight = smoothstep(0.815, 0.995, tTunnel);
+        blueCorridor.travelGroup.position.z = 22 * Math.pow(blueFlight, 1.6);
+        blueCorridor.wallTexture.offset.y = reducedMotion ? 0 : -blueFlight * 0.42;
         if (clipToMonitor) {
           blueCorridor.monitorStencilMask.position.copy(_monitorCenter);
           blueCorridor.monitorStencilMask.quaternion.copy(_monitorRotation);
@@ -1234,13 +1328,13 @@ export function GoalTunnelSection() {
 
       // 3. Authentic Plate-Glass Shatter Burst (`Frame 16`)
       if (shardsMesh) {
-        const shardVis = smoothstep(0.18, 0.42, tShatter) * (1 - smoothstep(0.85, 0.97, tShatter)) * (tWait > 0.001 ? 0 : 1);
+        const shardVis = smoothstep(0.30, 0.40, tShatter) * (1 - smoothstep(0.85, 0.97, tShatter)) * (tWait > 0.001 ? 0 : 1);
         shardsMesh.visible = shardVis > 0.005;
         if (shardsMesh.visible) {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
           
-          const burst = smoothstep(0.18, 0.82, tShatter);
+          const burst = smoothstep(0.32, 0.84, tShatter);
           const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
           sampleFrame(clamp01(burst) * (framesPerShard - 1));
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
@@ -1406,14 +1500,20 @@ export function GoalTunnelSection() {
           };
         }
 
+        if (!inEmergencePhase && !reducedMotion) {
+          const blueDrift = smoothstep(0.85, 0.98, tTunnel) * (1 - smoothstep(0.14, 0.62, tShatter));
+          az += blueDrift * 0.28;
+          ay += Math.sin(blueDrift * Math.PI * 2) * 0.025;
+          rx += Math.sin(blueDrift * Math.PI * 2) * 0.035;
+        }
         applySuitJointPose(mainAstro, jointPose);
         // Captured parts have deformation palettes, not the legacy GLB's named joints.
-        // Sample the actual float/drop/wait clips from scroll; never advance a mixer by wall time.
+        // Sample all clips from the shared virtual coordinate, never a competing animation mixer.
         const bakedFrame = tWait > 0
           ? lerp(139, 287, tWait)
           : tShatter > 0
             ? lerp(89, 139, tShatter)
-            : 89 * clamp01(tTunnel / 0.86);
+            : 89 * clamp01((sy - m.tunnelStart) / Math.max(1, shatterStart - m.tunnelStart));
         mainAstro.sampleBakedPose?.(bakedFrame, inEmergencePhase ? 0 : smoothstep(0, 0.08, tTunnel));
         if (window.__goalAstronautTelemetry) {
           window.__goalAstronautTelemetry.sceneState.bakedFrame = bakedFrame;
@@ -1498,6 +1598,11 @@ export function GoalTunnelSection() {
         state.shardsLoaded = shardsMesh !== null;
         state.portalFlash = portalFlash;
         state.flashVisible = trussSystem.group.visible && portalFlash > 0.001;
+        state.corridorTravel = blueCorridor.group.visible ? blueCorridor.travelGroup.position.z : 0;
+        state.glazingLayers = glazing.group.visible ? glazing.group.children.length : 0;
+        state.glassOpacity = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uOpacity.value : 0;
+        state.crackProgress = crackProgress;
+        state.ringVisible = optics.chromaticRingMesh.visible;
       }
     };
 
@@ -1506,7 +1611,47 @@ export function GoalTunnelSection() {
         rafId = 0;
         return;
       }
+      const now = performance.now();
+      const deltaSeconds = Math.min(0.25, Math.max(0, (now - frameClock) * 0.001));
+      frameClock = now;
       targetScrollY = window.scrollY;
+      const resetAt = metrics ? metrics.emergenceStart - metrics.viewportH * 0.25 : 0;
+      const returnedBeforeTablet = lastObservedScrollY >= resetAt && targetScrollY < resetAt;
+      lastObservedScrollY = targetScrollY;
+      if (metrics && playbackPath && !reducedMotion && window.__goalAstronautTelemetry?.glbLoaded && !window.__goalAstronautTelemetry.fallbackVisible) {
+        const activation = playbackPath(0);
+        if (playbackState === "completed" && returnedBeforeTablet) {
+          playbackState = "armed";
+          playbackProgress = 0;
+        }
+        if (playbackState === "armed" && targetScrollY >= activation - 1 && targetScrollY < metrics.endTop && !blockedByChrome()) {
+          playbackTimeOrigin = (now - startClock) * 0.001 - cinematicTimeOffset;
+          playbackState = "playing";
+          playbackProgress = 0;
+          playbackRuns++;
+          scrollDriver()?.stop();
+          if (controls) controls.hidden = false;
+          if (pauseButton) { pauseButton.textContent = "Pause"; pauseButton.setAttribute("aria-label", "Pause cinematic"); }
+        } else if (playing()) {
+          const paused = userPaused || blockedByChrome();
+          playbackState = paused ? "paused" : "playing";
+          if (!paused) playbackProgress = Math.min(1, playbackProgress + deltaSeconds / 26);
+        }
+        if (playing()) {
+          // Only this clock drives both scene pose and document placement during playback.
+          scrollDriver()?.stop();
+          targetScrollY = smoothScrollY = playbackPath(playbackProgress);
+          syncDocument(targetScrollY);
+          if (playbackProgress === 1) releasePlayback(true);
+        }
+      }
+      if (window.__goalAstronautTelemetry) {
+        const playback = window.__goalAstronautTelemetry.playback;
+        playback.state = playbackState;
+        playback.progress = playbackProgress;
+        playback.virtualScroll = smoothScrollY;
+        playback.runs = playbackRuns;
+      }
       const vhNow = window.innerHeight;
       const inBand =
         metrics !== null &&
@@ -1533,12 +1678,14 @@ export function GoalTunnelSection() {
         }
       }
 
-      pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * 0.075;
-      pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * 0.075;
+      if (playbackState !== "paused") {
+        pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * 0.075;
+        pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * 0.075;
+      }
 
       renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);
 
-      if (reducedMotion && smoothScrollY === targetScrollY) {
+      if (reducedMotion && smoothScrollY === targetScrollY && !playing()) {
         rafId = 0;
         return;
       }
@@ -1566,13 +1713,72 @@ export function GoalTunnelSection() {
 
     const onResize = () => {
       measure();
-      renderSceneAtScroll(window.scrollY, (performance.now() - startClock) * 0.001);
+      if (playing() && playbackPath) {
+        targetScrollY = smoothScrollY = playbackPath(playbackProgress);
+        syncDocument(targetScrollY);
+      }
+      renderSceneAtScroll(playing() ? smoothScrollY : window.scrollY, (performance.now() - startClock) * 0.001);
+      ensureLoop();
     };
 
     const onVisibility = () => {
       docVisible = document.visibilityState === "visible";
+      frameClock = performance.now(); // Do not charge hidden-tab time to the cinematic.
       ensureLoop();
     };
+
+    const onPausePlayback = () => {
+      if (!playing()) return;
+      userPaused = !userPaused;
+      if (pauseButton) {
+        pauseButton.textContent = userPaused ? "Resume" : "Pause";
+        pauseButton.setAttribute("aria-label", userPaused ? "Resume cinematic" : "Pause cinematic");
+      }
+      frameClock = performance.now();
+      ensureLoop();
+    };
+    const onSkipPlayback = () => { releasePlayback(true); ensureLoop(); };
+    const onScrollInput = (event: WheelEvent | TouchEvent) => {
+      // Leave menus, browser zoom and interactive controls alone.
+      if (event instanceof WheelEvent && event.ctrlKey) return;
+      if ("touches" in event && event.touches.length > 1) return;
+      if (playing() && !blockedByChrome()) event.preventDefault();
+    };
+    const onScrollKey = (event: KeyboardEvent) => {
+      if (!playing() || blockedByChrome() || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.target instanceof Element && event.target.closest("button, a, input, textarea, select, [contenteditable]")) return;
+      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) event.preventDefault();
+    };
+    const onNavigate = (event: MouseEvent) => {
+      // Explicit anchor/navigation intent wins over the movie; no trapped links or route transitions.
+      if (event.target instanceof Element && event.target.closest("a[href], [data-scroll-to], #header-right-talk-btn")) {
+        releasePlayback(false);
+        // Explicit navigation before entry must not be hijacked when smooth scrolling crosses the trigger.
+        playbackState = "completed";
+      }
+    };
+    const onHistoryNavigate = () => {
+      releasePlayback(false);
+      playbackState = "completed";
+    };
+    window.addEventListener("popstate", onHistoryNavigate);
+    window.addEventListener("hashchange", onHistoryNavigate);
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onMotionChange = () => {
+      reducedMotion = motionQuery.matches;
+      if (reducedMotion) {
+        pointerTarget.x = pointerTarget.y = pointerSmooth.x = pointerSmooth.y = 0;
+        releasePlayback(true);
+      }
+      ensureLoop();
+    };
+    pauseButton?.addEventListener("click", onPausePlayback);
+    skipButton?.addEventListener("click", onSkipPlayback);
+    window.addEventListener("wheel", onScrollInput, { passive: false });
+    window.addEventListener("touchmove", onScrollInput, { passive: false });
+    window.addEventListener("keydown", onScrollKey);
+    document.addEventListener("click", onNavigate, true);
+    motionQuery.addEventListener("change", onMotionChange);
 
     const ro = new ResizeObserver(() => {
       measure();
@@ -1587,7 +1793,17 @@ export function GoalTunnelSection() {
     ensureLoop();
 
     return () => {
+      releasePlayback(false);
       unmounted = true;
+      pauseButton?.removeEventListener("click", onPausePlayback);
+      skipButton?.removeEventListener("click", onSkipPlayback);
+      window.removeEventListener("wheel", onScrollInput);
+      window.removeEventListener("touchmove", onScrollInput);
+      window.removeEventListener("keydown", onScrollKey);
+      document.removeEventListener("click", onNavigate, true);
+      motionQuery.removeEventListener("change", onMotionChange);
+      window.removeEventListener("popstate", onHistoryNavigate);
+      window.removeEventListener("hashchange", onHistoryNavigate);
       if (rafId) window.cancelAnimationFrame(rafId);
       ro.disconnect();
       window.removeEventListener("scroll", onScroll);
@@ -1624,6 +1840,16 @@ export function GoalTunnelSection() {
       aria-label="Our Goal"
       className="relative w-full bg-[#eff0f9] text-[#111319]"
     >
+      <div
+        ref={playbackControlsRef}
+        hidden
+        role="group"
+        aria-label="Cinematic controls"
+        className="fixed bottom-6 right-5 z-[45] rounded-full border border-white/20 bg-[#080d29]/85 px-2 text-xs text-white backdrop-blur-md sm:right-8"
+      >
+        <button ref={pausePlaybackRef} type="button" aria-label="Pause cinematic" className="min-h-11 min-w-16 rounded-full px-3 focus-visible:outline-2 focus-visible:outline-cyan-200">Pause</button>
+        <button ref={skipPlaybackRef} type="button" aria-label="Skip cinematic" className="min-h-11 min-w-16 rounded-full px-3 focus-visible:outline-2 focus-visible:outline-cyan-200">Skip</button>
+      </div>
       {/* =======================================================================
           Part A: Editorial Context Band + Left Tablet Portal Anchor (`#home-goal-image-in`)
           ======================================================================= */}
@@ -1741,7 +1967,7 @@ export function GoalTunnelSection() {
       >
         <div ref={backdropGlowRef} className="absolute inset-0 z-[1] transition-none" />
 
-        {/* Downstream Exit Apple Studio Display Chassis (`Frame 16` — `z-[8]` behind `<canvas>` `z-[10]` so the 3D astronaut & shards burst physically over the bezel & `#f7f8fc` white wall!) */}
+        {/* Downstream Exit Apple Studio Display Chassis (`Frame 16` — `z-[8]` behind `<canvas>` `z-[10]` so the 3D astronaut & shards burst over the bezel and blue surroundings.) */}
         <div
           ref={monitorBezelRef}
           className="absolute left-0 top-0 z-[8] will-change-transform"
@@ -1783,13 +2009,17 @@ export function GoalTunnelSection() {
               aria-hidden="true"
               viewBox="0 0 1000 600"
               fill="none"
-              className="pointer-events-none h-full w-full opacity-85"
+              className="pointer-events-none h-full w-full"
+              style={{ opacity: "var(--goal-crack-opacity, 0)" }}
             >
               <path
                 d="M500 295 L180 42 M500 295 L830 58 M500 295 L965 280 M500 295 L845 555 M500 295 L490 590 M500 295 L145 545 M500 295 L35 265 M360 185 L435 120 L545 145 M635 205 L710 290 L615 395 M385 395 L295 315 L360 185"
                 stroke="rgba(235, 245, 255, 0.72)"
                 strokeWidth="2.2"
                 strokeLinecap="round"
+                pathLength="1"
+                strokeDasharray="1"
+                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
               />
             </svg>
           </div>
