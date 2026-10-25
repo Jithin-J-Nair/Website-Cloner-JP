@@ -53,6 +53,11 @@ export function createGpuFrameTimer(
     },
     end() {
       if (disposed || active === -1) return;
+      if (gl.isContextLost()) {
+        slots[active].pending = false;
+        active = -1;
+        return;
+      }
       gl.endQuery(ext.TIME_ELAPSED_EXT);
       slots[active].pending = true;
       active = -1;

@@ -9,6 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { chromium } from 'playwright-core';
 import sparticuz from '@sparticuz/chromium';
+import { startBrowserRecording } from './lib/browser-runtime.mjs';
 
 const require = createRequire(import.meta.url);
 const baseUrl = process.env.BASE_URL || 'http://127.0.0.1:3000';
@@ -102,6 +103,9 @@ try {
         window.__cinematicSamples.push({ time: performance.now(), native: scrollY, ...t.playback, ...t.sceneState, frameMs: t.lastFrameMs });
       }, 100);
     });
+    // Optional evidence only: all autonomous acceptance assertions below remain unchanged.
+    const recording = process.env.GOAL_RECORD === '1' ? await startBrowserRecording(context, page, out) : null;
+    if (recording) await recording.waitForFirstFrame();
     const started = Date.now();
     await native(activation + 2);
     await play();
@@ -109,6 +113,7 @@ try {
     await page.waitForFunction(() => window.__goalAstronautTelemetry.playback.state === 'completed', null, { timeout: 240000, polling: 200 });
     const samples = await page.evaluate(() => { clearInterval(window.__cinematicTimer); return window.__cinematicSamples; });
     report.autonomous = { seconds: (Date.now() - started) / 1000, samples };
+    if (recording) report.autonomous.recordedFrames = await recording.stop();
     const active = samples.filter((s) => s.state === 'playing');
     assert.ok(active.length > 30, 'visible intermediate frames, not a jump to the end');
     for (let i = 1; i < active.length; i++) assert.ok(active[i].progress >= active[i - 1].progress);

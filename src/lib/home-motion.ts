@@ -46,3 +46,10 @@ export function cinematicRenderDpr(width: number, height: number, deviceDpr: num
   const native = homeRenderDpr(width, height, deviceDpr);
   return software && !reduced ? Math.min(native, Math.sqrt(960 * 600 / Math.max(1, width * height))) : native;
 }
+
+/** Advance only by visible, unpaused elapsed time. Interpolation limits must not slow this clock. */
+export function advanceCinematicProgress(progress: number, elapsedSeconds: number): number {
+  const current = Number.isFinite(progress) ? clampMotion(progress) : 0;
+  const elapsed = Number.isFinite(elapsedSeconds) ? Math.max(0, elapsedSeconds) : 0;
+  return clampMotion(current + elapsed / GOAL_CINEMATIC_SECONDS);
+}

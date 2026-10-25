@@ -338,6 +338,9 @@ export function ContactCtaSection({
             padding-top: 124vh;
             padding-bottom: 28vh;
           }
+          #home-goal[data-static-fallback="true"] + #end-section { background: #000 !important; }
+          #home-goal[data-static-fallback="true"] + #end-section .home-end-cta-shell { min-height: 100vh; padding-top: 10vh; }
+          #home-goal[data-static-fallback="true"] + #end-section .home-end-cta-pad { padding-top: 16vh; padding-bottom: 16vh; }
           @media (max-width: 819px) {
             .home-end-cta-shell {
               min-height: 218vh;
@@ -420,7 +423,7 @@ export function ContactCtaSection({
               onClick={(e) => {
                 e.preventDefault();
                 soundEngine.playClick();
-                document.getElementById("footer-section")?.scrollIntoView({ behavior: "smooth" });
+                document.getElementById("footer-section")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
               }}
               className="pointer-events-auto inline-flex h-[3.1rem] min-w-[238px] items-center justify-between gap-4 rounded-full bg-white px-6 !text-black shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:scale-[1.03]"
             >
@@ -522,7 +525,7 @@ export function ContactCtaSection({
             onClick={(e) => {
               e.preventDefault();
               soundEngine.playClick();
-              document.getElementById("footer-section")?.scrollIntoView({ behavior: "smooth" });
+              document.getElementById("footer-section")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
             }}
             className="pointer-events-auto absolute bottom-7 left-1/2 z-30 inline-flex h-[3.1rem] min-w-[238px] -translate-x-1/2 items-center justify-between gap-4 rounded-full bg-white px-6 !text-black shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-transform duration-300 hover:scale-[1.03]"
           >

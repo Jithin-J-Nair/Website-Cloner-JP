@@ -90,27 +90,36 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
     };
   }, [project.categoriesText, reducedMotion]);
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (reducedMotion || !imgWrapRef.current) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      imgWrapRef.current.style.transform = `scale(1.045) translate3d(${(-nx * 9).toFixed(1)}px, ${(-ny * 7).toFixed(1)}px, 0)`;
-    },
-    [reducedMotion]
-  );
-
-  const handlePointerEnter = useCallback(() => {
-    setHovered(true);
-    soundEngine.playHover();
-  }, []);
-
   const handlePointerLeave = useCallback(() => {
     setHovered(false);
-    if (imgWrapRef.current) {
-      imgWrapRef.current.style.transform = "scale(1) translate3d(0px, 0px, 0)";
-    }
+    imgWrapRef.current?.style.removeProperty("transform");
+  }, []);
+
+  useEffect(() => {
+    // A live preference change must also clear an already-written imperative transform.
+    if (reducedMotion) imgWrapRef.current?.style.removeProperty("transform");
+  }, [reducedMotion]);
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (reducedMotion || e.pointerType === "touch" || e.buttons !== 0) {
+        handlePointerLeave();
+        return;
+      }
+      if (!imgWrapRef.current) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const nx = Math.max(-1, Math.min(1, ((e.clientX - rect.left) / rect.width - 0.5) * 2));
+      const ny = Math.max(-1, Math.min(1, ((e.clientY - rect.top) / rect.height - 0.5) * 2));
+      imgWrapRef.current.style.transform = `scale(1.045) translate3d(${(-nx * 9).toFixed(1)}px, ${(-ny * 7).toFixed(1)}px, 0)`;
+    },
+    [reducedMotion, handlePointerLeave]
+  );
+
+  const handlePointerEnter = useCallback((event: React.PointerEvent<HTMLAnchorElement>) => {
+    if (event.pointerType === "touch") return;
+    setHovered(true);
+    soundEngine.playHover();
   }, []);
 
   return (
@@ -121,8 +130,10 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
       data-project-slug={project.id}
       data-color-bg={project.colorBg}
       data-color-text={project.colorText}
-      onMouseEnter={handlePointerEnter}
-      onMouseLeave={handlePointerLeave}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+      onPointerCancel={handlePointerLeave}
+      onPointerDown={(event) => { if (event.pointerType === "touch") handlePointerLeave(); }}
       onFocus={() => setHovered(true)}
       onBlur={handlePointerLeave}
       className={`project-item project-type-website group relative col-span-6 block cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-[#1a2ffb] ${

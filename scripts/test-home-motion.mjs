@@ -10,8 +10,21 @@ try {
   const output = ts.transpileModule(fs.readFileSync('src/lib/home-motion.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
   const file = path.join(dir,'motion.mjs');
   fs.writeFileSync(file,output);
-  const {acceleratedFall,stepMotionSpring,homeRenderDpr,cinematicRenderDpr,blueFlightDistance,UHD_PIXEL_BUDGET,GOAL_CINEMATIC_SECONDS,motionEase} = await import(pathToFileURL(file));
+  const {advanceCinematicProgress,acceleratedFall,stepMotionSpring,homeRenderDpr,cinematicRenderDpr,blueFlightDistance,UHD_PIXEL_BUDGET,GOAL_CINEMATIC_SECONDS,motionEase} = await import(pathToFileURL(file));
   assert.ok(GOAL_CINEMATIC_SECONDS<26 && GOAL_CINEMATIC_SECONDS>22);
+  for (const dt of [1/120,1/60,1/30,.25,.5,1,2]) {
+    let progress=0,elapsed=0;
+    while(elapsed<GOAL_CINEMATIC_SECONDS-1e-9) {
+      const step=Math.min(dt,GOAL_CINEMATIC_SECONDS-elapsed);
+      progress=advanceCinematicProgress(progress,step);elapsed+=step;
+      assert.ok(Math.abs(progress-elapsed/GOAL_CINEMATIC_SECONDS)<1e-10,'same elapsed time must map to the same progress, including slow frames');
+    }
+    assert.ok(Math.abs(progress-1)<1e-10);
+  }
+  assert.ok(Math.abs(advanceCinematicProgress(.2,.65)-(.2+.65/GOAL_CINEMATIC_SECONDS))<1e-12,'a visible stall must not be truncated');
+  assert.equal(advanceCinematicProgress(.2,-1),.2);
+  assert.equal(advanceCinematicProgress(.2,NaN),.2);
+  assert.equal(advanceCinematicProgress(0,100),1);
   assert.equal(acceleratedFall(-1),0); assert.equal(acceleratedFall(2),1);
   let lastVelocity = -Infinity;
   for(let i=1;i<1000;i++) {
@@ -110,6 +123,11 @@ try {
   timer.dispose();timer.dispose();timer.begin('solar');timer.end();
   assert.equal(state.ends,5);assert.equal(state.deleted,3);
   assert.equal(state.created,3,'disposed timer cannot allocate or restart');
+  const lostDuringFrame=mockGl();
+  const lostTimer=createGpuFrameTimer(lostDuringFrame.gl,()=>{},()=>{});
+  lostTimer.begin('solar');lostDuringFrame.state.lost=true;lostTimer.end();lostTimer.dispose();
+  assert.equal(lostDuringFrame.state.ends,0,'context loss between begin/end cannot end an invalid query');
+
   const {summarizeGpuQueries}=await import('./lib/summarize-gpu-queries.mjs');
   const entry=(id,ms,phase)=>({id,ms,phase});
   const snapshots=[

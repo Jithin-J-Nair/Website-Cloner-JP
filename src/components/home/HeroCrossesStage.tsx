@@ -752,6 +752,7 @@ export function HeroCrossesStage() {
         const spec = HERO_PIECES[i];
         const mesh = meshes[i];
         const imp = impulseStates[i];
+        if (isReduced) { imp.pos.set(0, 0, 0); imp.rot.set(0, 0, 0); }
         const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
 
         let pushX = 0, pushY = 0, pushZ = 0;
@@ -786,9 +787,15 @@ export function HeroCrossesStage() {
         targetEuler.set(spec.euler[0]+springs[3].value+imp.rot.x,spec.euler[1]+springs[4].value+imp.rot.y,spec.euler[2]+springs[5].value+imp.rot.z);
         targetQuat.setFromEuler(targetEuler);
 
-        if (mesh.position.distanceToSquared(targetPos)>0.00000001 || mesh.quaternion.angleTo(targetQuat)>0.0001) moving = true;
-        mesh.position.lerp(targetPos, alpha);
-        mesh.quaternion.slerp(targetQuat, alpha);
+        if (!isReduced && (mesh.position.distanceToSquared(targetPos)>0.00000001 || mesh.quaternion.angleTo(targetQuat)>0.0001)) moving = true;
+        if (isReduced) {
+          // Paint the exact neutral pose before the reduced-motion renderer goes to sleep.
+          mesh.position.copy(targetPos);
+          mesh.quaternion.copy(targetQuat);
+        } else {
+          mesh.position.lerp(targetPos, alpha);
+          mesh.quaternion.slerp(targetQuat, alpha);
+        }
         if (!moving && !ptr.active) { mesh.position.copy(targetPos); mesh.quaternion.copy(targetQuat); }
 
         imp.pos.multiplyScalar(decay);

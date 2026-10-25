@@ -7,7 +7,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
-import { acceleratedFall, blueFlightDistance, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
+import { advanceCinematicProgress, acceleratedFall, blueFlightDistance, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
 import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
 import { createGpuFrameTimer } from "@/lib/gpu-frame-timer";
 import { LUSION_HOME } from "@/data/reference";
@@ -77,6 +77,8 @@ declare global {
       drawCalls: number;
       triangles: number;
       lastFrameMs: number;
+      renderCount: number;
+      resources: { geometries: number; textures: number; programs: number };
       gpuTiming: { enabled: boolean; lastMs: number | null; phase: string; samples: number; disjoints: number; recent?: { id: number; ms: number; phase: string }[] };
       solar: { x: number; y: number; facing: number; visibility: number; occlusion: number; focalScale: number };
       emergenceProgress: number;
@@ -201,6 +203,17 @@ export function GoalTunnelSection() {
       return;
     }
 
+    const showStaticFallback = () => {
+      goalEl.dataset.staticFallback = "true";
+      if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "flex";
+      // Never leave a 35-screen empty cinematic when rendering is unavailable.
+      tunnelEl.style.display = "none";
+      overlayEl.style.display = "none";
+      for (const el of [titleHeadingEl, copyColEl, ribbonSvgEl]) {
+        if (el) { el.style.opacity = ""; el.style.transform = ""; }
+      }
+    };
+
     let reducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -218,9 +231,7 @@ export function GoalTunnelSection() {
         powerPreference: "high-performance",
       });
     } catch {
-      if (fallbackPosterRef.current) {
-        fallbackPosterRef.current.style.display = "flex";
-      }
+      showStaticFallback();
       return;
     }
 
@@ -250,9 +261,10 @@ export function GoalTunnelSection() {
     hostEl.appendChild(glRenderer.domElement);
 
     let unmounted = false;
+    let contextLost = false;
     const disposables: Array<{ dispose: () => void }> = [];
     const track = <T extends { dispose: () => void }>(item: T): T => {
-      if (unmounted) item.dispose();
+      if (unmounted || contextLost) item.dispose();
       else disposables.push(item);
       return item;
     };
@@ -348,7 +360,7 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     const corridorEnvironment = track(new THREE.WebGLCubeRenderTarget(isMobileInit ? 64 : 128));
     const captureCorridorEnvironment = (world: THREE.Group) => {
-      if (unmounted) return;
+      if (unmounted || contextLost) return;
       const reflectionScene = new THREE.Scene();
       reflectionScene.background = new THREE.Color(0x0a104a);
       reflectionScene.add(new THREE.HemisphereLight(0xe5efff,0x162e9a,1.2));
@@ -404,7 +416,7 @@ export function GoalTunnelSection() {
         m.loadLusionBuf("/assets/models/tunnels/broken_glass_animation.buf"),
       ]))
       .then(([bg, bga]) => {
-        if (unmounted) return;
+        if (unmounted || contextLost) return;
 
         const maxPiece = Math.max(...bg.attributes.piece);
         numShards = maxPiece + 1;
@@ -517,7 +529,7 @@ export function GoalTunnelSection() {
 
     glbPromise
       .then(({ primary, createClone }) => {
-        if (unmounted) return;
+        if (unmounted || contextLost) return;
         mainAstro = primary;
         portalMaskedMaterials.push(...primary.materials);
 
@@ -582,13 +594,11 @@ export function GoalTunnelSection() {
         renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);
       })
       .catch((err: unknown) => {
-        if (unmounted) return;
+        if (unmounted || contextLost) return;
         const msg = err instanceof Error ? err.message : "Failed to load astronaut.glb";
         tablet3D.group.visible = false;
         earthSystem.group.visible = false;
-        if (fallbackPosterRef.current) {
-          fallbackPosterRef.current.style.display = "flex";
-        }
+        showStaticFallback();
         if (window.__goalAstronautTelemetry) {
           window.__goalAstronautTelemetry.glbLoaded = false;
           window.__goalAstronautTelemetry.glbError = msg;
@@ -732,6 +742,8 @@ export function GoalTunnelSection() {
       drawCalls: 0,
       triangles: 0,
       lastFrameMs: 0,
+      renderCount: 0,
+      resources: { geometries: 0, textures: 0, programs: 0 },
       gpuTiming: { enabled: false, lastMs: null, phase: "", samples: 0, disjoints: 0 },
       solar: { x: 0, y: 0, facing: 0, visibility: 0, occlusion: 1, focalScale: 1 },
       emergenceProgress: 0,
@@ -1731,6 +1743,11 @@ export function GoalTunnelSection() {
       gpuTimer?.end();
       const dtMs = performance.now() - t0;
       if (window.__goalAstronautTelemetry) {
+        window.__goalAstronautTelemetry.renderCount++;
+        const resources = window.__goalAstronautTelemetry.resources;
+        resources.geometries = glRenderer.info.memory.geometries;
+        resources.textures = glRenderer.info.memory.textures;
+        resources.programs = glRenderer.info.programs?.length ?? 0;
         window.__goalAstronautTelemetry.drawCalls = glRenderer.info.render.calls;
         window.__goalAstronautTelemetry.triangles = glRenderer.info.render.triangles;
         window.__goalAstronautTelemetry.lastFrameMs = +dtMs.toFixed(2);
@@ -1755,12 +1772,13 @@ export function GoalTunnelSection() {
     };
 
     const tick = () => {
-      if (!docVisible || unmounted) {
+      if (!docVisible || unmounted || contextLost || window.__goalAstronautTelemetry?.fallbackVisible) {
         rafId = 0;
         return;
       }
       const now = performance.now();
-      const deltaSeconds = Math.min(0.25, Math.max(0, (now - frameClock) * 0.001));
+      const elapsedSeconds = Math.max(0, (now - frameClock) * 0.001);
+      const deltaSeconds = Math.min(0.25, elapsedSeconds); // Smoothing only, never the authored clock.
       frameClock = now;
       targetScrollY = window.scrollY;
       const resetAt = metrics ? metrics.emergenceStart - metrics.viewportH * 0.25 : 0;
@@ -1782,8 +1800,8 @@ export function GoalTunnelSection() {
           if (pauseButton) { pauseButton.textContent = "Pause"; pauseButton.setAttribute("aria-label", "Pause cinematic"); }
         } else if (playing()) {
           const paused = userPaused || blockedByChrome();
+          if (!paused && playbackState !== "paused") playbackProgress = advanceCinematicProgress(playbackProgress, elapsedSeconds);
           playbackState = paused ? "paused" : "playing";
-          if (!paused) playbackProgress = Math.min(1, playbackProgress + deltaSeconds / GOAL_CINEMATIC_SECONDS);
         }
         if (playing()) {
           // Only this clock drives both scene pose and document placement during playback.
@@ -1833,7 +1851,7 @@ export function GoalTunnelSection() {
 
       renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);
 
-      if (reducedMotion && smoothScrollY === targetScrollY && !playing()) {
+      if (playbackState === "paused" || (reducedMotion && smoothScrollY === targetScrollY && !playing())) {
         rafId = 0;
         return;
       }
@@ -1841,10 +1859,39 @@ export function GoalTunnelSection() {
     };
 
     const ensureLoop = () => {
-      if (!rafId && docVisible && !unmounted) {
+      if (!rafId && docVisible && !unmounted && !contextLost && !window.__goalAstronautTelemetry?.fallbackVisible) {
         rafId = window.requestAnimationFrame(tick);
       }
     };
+
+    // Wake a sleeping paused frame only when overlay state changes. Reset the time
+    // boundary so menu/modal time can never be charged on resume.
+    const unsubscribeChrome = useStudioStore.subscribe((state, previous) => {
+      if (state.menuOpen !== previous.menuOpen || state.reelOpen !== previous.reelOpen || state.isTransitioning !== previous.isTransitioning) {
+        frameClock = performance.now();
+        ensureLoop();
+      }
+    });
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      contextLost = true;
+      releasePlayback(false);
+      if (rafId) window.cancelAnimationFrame(rafId);
+      rafId = 0;
+      gpuTimer?.dispose();
+      const telemetry = window.__goalAstronautTelemetry;
+      if (telemetry) {
+        telemetry.glbError = "WebGL context lost; static experience is available";
+        telemetry.fallbackVisible = true;
+        telemetry.playback.state = "completed";
+      }
+      showStaticFallback();
+      const y = goalEl.getBoundingClientRect().top + window.scrollY;
+      targetScrollY = smoothScrollY = y;
+      syncDocument(y);
+      setActiveSurface("ice");
+    };
+    glRenderer.domElement.addEventListener("webglcontextlost", onContextLost);
 
     const onScroll = () => {
       targetScrollY = window.scrollY;
@@ -1860,6 +1907,7 @@ export function GoalTunnelSection() {
     };
 
     const onResize = () => {
+      if (contextLost || window.__goalAstronautTelemetry?.fallbackVisible) return;
       measure();
       if (playing() && playbackPath) {
         targetScrollY = smoothScrollY = playbackPath(playbackProgress);
@@ -1943,6 +1991,8 @@ export function GoalTunnelSection() {
     return () => {
       releasePlayback(false);
       unmounted = true;
+      unsubscribeChrome();
+      glRenderer.domElement.removeEventListener("webglcontextlost", onContextLost);
       pauseButton?.removeEventListener("click", onPausePlayback);
       skipButton?.removeEventListener("click", onSkipPlayback);
       window.removeEventListener("wheel", onScrollInput);
@@ -2070,11 +2120,15 @@ export function GoalTunnelSection() {
                 ref={fallbackPosterRef}
                 data-testid="goal-astronaut-fallback"
                 style={{ display: "none" }}
-                className="h-full w-full items-center justify-center rounded-[24px] bg-gradient-to-b from-[#04060d] via-[#081738] to-[#1748b8] p-8 text-center text-white shadow-[0_28px_70px_rgba(8,12,28,0.35)]"
+                className="h-full w-full flex-col gap-4 items-center justify-center rounded-[24px] bg-gradient-to-b from-[#04060d] via-[#081738] to-[#1748b8] p-8 text-center text-white shadow-[0_28px_70px_rgba(8,12,28,0.35)]"
               >
                 <p className="font-sans text-lg uppercase tracking-[0.08em]">
                   Step into a new world and let your imagination run wild
                 </p>
+                <p className="text-sm">3D is unavailable. You can continue below.</p>
+                <a href="#end-section-title" className="rounded-full border border-white/60 px-5 py-3 text-sm underline underline-offset-4">
+                  Continue to contact
+                </a>
               </div>
             </div>
           </div>
