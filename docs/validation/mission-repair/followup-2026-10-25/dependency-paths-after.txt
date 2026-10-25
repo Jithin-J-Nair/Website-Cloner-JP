@@ -1,0 +1,35 @@
+lusion-studio-reconstruction@1.0.0 /home/user/Website-Cloner-JP
++-- @tailwindcss/postcss@4.2.2
+| +-- @tailwindcss/node@4.2.2
+| | `-- source-map-js@1.2.2
+| `-- postcss@8.5.23
+|   `-- source-map-js@1.2.2 deduped
++-- eslint-config-next@16.4.3
+| +-- eslint-plugin-react-hooks@7.1.1
+| | +-- zod-validation-error@4.0.2
+| | | `-- zod@4.6.7 deduped
+| | `-- zod@4.6.7 deduped
+| `-- typescript-eslint@8.57.2
+|   `-- @typescript-eslint/typescript-estree@8.57.2
+|     `-- minimatch@10.2.4
+|       `-- brace-expansion@5.0.12
++-- eslint@9.39.4
+| `-- minimatch@3.1.5
+|   `-- brace-expansion@1.1.21
++-- next@16.4.3
+`-- shadcn@4.22.1
+  +-- @modelcontextprotocol/sdk@1.32.2
+  | +-- express-rate-limit@8.7.1
+  | | `-- express@5.3.0 deduped
+  | +-- express@5.3.0
+  | | `-- proxy-addr@2.0.8
+  | +-- zod-to-json-schema@3.25.2
+  | | `-- zod@4.6.7 deduped
+  | `-- zod@4.6.7 deduped
+  +-- @shadcn/registry@0.2.0
+  | `-- zod@4.6.7 deduped
+  +-- ts-morph@26.0.0
+  | `-- @ts-morph/common@0.27.0
+  |   `-- minimatch@10.2.4
+  |     `-- brace-expansion@5.0.12
+  `-- zod@4.6.7

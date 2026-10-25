@@ -4,7 +4,7 @@ You are a principal graphics engineer, senior UX/UI architect and motion/graphic
 
 REPO / BRANCH: `Jithin-J-Nair/Website-Cloner-JP`, branch `arena/c8775c5f-website-cloner-jp` (verify the earlier hero-crosses work from `arena/abde912a-website-cloner-jp` is included; bring it in if not). Do not reset or discard anything. Do not fetch lusion.co. Clean-room: original code and assets, licensed/public-domain models with provenance in `docs/ASSETS.md`.
 
-STEP 0. Read, in this order, completely: 
+STEP 0. Read, in this order, completely:
 1. `docs/lusion-fix/02_ADDENDUM_V2.md` (wins on conflicts)
 2. `docs/lusion-fix/00_MASTER_PROMPT.md` (defect register D-01..D-14, milestones M0..M9, acceptance checklist)
 3. `docs/lusion-fix/01_CODE_LIBRARY.md` (original shaders/systems; adapt, do not paste blindly)
@@ -27,7 +27,7 @@ EXECUTION ORDER (no stopping between steps, commit after each):
 7. Addendum E: full re-audit (particles, world, astronaut, tesseract, glass breaking, jump-out, parallax, transition, GlowCard borders, finish, skills) with PASS/FAIL and capture paths; fix every FAIL
 
 NON-NEGOTIABLE RULES
-- No hallucination: never invent APIs, flags, package names or skill rules. Check the installed three version (`package.json`), read `node_modules` sources and the skills' SKILL.md files when unsure, and record what you verified. 
+- No hallucination: never invent APIs, flags, package names or skill rules. Check the installed three version (`package.json`), read `node_modules` sources and the skills' SKILL.md files when unsure, and record what you verified.
 - Verification is visual: for every scene capture a frame SEQUENCE at 1440x900 with the full pipeline forced, build side-by-side against the matching official frame, write a numbered difference list, fix HIGH and MED items, repeat at least 3 passes. Label every capture with the pipeline used; disclose software-rendering limits. A green build or a similarity score is not proof.
 - No empty or blank frames anywhere in S4 to S12, forward or reverse scroll. Deterministic: same scroll position gives the same frame.
 - Performance: one renderer and one rAF per canvas, pixelRatio <= 2, quality tiers, dispose everything, pause off-screen, no new WebGL context per click.

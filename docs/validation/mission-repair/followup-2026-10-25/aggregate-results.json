@@ -1,0 +1,26 @@
+{
+  "accepted": false,
+  "failures": [
+    {
+      "name": "final-normal-1440",
+      "exit": 1,
+      "classification": "original acceptance failure"
+    },
+    {
+      "name": "final-normal-390",
+      "exit": 1,
+      "classification": "original acceptance failure"
+    },
+    {
+      "name": "final-glb-1440",
+      "exit": 1,
+      "classification": "invalid unsupported scenario; proper astronaut reruns retained"
+    },
+    {
+      "name": "final-glb-390",
+      "exit": 1,
+      "classification": "invalid unsupported scenario; proper astronaut reruns retained"
+    }
+  ],
+  "note": "Collection runners continue after each command so every result is retained; their completion exit is not a passing acceptance gate. Original desktop and mobile failures mean overall acceptance is FAILED."
+}

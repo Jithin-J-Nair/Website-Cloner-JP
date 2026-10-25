@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useRef, useEffect } from "react";
+import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ShaderAnimation } from "@/components/ui/ShaderAnimation";
 import { useStudioStore } from "@/lib/store";
@@ -26,17 +26,43 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   const [phase, setPhase] = useState<"idle" | "opening" | "covered" | "closing">("idle");
   const originRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const timeoutRef = useRef<number>(0);
+  const frameRef = useRef<number>(0);
 
-  const isTransitioning = useStudioStore((s) => s.isTransitioning);
   const setTransition = useStudioStore((s) => s.setTransition);
 
-  // Sync back to store for other components that might need it
-  useEffect(() => {
-    if (!isTransitioning && isActive && phase === "covered") {
-      // route changed successfully and lifted transition curtain
+  const startClose = useCallback(() => {
+    window.clearTimeout(timeoutRef.current);
+    setPhase("closing");
+    setTransition(false); // Make sure store matches
+
+    if (reducedMotion) {
+      setIsActive(false);
+      setPhase("idle");
+      return;
+    }
+
+    // Collapse toward center or same origin
+    // "collapses toward the new page's hero or toward the same point"
+    setClipPath(`circle(0px at 50% 50%)`); // Collapsing to center is a nice effect for opening
+
+    timeoutRef.current = window.setTimeout(() => {
+      setIsActive(false);
+      setPhase("idle");
+    }, 620);
+  }, [reducedMotion, setTransition]);
+
+  // Subscribe to the external route-transition completion, rather than cascading
+  // React state updates synchronously from an effect after every render.
+  useEffect(() => useStudioStore.subscribe((state, previous) => {
+    if (previous.isTransitioning && !state.isTransitioning && isActive && phase === "covered") {
       startClose();
     }
-  }, [isTransitioning, isActive, phase]);
+  }), [isActive, phase, startClose]);
+
+  useEffect(() => () => {
+    window.clearTimeout(timeoutRef.current);
+    window.cancelAnimationFrame(frameRef.current);
+  }, []);
 
   const navigate = (href: string, e: React.SyntheticEvent, newLabel?: string) => {
     if (phase !== "idle") return; // block double clicks
@@ -55,7 +81,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
       setPhase("opening");
       setIsActive(true);
       setClipPath(`circle(150% at ${x}px ${y}px)`);
-      setTimeout(() => {
+      timeoutRef.current = window.setTimeout(() => {
         setPhase("covered");
         setTransition(true, newLabel);
         router.push(href);
@@ -67,10 +93,10 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
     setIsActive(true);
     // Start at 0 size
     setClipPath(`circle(0px at ${x}px ${y}px)`);
-    
+
     // Grow to cover
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = requestAnimationFrame(() => {
         setClipPath(`circle(150% at ${x}px ${y}px)`);
       });
     });
@@ -80,7 +106,7 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
       setPhase("covered");
       setTransition(true, newLabel);
       router.push(href);
-      
+
       // Fallback if route change hangs
       timeoutRef.current = window.setTimeout(() => {
         startClose();
@@ -88,31 +114,12 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
     }, 520);
   };
 
-  const startClose = () => {
-    window.clearTimeout(timeoutRef.current);
-    setPhase("closing");
-    setTransition(false); // Make sure store matches
-    
-    if (reducedMotion) {
-      setIsActive(false);
-      setPhase("idle");
-      return;
-    }
 
-    // Collapse toward center or same origin
-    // "collapses toward the new page's hero or toward the same point"
-    setClipPath(`circle(0px at 50% 50%)`); // Collapsing to center is a nice effect for opening
-
-    timeoutRef.current = window.setTimeout(() => {
-      setIsActive(false);
-      setPhase("idle");
-    }, 620);
-  };
 
   return (
     <TransitionContext.Provider value={{ navigate }}>
       {children}
-      
+
       {isActive && (
         <div
           role="status"
@@ -128,10 +135,10 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         >
           {!reducedMotion && (
             <div className="absolute inset-0 w-full h-full">
-              <ShaderAnimation 
-                tint={[0.35, 0.4, 1.0]} 
-                speed={1} 
-                paused={phase === "covered"} 
+              <ShaderAnimation
+                tint={[0.35, 0.4, 1.0]}
+                speed={1}
+                paused={phase === "covered"}
               />
             </div>
           )}

@@ -1,36 +1,44 @@
-# Section Spec — Hero (`HeroSection`)
+# Reference Specification — Lusion Home Hero
 
-## 1. Purpose
-Establish KINETA's unmistakable studio authority within the first `800ms`: monumental grotesque typography floating effortlessly over a live, cursor-reactive 3D optical glass & spring-collision sphere stage on a crisp architectural `ice` surface.
+## Evidence source
 
-## 2. Layout Across Breakpoints
-- **Desktop (`≥1024px`)**: `min-h-[100svh]` 12-column Swiss frame (`max-w-[1480px]`). Top & bottom `+` crosshair bars. Display `<h1>` spans columns `1–9` in the lower-middle third so the WebGL optical sculpture breathes freely in the upper-right focal quadrant (`x: +1.15`). Bottom status bar splits into Showreel pill + live GPU telemetry left, `SCROLL TO EXPLORE` animated indicator right.
-- **Tablet (`768px–1023px`)**: `min-h-[96svh]` 8-column frame; fluid headline scales cleanly to `~64px`; full pointer/touch WebGL background remains active at `medium` quality tier.
-- **Mobile (`<768px`)**: `min-h-[92svh]` single-column vertical flex justify-between; compact top spacing clearing fixed HUD; fluid `44px` display headline (`line-height: 0.94`); full-width tap targets (`≥44px`).
+**Version conflict resolved explicitly:** the public `lusion-decoded` screenshot atlas describes an older Lusion homepage version with a balloon hero. The current captured dataset in this repository (capture date `2026-09-23`) instead records `/assets/models/home/cross.buf` and `cross_ld.buf`. These are different site versions. For this branch, follow the current live site and current `lusion-ground-truth.json`; do not copy the older balloon hero into the current reconstruction.
 
-## 3. Content (100% Original)
-- **Eyebrow**: `• REAL-TIME DESIGN & ENGINEERING STUDIO`
-- **Headline (`h1`)**: `We build 3D visual worlds and interactive web experiences that make ambitious brands unforgettable.`
-- **Primary Actions**: `Play 2026 Reel` (opens fullscreen interactive Showreel modal) + `Explore Selected Work` (`/work`)
-- **Scroll Prompt**: `SCROLL TO EXPLORE`
+The primary structured capture is `src/data/reference/lusion-ground-truth.json`, exposed through `src/data/reference/index.ts`. Its `home.hero` record specifies:
 
-## 4. Interactions
-- Moving the pointer displaces the 44 instanced spheres around the Cauchy refractive core via inverse-square repulsion while tilting the 6-DoF camera rig.
-- Clicking `Play 2026 Reel` opens the multi-chapter procedural Showreel modal and plays a subtle harmonic chime if audio is enabled.
+- Headline: “We create 3D visual storytelling and interactive web experiences that help brands stand out”
+- Scroll prompt: “scroll to explore”
+- High-detail scene asset: `/assets/models/home/cross.buf`
+- Low-detail scene asset: `/assets/models/home/cross_ld.buf`
+- High-detail matcap: `/assets/textures/home/matcap.exr`
+- Low-detail matcap: `/assets/textures/home/matcap_ld.exr`
 
-## 5. Motion Timeline
-- `0.00s–0.88s`: Immediate masked line-by-line headline entrance (`yPercent: 108 → 0`, `expo.out`, `75ms` stagger).
-- `0.28s–0.75s`: Eyebrow, action pills, and bottom telemetry fade/rise (`y: 18 → 0`).
-- Scrubbed `top top → bottom top`: Gentle parallax lift and opacity soften on hero copy as user enters Intro Statement.
+This evidence does **not** support replacing the hero with balloons, an astronaut, a tesseract, a generic glass sphere swarm, or a generic dashboard. Keep the scene tied to the captured cross-model reference.
 
-## 6. WebGL Needs
-- Activates `webglMode = "hero-cluster"` on `surface = "ice"` (`uSurfaceIsLight = 1.0`, `uIor = 1.46`, `uDispersion = 0.34`).
+## Structure
 
-## 7. Accessibility (A11y)
-- Semantic single `<h1>` per page with full intact `aria-label` string.
-- Contrast on `ice` (`#eef0f6`) with primary ink (`#0a0c12`) is `17.4:1` (WCAG AAA).
-- Under `prefers-reduced-motion: reduce`, headline renders statically at full opacity with zero displacement.
+- Full viewport hero section with the headline positioned in the reference grid.
+- Rounded WebGL visual container beneath the headline.
+- Bottom crosshair row and centered scroll prompt.
+- Fixed global Lusion header above the page content.
+- Responsive 12-column desktop / 6-column mobile grid and the captured spacing tokens in `src/app/globals.css`.
 
-## 8. Performance Budget
-- **DOM Nodes**: `< 45` elements.
-- **LCP Impact**: `<h1>` is server-rendered plain text with self-hosted local variable font (`CLS = 0.00`, zero network block).
+## Implementation rules
+
+1. Read the reference JSON and the corresponding screenshot-atlas chapter before changing the scene.
+2. Use the captured `.buf` model and matcap assets if they are present and their format is supported by the existing loader.
+3. If a captured binary asset is missing or cannot be decoded, document the exact limitation and build the closest evidence-based replacement. Do not describe a replacement as the original asset.
+4. Match object count, framing, silhouette, materials, lighting, camera, motion, and timing against reference captures. Do not invent numerical timings or camera values.
+5. Preserve the existing accessible headline and scroll affordance, and respect reduced-motion behavior.
+6. Validate at 1440×900 and 390×844 against matching reference states. A successful TypeScript/build check is not visual verification.
+
+## Current implementation review targets
+
+- `src/components/home/HomePageView.tsx`
+- `src/components/home/HeroCrossesStage.tsx`
+- `src/components/home/HollowCrossGeometry.tsx`
+- `src/data/reference/lusion-ground-truth.json`
+- `public/assets/models/home/`
+- `public/assets/textures/home/`
+
+Do not reintroduce generic `ShaderAnimation`, `GlowCard`, balloon, or astronaut effects unless the captured reference evidence explicitly requires them.

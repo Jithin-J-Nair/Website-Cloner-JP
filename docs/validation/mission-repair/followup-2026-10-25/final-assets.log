@@ -1,0 +1,25 @@
+
+> lusion-studio-reconstruction@1.0.0 test:assets
+> node scripts/test-asset-route.mjs
+
+=== ASSET ROUTE SECURITY & RFC 7233 SUITE (port 3199) ===
+  PASS  Blocks URL-encoded traversal (%2e%2e)
+  PASS  Blocks encoded backslash (%5c)
+  PASS  Blocks null-byte injection (%00)
+  PASS  Blocks hidden dotfile (.env)
+  PASS  Blocks symlink escape out of asset root even for allowlisted path
+  PASS  Blocks commercial font in /assets/fonts/
+  PASS  Blocks case-variant /assets/FONTS/
+  PASS  Blocks commercial .woff2 in non-/fonts subfolder
+  PASS  Serves approved SIL OFL font (/assets/fonts/IBMPlexMono-Regular.woff2)
+  PASS  Blocks non-allowlisted .json file (403)
+  PASS  Synthesizes approved fallback SVG with strict sandbox CSP + nosniff
+  PASS  Returns 404 for absent non-synthesized .mp4 stream
+  PASS  HEAD returns 200 with exact Content-Length=10 and 0 body bytes
+  PASS  RFC 7233 explicit Range bytes=2-5 -> 206 '2345' (bytes 2-5/10)
+  PASS  RFC 7233 suffix Range bytes=-4 -> 206 '6789' (bytes 6-9/10)
+  PASS  Rejects malformed Range bytes=0-abc with 416 (fixes prior 500 crash)
+  PASS  Rejects out-of-bounds Range bytes=50-60 with 416
+  PASS  Rejects unsupported multipart Range bytes=0-1,4-5 with 416
+
+Summary: 18 passed, 0 failed.

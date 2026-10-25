@@ -10,6 +10,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 import { TransitionLink } from "@/components/studio/TransitionLink";
 import { ProceduralReelStream } from "@/components/studio/ProceduralReelStream";
 import { LUSION_HOME } from "@/data/reference";
+import { motionEase } from "@/lib/home-motion";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
@@ -83,6 +84,7 @@ export function HomePageView() {
   const setReelOpen = useStudioStore((s) => s.setReelOpen);
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
+  const reelOpen = useStudioStore((s) => s.reelOpen);
 
   const [isMobileReel, setIsMobileReel] = useState(false);
   const [reelVideoFailed, setReelVideoFailed] = useState(false);
@@ -91,6 +93,8 @@ export function HomePageView() {
   const reelVideoAvailable = !reelVideoFailed;
 
   const heroSectionRef = useRef<HTMLElement>(null);
+  const featuredSectionRef = useRef<HTMLElement>(null);
+  const featuredTitleRef = useRef<HTMLHeadingElement>(null);
   const reelSectionRef = useRef<HTMLElement>(null);
   const reelContainerRef = useRef<HTMLDivElement>(null);
   const reelVideoStageRef = useRef<HTMLDivElement>(null);
@@ -124,81 +128,128 @@ export function HomePageView() {
     return () => io.disconnect();
   }, [setActiveSurface]);
 
-  // Direct zero-rerender DOM scroll scrubbing for `#home-reel`:
-  // - Zero React `setState` during scroll (0 re-renders across the entire homepage tree!)
-  // - Scrubs `Bold    Ideas,` dynamic word spacing (`ref-02-reel-intro`)
-  // - Scrubs progressive word contrast (`#8d92a4` -> `#000000`) across `#home-reel-desc`
-  // - Scrubs `#home-reel-thumb` crossfade & `#home-reel-video-container` expansion
+  // One scroll sampler for the upper homepage. Read natural layout on resize, then only
+  // composite transforms/opacity in scroll frames; never measure each card after writing styles.
   useEffect(() => {
     let rafId = 0;
-
-    const applyReelScrub = () => {
+    let layoutDirty = true;
+    let disposed = false;
+    let previousY = window.scrollY;
+    let previousTime = performance.now();
+    let skew = 0;
+    let introTop = 0, reelTop = 0, featuredTop = 0;
+    const cards = Array.from(featuredSectionRef.current?.querySelectorAll<HTMLElement>(".project-item") ?? []).map((el) => ({el,top:0,height:0,imageTravel:0}));
+    const naturalTop = (el: HTMLElement | null) => {
+      if (!el) return 0;
+      let top = 0;
+      for (let node: HTMLElement | null = el; node; node = node.offsetParent as HTMLElement | null) top += node.offsetTop;
+      return top;
+    };
+    const sample = (now: number) => {
       rafId = 0;
-      const vh = Math.max(1, window.innerHeight);
-
-      if (reducedMotion) {
-        if (reelVideoStageRef.current) reelVideoStageRef.current.style.transform = "scale(1)";
-        if (reelThumbCardRef.current) reelThumbCardRef.current.style.opacity = "1";
-        if (reelTitleLine1Ref.current) reelTitleLine1Ref.current.style.wordSpacing = "0.52em";
-        for (const wEl of reelWordRefs.current) {
-          if (wEl) wEl.style.opacity = "1";
+      if (document.hidden) return;
+      const vh = Math.max(1,window.innerHeight);
+      const y = window.scrollY;
+      if (layoutDirty) {
+        introTop = naturalTop(reelSectionRef.current);
+        reelTop = naturalTop(reelContainerRef.current);
+        featuredTop = naturalTop(featuredSectionRef.current);
+        for (const card of cards) {
+          card.top = naturalTop(card.el);
+          card.height = card.el.offsetHeight;
+          // Stay inside the image's 4% overscan, including narrow portrait cards.
+          card.imageTravel = Math.min(18, (card.el.querySelector<HTMLElement>(".project-item-image")?.offsetHeight ?? card.height) * 0.035);
         }
-        return;
+        layoutDirty = false;
       }
-
-      const secEl = reelSectionRef.current;
-      if (secEl) {
-        const sRect = secEl.getBoundingClientRect();
-        // Progress across editorial intro band (0 when entering viewport -> 1 when copy sits at upper third)
-        const introProg = Math.max(0, Math.min(1, (vh * 0.72 - sRect.top) / (vh * 0.62)));
-        if (reelTitleLine1Ref.current) {
-          const gapEm = 0.72 - 0.34 * introProg;
-          reelTitleLine1Ref.current.style.wordSpacing = `${gapEm.toFixed(3)}em`;
-        }
-        const totalW = reelWordRefs.current.length;
-        for (let i = 0; i < totalW; i++) {
-          const wEl = reelWordRefs.current[i];
-          if (!wEl) continue;
-          const threshold = (i / Math.max(1, totalW - 1)) * 0.86;
-          const lit = Math.max(0.38, Math.min(1, (introProg - threshold + 0.24) / 0.24));
-          wEl.style.opacity = lit.toFixed(3);
-        }
+      const dt = Math.min(0.1,Math.max(1/240,(now-previousTime)/1000));
+      const velocity = (y-previousY)/Math.max(dt,1/240);
+      previousY = y;
+      previousTime = now;
+      const targetSkew = reducedMotion ? 0 : Math.max(-1.6,Math.min(1.6,-velocity*0.0007));
+      skew += (targetSkew-skew)*(1-Math.exp(-14*dt));
+      if (Math.abs(skew)<0.005 && targetSkew===0) skew = 0;
+      const intro = reducedMotion ? 1 : motionEase((vh*0.76-(introTop-y))/(vh*0.7));
+      // A translated word gives spacing motion without reflowing the editorial headline.
+      reelTitleLine1Ref.current?.style.setProperty("--reel-word-shift",`${((1-intro)*0.34).toFixed(4)}em`);
+      for (let i = 0; i < reelWordRefs.current.length; i++) {
+        const word = reelWordRefs.current[i];
+        if (!word) continue;
+        const threshold = i/Math.max(1,reelWordRefs.current.length-1)*0.86;
+        word.style.opacity = reducedMotion ? "1" : Math.max(0.38,Math.min(1,(intro-threshold+0.24)/0.24)).toFixed(3);
       }
-
-      const el = reelContainerRef.current;
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        const raw = (vh - rect.top) / (vh * 0.85);
-        const t = Math.max(0, Math.min(1, raw));
-        const scale = 0.86 + 0.14 * t;
-        if (reelVideoStageRef.current) {
-          reelVideoStageRef.current.style.transform = `scale(${scale.toFixed(4)})`;
-        }
-        if (reelOverlayTitleRef.current) {
-          reelOverlayTitleRef.current.style.gap = `${(1.95 + 0.55 * t).toFixed(2)}em`;
-        }
-        if (reelThumbCardRef.current) {
-          const thumbOp = Math.max(0.15, 1 - t * 0.75);
-          reelThumbCardRef.current.style.opacity = thumbOp.toFixed(3);
-        }
+      const expansion = reducedMotion ? 1 : motionEase((vh*0.98-(reelTop-y))/(vh*0.85));
+      if (reelVideoStageRef.current) {
+        reelVideoStageRef.current.style.transform = `translate3d(0,${((1-expansion)*52).toFixed(2)}px,0) scale(${(0.86+expansion*0.14).toFixed(5)})`;
+        reelVideoStageRef.current.style.setProperty("--reel-radius",`${(36-expansion*16).toFixed(2)}px`);
       }
+      if (reelOverlayTitleRef.current) reelOverlayTitleRef.current.style.columnGap = `${(1.95+expansion*0.55).toFixed(3)}em`;
+      if (reelThumbCardRef.current) reelThumbCardRef.current.style.opacity = reducedMotion ? "1" : (1-expansion*0.75).toFixed(3);
+      const heading = reducedMotion ? 1 : motionEase((vh*0.9-(featuredTop-y))/(vh*0.48));
+      if (featuredTitleRef.current) featuredTitleRef.current.style.transform = `translate3d(0,${((1-heading)*0.32).toFixed(4)}em,0)`;
+      for (const card of cards) {
+        const top = card.top-y;
+        if (top>vh+180 || top+card.height < -180) continue;
+        const entrance = reducedMotion ? 1 : motionEase((vh*1.02-top)/(vh*0.45));
+        const parallax = reducedMotion ? 0 : Math.max(-1,Math.min(1,(top+card.height*0.5-vh*0.5)/vh))*card.imageTravel;
+        card.el.style.setProperty("--project-reveal-y",`${((1-entrance)*44).toFixed(2)}px`);
+        card.el.style.setProperty("--project-reveal-scale",(0.97+entrance*0.03).toFixed(5));
+        card.el.style.setProperty("--project-skew",`${skew.toFixed(4)}deg`);
+        card.el.style.setProperty("--project-image-y",`${parallax.toFixed(2)}px`);
+      }
+      // The small inertial shear settles to zero, then there is no idle scroll loop.
+      if (skew!==0) rafId = window.requestAnimationFrame(sample);
     };
-
-    const onScrollOrResize = () => {
-      if (!rafId) {
-        rafId = window.requestAnimationFrame(applyReelScrub);
-      }
-    };
-
-    applyReelScrub();
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize, { passive: true });
+    const schedule = () => { if (!disposed && !rafId && !document.hidden) rafId = window.requestAnimationFrame(sample); };
+    const resize = () => { layoutDirty = true; schedule(); };
+    const observer = new ResizeObserver(resize);
+    for (const el of [reelSectionRef.current,reelContainerRef.current,featuredSectionRef.current]) if (el) observer.observe(el);
+    window.addEventListener("scroll",schedule,{passive:true});
+    window.addEventListener("resize",resize,{passive:true});
+    document.addEventListener("visibilitychange",schedule);
+    document.fonts.ready.then(resize);
+    schedule();
     return () => {
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      disposed = true;
+      observer.disconnect();
+      window.removeEventListener("scroll",schedule);
+      window.removeEventListener("resize",resize);
+      document.removeEventListener("visibilitychange",schedule);
       if (rafId) window.cancelAnimationFrame(rafId);
     };
   }, [reducedMotion]);
+
+  // Decode/play only visible background footage; the deliberate modal playback is separate.
+  useEffect(() => {
+    const section = reelSectionRef.current;
+    if (!section) return;
+    const videos = Array.from(section.querySelectorAll("video"));
+    const visible = new Set<HTMLVideoElement>();
+    let disposed = false;
+    const sync = () => {
+      for (const video of videos) {
+        if (!disposed && !document.hidden && !reducedMotion && !reelOpen && visible.has(video)) {
+          void video.play().catch(() => { /* muted autoplay can still be denied by the browser */ });
+        } else video.pause();
+      }
+    };
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) visible.add(video); else visible.delete(video);
+      }
+      sync();
+    },{threshold:0.01});
+    for (const video of videos) observer.observe(video);
+    document.addEventListener("visibilitychange",sync);
+    sync();
+    return () => {
+      disposed = true;
+      observer.disconnect();
+      document.removeEventListener("visibilitychange",sync);
+      for (const video of videos) video.pause();
+    };
+  },[reducedMotion,reelOpen,isMobileReel,reelVideoAvailable]);
 
   const heroWords = LUSION_HOME.hero.headline.split(" ");
   const reelLoopSrc = isMobileReel
@@ -334,7 +385,9 @@ export function HomePageView() {
               style={{ wordSpacing: "0.52em" }}
               className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*0.92+var(--grid-gap))]"
             >
-              {LUSION_HOME.reel.eyebrowLine1}
+              {LUSION_HOME.reel.eyebrowLine1.split(" ").filter(Boolean).map((word,i) => (
+                <React.Fragment key={word}>{i>0 ? " " : ""}<span className="inline-block" style={i>0 ? {transform:"translate3d(var(--reel-word-shift,0em),0,0)"} : undefined}>{word}</span></React.Fragment>
+              ))}
             </span>
             <span id="home-reel-title-line-2" className="block max-[812px]:max-w-[8.8ch]">
               {LUSION_HOME.reel.eyebrowLine2}
@@ -445,6 +498,7 @@ export function HomePageView() {
               {/* Rounded Interactive Reel Viewport (`aspect-[1.85/1]` desktop matching `ref-03-reel-stage`) */}
               <div
                 onClick={handleOpenReel}
+                style={{ borderRadius: "var(--reel-radius,var(--global-border-radius))" }}
                 className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#0b0d14] shadow-[0_24px_64px_rgba(12,18,42,0.18)] min-[813px]:aspect-[1.85/1]"
               >
                 {reelVideoAvailable ? (
@@ -545,16 +599,18 @@ export function HomePageView() {
          ===================================================================== */}
       <section
         id="home-featured"
+        ref={featuredSectionRef}
         className="section relative grid grid-cols-6 gap-x-[var(--grid-gap)] px-[var(--base-padding-x)] pt-12 pb-16 min-[813px]:grid-cols-12 min-[813px]:pt-20 min-[813px]:pb-28"
       >
         {/* Header Band (`#home-featured-title-top`) */}
         <div id="home-featured-title-top" className="relative col-span-6 min-[813px]:col-span-12">
           <div
             id="home-featured-title-wrapper"
-            className="relative w-fit font-sans text-[15vw] tracking-[-0.02em] min-[813px]:text-[8vw]"
+            className="relative w-fit overflow-hidden font-sans text-[15vw] tracking-[-0.02em] min-[813px]:text-[8vw]"
           >
             <h2
               id="home-featured-title"
+              ref={featuredTitleRef}
               className="m-0 -ml-[0.06em] inline-block pt-[0.2em] leading-[0.92] font-normal text-[#000000]"
             >
               {LUSION_HOME.featured.heading}

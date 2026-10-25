@@ -1,0 +1,5 @@
+solar 3.79 fps CPU p95 1ms 6 calls
+tesseract 1.86 fps CPU p95 1.7ms 11 calls
+blue 0.89 fps CPU p95 2866.4ms 10 calls
+glass 1.14 fps CPU p95 2ms 10 calls
+shatter 0.99 fps CPU p95 1188.7ms 11 calls

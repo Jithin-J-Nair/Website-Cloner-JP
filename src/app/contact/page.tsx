@@ -1,12 +1,5 @@
-import type { Metadata } from "next";
-import { ContactPageView } from "@/components/pages/ContactPageView";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Contact & Project Brief Planner",
-  description:
-    "Start a conversation with KINETA's producers and creative directors in Osaka, Bristol, and New York.",
-};
-
-export default function ContactPage() {
-  return <ContactPageView />;
+export default function ContactPage(): never {
+  redirect("/#footer-section");
 }

@@ -176,9 +176,62 @@ console.log(
 );
 if (!assetOk) failures += 1;
 
+// These are the actual captured Lusion hero/suit assets used by the WebGL scenes.
+// Check the delivered bytes, not merely whether a manifest entry or source path exists.
+const referenceSceneAssets = [
+  // The actual captured showreel must remain available. If either video 404s,
+  // HomePageView silently switches to the procedural approximation, a major visual regression.
+  "/assets/textures/reel/desktop.mp4",
+  "/assets/textures/reel/mobile.mp4",
+  // Captured spline geometry drives the homepage's two large ribbon transitions.
+  "/assets/models/lines/line_reel.buf",
+  "/assets/models/lines/line_goal.buf",
+  "/assets/models/home/cross.buf",
+  "/assets/models/tunnels/astronaut_helmet.buf",
+  "/assets/models/tunnels/astronaut_helmet_glass.buf",
+  "/assets/models/tunnels/astronaut_glove_shoes.buf",
+  "/assets/models/tunnels/astronaut_wearpack.buf",
+  // Captured skeletal/root curves, both lattice levels, PBR atlases and corridor modules.
+  ...["astronaut_animations","astronaut_in_animation","astronaut_out_animation","grid_base_hd","grid_base_ld","grid_structure_hd","grid_structure_ld","tunnel_block_base","tunnel_block_wall"].map((name) => `/assets/models/tunnels/${name}.buf`),
+  ...["base","arm","nor"].map((name) => `/assets/textures/tunnels/grids/greeble_${name}.webp`),
+  "/assets/textures/tunnels/white_block.webp",
+  "/assets/textures/tunnels/astronaut/astronaut_helmet_base.webp",
+  "/assets/textures/tunnels/astronaut/astronaut_helmet_nor.webp",
+  "/assets/textures/tunnels/astronaut/astronaut_glove_shoes_base.webp",
+  "/assets/textures/tunnels/astronaut/astronaut_wearpack_base.webp",
+];
+// All 12 homepage project cards depend on their captured local thumbnail and depth map.
+const projectMediaAssets = GROUND_TRUTH.home.featured.projects.flatMap((project) => [
+  project.thumbnail,
+  project.depthMap,
+]);
+const requiredAssets = [...new Set([...referenceSceneAssets, ...projectMediaAssets])];
+
+const sceneAssetResults = await Promise.all(
+  requiredAssets.map(async (url) => {
+    try {
+      const response = await fetch(`${BASE_URL}${url}`);
+      const bytes = response.ok ? await response.arrayBuffer() : null;
+      return { url, status: response.status, bytes: bytes?.byteLength ?? 0 };
+    } catch {
+      return { url, status: 0, bytes: 0 };
+    }
+  })
+);
+const sceneAssetsOk = sceneAssetResults.every((result) => result.status === 200 && result.bytes > 0);
+console.log(
+  `  ${sceneAssetsOk ? "PASS" : "FAIL"} Captured Lusion scene + project media assets: ${sceneAssetResults.filter((result) => result.status === 200 && result.bytes > 0).length}/${requiredAssets.length} delivered with non-empty bodies`
+);
+for (const result of sceneAssetResults) {
+  if (result.status !== 200 || result.bytes === 0) {
+    console.error(`    Missing/empty scene asset: ${result.url} (HTTP ${result.status}, ${result.bytes} bytes)`);
+  }
+}
+if (!sceneAssetsOk) failures += 1;
+
 if (failures > 0) {
   console.error(`\nQA FAILED with ${failures} issue(s).`);
   process.exit(1);
 } else {
-  console.log("\nALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 CANONICAL ROUTES + 404 + ASSET SECURITY).");
+  console.log("\nALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).");
 }

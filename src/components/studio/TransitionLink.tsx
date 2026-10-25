@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
-import { useTransition } from "@/components/foundation/TransitionProvider";
 
 interface TransitionLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
@@ -32,7 +31,6 @@ export function TransitionLink({
   const setMenuOpen = useStudioStore((s) => s.setMenuOpen);
   const setCursor = useStudioStore((s) => s.setCursor);
   const resetCursor = useStudioStore((s) => s.resetCursor);
-  const { navigate } = useTransition();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
@@ -72,7 +70,10 @@ export function TransitionLink({
         ? "HOME"
         : href.replace(/^\//, "").replace(/\//g, " // ").replace(/-/g, " ").toUpperCase());
 
-    navigate(href, e, label);
+    setTransition(true, label);
+    window.setTimeout(() => {
+      router.push(href);
+    }, 260);
   };
 
   return (

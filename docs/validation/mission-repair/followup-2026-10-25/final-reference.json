@@ -1,0 +1,14 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "reduced": false,
+  "errors": [],
+  "warnings": [],
+  "failed": [],
+  "issues": [],
+  "states": [],
+  "frames": [],
+  "reference": "Error: page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"networkidle\"\n"
+}

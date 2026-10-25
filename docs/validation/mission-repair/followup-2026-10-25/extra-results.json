@@ -1,0 +1,52 @@
+[
+  {
+    "name": "final-astronaut-1440",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "followup-astronaut-1440",
+      "AUDIT_FAILURE": "astronaut"
+    },
+    "exit": 0,
+    "seconds": 19.39,
+    "report": "temp/followup/final-astronaut-1440.json",
+    "evidenceReport": "final-astronaut-1440.json"
+  },
+  {
+    "name": "final-astronaut-390",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "followup-astronaut-390",
+      "AUDIT_FAILURE": "astronaut"
+    },
+    "exit": 0,
+    "seconds": 15.63,
+    "report": "temp/followup/final-astronaut-390.json",
+    "evidenceReport": "final-astronaut-390.json"
+  },
+  {
+    "name": "final-audit-tablet-normal",
+    "command": "node scripts/audit-home-experience.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1024",
+      "AUDIT_TAG": "followup-tablet-normal"
+    },
+    "exit": 0,
+    "seconds": 354.52,
+    "report": "temp/followup/final-audit-tablet-normal.json",
+    "evidenceReport": "final-audit-tablet-normal.json"
+  },
+  {
+    "name": "final-profile-equivalent",
+    "command": "node scripts/.profile-followup-comparison.mjs",
+    "env": {
+      "PROFILE_TAG": "followup-equivalent",
+      "PROFILE_DURATION": "10000"
+    },
+    "exit": 0,
+    "seconds": 157.58,
+    "report": "temp/followup/final-profile-equivalent.json",
+    "evidenceReport": "final-profile-equivalent.json"
+  }
+]

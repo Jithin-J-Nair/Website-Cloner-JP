@@ -1,0 +1,34 @@
+{
+  "errors": [],
+  "issues": [],
+  "hover": {
+    "colorIndex": "0",
+    "accentColor": "#1b24e6",
+    "webglStatus": "ready",
+    "pointerInteractions": "1",
+    "motionState": "responding",
+    "activeRaf": "true",
+    "renderPixels": "1296x607",
+    "offsetEnergy": "0.20119",
+    "renderCount": "7",
+    "frameCpuMs": "4.60",
+    "drawCalls": "23"
+  },
+  "reduced": {
+    "colorIndex": "0",
+    "accentColor": "#1b24e6",
+    "webglStatus": "ready",
+    "pointerInteractions": "1",
+    "motionState": "settled",
+    "activeRaf": "false",
+    "renderPixels": "1296x607",
+    "offsetEnergy": "0.00000",
+    "renderCount": "42",
+    "frameCpuMs": "6.00",
+    "drawCalls": "23"
+  },
+  "pixelComparison": {
+    "meanAbsoluteChannelError": 0,
+    "fractionChannelsDifferentOver3": 0
+  }
+}

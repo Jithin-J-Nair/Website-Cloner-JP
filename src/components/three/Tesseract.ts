@@ -60,6 +60,6 @@ export class Tesseract extends THREE.Group {
     this.edges.instanceMatrix.needsUpdate = true
     this.nodes.instanceMatrix.needsUpdate = true
   }
-  
+
   dispose() { this.edges.geometry.dispose(); this.nodes.geometry.dispose(); this.edges.dispose(); this.nodes.dispose() }
 }

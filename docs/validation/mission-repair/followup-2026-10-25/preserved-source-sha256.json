@@ -1,0 +1,37 @@
+[
+  {
+    "path": "scripts/validate-goal-sequence.mjs",
+    "entrySha256": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910",
+    "currentSha256": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910"
+  },
+  {
+    "path": "src/components/home/GoalDownstreamScenes.ts",
+    "entrySha256": "9311544a834a3001c706aa952e13a399cbdb044b51e36373d37c7ebbec75eb05",
+    "currentSha256": "9311544a834a3001c706aa952e13a399cbdb044b51e36373d37c7ebbec75eb05"
+  },
+  {
+    "path": "src/components/home/AstronautEmergenceAssets.ts",
+    "entrySha256": "33b5d2d89135f2fa59b8e1533fe7670d82845293166a81a541944f23a8d9ebb2",
+    "currentSha256": "33b5d2d89135f2fa59b8e1533fe7670d82845293166a81a541944f23a8d9ebb2"
+  },
+  {
+    "path": "src/lib/home-motion.ts",
+    "entrySha256": "fc11b9c0714a3f4b41b2f746fca1bba3772b3d498ad0f0a20b6dfaa8f1de4588",
+    "currentSha256": "fc11b9c0714a3f4b41b2f746fca1bba3772b3d498ad0f0a20b6dfaa8f1de4588"
+  },
+  {
+    "path": "src/components/home/FeaturedProjectCard.tsx",
+    "entrySha256": "a8af853e82936201bbffa386ff0434c24389099eaf6f485568040f0fe9508a66",
+    "currentSha256": "a8af853e82936201bbffa386ff0434c24389099eaf6f485568040f0fe9508a66"
+  },
+  {
+    "path": "src/components/home/HeroCrossesStage.tsx",
+    "entrySha256": "cb6c4cce96f7ff2d0846c1a94132f77d864c1a35df0b184f87fe541643733ddc",
+    "currentSha256": "cb6c4cce96f7ff2d0846c1a94132f77d864c1a35df0b184f87fe541643733ddc"
+  },
+  {
+    "path": "src/components/sections/ContactCtaSection.tsx",
+    "entrySha256": "64af8a851e0707e7c9b26fb39936ff1e0e3b0a0e69cdda0fb1a6338fba385678",
+    "currentSha256": "64af8a851e0707e7c9b26fb39936ff1e0e3b0a0e69cdda0fb1a6338fba385678"
+  }
+]

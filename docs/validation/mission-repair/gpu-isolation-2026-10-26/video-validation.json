@@ -1,0 +1,28 @@
+[
+  {
+    "width": 1440,
+    "sourceImages": 107,
+    "sourceSeconds": 48.350247859954834,
+    "bytes": 1715781,
+    "previewSize": [
+      960,
+      600
+    ],
+    "decodeExit": 0,
+    "decodeStderr": "",
+    "encoding": "VFR timestamp-paced, no interpolation; JPEG demux timebase quantization; final <=0.2s encoding bookend; CRF26 lossy preview"
+  },
+  {
+    "width": 390,
+    "sourceImages": 133,
+    "sourceSeconds": 45.43628811836243,
+    "bytes": 1807770,
+    "previewSize": [
+      390,
+      844
+    ],
+    "decodeExit": 0,
+    "decodeStderr": "",
+    "encoding": "VFR timestamp-paced, no interpolation; JPEG demux timebase quantization; final <=0.2s encoding bookend; CRF26 lossy preview"
+  }
+]

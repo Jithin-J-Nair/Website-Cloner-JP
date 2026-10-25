@@ -37,10 +37,10 @@ Both viewports (`1440x900` Desktop and `390x844` Mobile) maintain a completely s
 - Mobile triangle counts correctly adjust through geometry reduction sweeps in `GoalDownstreamScenes.ts`.
 
 ### 8. Regression Results
-All 22 standalone routes, including `/about`, compile with exactly zero Next.js linting/type errors. `npm run qa` passes strictly. Zero disruption occurred to the `HeroCrossesStage.tsx` (`01-hero`), or the initial astronaut/Earth portal sequence (`08-emergence-end`). Memory allocation checks via `getWebGLContext().getExtension('WEBGL_debug_renderer_info')` verify deterministic cleanup of listeners and frame loop allocations upon unmount.
+The Phase 8 report recorded successful lint, typecheck, build, and QA runs on its then-current commit. Those results are historical and must not be treated as a fresh verification of the current branch HEAD. Re-run `npm run check`, `npm run test:assets`, and `npm run qa` after subsequent changes before release.
 
 ### 9. Remaining Differences
-Visual parity is fully achieved according to the Phase 8 requirements. Minor antialiasing pixel variations may exist inherently based on hardware-specific GPU rasterization compared against Lusion's macOS/Metal source capture context, but the logical 3D scenes, material inputs, animation frames, and scroll distances match perfectly.
+Pixel-level visual parity is **not established** by this report. The separate Phase E audit still records substantial differences in the goal-tunnel second stage, showreel stage, footer portal, projects archive, and featured cards. Hardware-specific antialiasing can explain small edge differences, not those large image and layout discrepancies. Existing screenshots and telemetry are historical artifacts and do not prove the current branch HEAD after later edits. A fresh side-by-side capture against the current live reference is required before calling this reconstruction visually complete.
 
 ### 10. Git Status
 All modifications, including the structural asset loaders, React interaction elements, and shader fixes, are secured locally on branch `arena/4eb11891-website-cloner-jp`. The branch is unmerged and marked `pr_open`, awaiting final PR review and merge into main/lusion. The production standalone server is successfully listening on `0.0.0.0:3000`.

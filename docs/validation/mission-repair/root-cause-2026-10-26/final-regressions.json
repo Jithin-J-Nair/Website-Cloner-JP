@@ -1,0 +1,149 @@
+[
+  {
+    "name": "final-normal-1440",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_MOTION": "normal",
+      "GOAL_VIEWPORT_WIDTH": "1440"
+    },
+    "exit": 1,
+    "seconds": 50.921
+  },
+  {
+    "name": "final-reduced-1440",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_MOTION": "reduce",
+      "GOAL_VIEWPORT_WIDTH": "1440"
+    },
+    "exit": 0,
+    "seconds": 134.304
+  },
+  {
+    "name": "final-clock-1440",
+    "command": "node scripts/validate-playback-clock.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "root-final-clock"
+    },
+    "exit": 0,
+    "seconds": 80.304
+  },
+  {
+    "name": "final-context-loss-1440",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "root-final-context-loss",
+      "AUDIT_FAILURE": "context-loss"
+    },
+    "exit": 0,
+    "seconds": 24.349
+  },
+  {
+    "name": "final-webgl-1440",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "root-final-webgl",
+      "AUDIT_FAILURE": "webgl"
+    },
+    "exit": 0,
+    "seconds": 4.878
+  },
+  {
+    "name": "final-astronaut-1440",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "root-final-astronaut",
+      "AUDIT_FAILURE": "astronaut"
+    },
+    "exit": 0,
+    "seconds": 20.538
+  },
+  {
+    "name": "final-normal-390",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_MOTION": "normal",
+      "GOAL_VIEWPORT_WIDTH": "390"
+    },
+    "exit": 1,
+    "seconds": 46.977
+  },
+  {
+    "name": "final-reduced-390",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_MOTION": "reduce",
+      "GOAL_VIEWPORT_WIDTH": "390"
+    },
+    "exit": 0,
+    "seconds": 92.758
+  },
+  {
+    "name": "final-clock-390",
+    "command": "node scripts/validate-playback-clock.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "root-final-clock"
+    },
+    "exit": 0,
+    "seconds": 65.702
+  },
+  {
+    "name": "final-context-loss-390",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "root-final-context-loss",
+      "AUDIT_FAILURE": "context-loss"
+    },
+    "exit": 0,
+    "seconds": 19.58
+  },
+  {
+    "name": "final-webgl-390",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "root-final-webgl",
+      "AUDIT_FAILURE": "webgl"
+    },
+    "exit": 0,
+    "seconds": 4.382
+  },
+  {
+    "name": "final-astronaut-390",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "root-final-astronaut",
+      "AUDIT_FAILURE": "astronaut"
+    },
+    "exit": 0,
+    "seconds": 15.757
+  },
+  {
+    "name": "final-assets",
+    "command": "node scripts/test-asset-route.mjs",
+    "env": {},
+    "exit": 0,
+    "seconds": 0.666
+  },
+  {
+    "name": "final-audit",
+    "command": "npm audit --json",
+    "env": {},
+    "exit": 0,
+    "seconds": 0.516
+  },
+  {
+    "name": "final-audit-production",
+    "command": "npm audit --omit=dev --json",
+    "env": {},
+    "exit": 0,
+    "seconds": 0.517
+  }
+]

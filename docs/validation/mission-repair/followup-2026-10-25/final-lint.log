@@ -1,0 +1,12 @@
+
+> lusion-studio-reconstruction@1.0.0 lint
+> eslint
+
+
+/home/user/Website-Cloner-JP/src/components/pages/AboutPageView.tsx
+  1044:6  warning  React Hook useEffect has a missing dependency: 'team'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/user/Website-Cloner-JP/src/components/pages/LusionProjectDetailView.tsx
+  85:3  warning  'highlight' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)

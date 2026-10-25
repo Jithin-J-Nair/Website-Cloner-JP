@@ -1,0 +1,110 @@
+[
+  {
+    "path": "README.md",
+    "reason": "Keep canonical runtime instructions; append links to upstream reference/experimental work. Preserve full upstream README separately."
+  },
+  {
+    "path": "docs/sections/hero.md",
+    "reason": "Retain implemented captured-asset behavior; preserve upstream specification separately, not as fresh verification."
+  },
+  {
+    "path": "docs/validation/parity-audit/Executive_Completion_Report.md",
+    "reason": "Historical evidence must not be replaced by a competing historical completion claim. Preserve both, latest mission report governs."
+  },
+  {
+    "path": "package.json",
+    "reason": "Retain motion/unit commands which upstream removes; dependency versions upgraded separately against audit."
+  },
+  {
+    "path": "scripts/qa-verify.mjs",
+    "reason": "Retain 50-asset delivery gates removed upstream; no acceptance weakening."
+  },
+  {
+    "path": "src/app/contact/page.tsx",
+    "reason": "Preserve canonical contact redirect rather than activating unrelated KINETA planner."
+  },
+  {
+    "path": "src/app/design-system/page.tsx",
+    "reason": "Preserve canonical 404 policy rather than exposing unrelated demo."
+  },
+  {
+    "path": "src/app/globals.css",
+    "reason": "Union: keep existing accessibility/global rules and append upstream spotlight CSS."
+  },
+  {
+    "path": "src/app/labs/page.tsx",
+    "reason": "Preserve verified external Lusion labs navigation."
+  },
+  {
+    "path": "src/app/work/[slug]/page.tsx",
+    "reason": "Preserve canonical project aliases rather than unrelated case-study data."
+  },
+  {
+    "path": "src/app/work/page.tsx",
+    "reason": "Preserve canonical projects redirect."
+  },
+  {
+    "path": "src/components/foundation/StudioShell.tsx",
+    "reason": "Keep one transition/scene owner; upstream adds a second transition provider and generic stage on captured routes."
+  },
+  {
+    "path": "src/components/home/AstronautEmergenceAssets.ts",
+    "reason": "Preserve captured DQ/root/pose decoding removed upstream; trajectory and pose acceptance depend on it."
+  },
+  {
+    "path": "src/components/home/FeaturedProjectCard.tsx",
+    "reason": "Preserve freshly verified input/reduced reset, captured assets and shared scroll transforms."
+  },
+  {
+    "path": "src/components/home/GoalDownstreamScenes.ts",
+    "reason": "Preserve captured lattice, glass frame sampler and sole authored path; upstream experimental primitives remain as separate files."
+  },
+  {
+    "path": "src/components/home/GoalTunnelSection.tsx",
+    "reason": "Preserve elapsed clock, native autoplay, controls, captured shaders/poses and failure cleanup; upstream removes these contracts."
+  },
+  {
+    "path": "src/components/home/HeroCrossesStage.tsx",
+    "reason": "Preserve bounded springs and exact reduced rest; no unbounded interaction rewrite."
+  },
+  {
+    "path": "src/components/home/HomePageView.tsx",
+    "reason": "Preserve shared reversible reveal/reel sampler and offscreen video policy removed upstream."
+  },
+  {
+    "path": "src/components/pages/AboutPageView.tsx",
+    "reason": "Retain real captured team geometry and async disposal, rather than procedural substitution."
+  },
+  {
+    "path": "src/components/pages/LusionProjectDetailView.tsx",
+    "reason": "Retain authentic still fallback rather than procedural reel replacement."
+  },
+  {
+    "path": "src/components/pages/WorkArchiveView.tsx",
+    "reason": "Keep canonical alias; upstream alternate archive preserved separately as an inactive component."
+  },
+  {
+    "path": "src/components/sections/ContactCtaSection.tsx",
+    "reason": "Upstream differs ONLY by removing the new fallback CSS and reduced scroll fixes; retain those repairs."
+  },
+  {
+    "path": "src/components/studio/ProjectCard.tsx",
+    "reason": "Preserve canonical media/routing; upstream alternate card implementation retained separately."
+  },
+  {
+    "path": "src/components/studio/TransitionLink.tsx",
+    "reason": "Preserve one transition owner; upstream provider would compete with existing curtain."
+  },
+  {
+    "path": "src/components/ui/GlowCard.tsx",
+    "reason": "Integrate upstream shared pointer controller and expanded props; isolated reusable UI."
+  },
+  {
+    "path": "src/components/ui/ShaderAnimation.tsx",
+    "reason": "Integrate upstream reusable animation implementation; inspect lint/type/cleanup."
+  },
+  {
+    "path": "src/data/reference/index.ts",
+    "reason": "Preserve canonical captured metadata and path contracts used by asset QA."
+  }
+]

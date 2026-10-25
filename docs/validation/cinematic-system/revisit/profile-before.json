@@ -1,0 +1,556 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "method": "RAF intervals during native phase sweep; one application render-loop owner; CPU submission telemetry, not GPU time",
+  "errors": [],
+  "failedAssets": [],
+  "phases": [
+    {
+      "name": "solar",
+      "frames": 13,
+      "intervalsMs": {
+        "mean": 393.5769230769231,
+        "p50": 266.6000000000022,
+        "p95": 1133.2999999999993
+      },
+      "observedFps": 2.5407993745724617,
+      "cpuSubmissionMs": {
+        "mean": 1.0384615384615385,
+        "p50": 0.9,
+        "p95": 2.1
+      },
+      "maxCalls": 6,
+      "maxTriangles": 13241,
+      "telemetry": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "desktop",
+        "renderWidth": 960,
+        "renderHeight": 600,
+        "pixelRatio": 0.6666666666666666,
+        "textureMaxDim": 2048,
+        "drawCalls": 6,
+        "triangles": 13241,
+        "lastFrameMs": 0.9,
+        "solar": {
+          "x": -0.4988792073837921,
+          "y": 1.455788571754826,
+          "facing": 0.5524640183084296,
+          "visibility": 0.380577210825971,
+          "occlusion": 1
+        },
+        "emergenceProgress": 0.8067,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 0,
+          "astronautMatrix": [
+            0.07786759235319882,
+            0.004988071016209155,
+            -0.9249316257699741,
+            0,
+            0.004796684603496056,
+            0.928188819546217,
+            0.0054094571861294394,
+            0,
+            0.9249326380979128,
+            -0.005233503393639648,
+            0.07783945377697699,
+            0,
+            0.05197335855166097,
+            -0.5758485890382092,
+            0.9151959527158255,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.9999327417379132,
+            -0.011597930871479758,
+            0,
+            0,
+            0.011597930871479758,
+            0.9999327417379132,
+            0,
+            0,
+            0,
+            3.323937853268187,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": true
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 10585,
+          "activation": 8431.56,
+          "end": 40733.44,
+          "runs": 0
+        }
+      }
+    },
+    {
+      "name": "tesseract",
+      "frames": 13,
+      "intervalsMs": {
+        "mean": 411.51538461538496,
+        "p50": 383.20000000000437,
+        "p95": 1016.5
+      },
+      "observedFps": 2.43004280613866,
+      "cpuSubmissionMs": {
+        "mean": 0.976923076923077,
+        "p50": 0.9,
+        "p95": 1.1
+      },
+      "maxCalls": 11,
+      "maxTriangles": 143609,
+      "telemetry": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "desktop",
+        "renderWidth": 960,
+        "renderHeight": 600,
+        "pixelRatio": 0.6666666666666666,
+        "textureMaxDim": 2048,
+        "drawCalls": 11,
+        "triangles": 143609,
+        "lastFrameMs": 1.1,
+        "solar": {
+          "x": -0.4985493636713154,
+          "y": 1.4554629773856649,
+          "facing": 0.5525743873234433,
+          "visibility": 0.3808228021320993,
+          "occlusion": 1
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.4117288651942117,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 37.060196418255344,
+          "astronautMatrix": [
+            0.5799999999158478,
+            -0.000001406977170399226,
+            -0.000009779407971972034,
+            0,
+            0.000005194942775901935,
+            -0.4448969524023973,
+            0.3721111416177583,
+            0,
+            -0.000008404104627823184,
+            -0.372111141651361,
+            -0.4448969523252453,
+            0,
+            -0.0000019294580852147193,
+            -0.11877311072186869,
+            -1.4159368449587357,
+            1
+          ],
+          "cameraMatrix": [
+            0.9963105822286682,
+            0.08582088171984831,
+            0,
+            0,
+            -0.08582088171984831,
+            0.9963105822286682,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 0,
+          "glazingLayers": 3,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 21805.796908997196,
+          "activation": 8431.56,
+          "end": 40733.44,
+          "runs": 0
+        }
+      }
+    },
+    {
+      "name": "blue",
+      "frames": 5,
+      "intervalsMs": {
+        "mean": 1223.2799999999988,
+        "p50": 1716.5999999999913,
+        "p95": 1733.300000000003
+      },
+      "observedFps": 0.8174743313059978,
+      "cpuSubmissionMs": {
+        "mean": 354.42,
+        "p50": 1,
+        "p95": 1768.4
+      },
+      "maxCalls": 10,
+      "maxTriangles": 103163,
+      "telemetry": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "desktop",
+        "renderWidth": 960,
+        "renderHeight": 600,
+        "pixelRatio": 0.6666666666666666,
+        "textureMaxDim": 2048,
+        "drawCalls": 10,
+        "triangles": 103163,
+        "lastFrameMs": 1768.4,
+        "solar": {
+          "x": -0.4985493636713154,
+          "y": 1.4554629773856649,
+          "facing": 0.5525743873234433,
+          "visibility": 0.3808228021320993,
+          "occlusion": 1
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 0.9691926884996191,
+          "shatterProgress": 0,
+          "waitProgress": 0,
+          "bakedFrame": 87.23816676295013,
+          "astronautMatrix": [
+            0.03193262862451515,
+            0.37847175511503306,
+            0.011808378774210563,
+            0,
+            -0.3786310098767532,
+            0.03177906638005887,
+            0.005352504060888402,
+            0,
+            0.004343453561258579,
+            -0.012215626064931899,
+            0.3797787683520538,
+            0,
+            0.04,
+            -0.02342296099022855,
+            -3.4754835990910857,
+            1
+          ],
+          "cameraMatrix": [
+            0.9373358895000643,
+            0.34842708025514213,
+            0,
+            0,
+            -0.34842708025514213,
+            0.9373358895000643,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 16.13791348932468,
+          "glazingLayers": 0,
+          "glassOpacity": 0,
+          "crackProgress": 0,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 36439,
+          "activation": 8431.56,
+          "end": 40733.44,
+          "runs": 0
+        }
+      }
+    },
+    {
+      "name": "shatter",
+      "frames": 8,
+      "intervalsMs": {
+        "mean": 637.4749999999985,
+        "p50": 533.2000000000116,
+        "p95": 1333.2999999999884
+      },
+      "observedFps": 1.5686889681948348,
+      "cpuSubmissionMs": {
+        "mean": 168.725,
+        "p50": 1.3,
+        "p95": 1340.6
+      },
+      "maxCalls": 11,
+      "maxTriangles": 115193,
+      "telemetry": {
+        "glbLoaded": true,
+        "glbError": null,
+        "qualityTier": "desktop",
+        "renderWidth": 960,
+        "renderHeight": 600,
+        "pixelRatio": 0.6666666666666666,
+        "textureMaxDim": 2048,
+        "drawCalls": 11,
+        "triangles": 115193,
+        "lastFrameMs": 1.3,
+        "solar": {
+          "x": -0.4985493636713154,
+          "y": 1.4554629773856649,
+          "facing": 0.5525743873234433,
+          "visibility": 0.3808228021320993,
+          "occlusion": 1
+        },
+        "emergenceProgress": 1,
+        "portalStencilActive": false,
+        "fallbackVisible": false,
+        "sceneState": {
+          "tunnelProgress": 1,
+          "shatterProgress": 0.5903305492901748,
+          "waitProgress": 0,
+          "bakedFrame": 118.51652746450874,
+          "astronautMatrix": [
+            0.9877228472012498,
+            0,
+            0.10403308094732006,
+            0,
+            0,
+            0.9931864401081677,
+            0,
+            0,
+            -0.10403308094732006,
+            0,
+            0.9877228472012498,
+            0,
+            0.0031587485437724167,
+            -0.14641350735533323,
+            1.6629639099377262,
+            1
+          ],
+          "cameraMatrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            5.2,
+            1
+          ],
+          "trussLoaded": true,
+          "shardsLoaded": true,
+          "portalFlash": 0,
+          "flashVisible": false,
+          "corridorTravel": 27.67910276022592,
+          "glazingLayers": 0,
+          "glassOpacity": 1,
+          "crackProgress": 1,
+          "ringVisible": false
+        },
+        "playback": {
+          "state": "completed",
+          "progress": 0,
+          "virtualScroll": 38651.847232168446,
+          "activation": 8431.56,
+          "end": 40733.44,
+          "runs": 0
+        }
+      }
+    }
+  ],
+  "device": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.0 Safari/537.36",
+    "cores": 2,
+    "dpr": 1,
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "gpuTimerAvailable": true
+  },
+  "browserMetrics": [
+    {
+      "name": "Timestamp",
+      "value": 976.534165
+    },
+    {
+      "name": "AudioHandlers",
+      "value": 0
+    },
+    {
+      "name": "AudioWorkletProcessors",
+      "value": 0
+    },
+    {
+      "name": "Documents",
+      "value": 1
+    },
+    {
+      "name": "Frames",
+      "value": 1
+    },
+    {
+      "name": "JSEventListeners",
+      "value": 489
+    },
+    {
+      "name": "LayoutObjects",
+      "value": 732
+    },
+    {
+      "name": "MediaKeySessions",
+      "value": 0
+    },
+    {
+      "name": "MediaKeys",
+      "value": 0
+    },
+    {
+      "name": "Nodes",
+      "value": 1154
+    },
+    {
+      "name": "Resources",
+      "value": 47
+    },
+    {
+      "name": "ContextLifecycleStateObservers",
+      "value": 8
+    },
+    {
+      "name": "V8PerContextDatas",
+      "value": 3
+    },
+    {
+      "name": "WorkerGlobalScopes",
+      "value": 0
+    },
+    {
+      "name": "UACSSResources",
+      "value": 0
+    },
+    {
+      "name": "RTCPeerConnections",
+      "value": 0
+    },
+    {
+      "name": "ResourceFetchers",
+      "value": 1
+    },
+    {
+      "name": "AdSubframes",
+      "value": 0
+    },
+    {
+      "name": "DetachedScriptStates",
+      "value": 0
+    },
+    {
+      "name": "ArrayBufferContents",
+      "value": 303
+    },
+    {
+      "name": "LayoutCount",
+      "value": 0
+    },
+    {
+      "name": "RecalcStyleCount",
+      "value": 0
+    },
+    {
+      "name": "LayoutDuration",
+      "value": 0
+    },
+    {
+      "name": "RecalcStyleDuration",
+      "value": 0
+    },
+    {
+      "name": "DevToolsCommandDuration",
+      "value": 0.000013
+    },
+    {
+      "name": "ScriptDuration",
+      "value": 0
+    },
+    {
+      "name": "V8CompileDuration",
+      "value": 0
+    },
+    {
+      "name": "TaskDuration",
+      "value": 0.000016
+    },
+    {
+      "name": "TaskOtherDuration",
+      "value": 0.000003
+    },
+    {
+      "name": "ThreadTime",
+      "value": 0.000059
+    },
+    {
+      "name": "ProcessTime",
+      "value": 2.68
+    },
+    {
+      "name": "JSHeapUsedSize",
+      "value": 12649128
+    },
+    {
+      "name": "JSHeapTotalSize",
+      "value": 13766656
+    },
+    {
+      "name": "FirstMeaningfulPaint",
+      "value": 860.131397
+    },
+    {
+      "name": "DomContentLoaded",
+      "value": 859.803572
+    },
+    {
+      "name": "NavigationStart",
+      "value": 859.745776
+    }
+  ]
+}

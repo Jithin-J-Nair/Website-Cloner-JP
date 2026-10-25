@@ -1,0 +1,109 @@
+4c9770f800027a986cb54d2752bf249a59ae1cc0
+100644 4ed16fd46744c8939f1f70045824f31511daae1c 1	README.md
+100644 ae52262070e2c7bb92cd7f438e9a922c44bec49d 2	README.md
+100644 70f418b483d738fc10de337b2b0882a58a7f1fb9 3	README.md
+100644 83d8372cbc0cc07ffcf175aa2009e15121be7efd 2	docs/sections/hero.md
+100644 4f0bc360633a908b97126c2b3d884969ac780051 3	docs/sections/hero.md
+100644 c9ccee8bddbbc36948eed397e6403529955f78e7 2	docs/validation/parity-audit/Executive_Completion_Report.md
+100644 11f80947ef900fa1637463706d0ca64c7e77d5ff 3	docs/validation/parity-audit/Executive_Completion_Report.md
+100644 520ca195c6c37c0a6912bc90acb3669e7e700fe4 1	package.json
+100644 b2202fd71819cf9df58fabe730ace44a33dfd95b 2	package.json
+100644 3a7d1f4dd3634027e07db5be1d7d4642b1fee832 3	package.json
+100755 5020302e87ad7be65b399738bc4573bb549938bb 2	scripts/qa-verify.mjs
+100755 44a8c29e30bede3b33c5ae5ccf46a2c2558d824d 3	scripts/qa-verify.mjs
+100644 7372c4a200815206bbb32d5a6dcc50c03f9a7976 2	src/app/contact/page.tsx
+100644 f9e7ff0eb3744fc0d826c4b07bff0a34f3d94c55 3	src/app/contact/page.tsx
+100644 a3bf23c1550738b7ba60f7736a495cb518d2183f 2	src/app/design-system/page.tsx
+100644 a9567465aafabfbc785c928b8090fe67dda7075a 3	src/app/design-system/page.tsx
+100644 69cf25606d10cdc46eed4ef41c58fe7af8aad486 1	src/app/globals.css
+100644 4226284cee1b5d8234fcd58888ba1ddc05f26055 2	src/app/globals.css
+100644 cafdb9e9547d9ad1c898b0dc2f4dffd9951ca6d6 3	src/app/globals.css
+100644 ecbfeeff346702985a15e524b8c9ef3b5fb7d9de 2	src/app/labs/page.tsx
+100644 b592f0b6a552c3e2e2c277d2286501c78e642b9d 3	src/app/labs/page.tsx
+100644 3aee6ec358c4c3cfc7917519c45104aa78400580 2	src/app/work/[slug]/page.tsx
+100644 9dbd99302f4e10adca6815744ada5cf5afddd2d3 3	src/app/work/[slug]/page.tsx
+100644 7361d89bde209ff5d0df3141a01e9e4ed2dc566c 2	src/app/work/page.tsx
+100644 09cc361b811d023192887e4dbb5113e50bfafd8a 3	src/app/work/page.tsx
+100644 79040d4a4dee64efe208261e89a18bbced9aac39 2	src/components/foundation/StudioShell.tsx
+100644 f187cc4032766e0756071da94cf5b4c58ba9c8ac 3	src/components/foundation/StudioShell.tsx
+100644 c9ff832e4618dd18816fa95f460a332d54189119 2	src/components/home/AstronautEmergenceAssets.ts
+100644 14d3c65fba861b45ef97ec4a8e9665a81a8f8d61 3	src/components/home/AstronautEmergenceAssets.ts
+100644 b9ef6f3aacd6283f370b0e8ed87f5f91c7eba39b 2	src/components/home/FeaturedProjectCard.tsx
+100644 d4e1fa65fc46fdeaa0d4f14d6499a742eb02e85e 3	src/components/home/FeaturedProjectCard.tsx
+100644 8eb03df6484b1100b9d287abcd963e2edcefe8b6 2	src/components/home/GoalDownstreamScenes.ts
+100644 b60cecac3db17a46e54a06b047e3434e80551233 3	src/components/home/GoalDownstreamScenes.ts
+100644 7ea386130be163df2d793b0321bb40846828c029 2	src/components/home/GoalTunnelSection.tsx
+100644 574e22ec2eda05d656129f2c9de961369446bfc7 3	src/components/home/GoalTunnelSection.tsx
+100644 3c37358a25242d7871de878bdeeb718a3f1dbda3 2	src/components/home/HeroCrossesStage.tsx
+100644 9660c88102f5ffc560076d5520b8c3d9bc81c75b 3	src/components/home/HeroCrossesStage.tsx
+100644 c2ebe7e827187661c68b7f6da32cd1407c7a571e 2	src/components/home/HomePageView.tsx
+100644 ba2406b63903a017f1b57065817e351263f0ce76 3	src/components/home/HomePageView.tsx
+100644 e62362e1bbaba2b8e4dfc8c2ceb7d0c094218891 2	src/components/pages/AboutPageView.tsx
+100644 423fdf7ee421f2b73827c47a258455dcd1e0fe4a 3	src/components/pages/AboutPageView.tsx
+100644 8a01c620763b2c3cce52040f61212a76ca3dd7bf 2	src/components/pages/LusionProjectDetailView.tsx
+100644 28206af54366c585cc3c2da7c4bbf3a9ec731f67 3	src/components/pages/LusionProjectDetailView.tsx
+100644 88991272e6b7c9996a3f542b9044f4888b2e467e 2	src/components/pages/WorkArchiveView.tsx
+100644 32aba4089d2a557fbb974fb13a9b1aa0102ba669 3	src/components/pages/WorkArchiveView.tsx
+100644 2dda1b03ee8ef07c60fee59d34e7281a831b664f 2	src/components/studio/ProjectCard.tsx
+100644 7faf31e927bf03e7f1859674d1d99b289fde0195 3	src/components/studio/ProjectCard.tsx
+100644 6d08e35d0a2a7e5a6460db62762373ceffdced7a 2	src/components/studio/TransitionLink.tsx
+100644 cb632c385a977b046a471e22834229eb26f26d2a 3	src/components/studio/TransitionLink.tsx
+100644 6b103775e896973cb42630d5b51625bdb765dab2 2	src/components/ui/GlowCard.tsx
+100644 f8a840adf160b41f148c9ca9c618117f7b6a4fca 3	src/components/ui/GlowCard.tsx
+100644 f25882ca727fc9e02d6d4854c29bc0abb5015f5f 2	src/components/ui/ShaderAnimation.tsx
+100644 bc6305703bcb413643a188772948a03a39bb02ea 3	src/components/ui/ShaderAnimation.tsx
+100644 8275fc2d6a511607407c278a8eb5d5ea8301fca8 2	src/data/reference/index.ts
+100644 1a74bb1bc0a2065addc90f961d0523accccd2cbb 3	src/data/reference/index.ts
+
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Auto-merging docs/sections/hero.md
+CONFLICT (add/add): Merge conflict in docs/sections/hero.md
+Auto-merging docs/validation/parity-audit/Executive_Completion_Report.md
+CONFLICT (add/add): Merge conflict in docs/validation/parity-audit/Executive_Completion_Report.md
+Auto-merging package.json
+CONFLICT (content): Merge conflict in package.json
+Auto-merging scripts/qa-verify.mjs
+CONFLICT (add/add): Merge conflict in scripts/qa-verify.mjs
+Auto-merging src/app/contact/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/contact/page.tsx
+Auto-merging src/app/design-system/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/design-system/page.tsx
+Auto-merging src/app/globals.css
+CONFLICT (content): Merge conflict in src/app/globals.css
+Auto-merging src/app/labs/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/labs/page.tsx
+Auto-merging src/app/work/[slug]/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/work/[slug]/page.tsx
+Auto-merging src/app/work/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/work/page.tsx
+Auto-merging src/components/foundation/StudioShell.tsx
+CONFLICT (add/add): Merge conflict in src/components/foundation/StudioShell.tsx
+Auto-merging src/components/home/AstronautEmergenceAssets.ts
+CONFLICT (add/add): Merge conflict in src/components/home/AstronautEmergenceAssets.ts
+Auto-merging src/components/home/FeaturedProjectCard.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/FeaturedProjectCard.tsx
+Auto-merging src/components/home/GoalDownstreamScenes.ts
+CONFLICT (add/add): Merge conflict in src/components/home/GoalDownstreamScenes.ts
+Auto-merging src/components/home/GoalTunnelSection.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/GoalTunnelSection.tsx
+Auto-merging src/components/home/HeroCrossesStage.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/HeroCrossesStage.tsx
+Auto-merging src/components/home/HomePageView.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/HomePageView.tsx
+Auto-merging src/components/pages/AboutPageView.tsx
+CONFLICT (add/add): Merge conflict in src/components/pages/AboutPageView.tsx
+Auto-merging src/components/pages/LusionProjectDetailView.tsx
+CONFLICT (add/add): Merge conflict in src/components/pages/LusionProjectDetailView.tsx
+Auto-merging src/components/pages/WorkArchiveView.tsx
+CONFLICT (add/add): Merge conflict in src/components/pages/WorkArchiveView.tsx
+Auto-merging src/components/studio/ProjectCard.tsx
+CONFLICT (add/add): Merge conflict in src/components/studio/ProjectCard.tsx
+Auto-merging src/components/studio/TransitionLink.tsx
+CONFLICT (add/add): Merge conflict in src/components/studio/TransitionLink.tsx
+Auto-merging src/components/ui/GlowCard.tsx
+CONFLICT (add/add): Merge conflict in src/components/ui/GlowCard.tsx
+Auto-merging src/components/ui/ShaderAnimation.tsx
+CONFLICT (add/add): Merge conflict in src/components/ui/ShaderAnimation.tsx
+Auto-merging src/data/reference/index.ts
+CONFLICT (add/add): Merge conflict in src/data/reference/index.ts

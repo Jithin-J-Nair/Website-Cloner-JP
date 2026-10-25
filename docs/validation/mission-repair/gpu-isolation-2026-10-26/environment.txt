@@ -1,0 +1,26 @@
+2026-10-25T17:11:21+00:00
+0464dfa35c7d887eb08361d0671b5548543ca848
+?? scripts/isolate-goal-gpu-cost.mjs
+Linux e2b.local 6.1.158+ #1 SMP PREEMPT_DYNAMIC Mon May 11 18:48:24 UTC 2026 x86_64 GNU/Linux
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+NAME="Debian GNU/Linux"
+VERSION_ID="12"
+VERSION="12 (bookworm)"
+VERSION_CODENAME=bookworm
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+{"node":"v22.22.3","cpus":["Intel(R) Xeon(R) Processor @ 2.60GHz","Intel(R) Xeon(R) Processor @ 2.60GHz"],"availableParallelism":2,"memory":4131278848}
+2
+cpu.max: cat: /sys/fs/cgroup/cpu.max: No such file or directory
+memory.max: cat: /sys/fs/cgroup/memory.max: No such file or directory
+cpuset.cpus.effective: 0-1
+ls: cannot access '/dev/dri': No such file or directory
+DISPLAY= WAYLAND_DISPLAY=
+d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910  scripts/validate-goal-sequence.mjs
+eb4d34847a5f6ee82ab474c2cac42ab124d819dd6aa07335e933cc402ac86a77  src/components/home/GoalTunnelSection.tsx
+9311544a834a3001c706aa952e13a399cbdb044b51e36373d37c7ebbec75eb05  src/components/home/GoalDownstreamScenes.ts
+cpu/cpu.cfs_quota_us: cat: /sys/fs/cgroup/cpu/cpu.cfs_quota_us: No such file or directory
+cpu/cpu.cfs_period_us: cat: /sys/fs/cgroup/cpu/cpu.cfs_period_us: No such file or directory
+memory/memory.limit_in_bytes: cat: /sys/fs/cgroup/memory/memory.limit_in_bytes: No such file or directory

@@ -1,38 +1,26 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { usePathname } from "next/navigation";
 import { MotionConfig } from "framer-motion";
 import { SmoothScrollProvider } from "@/components/foundation/SmoothScrollProvider";
-import { GlobalStage } from "@/components/webgl/GlobalStage";
 import { StudioHud } from "@/components/foundation/StudioHud";
 import { CustomCursor } from "@/components/foundation/CustomCursor";
 import { PageTransitionCurtain } from "@/components/foundation/PageTransitionCurtain";
 import { ShowreelModal } from "@/components/foundation/ShowreelModal";
 import { Preloader } from "@/components/foundation/Preloader";
 import { useStudioStore } from "@/lib/store";
-import { TransitionProvider } from "@/components/foundation/TransitionProvider";
 
 export function StudioShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const activeSurface = useStudioStore((s) => s.activeSurface);
   const activeProjectTheme = useStudioStore((s) => s.activeProjectTheme);
 
-  // Sync `--vh` custom property & root polarity classes (`is-white-bg` / `is-black-bg` / `is-blue-bg`)
+  // Keep the viewport-height unit synchronized with mobile browser chrome.
   useEffect(() => {
     const syncViewportUnit = () => {
       document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
     };
     syncViewportUnit();
     window.addEventListener("resize", syncViewportUnit, { passive: true });
-    
-    // Parse ?quality= flag and expose window.__pipeline
-    const search = new URLSearchParams(window.location.search);
-    const q = search.get("quality");
-    if (q === "high" || q === "medium" || q === "low") {
-      useStudioStore.getState().setQualityTier(q);
-    }
-    
     return () => window.removeEventListener("resize", syncViewportUnit);
   }, []);
 
@@ -58,36 +46,27 @@ export function StudioShell({ children }: { children: React.ReactNode }) {
   }, [activeSurface, activeProjectTheme]);
 
   return (
-    <TransitionProvider>
     <MotionConfig reducedMotion="user">
       <SmoothScrollProvider>
-        {/* Keyboard Skip Link */}
         <a href="#main-content" className="kn-skip-link">
           Skip to main content
         </a>
 
-        {/* Persistent Viewport WebGL Stage (suppressed on `/` where dedicated Lusion stages run) */}
-        {pathname !== "/" && <GlobalStage />}
-
-        {/* Shared Lusion Header, Menu Popover, Back Control & Scroll Indicator (z-index: 52) */}
+        {/* Each captured Lusion route owns its own scene. Do not inject the unrelated
+            generic optical-sphere demo behind About, Projects, or project-detail pages. */}
         <StudioHud />
 
-        {/* Main Scrollable Document Layer (z-index: 10) */}
         <div id="main-content" className="relative z-10 min-h-dvh">
           {children}
         </div>
 
-        {/* Shared Cinema Overlay (`#video-overlay`, z-index: 99) */}
         <ShowreelModal />
 
-        {/* Route Transition Curtain & Cold-Start Preloader (`#preloader`, z-index: 90–200) */}
+        {/* Keep one route-transition system: the reference transition must not be double-triggered. */}
         <PageTransitionCurtain />
         <Preloader />
-
-        {/* Reactive Pointer (auto-disabled on coarse touch devices & reduced motion) */}
         <CustomCursor />
       </SmoothScrollProvider>
     </MotionConfig>
-    </TransitionProvider>
   );
 }

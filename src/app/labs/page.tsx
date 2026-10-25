@@ -1,12 +1,5 @@
-import type { Metadata } from "next";
-import { LabsPageView } from "@/components/pages/LabsPageView";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Labs R&D — Optical & Physics Sandbox",
-  description:
-    "Interactive WebGL laboratory showcasing KINETA's real-time Snell's Law dispersion shaders, curl-noise swarms, and damped spring physics.",
-};
-
-export default function LabsPage() {
-  return <LabsPageView />;
+export default function LabsPage(): never {
+  redirect("https://labs.lusion.co/");
 }

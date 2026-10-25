@@ -1,0 +1,11 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "method": "RAF intervals during native phase sweep; one application render-loop owner; CPU submission telemetry, not GPU time",
+  "errors": [],
+  "failedAssets": [],
+  "phases": [],
+  "reference": "Error: page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"networkidle\"\n"
+}

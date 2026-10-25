@@ -3,7 +3,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { TransitionLink } from "@/components/studio/TransitionLink";
-import { GlowCard } from "@/components/ui/GlowCard";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 import { getCanonicalProjectTitle } from "@/lib/clean-media-synthesizer";
@@ -42,9 +41,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
   useEffect(() => {
     const el = cardStageRef.current;
     if (!el) return;
-    let rafId = 0;
     let decodeRaf = 0;
-    let smoothSkew = 0;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -87,69 +84,42 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
     );
     io.observe(el);
 
-    let lastY = window.scrollY;
-    let lastT = performance.now();
-
-    const applyVelocityShear = (now: number) => {
-      rafId = 0;
-      const stage = cardStageRef.current;
-      if (!stage || reducedMotion) {
-        if (stage) stage.style.transform = "";
-        return;
-      }
-      const curY = window.scrollY;
-      const dt = Math.max(16, now - lastT);
-      const instantVel = ((curY - lastY) / dt) * 16;
-      lastY = curY;
-      lastT = now;
-
-      const targetSkew = Math.max(-2.2, Math.min(2.2, instantVel * -0.045));
-      smoothSkew += (targetSkew - smoothSkew) * 0.26;
-      if (Math.abs(smoothSkew) < 0.02 && Math.abs(targetSkew) < 0.02) {
-        smoothSkew = 0;
-        stage.style.transform = "";
-        return;
-      }
-      stage.style.transform = `skewY(${smoothSkew.toFixed(3)}deg)`;
-      rafId = window.requestAnimationFrame(applyVelocityShear);
-    };
-
-    const onScroll = () => {
-      if (!rafId && !reducedMotion) {
-        rafId = window.requestAnimationFrame(applyVelocityShear);
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       io.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      if (rafId) window.cancelAnimationFrame(rafId);
       if (decodeRaf) window.cancelAnimationFrame(decodeRaf);
     };
   }, [project.categoriesText, reducedMotion]);
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (reducedMotion || !imgWrapRef.current) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      imgWrapRef.current.style.transform = `scale(1.045) translate3d(${(-nx * 9).toFixed(1)}px, ${(-ny * 7).toFixed(1)}px, 0)`;
-    },
-    [reducedMotion]
-  );
-
-  const handlePointerEnter = useCallback(() => {
-    setHovered(true);
-    soundEngine.playHover();
-  }, []);
-
   const handlePointerLeave = useCallback(() => {
     setHovered(false);
-    if (imgWrapRef.current) {
-      imgWrapRef.current.style.transform = "scale(1) translate3d(0px, 0px, 0)";
-    }
+    imgWrapRef.current?.style.removeProperty("transform");
+  }, []);
+
+  useEffect(() => {
+    // A live preference change must also clear an already-written imperative transform.
+    if (reducedMotion) imgWrapRef.current?.style.removeProperty("transform");
+  }, [reducedMotion]);
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (reducedMotion || e.pointerType === "touch" || e.buttons !== 0) {
+        handlePointerLeave();
+        return;
+      }
+      if (!imgWrapRef.current) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const nx = Math.max(-1, Math.min(1, ((e.clientX - rect.left) / rect.width - 0.5) * 2));
+      const ny = Math.max(-1, Math.min(1, ((e.clientY - rect.top) / rect.height - 0.5) * 2));
+      imgWrapRef.current.style.transform = `scale(1.045) translate3d(${(-nx * 9).toFixed(1)}px, ${(-ny * 7).toFixed(1)}px, 0)`;
+    },
+    [reducedMotion, handlePointerLeave]
+  );
+
+  const handlePointerEnter = useCallback((event: React.PointerEvent<HTMLAnchorElement>) => {
+    if (event.pointerType === "touch") return;
+    setHovered(true);
+    soundEngine.playHover();
   }, []);
 
   return (
@@ -160,8 +130,10 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
       data-project-slug={project.id}
       data-color-bg={project.colorBg}
       data-color-text={project.colorText}
-      onMouseEnter={handlePointerEnter}
-      onMouseLeave={handlePointerLeave}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+      onPointerCancel={handlePointerLeave}
+      onPointerDown={(event) => { if (event.pointerType === "touch") handlePointerLeave(); }}
       onFocus={() => setHovered(true)}
       onBlur={handlePointerLeave}
       className={`project-item project-type-website group relative col-span-6 block cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-[#1a2ffb] ${
@@ -169,11 +141,10 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
       } ${index >= 1 ? "max-[812px]:mt-[2em]" : ""}`}
     >
       {/* Thumbnail Stage (`.project-item-main`, 65% aspect ratio, 15px border radius) */}
-      <GlowCard variant="surface" customSize radius={15} glowColor="brand" className="w-full">
       <div
         ref={cardStageRef}
         onPointerMove={handlePointerMove}
-        style={{ backgroundColor: project.colorBg }}
+        style={{ backgroundColor: project.colorBg, transform: reducedMotion ? "none" : "translate3d(0,var(--project-reveal-y,0px),0) scale(var(--project-reveal-scale,1)) skewY(var(--project-skew,0deg))" }}
         className="project-item-main relative w-full overflow-hidden rounded-[15px] pt-[65%] shadow-[0_14px_34px_rgba(10,14,28,0.06)] transition-shadow duration-500 will-change-transform group-hover:shadow-[0_24px_54px_rgba(26,47,251,0.14)]"
       >
         <div
@@ -194,6 +165,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
               loading={index < 4 ? "eager" : "lazy"}
               decoding="async"
               onError={() => setImgFailed(true)}
+              style={{ transform: reducedMotion ? "none" : "translate3d(0,var(--project-image-y,0px),0) scale(1.08)" }}
               className="project-item-image h-full w-full rounded-[15px] object-cover"
             />
           ) : (
@@ -225,7 +197,6 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
           className="pointer-events-none absolute inset-0 transition-opacity duration-300"
         />
       </div>
-      </GlowCard>
 
       {/* Metadata Footer (`.project-item-footer`: uppercase bullet categories + title with slide-in arrow on desktop & permanent arrow on mobile) */}
       <div className="project-item-footer relative w-full text-[#000000]">

@@ -1,0 +1,524 @@
+{
+  "entry": "0464dfa35c7d887eb08361d0671b5548543ca848",
+  "allCheckedUnchanged": true,
+  "originalAcceptanceSha256": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910",
+  "diagnosticSha256": "075319a454377d77127234f816a7a29dabe6506783709419dbbb5509b9a3d7f0",
+  "files": [
+    {
+      "path": "package-lock.json",
+      "entrySha256": "2e4a57007989d0552a9f6b73f91a340a2ec2751bba1368e626ad235d7508b3c5",
+      "currentSha256": "2e4a57007989d0552a9f6b73f91a340a2ec2751bba1368e626ad235d7508b3c5",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "entrySha256": "d35f12aa40da9c01553d484637b0e56c1f528fe1ff9e829a83357b1a631e187d",
+      "currentSha256": "d35f12aa40da9c01553d484637b0e56c1f528fe1ff9e829a83357b1a631e187d",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/diagnose-render-pipeline.mjs",
+      "entrySha256": "aa7bb1003ce9e1dcd6509e40d53120d3d259631234f235cfb6ee659851ca0985",
+      "currentSha256": "aa7bb1003ce9e1dcd6509e40d53120d3d259631234f235cfb6ee659851ca0985",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/lib/browser-runtime.mjs",
+      "entrySha256": "ed1e31d524b2c0cdd5e3b0f52592d50a6cf5586cfc584860a1e10db561362fa9",
+      "currentSha256": "ed1e31d524b2c0cdd5e3b0f52592d50a6cf5586cfc584860a1e10db561362fa9",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/validate-goal-sequence.mjs",
+      "entrySha256": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910",
+      "currentSha256": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/about/page.tsx",
+      "entrySha256": "8b3c9a53aa6472a514189d9a329f3075613b83d16f64ed9e641abee16af7d491",
+      "currentSha256": "8b3c9a53aa6472a514189d9a329f3075613b83d16f64ed9e641abee16af7d491",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/assets/[...path]/route.ts",
+      "entrySha256": "68a28e51683fc08253fc5d2ca37895aa0ec31e3eb623fa025f27ce17c25d609f",
+      "currentSha256": "68a28e51683fc08253fc5d2ca37895aa0ec31e3eb623fa025f27ce17c25d609f",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/contact/page.tsx",
+      "entrySha256": "9cc3e9e9262f18d54ff3562d1836d72169e55bfb1594c0b6da5aa2867ac0a3ef",
+      "currentSha256": "9cc3e9e9262f18d54ff3562d1836d72169e55bfb1594c0b6da5aa2867ac0a3ef",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/design-system/page.tsx",
+      "entrySha256": "cba324a1897f614508438fe2b150bc2b6f13b97ed84aa6560ef4b7e4fba455e6",
+      "currentSha256": "cba324a1897f614508438fe2b150bc2b6f13b97ed84aa6560ef4b7e4fba455e6",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/globals.css",
+      "entrySha256": "a4eea7b6ba5a5268b27ac166526022232cbb1451f969b22dd5ec318d7cc2e954",
+      "currentSha256": "a4eea7b6ba5a5268b27ac166526022232cbb1451f969b22dd5ec318d7cc2e954",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/icon.svg",
+      "entrySha256": "8a8ec20b45f7d5de8e0d9cd16e96528130bda2ace7658810e06b62df61684096",
+      "currentSha256": "8a8ec20b45f7d5de8e0d9cd16e96528130bda2ace7658810e06b62df61684096",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/labs/page.tsx",
+      "entrySha256": "dadf9fc6b0cadb43723b87badd62e7b9fb2819ec59bea99351640484418804d1",
+      "currentSha256": "dadf9fc6b0cadb43723b87badd62e7b9fb2819ec59bea99351640484418804d1",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "entrySha256": "41de722d9ff34925bb93b17caba7367be3ea47ca9af6f94ed1f894e260e76556",
+      "currentSha256": "41de722d9ff34925bb93b17caba7367be3ea47ca9af6f94ed1f894e260e76556",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "entrySha256": "3e38d057e93605766548fb9a89d42edd09929e1cc8aad96cacf32a5e38983509",
+      "currentSha256": "3e38d057e93605766548fb9a89d42edd09929e1cc8aad96cacf32a5e38983509",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/page.tsx",
+      "entrySha256": "38c9c961b4dc77d7a1b212fe91981b04a32536a4fd88207d1fc6f557c23345b9",
+      "currentSha256": "38c9c961b4dc77d7a1b212fe91981b04a32536a4fd88207d1fc6f557c23345b9",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/projects/[slug]/page.tsx",
+      "entrySha256": "2253f251fae0437862701ff4f2b798e711a3c4661494acdafbb9e51fb9126d5d",
+      "currentSha256": "2253f251fae0437862701ff4f2b798e711a3c4661494acdafbb9e51fb9126d5d",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/projects/page.tsx",
+      "entrySha256": "b63d0101bb1386a8d0c7dafad0d56c72903715f042563ad1bb33495f12a05a72",
+      "currentSha256": "b63d0101bb1386a8d0c7dafad0d56c72903715f042563ad1bb33495f12a05a72",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/work/[slug]/page.tsx",
+      "entrySha256": "f0ce8c41300f7d6f5ab65ba259eb32a4591d4efab4e12d5268d2556bb86cc498",
+      "currentSha256": "f0ce8c41300f7d6f5ab65ba259eb32a4591d4efab4e12d5268d2556bb86cc498",
+      "unchanged": true
+    },
+    {
+      "path": "src/app/work/page.tsx",
+      "entrySha256": "aa6299c91c2f0450f4fbbdeef23c61d6ace7bbc875af16eefbdfbde68d50a5bf",
+      "currentSha256": "aa6299c91c2f0450f4fbbdeef23c61d6ace7bbc875af16eefbdfbde68d50a5bf",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/CustomCursor.tsx",
+      "entrySha256": "b43c2788c641297d14deac14fd9e5ba83b4d6db7e84ca364b171ed66f37f9de0",
+      "currentSha256": "b43c2788c641297d14deac14fd9e5ba83b4d6db7e84ca364b171ed66f37f9de0",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/PageTransitionCurtain.tsx",
+      "entrySha256": "2156598d99408047bbcbd4b639d09c6ac5a93fee78c7187533f73e7c8606959e",
+      "currentSha256": "2156598d99408047bbcbd4b639d09c6ac5a93fee78c7187533f73e7c8606959e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/Preloader.tsx",
+      "entrySha256": "e0c66bdf8793be219318efb76f78f29dc22168284b98a55e896822d5f3ea4ac1",
+      "currentSha256": "e0c66bdf8793be219318efb76f78f29dc22168284b98a55e896822d5f3ea4ac1",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/ShowreelModal.tsx",
+      "entrySha256": "57a3886917544c005a6eded1dbfa5ed95292eeff090f5458fa43ae465303910f",
+      "currentSha256": "57a3886917544c005a6eded1dbfa5ed95292eeff090f5458fa43ae465303910f",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/SmoothScrollProvider.tsx",
+      "entrySha256": "be10402ec20438f9540c9b66aed10dce598554eef7c4180a9863dd90f6c95d4d",
+      "currentSha256": "be10402ec20438f9540c9b66aed10dce598554eef7c4180a9863dd90f6c95d4d",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/StudioHud.tsx",
+      "entrySha256": "69a341533bca0ec6b176053703eb2946eae1db48ae85ad47b64e3b014411eca4",
+      "currentSha256": "69a341533bca0ec6b176053703eb2946eae1db48ae85ad47b64e3b014411eca4",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/StudioShell.tsx",
+      "entrySha256": "8b00ad1327d1b06978b3a6ba46fb0c79339aa4aeff2aba8f48f184d7f88e79e8",
+      "currentSha256": "8b00ad1327d1b06978b3a6ba46fb0c79339aa4aeff2aba8f48f184d7f88e79e8",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/foundation/TransitionProvider.tsx",
+      "entrySha256": "77e4b467af0bd0eb8468adce9a240bee1af5b1605d3b4ba9e9802f15fa6b7e4c",
+      "currentSha256": "77e4b467af0bd0eb8468adce9a240bee1af5b1605d3b4ba9e9802f15fa6b7e4c",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/home/AstronautEmergenceAssets.ts",
+      "entrySha256": "33b5d2d89135f2fa59b8e1533fe7670d82845293166a81a541944f23a8d9ebb2",
+      "currentSha256": "33b5d2d89135f2fa59b8e1533fe7670d82845293166a81a541944f23a8d9ebb2",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/home/FeaturedProjectCard.tsx",
+      "entrySha256": "a8af853e82936201bbffa386ff0434c24389099eaf6f485568040f0fe9508a66",
+      "currentSha256": "a8af853e82936201bbffa386ff0434c24389099eaf6f485568040f0fe9508a66",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/home/GoalDownstreamScenes.ts",
+      "entrySha256": "9311544a834a3001c706aa952e13a399cbdb044b51e36373d37c7ebbec75eb05",
+      "currentSha256": "9311544a834a3001c706aa952e13a399cbdb044b51e36373d37c7ebbec75eb05",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/home/GoalTunnelSection.tsx",
+      "entrySha256": "eb4d34847a5f6ee82ab474c2cac42ab124d819dd6aa07335e933cc402ac86a77",
+      "currentSha256": "eb4d34847a5f6ee82ab474c2cac42ab124d819dd6aa07335e933cc402ac86a77",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/home/HeroCrossesStage.tsx",
+      "entrySha256": "cb6c4cce96f7ff2d0846c1a94132f77d864c1a35df0b184f87fe541643733ddc",
+      "currentSha256": "cb6c4cce96f7ff2d0846c1a94132f77d864c1a35df0b184f87fe541643733ddc",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/home/HollowCrossGeometry.ts",
+      "entrySha256": "798ae07104a5ff14b67efc08b4da9eec767c7ddf1f695f2a0b14526df84918a0",
+      "currentSha256": "798ae07104a5ff14b67efc08b4da9eec767c7ddf1f695f2a0b14526df84918a0",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/home/HomePageView.tsx",
+      "entrySha256": "3cf36cdb6db7707f4f5d966b52ec39f77739aa14ca13bae83fff7b00df204165",
+      "currentSha256": "3cf36cdb6db7707f4f5d966b52ec39f77739aa14ca13bae83fff7b00df204165",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/AboutPageView.tsx",
+      "entrySha256": "a2678e80596119cb4d7d4ab117a436d81a5426bcea967197bfc02310445b1bae",
+      "currentSha256": "a2678e80596119cb4d7d4ab117a436d81a5426bcea967197bfc02310445b1bae",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/CaseStudyView.tsx",
+      "entrySha256": "357b71d07db11fc497281ba39618ae7b8cca82736fca8e1ac22195f0de0ca66b",
+      "currentSha256": "357b71d07db11fc497281ba39618ae7b8cca82736fca8e1ac22195f0de0ca66b",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/ContactPageView.tsx",
+      "entrySha256": "66ba5733cf09f4958296187bbd48c521fb28751364ce234a4a9c38157c6d0b59",
+      "currentSha256": "66ba5733cf09f4958296187bbd48c521fb28751364ce234a4a9c38157c6d0b59",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/DesignSystemView.tsx",
+      "entrySha256": "f61e38c9b33c800ac6e90ec45fd72199cc4b7469db4fd360bae242a4694f5bba",
+      "currentSha256": "f61e38c9b33c800ac6e90ec45fd72199cc4b7469db4fd360bae242a4694f5bba",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/LabsPageView.tsx",
+      "entrySha256": "184b1f06b4edcc437ae102eb443c8bbb03e8a997bfaf77d9b52f354753b644cd",
+      "currentSha256": "184b1f06b4edcc437ae102eb443c8bbb03e8a997bfaf77d9b52f354753b644cd",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/LusionProjectDetailView.tsx",
+      "entrySha256": "2e7cf70e3b1da9f29dee6d4801405fcdd0a15a9c521f1ae6bd287913dd4f7cfa",
+      "currentSha256": "2e7cf70e3b1da9f29dee6d4801405fcdd0a15a9c521f1ae6bd287913dd4f7cfa",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/NotFoundView.tsx",
+      "entrySha256": "b08b1a99970f9d9fc5b97cddd532e5558776ce4241de0432892c8f2d96ba63a4",
+      "currentSha256": "b08b1a99970f9d9fc5b97cddd532e5558776ce4241de0432892c8f2d96ba63a4",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/ProjectsArchiveView.tsx",
+      "entrySha256": "9a3c111e4086311429548f6638f955d07a4369d24b61280173bbbbcea6853296",
+      "currentSha256": "9a3c111e4086311429548f6638f955d07a4369d24b61280173bbbbcea6853296",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/UpstreamWorkArchiveView.tsx",
+      "entrySha256": "869d2f4bc76053a74d1f90b82ecaf4f47f38f8a9af3dc3ff3ba3b957952cbc7e",
+      "currentSha256": "869d2f4bc76053a74d1f90b82ecaf4f47f38f8a9af3dc3ff3ba3b957952cbc7e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/pages/WorkArchiveView.tsx",
+      "entrySha256": "ac9f2c46264c37ae6bf4567c71c0ac6424e5b75134d9a80b02eeef413daf1c31",
+      "currentSha256": "ac9f2c46264c37ae6bf4567c71c0ac6424e5b75134d9a80b02eeef413daf1c31",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/AboutTeamSection.tsx",
+      "entrySha256": "eb2082b32d6dc7d0d6f89f5f4ab13124fea2a6a1c8173158bb148d1f1699aee7",
+      "currentSha256": "eb2082b32d6dc7d0d6f89f5f4ab13124fea2a6a1c8173158bb148d1f1699aee7",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/CapabilitiesSection.tsx",
+      "entrySha256": "de5367dcadeb2c93ab23012bea15d983429b2839c55ceaf9beb7870fff56c1bf",
+      "currentSha256": "de5367dcadeb2c93ab23012bea15d983429b2839c55ceaf9beb7870fff56c1bf",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/ClientsAwardsSection.tsx",
+      "entrySha256": "847f0560d289244a0d5a71f7f8993600a13374ff032a7530725b534d216a50fc",
+      "currentSha256": "847f0560d289244a0d5a71f7f8993600a13374ff032a7530725b534d216a50fc",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/ContactCtaSection.tsx",
+      "entrySha256": "64af8a851e0707e7c9b26fb39936ff1e0e3b0a0e69cdda0fb1a6338fba385678",
+      "currentSha256": "64af8a851e0707e7c9b26fb39936ff1e0e3b0a0e69cdda0fb1a6338fba385678",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/FeaturedWorkSection.tsx",
+      "entrySha256": "e25445dc1a7cc9e7e5f98122741410f1bef05b6d1375b30e6abc2f0015534b1f",
+      "currentSha256": "e25445dc1a7cc9e7e5f98122741410f1bef05b6d1375b30e6abc2f0015534b1f",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/HeroSection.tsx",
+      "entrySha256": "d1832994c74853b1798e527ac99506a9086d4ca1cb6ea739602a31cfe98c2540",
+      "currentSha256": "d1832994c74853b1798e527ac99506a9086d4ca1cb6ea739602a31cfe98c2540",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/IntroStatementSection.tsx",
+      "entrySha256": "c4372a751a2901f4c70a221cd13879f360e34ebbb33ca14215277972b22d3c14",
+      "currentSha256": "c4372a751a2901f4c70a221cd13879f360e34ebbb33ca14215277972b22d3c14",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/LabsSection.tsx",
+      "entrySha256": "68e77e72c430afbc63183d40cd97df08d9271ce610b2941b7e291b5e8633c387",
+      "currentSha256": "68e77e72c430afbc63183d40cd97df08d9271ce610b2941b7e291b5e8633c387",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/sections/StudioFooter.tsx",
+      "entrySha256": "4d27f58ec62c9e828ffcb0a4903507a9c6b603006b66acf78e1864bc733ddb53",
+      "currentSha256": "4d27f58ec62c9e828ffcb0a4903507a9c6b603006b66acf78e1864bc733ddb53",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/CrosshairGrid.tsx",
+      "entrySha256": "6efbc294f4e476610f98fdd724897c1dc6198068c91a6c543e92a9307f96f9d5",
+      "currentSha256": "6efbc294f4e476610f98fdd724897c1dc6198068c91a6c543e92a9307f96f9d5",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/MagneticPill.tsx",
+      "entrySha256": "18185e54d6e0d0b58b85c69e18e03b1058a6caa789419ab47454f1f7c2600662",
+      "currentSha256": "18185e54d6e0d0b58b85c69e18e03b1058a6caa789419ab47454f1f7c2600662",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/ProceduralMediaCanvas.tsx",
+      "entrySha256": "bec9d3201ab975f1509d7c65570ef48a57a62ef2d2f89ebb24364e799556eb9c",
+      "currentSha256": "bec9d3201ab975f1509d7c65570ef48a57a62ef2d2f89ebb24364e799556eb9c",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/ProceduralReelStream.tsx",
+      "entrySha256": "494fc8d0a4db5d8c4ab36ce6dbe419db2c92e8d738274fd0704bb033af361b03",
+      "currentSha256": "494fc8d0a4db5d8c4ab36ce6dbe419db2c92e8d738274fd0704bb033af361b03",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/ProjectCard.tsx",
+      "entrySha256": "f12cb662912c47e7caa8123959e2c16805ea104632e941ce723e7ad15fcc172f",
+      "currentSha256": "f12cb662912c47e7caa8123959e2c16805ea104632e941ce723e7ad15fcc172f",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/SplitTextReveal.tsx",
+      "entrySha256": "49bfe5c091f860f8d59165b9fd9d4a0b199a68e8fa24989de3eb9f9599488c26",
+      "currentSha256": "49bfe5c091f860f8d59165b9fd9d4a0b199a68e8fa24989de3eb9f9599488c26",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/SurfaceSection.tsx",
+      "entrySha256": "9266e12251ccb74a6af42b5f06c4a54954e7bbbff6b3f93c16d75694e1e47c78",
+      "currentSha256": "9266e12251ccb74a6af42b5f06c4a54954e7bbbff6b3f93c16d75694e1e47c78",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/TransitionLink.tsx",
+      "entrySha256": "f400e13dcc752d360ee4e691c97b59ea155696ff1de1f95f07adfa1fbe21eb4d",
+      "currentSha256": "f400e13dcc752d360ee4e691c97b59ea155696ff1de1f95f07adfa1fbe21eb4d",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/studio/UpstreamProjectCard.tsx",
+      "entrySha256": "f6603d39c4aa566152cd1fa3aabc7d82f41c7fc1d9ee274c5eb328eb640081b4",
+      "currentSha256": "f6603d39c4aa566152cd1fa3aabc7d82f41c7fc1d9ee274c5eb328eb640081b4",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/three/CinematicPass.ts",
+      "entrySha256": "53ba4dfd076472e6ae1f265a088adb92d80a1cfc51f89c2aa7f7c3cfc0e9e360",
+      "currentSha256": "53ba4dfd076472e6ae1f265a088adb92d80a1cfc51f89c2aa7f7c3cfc0e9e360",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/three/Fracture.ts",
+      "entrySha256": "1ca2f96dfb8cd8422b8a66d2718efacf8965db7be6ec20dd2f507653d1f4103e",
+      "currentSha256": "1ca2f96dfb8cd8422b8a66d2718efacf8965db7be6ec20dd2f507653d1f4103e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/three/Tesseract.ts",
+      "entrySha256": "60ecd3423491d14832151e8016e8c3ff8737c02442c83bc6eab6e4dc0bf2510e",
+      "currentSha256": "60ecd3423491d14832151e8016e8c3ff8737c02442c83bc6eab6e4dc0bf2510e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/ui/GlowCard.tsx",
+      "entrySha256": "6dfbdd05c093b8b0cd5842f99083b21fd3bdced3ccde0cdc64f8ba572438fc28",
+      "currentSha256": "6dfbdd05c093b8b0cd5842f99083b21fd3bdced3ccde0cdc64f8ba572438fc28",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/ui/ShaderAnimation.tsx",
+      "entrySha256": "20caf69a44e1c49472d0ef5da68445acd04d20241c69cb9747c9ca246475435e",
+      "currentSha256": "20caf69a44e1c49472d0ef5da68445acd04d20241c69cb9747c9ca246475435e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "entrySha256": "75013886623b396e9e6572e419f4d88c0eb7708735271a809c51c08ed47bc5af",
+      "currentSha256": "75013886623b396e9e6572e419f4d88c0eb7708735271a809c51c08ed47bc5af",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/webgl/GlobalStage.tsx",
+      "entrySha256": "1ae597602c076307684b0868e078319472e395bbd4b131205bd9cd7dcd8258b6",
+      "currentSha256": "1ae597602c076307684b0868e078319472e395bbd4b131205bd9cd7dcd8258b6",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/webgl/RaymarchViewport.tsx",
+      "entrySha256": "5cd89f59ccce33471e5821fbc14717c023bdf146f5f5132753f838c3f6133cb0",
+      "currentSha256": "5cd89f59ccce33471e5821fbc14717c023bdf146f5f5132753f838c3f6133cb0",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/webgl/shaders.ts",
+      "entrySha256": "d79760f361d18f8e959280c35a9ef212c7fc693b37d84129d713e3ee058e2f4b",
+      "currentSha256": "d79760f361d18f8e959280c35a9ef212c7fc693b37d84129d713e3ee058e2f4b",
+      "unchanged": true
+    },
+    {
+      "path": "src/data/reference/index.ts",
+      "entrySha256": "e5abef5ed27d27a27afe63b334064b6e4d67ef68927f0b5833d4812f627457f3",
+      "currentSha256": "e5abef5ed27d27a27afe63b334064b6e4d67ef68927f0b5833d4812f627457f3",
+      "unchanged": true
+    },
+    {
+      "path": "src/data/reference/lusion-ground-truth.json",
+      "entrySha256": "0ca7a4d99a87f241ef7b070dc285976bd18b49a219870aeaddbe01178547a4f6",
+      "currentSha256": "0ca7a4d99a87f241ef7b070dc285976bd18b49a219870aeaddbe01178547a4f6",
+      "unchanged": true
+    },
+    {
+      "path": "src/data/studio.ts",
+      "entrySha256": "394470f39b2a64f65091cf9ade3774774387370ff4d47998c690d1356264e30e",
+      "currentSha256": "394470f39b2a64f65091cf9ade3774774387370ff4d47998c690d1356264e30e",
+      "unchanged": true
+    },
+    {
+      "path": "src/hooks/.gitkeep",
+      "entrySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "currentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/asset-pipeline.ts",
+      "entrySha256": "b5719101ae3959765d4375d8bfe183079e8ee9e0afb923fcb4b685fb36647842",
+      "currentSha256": "b5719101ae3959765d4375d8bfe183079e8ee9e0afb923fcb4b685fb36647842",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/audio.ts",
+      "entrySha256": "66607b61e2a184d1725dc3b7e12fafb0f818089c0c8316ee19eb0e577fee7b91",
+      "currentSha256": "66607b61e2a184d1725dc3b7e12fafb0f818089c0c8316ee19eb0e577fee7b91",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/clean-media-synthesizer.ts",
+      "entrySha256": "7bd450461a3c5bc3c8e1bedc102f5bb19517a7332415888e77bda21b30fb4611",
+      "currentSha256": "7bd450461a3c5bc3c8e1bedc102f5bb19517a7332415888e77bda21b30fb4611",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/gpu-frame-timer.ts",
+      "entrySha256": "8e9b704923e4bc20089f25b27fad3f5d3d99e57bc73b1d67cb3682fca4a25ae2",
+      "currentSha256": "8e9b704923e4bc20089f25b27fad3f5d3d99e57bc73b1d67cb3682fca4a25ae2",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/home-motion.ts",
+      "entrySha256": "fc11b9c0714a3f4b41b2f746fca1bba3772b3d498ad0f0a20b6dfaa8f1de4588",
+      "currentSha256": "fc11b9c0714a3f4b41b2f746fca1bba3772b3d498ad0f0a20b6dfaa8f1de4588",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/lusion-buf-loader.ts",
+      "entrySha256": "67d1ebf5928b2159baf9fff2be17cf3c4a13cc5f85dd930342d8fd289d58748e",
+      "currentSha256": "67d1ebf5928b2159baf9fff2be17cf3c4a13cc5f85dd930342d8fd289d58748e",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/solar-optics.ts",
+      "entrySha256": "93c56e9658faf8a688f5f8e626bd407b267afc4e5b3cc2c31fcb9ac89e0e759f",
+      "currentSha256": "93c56e9658faf8a688f5f8e626bd407b267afc4e5b3cc2c31fcb9ac89e0e759f",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/store.ts",
+      "entrySha256": "2b7d92728611f77975cb547045c60e952883b7db2f2e4fcb57e49bed63a7bddb",
+      "currentSha256": "2b7d92728611f77975cb547045c60e952883b7db2f2e4fcb57e49bed63a7bddb",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/tokens.ts",
+      "entrySha256": "c4a75610f132924c174c190ae00eae0541d89e2f87e68f54fc7dc4e9c797181f",
+      "currentSha256": "c4a75610f132924c174c190ae00eae0541d89e2f87e68f54fc7dc4e9c797181f",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "entrySha256": "7c8c3dfc0cdd370d44932828eb067ef771c8fe7996693221d5d4b90af6d54f2d",
+      "currentSha256": "7c8c3dfc0cdd370d44932828eb067ef771c8fe7996693221d5d4b90af6d54f2d",
+      "unchanged": true
+    },
+    {
+      "path": "src/types/.gitkeep",
+      "entrySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "currentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged": true
+    }
+  ]
+}

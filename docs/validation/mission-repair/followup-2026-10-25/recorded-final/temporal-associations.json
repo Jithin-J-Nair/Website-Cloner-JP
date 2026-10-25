@@ -1,0 +1,944 @@
+{
+  "warning": "Temporal association, NOT causal frame pairing or swap/presentation instrumentation",
+  "cpuCompletedAt": 72646.19999999995,
+  "frames": [
+    {
+      "file": "motion-0000.jpg",
+      "time": 1792939445.953545,
+      "pageCaptureMs": 48327.7451171875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 48077.39999999991,
+        "count": 72,
+        "state": "armed",
+        "progress": 0,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0001.jpg",
+      "time": 1792939446.349154,
+      "pageCaptureMs": 48723.35400390625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 48679.19999999995,
+        "count": 76,
+        "state": "playing",
+        "progress": 0.013733333333333334,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0002.jpg",
+      "time": 1792939446.476547,
+      "pageCaptureMs": 48850.7470703125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 48752.39999999991,
+        "count": 77,
+        "state": "playing",
+        "progress": 0.016444444444444446,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0003.jpg",
+      "time": 1792939446.800842,
+      "pageCaptureMs": 49175.0419921875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 48977.39999999991,
+        "count": 78,
+        "state": "playing",
+        "progress": 0.026924444444436167,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0004.jpg",
+      "time": 1792939447.116384,
+      "pageCaptureMs": 49490.583984375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 48977.39999999991,
+        "count": 78,
+        "state": "playing",
+        "progress": 0.026924444444436167,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0005.jpg",
+      "time": 1792939447.40762,
+      "pageCaptureMs": 49781.81982421875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 49502.30000000005,
+        "count": 79,
+        "state": "playing",
+        "progress": 0.04997333333332919,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0006.jpg",
+      "time": 1792939447.705246,
+      "pageCaptureMs": 50079.446044921875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 50057.80000000005,
+        "count": 81,
+        "state": "playing",
+        "progress": 0.0738844444444403,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0007.jpg",
+      "time": 1792939448.029073,
+      "pageCaptureMs": 50403.27294921875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 50057.80000000005,
+        "count": 81,
+        "state": "playing",
+        "progress": 0.0738844444444403,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0008.jpg",
+      "time": 1792939448.330106,
+      "pageCaptureMs": 50704.305908203125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 50552.39999999991,
+        "count": 82,
+        "state": "playing",
+        "progress": 0.09620888888888682,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0009.jpg",
+      "time": 1792939448.60661,
+      "pageCaptureMs": 50980.81005859375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 50552.39999999991,
+        "count": 82,
+        "state": "playing",
+        "progress": 0.09620888888888682,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0010.jpg",
+      "time": 1792939448.899896,
+      "pageCaptureMs": 51274.095947265625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 51002.39999999991,
+        "count": 83,
+        "state": "playing",
+        "progress": 0.11618222222221601,
+        "tunnelProgress": 0,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0011.jpg",
+      "time": 1792939452.098556,
+      "pageCaptureMs": 54472.756103515625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 53802.39999999991,
+        "count": 88,
+        "state": "playing",
+        "progress": 0.24061777777777366,
+        "tunnelProgress": 0.1569108909968273,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0012.jpg",
+      "time": 1792939452.670947,
+      "pageCaptureMs": 55045.14697265625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 54481.69999999995,
+        "count": 89,
+        "state": "playing",
+        "progress": 0.27138222222221603,
+        "tunnelProgress": 0.2241881908248794,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0013.jpg",
+      "time": 1792939453.150961,
+      "pageCaptureMs": 55525.160888671875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 55052.39999999991,
+        "count": 90,
+        "state": "playing",
+        "progress": 0.2960844444444403,
+        "tunnelProgress": 0.2811775020721221,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0014.jpg",
+      "time": 1792939453.591998,
+      "pageCaptureMs": 55966.197998046875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 55528.69999999995,
+        "count": 91,
+        "state": "playing",
+        "progress": 0.31812444444443616,
+        "tunnelProgress": 0.33327725379435713,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0015.jpg",
+      "time": 1792939454.156353,
+      "pageCaptureMs": 56530.552978515625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 56002.39999999991,
+        "count": 92,
+        "state": "playing",
+        "progress": 0.33834666666665836,
+        "tunnelProgress": 0.38141638172794656,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0016.jpg",
+      "time": 1792939454.611566,
+      "pageCaptureMs": 56985.76611328125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 56977.30000000005,
+        "count": 94,
+        "state": "playing",
+        "progress": 0.38187555555555347,
+        "tunnelProgress": 0.48320689738423905,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0017.jpg",
+      "time": 1792939455.040118,
+      "pageCaptureMs": 57414.31787109375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 57402.39999999991,
+        "count": 95,
+        "state": "playing",
+        "progress": 0.40071555555554933,
+        "tunnelProgress": 0.5252971489641337,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0018.jpg",
+      "time": 1792939455.503938,
+      "pageCaptureMs": 57878.137939453125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 57802.30000000005,
+        "count": 96,
+        "state": "playing",
+        "progress": 0.41833333333333333,
+        "tunnelProgress": 0.562951331784654,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0019.jpg",
+      "time": 1792939455.912782,
+      "pageCaptureMs": 58286.98193359375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 57902.39999999991,
+        "count": 97,
+        "state": "playing",
+        "progress": 0.42274222222222013,
+        "tunnelProgress": 0.5720677935237841,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0020.jpg",
+      "time": 1792939456.397978,
+      "pageCaptureMs": 58772.177978515625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 58302.39999999991,
+        "count": 98,
+        "state": "playing",
+        "progress": 0.44083999999999585,
+        "tunnelProgress": 0.6080028732931632,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0021.jpg",
+      "time": 1792939457.20934,
+      "pageCaptureMs": 59583.5400390625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 59505.10000000009,
+        "count": 102,
+        "state": "playing",
+        "progress": 0.4948444444444445,
+        "tunnelProgress": 0.6996893452943839,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0022.jpg",
+      "time": 1792939458.072966,
+      "pageCaptureMs": 60447.166015625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 60427.39999999991,
+        "count": 104,
+        "state": "playing",
+        "progress": 0.5356044444444382,
+        "tunnelProgress": 0.759682054389516,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0023.jpg",
+      "time": 1792939458.844025,
+      "pageCaptureMs": 61218.224853515625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 61202.39999999991,
+        "count": 105,
+        "state": "playing",
+        "progress": 0.5701111111111111,
+        "tunnelProgress": 0.8048951446930548,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0024.jpg",
+      "time": 1792939459.5016,
+      "pageCaptureMs": 61875.800048828125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 61202.39999999991,
+        "count": 105,
+        "state": "playing",
+        "progress": 0.5701111111111111,
+        "tunnelProgress": 0.8048951446930548,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0025.jpg",
+      "time": 1792939460.272508,
+      "pageCaptureMs": 62646.707763671875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 61880.19999999995,
+        "count": 106,
+        "state": "playing",
+        "progress": 0.6003555555555555,
+        "tunnelProgress": 0.8398418912233029,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0026.jpg",
+      "time": 1792939461.008545,
+      "pageCaptureMs": 63382.744873046875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 62652.5,
+        "count": 107,
+        "state": "playing",
+        "progress": 0.6346222222222222,
+        "tunnelProgress": 0.8744568840416994,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0027.jpg",
+      "time": 1792939461.813959,
+      "pageCaptureMs": 64188.158935546875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 63527.89999999991,
+        "count": 108,
+        "state": "playing",
+        "progress": 0.6736399999999958,
+        "tunnelProgress": 0.9099121282067972,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0028.jpg",
+      "time": 1792939462.658737,
+      "pageCaptureMs": 65032.93701171875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 65027.39999999991,
+        "count": 109,
+        "state": "playing",
+        "progress": 0.739462222222218,
+        "tunnelProgress": 0.9614892130472987,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0029.jpg",
+      "time": 1792939463.642505,
+      "pageCaptureMs": 66016.70483398438,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 65027.39999999991,
+        "count": 109,
+        "state": "playing",
+        "progress": 0.739462222222218,
+        "tunnelProgress": 0.9614892130472987,
+        "shatterProgress": 0
+      }
+    },
+    {
+      "file": "motion-0030.jpg",
+      "time": 1792939464.563116,
+      "pageCaptureMs": 66937.31591796875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 66027.30000000005,
+        "count": 110,
+        "state": "playing",
+        "progress": 0.7844444444444444,
+        "tunnelProgress": 0.9915107376983355,
+        "shatterProgress": 0.029905382555307936
+      }
+    },
+    {
+      "file": "motion-0031.jpg",
+      "time": 1792939468.363696,
+      "pageCaptureMs": 70737.89599609375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 69802.5,
+        "count": 113,
+        "state": "playing",
+        "progress": 0.9522044444444382,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0032.jpg",
+      "time": 1792939470.261289,
+      "pageCaptureMs": 72635.48876953125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 70777.3999999999,
+        "count": 114,
+        "state": "playing",
+        "progress": 0.9957199999999979,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0033.jpg",
+      "time": 1792939471.158301,
+      "pageCaptureMs": 73532.5009765625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 73502.3999999999,
+        "count": 116,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0034.jpg",
+      "time": 1792939471.968008,
+      "pageCaptureMs": 74342.2080078125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 74327.3999999999,
+        "count": 117,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0035.jpg",
+      "time": 1792939472.633444,
+      "pageCaptureMs": 75007.64404296875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 74427.3999999999,
+        "count": 118,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0036.jpg",
+      "time": 1792939473.425626,
+      "pageCaptureMs": 75799.82592773438,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 75127.5,
+        "count": 119,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0037.jpg",
+      "time": 1792939474.6364,
+      "pageCaptureMs": 77010.59985351562,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 75902.3999999999,
+        "count": 120,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0038.jpg",
+      "time": 1792939475.369615,
+      "pageCaptureMs": 77743.81494140625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 77102.3999999999,
+        "count": 122,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0039.jpg",
+      "time": 1792939475.928753,
+      "pageCaptureMs": 78302.95288085938,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 78302.30000000005,
+        "count": 125,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0040.jpg",
+      "time": 1792939476.541888,
+      "pageCaptureMs": 78916.087890625,
+      "visuallyReviewedLabel": "Blue corridor",
+      "latestCpuObservationNotImagePair": {
+        "time": 78902.3999999999,
+        "count": 127,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0041.jpg",
+      "time": 1792939477.194715,
+      "pageCaptureMs": 79568.9150390625,
+      "visuallyReviewedLabel": "Monitor/corridor",
+      "latestCpuObservationNotImagePair": {
+        "time": 79502.3999999999,
+        "count": 130,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0042.jpg",
+      "time": 1792939477.784224,
+      "pageCaptureMs": 80158.42407226562,
+      "visuallyReviewedLabel": "Monitor/corridor, changed astronaut pose",
+      "latestCpuObservationNotImagePair": {
+        "time": 79577.5,
+        "count": 131,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0043.jpg",
+      "time": 1792939478.763746,
+      "pageCaptureMs": 81137.94604492188,
+      "visuallyReviewedLabel": "Astronaut/stickers, no CTA heading",
+      "latestCpuObservationNotImagePair": {
+        "time": 80952.5,
+        "count": 135,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0044.jpg",
+      "time": 1792939479.046401,
+      "pageCaptureMs": 81420.60107421875,
+      "visuallyReviewedLabel": "Astronaut/sticker CTA",
+      "latestCpuObservationNotImagePair": {
+        "time": 81402.3999999999,
+        "count": 137,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0045.jpg",
+      "time": 1792939479.317857,
+      "pageCaptureMs": 81692.05688476562,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 81455.30000000005,
+        "count": 139,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0046.jpg",
+      "time": 1792939479.583015,
+      "pageCaptureMs": 81957.21484375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 81702.3999999999,
+        "count": 140,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0047.jpg",
+      "time": 1792939479.864311,
+      "pageCaptureMs": 82238.51098632812,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 81977.3999999999,
+        "count": 141,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0048.jpg",
+      "time": 1792939480.700437,
+      "pageCaptureMs": 83074.63696289062,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 82827.3999999999,
+        "count": 143,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0049.jpg",
+      "time": 1792939481.264465,
+      "pageCaptureMs": 83638.6650390625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 83327.3999999999,
+        "count": 144,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0050.jpg",
+      "time": 1792939481.770473,
+      "pageCaptureMs": 84144.6728515625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 83652.3999999999,
+        "count": 145,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0051.jpg",
+      "time": 1792939482.588279,
+      "pageCaptureMs": 84962.47900390625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 84927.5,
+        "count": 148,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0052.jpg",
+      "time": 1792939482.84999,
+      "pageCaptureMs": 85224.18994140625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 84977.5,
+        "count": 149,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0053.jpg",
+      "time": 1792939484.372269,
+      "pageCaptureMs": 86746.46875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 86027.3999999999,
+        "count": 153,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0054.jpg",
+      "time": 1792939484.443668,
+      "pageCaptureMs": 86817.86791992188,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 86752.3999999999,
+        "count": 154,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0055.jpg",
+      "time": 1792939485.005106,
+      "pageCaptureMs": 87379.30590820312,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 87352.3999999999,
+        "count": 157,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0056.jpg",
+      "time": 1792939485.26753,
+      "pageCaptureMs": 87641.72998046875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 87627.5,
+        "count": 159,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0057.jpg",
+      "time": 1792939485.52515,
+      "pageCaptureMs": 87899.35009765625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 87877.3999999999,
+        "count": 160,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0058.jpg",
+      "time": 1792939486.07425,
+      "pageCaptureMs": 88448.44995117188,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 88177.30000000005,
+        "count": 162,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0059.jpg",
+      "time": 1792939486.354244,
+      "pageCaptureMs": 88728.44384765625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 88477.30000000005,
+        "count": 164,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0060.jpg",
+      "time": 1792939486.602783,
+      "pageCaptureMs": 88976.98291015625,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 88752.3999999999,
+        "count": 165,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0061.jpg",
+      "time": 1792939487.408324,
+      "pageCaptureMs": 89782.52392578125,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 89752.3999999999,
+        "count": 168,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0062.jpg",
+      "time": 1792939487.670576,
+      "pageCaptureMs": 90044.77612304688,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 89802.30000000005,
+        "count": 169,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0063.jpg",
+      "time": 1792939488.734416,
+      "pageCaptureMs": 91108.61596679688,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 91102.3999999999,
+        "count": 174,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0064.jpg",
+      "time": 1792939489.046259,
+      "pageCaptureMs": 91420.458984375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 91127.3999999999,
+        "count": 175,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0065.jpg",
+      "time": 1792939489.868421,
+      "pageCaptureMs": 92242.62109375,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 92002.3999999999,
+        "count": 177,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    },
+    {
+      "file": "motion-0066.jpg",
+      "time": 1792939490.38862,
+      "pageCaptureMs": 92762.81982421875,
+      "visuallyReviewedLabel": null,
+      "latestCpuObservationNotImagePair": {
+        "time": 92752.5,
+        "count": 180,
+        "state": "completed",
+        "progress": 1,
+        "tunnelProgress": 1,
+        "shatterProgress": 1
+      }
+    }
+  ]
+}

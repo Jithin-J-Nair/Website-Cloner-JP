@@ -1,0 +1,1086 @@
+{
+  "accepted": false,
+  "reason": "Original normal desktop and mobile still fail; no verified rendering correction shipped.",
+  "entryCommit": "8da3550d1bac7fed0ee82eb6ff30df1fb0ac0c87",
+  "originalAcceptanceSha256": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910",
+  "applicationChange": "Opt-in pipeline observer only; both candidates removed.",
+  "originalResults": [
+    {
+      "name": "before-desktop",
+      "seconds": 24.222,
+      "playing": 176,
+      "shaft": 17,
+      "blue": 31,
+      "glass": 45,
+      "bluePoses": 5,
+      "errors": []
+    },
+    {
+      "name": "before-mobile",
+      "seconds": 24.01,
+      "playing": 144,
+      "shaft": 41,
+      "blue": 16,
+      "glass": 0,
+      "bluePoses": 3,
+      "errors": []
+    },
+    {
+      "name": "final-normal-1440",
+      "seconds": 23.159,
+      "playing": 141,
+      "shaft": 33,
+      "blue": 32,
+      "glass": 1,
+      "bluePoses": 5,
+      "errors": []
+    },
+    {
+      "name": "final-normal-390",
+      "seconds": 24.265,
+      "playing": 135,
+      "shaft": 14,
+      "blue": 24,
+      "glass": 0,
+      "bluePoses": 8,
+      "errors": []
+    }
+  ],
+  "experimentResults": [
+    {
+      "name": "coalesced-desktop",
+      "seconds": 22.796,
+      "playing": 220,
+      "shaft": 69,
+      "blue": 28,
+      "glass": 22,
+      "bluePoses": 1,
+      "errors": []
+    },
+    {
+      "name": "coalesced-mobile",
+      "seconds": 23.03,
+      "playing": 223,
+      "shaft": 42,
+      "blue": 20,
+      "glass": 13,
+      "bluePoses": 2,
+      "errors": []
+    },
+    {
+      "name": "culled-desktop",
+      "seconds": 23.877,
+      "playing": 98,
+      "shaft": 1,
+      "blue": 16,
+      "glass": 1,
+      "bluePoses": 2,
+      "errors": []
+    },
+    {
+      "name": "culled-mobile",
+      "seconds": 25.057,
+      "playing": 132,
+      "shaft": 30,
+      "blue": 6,
+      "glass": 14,
+      "bluePoses": 2,
+      "errors": []
+    }
+  ],
+  "finalNative": {
+    "1440": {
+      "device": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.0 Safari/537.36",
+        "cores": 2,
+        "dpr": 1,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "context": {
+          "alpha": true,
+          "antialias": true,
+          "depth": true,
+          "desynchronized": false,
+          "failIfMajorPerformanceCaveat": false,
+          "powerPreference": "high-performance",
+          "premultipliedAlpha": true,
+          "preserveDrawingBuffer": false,
+          "stencil": true,
+          "xrCompatible": false
+        },
+        "timeOrigin": 1792945728297.4
+      },
+      "runs": [
+        {
+          "run": 0,
+          "start": 20336.5,
+          "end": 46032.200000000186,
+          "playingSourceRenders": 33,
+          "distinctBlueSourcePoses": 3,
+          "distinctCapturedBlue": 3,
+          "distinctCapturedMidGlass": 1,
+          "capturedCompletedIds": [
+            48,
+            49,
+            50,
+            52,
+            54,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            66,
+            67,
+            68,
+            70,
+            71,
+            72,
+            73,
+            74,
+            76,
+            77,
+            79,
+            80,
+            81,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            91,
+            92,
+            93,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            118,
+            120,
+            121,
+            122
+          ]
+        },
+        {
+          "run": 1,
+          "start": 68540.30000000075,
+          "end": 93689,
+          "playingSourceRenders": 38,
+          "distinctBlueSourcePoses": 4,
+          "distinctCapturedBlue": 4,
+          "distinctCapturedMidGlass": 1,
+          "capturedCompletedIds": [
+            162,
+            163,
+            164,
+            165,
+            166,
+            167,
+            168,
+            169,
+            170,
+            172,
+            174,
+            175,
+            176,
+            177,
+            178,
+            179,
+            180,
+            181,
+            182,
+            183,
+            185,
+            186,
+            188,
+            189,
+            190,
+            191,
+            192,
+            193,
+            194,
+            196,
+            198,
+            199,
+            200,
+            201,
+            202,
+            203,
+            204,
+            205,
+            206,
+            208,
+            210,
+            211,
+            212,
+            213,
+            214,
+            215,
+            216,
+            217,
+            218,
+            219,
+            221,
+            223,
+            224,
+            225
+          ]
+        }
+      ],
+      "errors": [],
+      "captureCount": 200,
+      "validGlCodes": 200,
+      "matchingCodes": 200,
+      "firstCaptureMs": 20310.904052734375,
+      "lastCaptureMs": 115686.5302734375,
+      "pendingAtEnd": [
+        {
+          "id": 226,
+          "submittedAt": 112470.90000000037,
+          "previousPoll": 115682.60000000056
+        },
+        {
+          "id": 230,
+          "submittedAt": 113317.90000000037,
+          "previousPoll": 115682.60000000056
+        },
+        {
+          "id": 232,
+          "submittedAt": 113849.90000000037,
+          "previousPoll": 115682.60000000056
+        },
+        {
+          "id": 233,
+          "submittedAt": 114121.70000000019,
+          "previousPoll": 115682.60000000056
+        },
+        {
+          "id": 235,
+          "submittedAt": 114629.90000000037,
+          "previousPoll": 115682.60000000056
+        },
+        {
+          "id": 236,
+          "submittedAt": 114917.5,
+          "previousPoll": 115682.60000000056
+        },
+        {
+          "id": 237,
+          "submittedAt": 115133.90000000037,
+          "previousPoll": 115682.60000000056
+        },
+        {
+          "id": 238,
+          "submittedAt": 115399,
+          "previousPoll": 115682.60000000056
+        }
+      ],
+      "keyFrames": [
+        {
+          "file": "frame-0037.jpg",
+          "id": 41,
+          "phase": "blue",
+          "captureMs": 46727.78515625,
+          "sceneStartedAt": 36390.700000000186,
+          "rendererReturnedAt": 36392,
+          "authoredProgress": 0.7099733333333086,
+          "bakedFrame": 84.57234918124855,
+          "tunnel": 0.9395761685184109,
+          "shatter": 0,
+          "fence": null
+        },
+        {
+          "file": "frame-0038.jpg",
+          "id": 42,
+          "phase": "blue",
+          "captureMs": 47844.382080078125,
+          "sceneStartedAt": 36398.60000000056,
+          "rendererReturnedAt": 36399.90000000037,
+          "authoredProgress": 0.7103244444444362,
+          "bakedFrame": 84.59682458715443,
+          "tunnel": 0.939848083728602,
+          "shatter": 0,
+          "fence": {
+            "id": 42,
+            "submittedAt": 36400.60000000056,
+            "observedAt": 47332.700000000186,
+            "previousPoll": 47282.700000000186,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0039.jpg",
+          "id": 43,
+          "phase": "blue",
+          "captureMs": 47922.336181640625,
+          "sceneStartedAt": 36651.200000000186,
+          "rendererReturnedAt": 36652.40000000037,
+          "authoredProgress": 0.7215511111110863,
+          "bakedFrame": 85.3666113392829,
+          "tunnel": 0.9484002085559617,
+          "shatter": 0,
+          "fence": {
+            "id": 43,
+            "submittedAt": 36653,
+            "observedAt": 47832.60000000056,
+            "previousPoll": 47782.60000000056,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0041.jpg",
+          "id": 45,
+          "phase": "mid-glass",
+          "captureMs": 49586.55712890625,
+          "sceneStartedAt": 39719.200000000186,
+          "rendererReturnedAt": 41789.90000000037,
+          "authoredProgress": 0.8579066666666418,
+          "bakedFrame": 114.03236219190339,
+          "tunnel": 1,
+          "shatter": 0.5006472438380677,
+          "fence": {
+            "id": 45,
+            "submittedAt": 41791.5,
+            "observedAt": 49482.60000000056,
+            "previousPoll": 49432.60000000056,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0138.jpg",
+          "id": 154,
+          "phase": "blue",
+          "captureMs": 93607.15625,
+          "sceneStartedAt": 82824.10000000056,
+          "rendererReturnedAt": 82825.30000000075,
+          "authoredProgress": 0.6258711111111359,
+          "bakedFrame": 77.94572168517703,
+          "tunnel": 0.8659561102696551,
+          "shatter": 0,
+          "fence": null
+        },
+        {
+          "file": "frame-0139.jpg",
+          "id": 155,
+          "phase": "blue",
+          "captureMs": 94260.51416015625,
+          "sceneStartedAt": 83682.80000000075,
+          "rendererReturnedAt": 83683.90000000037,
+          "authoredProgress": 0.6640355555555887,
+          "bakedFrame": 81.14903852700706,
+          "tunnel": 0.901544103200381,
+          "shatter": 0,
+          "fence": {
+            "id": 155,
+            "submittedAt": 83684.5,
+            "observedAt": 94282.60000000056,
+            "previousPoll": 94232.70000000019,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0140.jpg",
+          "id": 156,
+          "phase": "blue",
+          "captureMs": 94899.05004882812,
+          "sceneStartedAt": 84617.20000000019,
+          "rendererReturnedAt": 84618.30000000075,
+          "authoredProgress": 0.7055644444444528,
+          "bakedFrame": 84.26291302282716,
+          "tunnel": 0.9361384156009941,
+          "shatter": 0,
+          "fence": {
+            "id": 156,
+            "submittedAt": 84619.40000000037,
+            "observedAt": 94882.60000000056,
+            "previousPoll": 94832.70000000019,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0141.jpg",
+          "id": 157,
+          "phase": "blue",
+          "captureMs": 95718.15893554688,
+          "sceneStartedAt": 85614.10000000056,
+          "rendererReturnedAt": 85615.5,
+          "authoredProgress": 0.749871111111136,
+          "bakedFrame": 87.20232147096252,
+          "tunnel": 0.9687944568975507,
+          "shatter": 0,
+          "fence": {
+            "id": 157,
+            "submittedAt": 85616.70000000019,
+            "observedAt": 95682.60000000056,
+            "previousPoll": 95632.60000000056,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0143.jpg",
+          "id": 159,
+          "phase": "mid-glass",
+          "captureMs": 97120.7470703125,
+          "sceneStartedAt": 87772.70000000019,
+          "rendererReturnedAt": 87774.60000000056,
+          "authoredProgress": 0.8458088888888973,
+          "bakedFrame": 109.51053407756467,
+          "tunnel": 1,
+          "shatter": 0.41021068155129353,
+          "fence": {
+            "id": 159,
+            "submittedAt": 87776.10000000056,
+            "observedAt": 97083.90000000037,
+            "previousPoll": 97032.80000000075,
+            "status": 37148,
+            "pollMs": 0
+          }
+        }
+      ]
+    },
+    "390": {
+      "device": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.0 Safari/537.36",
+        "cores": 2,
+        "dpr": 1,
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "context": {
+          "alpha": true,
+          "antialias": true,
+          "depth": true,
+          "desynchronized": false,
+          "failIfMajorPerformanceCaveat": false,
+          "powerPreference": "high-performance",
+          "premultipliedAlpha": true,
+          "preserveDrawingBuffer": false,
+          "stencil": true,
+          "xrCompatible": false
+        },
+        "timeOrigin": 1792945855401.1
+      },
+      "runs": [
+        {
+          "run": 0,
+          "start": 17656.700000000186,
+          "end": 42018.299999999814,
+          "playingSourceRenders": 44,
+          "distinctBlueSourcePoses": 4,
+          "distinctCapturedBlue": 4,
+          "distinctCapturedMidGlass": 1,
+          "capturedCompletedIds": [
+            59,
+            62,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            75,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            103,
+            104,
+            105,
+            106,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            115,
+            116,
+            117,
+            118,
+            120,
+            121,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            132,
+            133,
+            135,
+            136,
+            137,
+            138,
+            139,
+            140,
+            141,
+            142,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149,
+            150,
+            151,
+            152,
+            154,
+            155,
+            156,
+            157,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            166,
+            168,
+            169,
+            170,
+            172,
+            173,
+            174,
+            175,
+            176,
+            177,
+            179,
+            181,
+            182,
+            183,
+            185,
+            186,
+            187,
+            188,
+            189
+          ]
+        },
+        {
+          "run": 1,
+          "start": 64210.700000000186,
+          "end": 87268.60000000056,
+          "playingSourceRenders": 47,
+          "distinctBlueSourcePoses": 4,
+          "distinctCapturedBlue": 4,
+          "distinctCapturedMidGlass": 2,
+          "capturedCompletedIds": [
+            238,
+            239,
+            240,
+            241,
+            242,
+            243,
+            244,
+            245,
+            246,
+            248,
+            250,
+            251,
+            252,
+            254,
+            255,
+            256,
+            257,
+            258,
+            259,
+            260,
+            262,
+            263,
+            264,
+            266,
+            267,
+            268,
+            269,
+            270,
+            271,
+            272,
+            273,
+            274,
+            275,
+            277,
+            278,
+            279,
+            280,
+            281,
+            282,
+            283,
+            284,
+            285,
+            286,
+            289,
+            290,
+            291,
+            292,
+            293,
+            294,
+            295,
+            296,
+            297,
+            298,
+            301,
+            302,
+            303,
+            304,
+            305,
+            306,
+            307,
+            308,
+            309,
+            310,
+            312,
+            313,
+            314,
+            315,
+            316,
+            317,
+            318,
+            319,
+            320,
+            321,
+            324,
+            326,
+            327,
+            328,
+            329,
+            330,
+            331,
+            332,
+            333,
+            334,
+            335
+          ]
+        }
+      ],
+      "errors": [],
+      "captureCount": 293,
+      "validGlCodes": 293,
+      "matchingCodes": 293,
+      "firstCaptureMs": 17646.370849609375,
+      "lastCaptureMs": 108829.298828125,
+      "pendingAtEnd": [
+        {
+          "id": 338,
+          "submittedAt": 107041,
+          "previousPoll": 109231.90000000037
+        },
+        {
+          "id": 340,
+          "submittedAt": 107361.40000000037,
+          "previousPoll": 109231.90000000037
+        },
+        {
+          "id": 342,
+          "submittedAt": 107728.40000000037,
+          "previousPoll": 109231.90000000037
+        },
+        {
+          "id": 343,
+          "submittedAt": 107908.60000000056,
+          "previousPoll": 109231.90000000037
+        },
+        {
+          "id": 344,
+          "submittedAt": 108088.40000000037,
+          "previousPoll": 109231.90000000037
+        },
+        {
+          "id": 346,
+          "submittedAt": 108457.20000000019,
+          "previousPoll": 109231.90000000037
+        },
+        {
+          "id": 347,
+          "submittedAt": 108650.5,
+          "previousPoll": 109231.79999999981
+        }
+      ],
+      "keyFrames": [
+        {
+          "file": "frame-0044.jpg",
+          "id": 50,
+          "phase": "blue",
+          "captureMs": 39347.330810546875,
+          "sceneStartedAt": 32400.799999999814,
+          "rendererReturnedAt": 32406.200000000186,
+          "authoredProgress": 0.6430044444444278,
+          "bakedFrame": 78.49589726555638,
+          "tunnel": 0.8856622109340438,
+          "shatter": 0,
+          "fence": {
+            "id": 50,
+            "submittedAt": 32408.200000000186,
+            "observedAt": 39370.60000000056,
+            "previousPoll": 37881.799999999814,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0045.jpg",
+          "id": 51,
+          "phase": "blue",
+          "captureMs": 40219.508056640625,
+          "sceneStartedAt": 32412.299999999814,
+          "rendererReturnedAt": 32413.299999999814,
+          "authoredProgress": 0.643515555555539,
+          "bakedFrame": 78.54395688567365,
+          "tunnel": 0.8862044633433093,
+          "shatter": 0,
+          "fence": {
+            "id": 51,
+            "submittedAt": 32414.10000000056,
+            "observedAt": 41054.40000000037,
+            "previousPoll": 39370.60000000056,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0046.jpg",
+          "id": 52,
+          "phase": "blue",
+          "captureMs": 40242.47802734375,
+          "sceneStartedAt": 33053.299999999814,
+          "rendererReturnedAt": 33054.299999999814,
+          "authoredProgress": 0.6720044444444279,
+          "bakedFrame": 81.15724010827726,
+          "tunnel": 0.915689904969614,
+          "shatter": 0,
+          "fence": null
+        },
+        {
+          "file": "frame-0047.jpg",
+          "id": 53,
+          "phase": "blue",
+          "captureMs": 41026.431884765625,
+          "sceneStartedAt": 33690.60000000056,
+          "rendererReturnedAt": 34981.700000000186,
+          "authoredProgress": 0.7003288888889054,
+          "bakedFrame": 83.58694875403987,
+          "tunnel": 0.9431040910111043,
+          "shatter": 0,
+          "fence": {
+            "id": 53,
+            "submittedAt": 34984.5,
+            "observedAt": 41054.40000000037,
+            "previousPoll": 39370.60000000056,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0051.jpg",
+          "id": 57,
+          "phase": "mid-glass",
+          "captureMs": 42792.301025390625,
+          "sceneStartedAt": 37909.5,
+          "rendererReturnedAt": 39364.40000000037,
+          "authoredProgress": 0.8878355555555473,
+          "bakedFrame": 124.38113859889697,
+          "tunnel": 1,
+          "shatter": 0.7076227719779395,
+          "fence": {
+            "id": 57,
+            "submittedAt": 39365.799999999814,
+            "observedAt": 42731.90000000037,
+            "previousPoll": 42681.90000000037,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0052.jpg",
+          "id": 57,
+          "phase": "mid-glass",
+          "captureMs": 42946.66796875,
+          "sceneStartedAt": 37909.5,
+          "rendererReturnedAt": 39364.40000000037,
+          "authoredProgress": 0.8878355555555473,
+          "bakedFrame": 124.38113859889697,
+          "tunnel": 1,
+          "shatter": 0.7076227719779395,
+          "fence": {
+            "id": 57,
+            "submittedAt": 39365.799999999814,
+            "observedAt": 42731.90000000037,
+            "previousPoll": 42681.90000000037,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0053.jpg",
+          "id": 57,
+          "phase": "mid-glass",
+          "captureMs": 42961.369873046875,
+          "sceneStartedAt": 37909.5,
+          "rendererReturnedAt": 39364.40000000037,
+          "authoredProgress": 0.8878355555555473,
+          "bakedFrame": 124.38113859889697,
+          "tunnel": 1,
+          "shatter": 0.7076227719779395,
+          "fence": {
+            "id": 57,
+            "submittedAt": 39365.799999999814,
+            "observedAt": 42731.90000000037,
+            "previousPoll": 42681.90000000037,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0201.jpg",
+          "id": 230,
+          "phase": "blue",
+          "captureMs": 87253.0849609375,
+          "sceneStartedAt": 79410.60000000056,
+          "rendererReturnedAt": 79411.5,
+          "authoredProgress": 0.6689955555555721,
+          "bakedFrame": 80.88819783069985,
+          "tunnel": 0.9126543249368407,
+          "shatter": 0,
+          "fence": {
+            "id": 230,
+            "submittedAt": 79412.20000000019,
+            "observedAt": 87281.70000000019,
+            "previousPoll": 87231.79999999981,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0202.jpg",
+          "id": 231,
+          "phase": "blue",
+          "captureMs": 87726.45483398438,
+          "sceneStartedAt": 79456.5,
+          "rendererReturnedAt": 79457.5,
+          "authoredProgress": 0.6710355555555473,
+          "bakedFrame": 81.07080972135522,
+          "tunnel": 0.9147147186192457,
+          "shatter": 0,
+          "fence": {
+            "id": 231,
+            "submittedAt": 79458.10000000056,
+            "observedAt": 87734.29999999981,
+            "previousPoll": 87681.79999999981,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0203.jpg",
+          "id": 232,
+          "phase": "blue",
+          "captureMs": 88268.72778320312,
+          "sceneStartedAt": 80106.29999999981,
+          "rendererReturnedAt": 80107.5,
+          "authoredProgress": 0.699915555555539,
+          "bakedFrame": 83.55298871094966,
+          "tunnel": 0.942720922872457,
+          "shatter": 0,
+          "fence": {
+            "id": 232,
+            "submittedAt": 80109,
+            "observedAt": 88281.79999999981,
+            "previousPoll": 88231.79999999981,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0204.jpg",
+          "id": 233,
+          "phase": "blue",
+          "captureMs": 88673.72094726562,
+          "sceneStartedAt": 80754.40000000037,
+          "rendererReturnedAt": 80755.40000000037,
+          "authoredProgress": 0.7287200000000083,
+          "bakedFrame": 85.79298639155631,
+          "tunnel": 0.9679946170068348,
+          "shatter": 0,
+          "fence": null
+        },
+        {
+          "file": "frame-0207.jpg",
+          "id": 236,
+          "phase": "mid-glass",
+          "captureMs": 89983.091796875,
+          "sceneStartedAt": 83430.70000000019,
+          "rendererReturnedAt": 83433.29999999981,
+          "authoredProgress": 0.8476666666666667,
+          "bakedFrame": 110.19686103933395,
+          "tunnel": 1,
+          "shatter": 0.4239372207866792,
+          "fence": {
+            "id": 236,
+            "submittedAt": 83434.79999999981,
+            "observedAt": 89982.10000000056,
+            "previousPoll": 89931.79999999981,
+            "status": 37148,
+            "pollMs": 0
+          }
+        },
+        {
+          "file": "frame-0208.jpg",
+          "id": 237,
+          "phase": "mid-glass",
+          "captureMs": 90491.77587890625,
+          "sceneStartedAt": 84070.20000000019,
+          "rendererReturnedAt": 84071.60000000056,
+          "authoredProgress": 0.8760888888888889,
+          "bakedFrame": 120.63712626671348,
+          "tunnel": 1,
+          "shatter": 0.6327425253342697,
+          "fence": {
+            "id": 237,
+            "submittedAt": 84072.90000000037,
+            "observedAt": 90481.79999999981,
+            "previousPoll": 90431.90000000037,
+            "status": 37148,
+            "pollMs": 0
+          }
+        }
+      ]
+    }
+  },
+  "finalRegressions": {
+    "total": 15,
+    "failed": [
+      {
+        "name": "final-normal-1440",
+        "command": "node scripts/validate-goal-sequence.mjs",
+        "env": {
+          "GOAL_MOTION": "normal",
+          "GOAL_VIEWPORT_WIDTH": "1440"
+        },
+        "exit": 1,
+        "seconds": 50.921
+      },
+      {
+        "name": "final-normal-390",
+        "command": "node scripts/validate-goal-sequence.mjs",
+        "env": {
+          "GOAL_MOTION": "normal",
+          "GOAL_VIEWPORT_WIDTH": "390"
+        },
+        "exit": 1,
+        "seconds": 46.977
+      }
+    ]
+  },
+  "hardware": {
+    "available": false,
+    "renderer": "SwiftShader",
+    "physicalGPU": false,
+    "physicalMobile": false,
+    "frameRateCertified": false
+  },
+  "visualReview": [
+    {
+      "file": "native-1440/frame-0041.jpg",
+      "observation": "Approaching/crouched astronaut over blue monitor, translucent fracture facets."
+    },
+    {
+      "file": "native-1440/frame-0143.jpg",
+      "observation": "Smaller approaching astronaut and cracked/faceted glass across monitor."
+    },
+    {
+      "file": "native-390/frame-0201.jpg",
+      "observation": "Small compact/rotated astronaut in full royal-blue corridor."
+    },
+    {
+      "file": "native-390/frame-0204.jpg",
+      "observation": "Extended astronaut inside pulled-back monitor."
+    },
+    {
+      "file": "native-390/frame-0208.jpg",
+      "observation": "Approaching/crouched astronaut and glass facets at monitor."
+    },
+    {
+      "file": "native-1440/frame-0199.jpg",
+      "observation": "Astronaut/stickers and visible Lets work together CTA."
+    },
+    {
+      "file": "native-390/frame-0292.jpg",
+      "observation": "Astronaut/stickers and visible Lets work together CTA."
+    }
+  ],
+  "limitations": [
+    "Nonblocking fence bounds include polling delay.",
+    "Capture epoch conversion is not physical presentation time.",
+    "GL/DOM stamps, tracing, fences and screencast add overhead.",
+    "Compositor trace events are not automatically paired with application IDs.",
+    "Auxiliary reports may reference intentionally omitted JPEGs; final native streams are complete."
+  ],
+  "sourceSHA256": {
+    "src/components/home/GoalTunnelSection.tsx": "eb4d34847a5f6ee82ab474c2cac42ab124d819dd6aa07335e933cc402ac86a77",
+    "scripts/diagnose-render-pipeline.mjs": "aa7bb1003ce9e1dcd6509e40d53120d3d259631234f235cfb6ee659851ca0985",
+    "scripts/capture-blue-culling-parity.mjs": "408164fc6a7255f46cd28c2df17b979ef466822b85ad9c7a1826244f9600f477",
+    "scripts/launch-hardware-chromium.py": "27a45d5271541edf959ea5820862badd59e65437aa9e45ded863f9a55b9caeae"
+  },
+  "independentChecks": [
+    {
+      "command": "npm run check",
+      "exit": 0
+    },
+    {
+      "command": "node scripts/test-goal-sequence.mjs",
+      "exit": 0
+    },
+    {
+      "command": "node scripts/test-home-motion.mjs",
+      "exit": 0
+    },
+    {
+      "command": "npm run lint (after final diagnostic script edits)",
+      "exit": 0
+    }
+  ]
+}

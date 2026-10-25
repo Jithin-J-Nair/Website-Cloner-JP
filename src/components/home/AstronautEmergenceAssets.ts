@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
+import { loadLusionBuf, type ParsedBufData } from "@/lib/lusion-buf-loader";
 
 export interface AstronautBoneMap {
   Hips?: THREE.Bone;
@@ -32,6 +33,9 @@ export interface LoadedAstronautRig {
   visorAnchorLocal: THREE.Vector3;
   drawCalls: number;
   triangles: number;
+  /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
+  sampleBakedPose?: (frame: number, influence: number) => void;
+  sampleCapturedRoot?: (stage: "in" | "out", frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void;
 }
 
 export interface SuitJointPose {
@@ -332,9 +336,9 @@ export function buildAstronautStudioEnv(renderer: THREE.WebGLRenderer): THREE.We
 }
 
 /**
- * Loads `/models/astronaut.glb` (`EXT_meshopt_compression` + `EXT_texture_webp`) lazily and constructs
- * studio-calibrated `THREE.MeshPhysicalMaterial` surfaces + curved visor Earth-limb reflection shader
- * (`detail_01`: curved cloudy blue Earth reflected in lower visor -> `detail_04/05`: pure black obsidian!).
+ * Legacy fallback loader for `/models/astronaut.glb`. The reconstruction prefers the captured Lusion
+ * `.buf` astronaut meshes above; this fallback remains only for environments where those assets fail
+ * to load. It constructs physical suit materials and a view-dependent visor reflection.
  */
 export async function loadLicensedAstronautGlb(
   visorEnvTex: THREE.Texture,
@@ -559,6 +563,299 @@ export async function loadLicensedAstronautGlb(
 
   const primary = buildRigFromScene(gltf.scene);
   const createClone = () => buildRigFromScene(SkeletonUtils.clone(gltf.scene));
+
+  return { primary, createClone };
+}
+
+/** Allocation-free sampler for the separately captured whole-body trajectories (100 frames). */
+export function createCapturedRootSampler(data: ParsedBufData): (frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void {
+  const frames = data.header.vertexCount;
+  if (frames !== 100 || data.header.attributes.find((a) => a.id === "orient")?.componentSize !== 4) {
+    throw new Error("Unexpected captured root animation layout");
+  }
+  const q1 = new THREE.Quaternion();
+  return (frame, position, orientation) => {
+    const f = THREE.MathUtils.clamp(frame,0,frames-1);
+    const a = Math.floor(f), b = Math.min(frames-1,a+1), t = f-a;
+    const p = data.attributes.position, q = data.attributes.orient;
+    position.set(THREE.MathUtils.lerp(p[a*3],p[b*3],t),THREE.MathUtils.lerp(p[a*3+1],p[b*3+1],t),THREE.MathUtils.lerp(p[a*3+2],p[b*3+2],t));
+    orientation.fromArray(q,a*4).normalize();
+    q1.fromArray(q,b*4).normalize();
+    orientation.slerp(q1,t);
+  };
+}
+
+/** Rigid two-influence dual-quaternion skinning using Three's per-skeleton bone texture.
+ * Preserve the existing bind/palette ownership: shared materials must never close over a
+ * particular rig. Only the captured astronaut uses this patch, not the legacy GLB fallback.
+ */
+export function applyCapturedDualQuaternionSkinning(material: THREE.Material): void {
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace("#include <skinning_pars_vertex>", `
+      #include <skinning_pars_vertex>
+      vec4 capturedQuat(mat3 m) {
+        float trace = m[0][0]+m[1][1]+m[2][2];
+        vec4 q;
+        if (trace > 0.0) {
+          float s = 2.0 * sqrt(trace+1.0);
+          q = vec4((m[1][2]-m[2][1])/s, (m[2][0]-m[0][2])/s, (m[0][1]-m[1][0])/s, 0.25*s);
+        } else if (m[0][0] > m[1][1] && m[0][0] > m[2][2]) {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[0][0]-m[1][1]-m[2][2]));
+          q = vec4(0.25*s,(m[1][0]+m[0][1])/s,(m[2][0]+m[0][2])/s,(m[1][2]-m[2][1])/s);
+        } else if (m[1][1] > m[2][2]) {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[1][1]-m[0][0]-m[2][2]));
+          q = vec4((m[1][0]+m[0][1])/s,0.25*s,(m[2][1]+m[1][2])/s,(m[2][0]-m[0][2])/s);
+        } else {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[2][2]-m[0][0]-m[1][1]));
+          q = vec4((m[2][0]+m[0][2])/s,(m[2][1]+m[1][2])/s,0.25*s,(m[0][1]-m[1][0])/s);
+        }
+        return normalize(q);
+      }
+      vec4 capturedDual(vec4 r, vec3 t) {
+        return 0.5 * vec4(r.w*t + cross(t,r.xyz),-dot(t,r.xyz));
+      }
+      vec3 capturedRotate(vec4 q, vec3 p) {
+        return p + 2.0 * cross(q.xyz,cross(q.xyz,p)+q.w*p);
+      }
+    `).replace("#include <skinbase_vertex>", `
+      mat4 dqBone0 = getBoneMatrix(skinIndex.x);
+      mat4 dqBone1 = getBoneMatrix(skinIndex.y);
+      vec4 dqR0 = capturedQuat(mat3(dqBone0));
+      vec4 dqR1 = capturedQuat(mat3(dqBone1));
+      vec4 dqD0 = capturedDual(dqR0,dqBone0[3].xyz);
+      vec4 dqD1 = capturedDual(dqR1,dqBone1[3].xyz);
+      float dqSign = dot(dqR0,dqR1) < 0.0 ? -1.0 : 1.0;
+      vec4 dqR = skinWeight.x*dqR0 + skinWeight.y*dqSign*dqR1;
+      vec4 dqD = skinWeight.x*dqD0 + skinWeight.y*dqSign*dqD1;
+      float dqLength = max(length(dqR),0.000001);
+      dqR /= dqLength;
+      dqD /= dqLength;
+      dqD -= dqR * dot(dqR,dqD);
+    `).replace("#include <skinnormal_vertex>", `
+      objectNormal = capturedRotate(dqR,objectNormal);
+      #ifdef USE_TANGENT
+        objectTangent = capturedRotate(dqR,objectTangent);
+      #endif
+    `).replace("#include <skinning_vertex>", `
+      transformed = capturedRotate(dqR,transformed) +
+        2.0 * (dqR.w*dqD.xyz - dqD.w*dqR.xyz + cross(dqR.xyz,dqD.xyz));
+    `);
+  };
+  material.customProgramCacheKey = () => "captured-two-weight-dq-v1";
+  material.needsUpdate = true;
+}
+
+/** Sample the capture's model-space (inverse-bind-applied) transforms without advancing wall time. */
+export function createCapturedPoseSampler(
+  animation: ParsedBufData,
+  bones: THREE.Bone[],
+  skeleton: THREE.Skeleton,
+  visorAnchorLocal: THREE.Vector3
+): (frame: number, influence: number) => void {
+  const boneCount = bones.length;
+  const frameCount = animation.header.vertexCount / boneCount;
+  if (boneCount !== 53 || frameCount !== 288) throw new Error("Unexpected captured astronaut animation layout");
+  const orientations = animation.attributes.orient;
+  const translations = animation.attributes.position;
+  const q0 = new THREE.Quaternion();
+  const q1 = new THREE.Quaternion();
+  const identity = new THREE.Quaternion();
+  const sourceVisorAnchor = new THREE.Vector3(0, 1.685, 0.132);
+  let previousFrame = -1;
+  let previousInfluence = -1;
+  return (frame: number, influence: number) => {
+    const f = THREE.MathUtils.clamp(frame, 0, frameCount - 1);
+    const weight = THREE.MathUtils.clamp(influence, 0, 1);
+    if (f === previousFrame && weight === previousInfluence) return;
+    previousFrame = f;
+    previousInfluence = weight;
+    const from = Math.floor(f);
+    const to = Math.min(frameCount - 1, from + 1);
+    const alpha = f - from;
+    for (let i = 0; i < boneCount; i++) {
+      const a = from * boneCount + i;
+      const b = to * boneCount + i;
+      q0.fromArray(orientations, a * 4).normalize();
+      q1.fromArray(orientations, b * 4).normalize();
+      q0.slerp(q1, alpha);
+      bones[i].quaternion.slerpQuaternions(identity, q0, weight);
+      bones[i].position.set(
+        THREE.MathUtils.lerp(translations[a * 3], translations[b * 3], alpha) * weight,
+        (THREE.MathUtils.lerp(translations[a * 3 + 1], translations[b * 3 + 1], alpha) + 0.9) * weight,
+        THREE.MathUtils.lerp(translations[a * 3 + 2], translations[b * 3 + 2], alpha) * weight
+      );
+      bones[i].updateMatrix();
+      // These are already model-space deformation matrices, not a hierarchy of joint locals.
+      bones[i].matrixWorld.copy(bones[i].matrix);
+    }
+    skeleton.update();
+    visorAnchorLocal.copy(sourceVisorAnchor).applyMatrix4(bones[0].matrix);
+    visorAnchorLocal.y -= 0.9;
+  };
+}
+
+/**
+ * Loads the captured Lusion astronaut parts from the repository's approved .buf asset bundle.
+ * These source meshes are preferred over the unrelated generic GLB placeholder; the parts share
+ * the captured model coordinate space, so the suit silhouette and visor line up without guessed
+ * per-part offsets. This loader preserves the source geometry and materials and decodes
+ * the baked per-bone animation buffer for downstream motion, while leaving emergence unchanged.
+ */
+export async function loadLusionAstronautParts(
+  visorEnvTex: THREE.Texture,
+  _isMobile: boolean,
+  track: <T extends { dispose: () => void }>(item: T) => T
+): Promise<{
+  primary: LoadedAstronautRig;
+  createClone: () => LoadedAstronautRig;
+}> {
+  const assetRoot = "/assets/models/tunnels/";
+  const textureRoot = "/assets/textures/tunnels/astronaut/";
+  const textureLoader = new THREE.TextureLoader();
+  const loadTexture = (name: string) => textureLoader.loadAsync(`${textureRoot}${name}`).then(track);
+  const [helmetData, visorData, glovesData, packData, helmetBase, helmetNormal, helmetArm,
+    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm, animation, inAnimation, outAnimation] = await Promise.all([
+    loadLusionBuf(`${assetRoot}astronaut_helmet.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_helmet_glass.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_glove_shoes.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_wearpack.buf`),
+    loadTexture("astronaut_helmet_base.webp"),
+    loadTexture("astronaut_helmet_nor.webp"),
+    loadTexture("astronaut_helmet_arm.webp"),
+    loadTexture("astronaut_glove_shoes_base.webp"),
+    loadTexture("astronaut_glove_shoes_nor.webp"),
+    loadTexture("astronaut_glove_shoes_arm.webp"),
+    loadTexture("astronaut_wearpack_base.webp"),
+    loadTexture("astronaut_wearpack_nor.webp"),
+    loadTexture("astronaut_wearpack_arm.webp"),
+    loadLusionBuf(`${assetRoot}astronaut_animations.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_in_animation.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_out_animation.buf`),
+  ]);
+
+  for (const tex of [helmetBase, glovesBase, packBase]) tex.colorSpace = THREE.SRGBColorSpace;
+  for (const tex of [helmetNormal, helmetArm, glovesNormal, glovesArm, packNormal, packArm]) {
+    tex.colorSpace = THREE.NoColorSpace;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+  }
+
+  const materials: THREE.Material[] = [];
+  const makeSuitMaterial = (
+    baseMap: THREE.Texture,
+    normalMap: THREE.Texture,
+    armMap: THREE.Texture,
+    roughness: number,
+    metalness: number
+  ) => {
+    const material = track(new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      map: baseMap,
+      normalMap,
+      normalScale: new THREE.Vector2(0.85, 0.85),
+      aoMap: armMap,
+      roughnessMap: armMap,
+      metalnessMap: armMap,
+      aoMapIntensity: 0.9,
+      roughness,
+      metalness,
+      clearcoat: 0.18,
+      clearcoatRoughness: 0.35,
+      envMap: visorEnvTex,
+      envMapIntensity: 0.18,
+    }));
+    materials.push(material);
+    return material;
+  };
+
+  const helmetMaterial = makeSuitMaterial(helmetBase, helmetNormal, helmetArm, 0.38, 0.18);
+  const glovesMaterial = makeSuitMaterial(glovesBase, glovesNormal, glovesArm, 0.56, 0.06);
+  const packMaterial = makeSuitMaterial(packBase, packNormal, packArm, 0.62, 0.04);
+  const visorEarthUniform = { value: 0 };
+  const visorMaterial = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color("#03070d"),
+    roughness: 0.045,
+    metalness: 0.78,
+    clearcoat: 1,
+    clearcoatRoughness: 0.025,
+    ior: 1.52,
+    envMap: visorEnvTex,
+    envMapIntensity: 1.1,
+  }));
+  materials.push(visorMaterial);
+
+  // The capture ledger identifies 53 deformation transforms per frame (288 frames).
+  // They already include inverse bind transforms: do NOT calculate a second inverse bind pose.
+  const boneCount = 53;
+  const frameCount = animation.header.vertexCount / boneCount;
+  if (!Number.isInteger(frameCount) || frameCount !== 288) {
+    throw new Error("Unexpected captured astronaut animation layout");
+  }
+  const parts = [helmetData, visorData, glovesData, packData];
+  const partMaterials = [helmetMaterial, visorMaterial, glovesMaterial, packMaterial];
+  partMaterials.forEach(applyCapturedDualQuaternionSkinning);
+  const geometries = parts.map(({ geometry: source }) => {
+    const geometry = track(source.clone());
+    const indices = source.getAttribute("boneIndices");
+    const weights = source.getAttribute("boneWeights");
+    const skinIndex = new Uint16Array(indices.count * 4);
+    const skinWeight = new Float32Array(indices.count * 4);
+    for (let i = 0; i < indices.count; i++) {
+      skinIndex[i * 4] = indices.getX(i);
+      skinIndex[i * 4 + 1] = indices.getY(i);
+      const total = weights.getX(i) + weights.getY(i);
+      skinWeight[i * 4] = weights.getX(i) / total;
+      skinWeight[i * 4 + 1] = weights.getY(i) / total;
+    }
+    geometry.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(skinIndex, 4));
+    geometry.setAttribute("skinWeight", new THREE.Float32BufferAttribute(skinWeight, 4));
+    const uv = geometry.getAttribute("uv");
+    if (uv) geometry.setAttribute("uv2", uv);
+    return geometry;
+  });
+  const triangles = parts.reduce(
+    (sum, part) => sum + (part.geometry.index?.count ?? part.geometry.getAttribute("position").count) / 3,
+    0
+  );
+
+  const sampleIn = createCapturedRootSampler(inAnimation);
+  const sampleOut = createCapturedRootSampler(outAnimation);
+  const sampleCapturedRoot: NonNullable<LoadedAstronautRig["sampleCapturedRoot"]> = (stage,frame,position,orientation) => {
+    (stage === "in" ? sampleIn : sampleOut)(frame,position,orientation);
+  };
+  const buildCapturedRig = (): LoadedAstronautRig => {
+    const root = new THREE.Group();
+    const modelRoot = new THREE.Group();
+    modelRoot.name = "LusionAstronautBufModel";
+    modelRoot.position.y = -0.9;
+    root.add(modelRoot);
+    const bones = Array.from({ length: boneCount }, () => new THREE.Bone());
+    modelRoot.add(...bones);
+    const skeleton = track(new THREE.Skeleton(bones, bones.map(() => new THREE.Matrix4())));
+    geometries.forEach((geometry, i) => {
+      const mesh = new THREE.SkinnedMesh(geometry, partMaterials[i]);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.frustumCulled = false;
+      mesh.renderOrder = 4;
+      // Bind in model-local coordinates. The existing -0.9 model centering remains untouched.
+      mesh.bind(skeleton, new THREE.Matrix4());
+      mesh.bindMode = THREE.DetachedBindMode;
+      modelRoot.add(mesh);
+    });
+    const visorAnchorLocal = new THREE.Vector3(-0.076, 0.80, 0.132);
+    const sampleBakedPose = createCapturedPoseSampler(animation, bones, skeleton, visorAnchorLocal);
+    // Keep the source bind silhouette until the downstream timeline explicitly samples it.
+    sampleBakedPose(0, 0);
+    // Skeleton.update reads matrixWorld; do not let parent transforms enter the baked palette.
+    for (const bone of bones) bone.matrixWorldAutoUpdate = false;
+    return {
+      root, modelRoot, bones: {}, restQuats: {}, materials: partMaterials,
+      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose, sampleCapturedRoot,
+    };
+  };
+  const primary = buildCapturedRig();
+  const createClone = () => buildCapturedRig();
 
   return { primary, createClone };
 }
@@ -1106,7 +1403,7 @@ export function buildSpaceOpticalOverlays(
   spaceHaloMesh.position.set(0, -0.35, -0.85);
   spaceHaloMesh.renderOrder = 2;
 
-  // 3. Screen-Space Optical Chromatic Dispersion Ring (`Frames 05–08` — silky circumference + zero alpha overwrite!)
+  // 3. Analytic off-axis solar lens scatter. Keep the public mesh handle for controller ownership.
   const chromaticRingMat = track(
     new THREE.ShaderMaterial({
       transparent: true,
@@ -1119,9 +1416,13 @@ export function buildSpaceOpticalOverlays(
       blendDstAlpha: THREE.OneFactor,
       uniforms: {
         uOpacity: { value: 0.0 },
+        uVisibility: { value: 0.0 },
         uAspect: { value: 1.6 },
         uRadius: { value: 0.625 },
+        uFocalScale: { value: 1.0 },
         uTime: { value: 0.0 },
+        uSource: { value: new THREE.Vector2(-0.25,0.90) },
+        uResolution: { value: new THREE.Vector2(1440,900) },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -1133,44 +1434,63 @@ export function buildSpaceOpticalOverlays(
       fragmentShader: `
         varying vec2 vUv;
         uniform float uOpacity;
+        uniform float uVisibility;
         uniform float uAspect;
         uniform float uRadius;
+        uniform float uFocalScale;
         uniform float uTime;
-
+        uniform vec2 uSource;
+        uniform vec2 uResolution;
+        // Pupil-scatter / two-surface spectral caustic approximation, in height-normalized units.
+        // Source radiance and internally reflected caustics share one camera/occlusion exposure.
+        float band(float d, float width) { return exp(-d*d/(width*width)); }
         void main() {
-          // Height-normalized screen coords centered slightly left-low matching Frame 07/08 (cx = 47.2%)
-          vec2 p = (vUv - vec2(0.472, 0.495)) * vec2(uAspect, 1.0);
-          float ang = atan(p.y, p.x);
+          if (uOpacity*uVisibility < 0.0001) discard;
+          vec2 metric = vec2(uAspect,1.0);
+          vec2 source = (uSource-0.5)*metric;
+          vec2 axis = normalize(source+vec2(-0.0001,0.0001));
+          float pixel = 1.0/max(uResolution.y,1.0);
+          vec2 q = (vUv-uSource)*metric;
+          float rq = dot(q,q);
+          // Finite emitter convolved with a Moffat pupil scatter tail. No opaque glow disc.
+          float focalSq = uFocalScale*uFocalScale;
+          float core = exp(-rq/(0.000018*focalSq+pixel*pixel*2.0))*2.4;
+          float scatter = pow(1.0+rq/(0.00055*focalSq),-1.55)*0.16;
+          float streak = exp(-abs(q.x)*6.5)*band(q.y,0.0015*uFocalScale+pixel*1.5)*0.26;
+          vec3 direct = vec3(0.86,0.95,1.0)*(core+scatter+streak);
 
-          // Gentle organic lower-arc caustics matching 07_t08.4s & 08_t09.8s!
-          float lowerMask = smoothstep(-0.05, -0.75, sin(ang));
-          float wobble = lowerMask * (0.018 * sin(ang * 5.0 + 0.6) + 0.010 * cos(ang * 9.0 - 0.4));
-          float rLocal = uRadius + wobble;
-
+          // A decentered lens produces incomplete, asymmetric arcs. Their center, radius and
+          // pupil acceptance change with incidence, rather than remaining a stationary rainbow.
+          // Rational compression retains source response outside the viewport (no hard clamp).
+          vec2 pupilOffset = source/(vec2(1.0)+0.35*abs(source));
+          vec2 center = vec2(0.50,0.48)-pupilOffset*0.075;
+          vec2 p = (vUv-center)*metric;
           float r = length(p);
-          float dr = r - rLocal;
-
-          // Smooth optical azimuthal intensity envelope (softly brighter on left & right arcs, zero moiré banding!)
-          float azim = 0.76 + 0.24 * cos(ang * 2.0 + 0.45);
-
-          // Authentic spectral dispersion: inner warm amber -> middle soft cream -> outer cyan/royal-blue
-          float disp = 0.026;
-          float w = 17.5;
-          float rAmber = exp(-pow((dr + disp) * w, 2.0));
-          float rCream = exp(-pow(dr * (w * 1.25), 2.0));
-          float rBlue  = exp(-pow((dr - disp) * w, 2.0));
-          float veil   = exp(-pow(dr * 5.6, 2.0)) * 0.14;
-
-          vec3 col = (
-            vec3(1.00, 0.50, 0.14) * rAmber * 1.05 +
-            vec3(0.95, 0.93, 0.86) * rCream * 0.30 +
-            vec3(0.16, 0.56, 1.05) * rBlue * 1.10 +
-            vec3(0.32, 0.44, 0.72) * veil
-          ) * azim * uOpacity;
-
-          // Note: CustomBlending (RGB: ONE+ONE, Alpha: ZERO+ONE) preserves canvas alpha = 0 in empty space
-          // so behind-astronaut white headline at z=6 shines through space while astronaut silhouette occludes LET!
-          gl_FragColor = vec4(col, 0.0);
+          vec2 direction = p/max(r,0.0001);
+          float angle = atan(p.y,p.x);
+          float incidence = clamp(length(source),0.0,1.5);
+          float radius = uRadius*(1.0+0.04*(uFocalScale-1.0)) + incidence*0.025 + 0.024*dot(direction,axis);
+          float d = r-radius;
+          float filterWidth = max(fwidth(r),pixel);
+          // Off-axis pupil defocus broadens the caustic continuously with source incidence.
+          // A low-energy neutral tail avoids a hard, uniformly coloured ring edge.
+          float pupilBlur = 1.0 + incidence*0.30 + abs(uFocalScale-1.0)*0.15;
+          // Dispersion remains subordinate to the neutral/cyan scattering energy.
+          vec3 spectral = vec3(band(d+0.012,0.030*pupilBlur+filterWidth)*0.10,
+                               band(d,0.027*pupilBlur+filterWidth)*0.17,
+                               band(d-0.014,0.032*pupilBlur+filterWidth)*0.30);
+          spectral += vec3(0.22,0.26,0.29)*band(d,0.021*pupilBlur+filterWidth);
+          float tailD = d/(0.055*pupilBlur+filterWidth);
+          spectral += vec3(0.16,0.18,0.20)*pow(1.0+tailD*tailD,-1.8);
+          float cycles = min(150.0,0.20/max(filterWidth,0.00001));
+          float interference = 0.93+0.07*cos(d*cycles*6.28318+sin(angle*2.0)-uTime*0.15);
+          float aperture = 0.97+0.03*sin(angle*106.0+sin(angle*13.0));
+          float sector = pow(abs(cos(angle+0.24+axis.y*0.12)),5.0);
+          sector *= 0.60+0.40*smoothstep(-0.6,0.8,dot(direction,-axis));
+          vec3 caustic = spectral*sector*interference*aperture;
+          gl_FragColor = vec4((direct+caustic)*uOpacity*uVisibility,0.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
         }
       `,
     })

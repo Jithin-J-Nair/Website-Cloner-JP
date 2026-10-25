@@ -1,0 +1,1382 @@
+[
+  {
+    "source": "temp/gpu-isolation/compositor-control-1440/solar-compositor.png",
+    "sha256": "6d996a5e02c707d9d60cfb977b4eba5f7d8108476906dde6dcde12b8262c28a2",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-1440/tesseract-compositor.png",
+    "sha256": "7d3ca691fa846d16dcea7ccde7e2034a8e4382c8605a404d837def4ab826b665",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-1440/blue-entry-compositor.png",
+    "sha256": "f5a6cdff40d85200fba94ea6b461fd2adb63d8b594aab91f9b791deb8b4fe967",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-1440/blue-compositor.png",
+    "sha256": "9c72beba524457568094b0a3b8f6946c6a42b2e0588eb28dda0d5d65d4b1c56f",
+    "archive": "controls/compositor-control-1440/blue-compositor.png",
+    "reason": null
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-1440/glass-compositor.png",
+    "sha256": "75defe4916b7c2f37765dd5e131fb7604bd1ce07dee6ab78c06abb03e1815558",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-1440/fracture-compositor.png",
+    "sha256": "282383274945c3eed159696dd644520c1669ed25e6701447d3074c7a9a2d215b",
+    "archive": "controls/compositor-control-1440/fracture-compositor.png",
+    "reason": null
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-1440/shatter-exit-compositor.png",
+    "sha256": "02439e4039f02690b1fa054226983b0ab5d7226767d97de7d04afb1832776c1a",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-390/solar-compositor.png",
+    "sha256": "ff05a4d8ed5bf19470ea37594c669b6a2f97cd944ccb86bd4a03e4a345426da2",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-390/tesseract-compositor.png",
+    "sha256": "7d3ca691fa846d16dcea7ccde7e2034a8e4382c8605a404d837def4ab826b665",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-390/blue-entry-compositor.png",
+    "sha256": "f5a6cdff40d85200fba94ea6b461fd2adb63d8b594aab91f9b791deb8b4fe967",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-390/blue-compositor.png",
+    "sha256": "9c72beba524457568094b0a3b8f6946c6a42b2e0588eb28dda0d5d65d4b1c56f",
+    "archive": "controls/compositor-control-390/blue-compositor.png",
+    "reason": null
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-390/glass-compositor.png",
+    "sha256": "75defe4916b7c2f37765dd5e131fb7604bd1ce07dee6ab78c06abb03e1815558",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-390/fracture-compositor.png",
+    "sha256": "a35f71aa259076d443e6622045d118eb5aaf57bbbae177568477655e1b76bfcc",
+    "archive": "controls/compositor-control-390/fracture-compositor.png",
+    "reason": null
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-control-390/shatter-exit-compositor.png",
+    "sha256": "6ac377b6a243925a22e8d2079dd2d2983be0544b3be9d97e2fd7cb5e670b56e6",
+    "archive": null,
+    "reason": "Full local raw control remains in ignored temp; archive retains source/decoded-ID/timestamps and other actual scene images."
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-transitions-390/solar-wide-compositor.png",
+    "sha256": "39c4ecbe0a8e8022493d7509f3658b3a15c95b46141d5af7cd35ac623e77406a",
+    "archive": "controls/compositor-transitions-390/solar-wide-compositor.png",
+    "reason": null
+  },
+  {
+    "source": "temp/gpu-isolation/compositor-transitions-390/white-transition-compositor.png",
+    "sha256": "18da762a25f558a24420ff03c44ce9af59aea036cef2206f29253122009940b6",
+    "archive": "controls/compositor-transitions-390/white-transition-compositor.png",
+    "reason": null
+  },
+  {
+    "source": "temp/gpu-isolation/order-1440/blue-entry-baseline.png",
+    "sha256": "94bec1de158a5ea2c47c740e6d59115d18fded810454a00d46d0ca5b34da5e9c",
+    "archive": "experiments/images/order-1440-blue-entry-baseline.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/order-1440/blue-entry-wall-first.png",
+    "sha256": "111c07597221425ac671f740fdf5ebbaf26a0e2b94ff33805a5beb1e19514efa",
+    "archive": "experiments/images/order-1440-blue-entry-wall-first.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/depth-1440/fracture-baseline.png",
+    "sha256": "155fa3c924d37b518a68f5be09a9ddce051a466902317f5286182372d59c37df",
+    "archive": "experiments/images/depth-1440-fracture-baseline.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/depth-1440/fracture-depth.png",
+    "sha256": "155fa3c924d37b518a68f5be09a9ddce051a466902317f5286182372d59c37df",
+    "archive": "experiments/images/depth-1440-fracture-baseline.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/atlas-corrected-1440/blue-baseline.png",
+    "sha256": "f7b8f7deb87d26ceeb1dd067e1731c974ebdda7dc010241eb38bf090cfb03e49",
+    "archive": "experiments/images/atlas-corrected-1440-blue-baseline.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/atlas-corrected-1440/blue-atlas-aniso1.png",
+    "sha256": "a22ec7d723a94fad7240d3e1cbb3e774f79eb0e7dc3d7f9fe8d5073e09786f9d",
+    "archive": "experiments/images/atlas-corrected-1440-blue-atlas-aniso1.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/atlas-corrected-1440/blue-atlas-1px.png",
+    "sha256": "1e2ba23711fe0dfb322f89f7962b4e72ce251117f22cd02f9c3d6146da59ac19",
+    "archive": "experiments/images/atlas-corrected-1440-blue-atlas-1px.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/discard-output-1440/blue-baseline.png",
+    "sha256": "f7b8f7deb87d26ceeb1dd067e1731c974ebdda7dc010241eb38bf090cfb03e49",
+    "archive": "experiments/images/atlas-corrected-1440-blue-baseline.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/discard-output-1440/blue-discard.png",
+    "sha256": "cc80177da1c11f54a8e494fae38172c8a249e84c0281b7afcea5b42f4c406e55",
+    "archive": "experiments/images/discard-output-1440-blue-discard.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/no-msaa-1440/blue-baseline.png",
+    "sha256": "322006d56ad5ae3a72b534a79d415e80458c370e4adede9e208b18e649c14565",
+    "archive": "experiments/images/no-msaa-1440-blue-baseline.png",
+    "reason": "Byte-identical images deduplicated by SHA-256 where applicable."
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0000.jpg",
+    "sha256": "16dd88a55f744c75c5e2315d0e4cbfb06e55ff2041ffdc5f576379a822759ff5",
+    "archive": "native-1440/frame-0000.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0001.jpg",
+    "sha256": "af87e2eb453db5fdd4577d6da1ffec8621470ec7353be6bde58a524f7c66817a",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0002.jpg",
+    "sha256": "19aca86f5966373111a202bc54ecd179b4bd8811da037474164884425fed5c18",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0003.jpg",
+    "sha256": "edd0fd0cc7ac857d21270be9dabcb1e8e7447c60047d413abaf7556991e64af5",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0004.jpg",
+    "sha256": "299fa2a092240e19f94e5cea485fdc945b8e83b13936aa60a60ed7c9e0d3b15e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0005.jpg",
+    "sha256": "338272a9708fec6393b8c22365ba63ce26a1d51f58e58a4b2518ec04a42abb0e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0006.jpg",
+    "sha256": "130b936ae2cfd977dd8335ebfb4d13ed90a2d83435efc9b6d046352036dbcb1d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0007.jpg",
+    "sha256": "b44e28f3b324ea346c82d68676d7b31068de1a573791e81a76420dc21e3e8ec8",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0008.jpg",
+    "sha256": "ab25931e2693d5a4ca191a56b9f19b2583e0e2eb106e93ad4e3d10363673ee74",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0009.jpg",
+    "sha256": "5da547247c71372c5ee4a8fc27ee74462516a27f72c34eacef1912fe0eaa109b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0010.jpg",
+    "sha256": "d2e6b8e1196f726ca08dfabba21e27570b142a0fa189f398c7844296f6ff43b9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0011.jpg",
+    "sha256": "bb4e6d15c8c03f64140f1b02f5e5fbfc2dc57189f61e8bd6f18dc2743fb9e987",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0012.jpg",
+    "sha256": "d4ac5e35b64d2fce2cd1e3a35ff93743506c96701ebba2d255676b80dd8b859d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0013.jpg",
+    "sha256": "6d92700e5813a385902e8fca7f713a3e422f30840b62a76eb5f200fdd5416800",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0014.jpg",
+    "sha256": "b7d06550320b0d9bc0be31a4580fd1cb0a8e26630daf9b87e05b5380e3284556",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0015.jpg",
+    "sha256": "0638227453a28bf5e86fc45aa8887fb2b8a9b738c234b0556425fce63a10df69",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0016.jpg",
+    "sha256": "0f5c1a9fbc99bb16930608fffcdce41e182694d5ab298de501790af0a5041ad1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0017.jpg",
+    "sha256": "0f5c1a9fbc99bb16930608fffcdce41e182694d5ab298de501790af0a5041ad1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0018.jpg",
+    "sha256": "fcc67d2e812672401436a0802c5cd3a2aa977138288121dd18b57cd8c059c24e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0019.jpg",
+    "sha256": "c8c570690c1406ebeb3a1cc1fda16628806fbe13349c7d5e9ecd78b1838d7f41",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0020.jpg",
+    "sha256": "253b4f3bf96c1bc1d374ca01d81847460b436adb9d25dc4bf5630ecea26d52bc",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0021.jpg",
+    "sha256": "467f0d38d6701a3c02621b462adce50712439de52dcc91d8f0174db5627007a4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0022.jpg",
+    "sha256": "0822f26b502c270649212a8a7d4f717a5bd2641b5248e0c8667fdda0c127a211",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0023.jpg",
+    "sha256": "6af8fdc818023bb20c58e153b06e47f792c09f14ed2622742939bbd7d8010bb9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0024.jpg",
+    "sha256": "4664ab068ea5e9e7a5e378d5aa86b60cb604a29c8dbcb2073182e6403e483383",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0025.jpg",
+    "sha256": "37954d1428de5bba0340ac7046ef521857a116343252076fa704e474a65a7d0e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0026.jpg",
+    "sha256": "feca4104e1636999213e3affa284056b45344083c468facacc3272efb1de6d8b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0027.jpg",
+    "sha256": "5460fd4dd298594e07802fb301dda2ff51a2cda161a0b89fa20a836aca168ff2",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0028.jpg",
+    "sha256": "4c769174536fcec31f871f4ed8cde3b61af4bd89056dd719e297b8351a2156cc",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0029.jpg",
+    "sha256": "b06f89d525cb64a2d72606f5ac2c3c9851ee001fcb2f85840a716d9a078a30a4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0030.jpg",
+    "sha256": "614adfc64f16fbf29cd5b267383f9d98e70db754aacb64a0b233eda37268074e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0031.jpg",
+    "sha256": "8b221c290149192bc16d16a964cd201c86eda3239993212fbdc4130b6b8b111c",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0032.jpg",
+    "sha256": "73073953536f16d963a37803128498d5445e1cd7465ab829d2b6d30c00702b53",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0033.jpg",
+    "sha256": "9d6e98f15d9cffcfdb0ef400e2ad109a159622b052f6385f53da2169a7995f92",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0034.jpg",
+    "sha256": "0709abd3abddc6bfd9fdc73481e87cc270a1b8465749926a0487cd6feba31c8b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0035.jpg",
+    "sha256": "f837ca21b0d47032bc8dbf7aad3890a3a1c2525d18431069a3e240c9fb63b774",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0036.jpg",
+    "sha256": "e76311f718e931c195c10ff37e2a0d6237340a517223e4b1085cd4cf1085cd97",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0037.jpg",
+    "sha256": "77810ee040b6bf7eea235cdbdef75a8fc5c2b4813fed98ba21fff731e4f845f1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0038.jpg",
+    "sha256": "b8c2ac55901493dc98828e4f9b94f9f99f0104f8951236f24dec48621aad2016",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0039.jpg",
+    "sha256": "4f77c30e2428dd726bb60de56e32acbd5223dbf4623581caa2888796f519d574",
+    "archive": "native-1440/frame-0039.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0040.jpg",
+    "sha256": "6e2abe4b54abdfceb52d30e0e9d7193e5990a7d8a31054d32490d4aa8f078765",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0041.jpg",
+    "sha256": "52fad3b1fb94ddf08ba990da44af9034c051a850e0c475230849fa0a84214625",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0042.jpg",
+    "sha256": "9ce50bc8e3fc815fd062ae2af1baef0ee9e07ce776f242186de94c7ff0af53a1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0043.jpg",
+    "sha256": "55a56ba3e0dae433e5f4cb7c0bb5e803473e9728d874b0e97d99695baf4e856a",
+    "archive": "native-1440/frame-0043.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0044.jpg",
+    "sha256": "eeb6c4a88f34a37c98a3674eaa327fe19531d31ed2ac8e688838fd2367ae2ff0",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0045.jpg",
+    "sha256": "fbf8930c41d5096229693ab1369067c98d63da5dacd72888ef44f71c5e70e4ad",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0046.jpg",
+    "sha256": "86e32948a83747047047778739c29113f2af4b53cdd8d44837afe7c9910400c4",
+    "archive": "native-1440/frame-0046.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0047.jpg",
+    "sha256": "c243046d1d92c9bccea610ffcd373983e43a8ccd169cd30ac2636b051346696a",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0048.jpg",
+    "sha256": "481c4ffe4ba0f0de570d0e53cb92ebacde562361d57dc2943a53721f92d26dff",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0049.jpg",
+    "sha256": "8f334a5321c7b6f891f67e3091481a93d73d5136446bad6ee5bd3359938fc15f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0050.jpg",
+    "sha256": "12799d8e73f1876309469b208e2d803176a1444d80c2f618b1b47acb2688391f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0051.jpg",
+    "sha256": "da32fa41d615f5cbcc9033687b1e98040b60cd12fdea5a72c76a824a86803781",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0052.jpg",
+    "sha256": "3e268746666b6fd249efd6829d327f361f8d4c16b845a77c4f92f83068adf140",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0053.jpg",
+    "sha256": "f9b78f255f6cc88bea543f88fdfd44957a6795f4bac8a3dbd73ed92b602c71d9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0054.jpg",
+    "sha256": "125b7c10fe03d08d570c5abf925f3dcf017e663c9f2beea9ee44f235ce465c97",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0055.jpg",
+    "sha256": "58ae2e198a3c5833eaa103a1201f8f170983a4e7aa0b10eb0033675d7ff570ae",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0056.jpg",
+    "sha256": "7a96ad6a4e73916fec42465102ed3254a38323a0ba4086278b9089578b6dcf7b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0057.jpg",
+    "sha256": "d65d76ddf28d1b108a63d69e594e5e433bf365dac263e8c80e55ab751837c5a2",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0058.jpg",
+    "sha256": "86cbab87af65332b78c621fcdde28e1feb8ef93c0141a2152f8868458e774dcd",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0059.jpg",
+    "sha256": "02363eaf35cc8d81927300ed38a07bf7d654cee4e039f8034aab448f43c2aec2",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0060.jpg",
+    "sha256": "f44bac2a9c55cf9a54f676bd992a5a674f7062b967e08055da06a39dfe0d843a",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0061.jpg",
+    "sha256": "ea7be3cea2126fac51bd8f1224a6e253dbe30a93d96b85d751dfc98280067cfc",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0062.jpg",
+    "sha256": "ad1e87c3099755a47bc5ce28d1c7cde4b3778e917d8ec4d3f2d9097a61fc0954",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0063.jpg",
+    "sha256": "c2b4b98e9db7bdf63e97c6fd279920f790c4146c2917b7caee4a6cdbbd7befdf",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0064.jpg",
+    "sha256": "677751dbd646557abb1e605afe41dec434f6b1f4ca15796dae6fcaa0f9357008",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0065.jpg",
+    "sha256": "e876cf4751eb949ec33a89bbb4f15c5de4aa621442bd0003ee6aca0be47b0463",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0066.jpg",
+    "sha256": "8a8249b7252cce9559d42fc1a57a1080f0618b35636402586f85aca8c808c7b2",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0067.jpg",
+    "sha256": "18453d061805b9a2e866130e9061d0fa1003359c0074deafe30d441724eb9e77",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0068.jpg",
+    "sha256": "3427074bb3ca977fefbbd3b8ba3182d6a6b1d806cc7607b552c263f898cde833",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0069.jpg",
+    "sha256": "95aa65dff87462ea5cb3b223466c9b3f94a058f4913da89b36a0b5630d382ad4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0070.jpg",
+    "sha256": "88db41c4bcd080ac867c80eb12b160cc9770b473dd85d12f14467f4e12e13336",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0071.jpg",
+    "sha256": "376054e87ee747438dd5964360eb34c4bbd3e90c69eb18b98cca3d92eea6ffdb",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0072.jpg",
+    "sha256": "865c79469611f302cf5d446ebff14acab3c86d964244b84a049099333f17ad01",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0073.jpg",
+    "sha256": "95f93695192c4254a1b5789e5cc72541a078410da6edc66288ba027b5f8ef836",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0074.jpg",
+    "sha256": "4b0dcd22fdab6ae2f1209f7ee687f0922adbd39c76029e9f60f319cb92ba16fc",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0075.jpg",
+    "sha256": "adaf05df16e6169f444d94615a65f8bf063e383b6cad5f54030c0c612567058f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0076.jpg",
+    "sha256": "2ec8a41df4e8290a6c58f7678f12aa694556e13d1aca659db70aa3e450d6d89d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0077.jpg",
+    "sha256": "8bc306782e3e85cadcdc3fc4898bca53997ac65d52062f20bb942fce3e91a056",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0078.jpg",
+    "sha256": "a613d647f1c63557a7c3f2264d187f944ac12bfb304201437265df6ef9f40f4e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0079.jpg",
+    "sha256": "753f12c006e95696049f588ca86bd6cafa4dd3b02a3d010b10ab52d3de172cc0",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0080.jpg",
+    "sha256": "5b5f264b7fd670dd41658f71f326c8a04ceab5770871b1673f446c0d2c5c7cea",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0081.jpg",
+    "sha256": "d41e3f34a8351143d46d064c801e7021a419a7499e7408088f8a0d7ca053652b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0082.jpg",
+    "sha256": "22d5d88a686e56e11d7d29b63603254d30e25c9e6bc207dbbf8e7d1949e9c829",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0083.jpg",
+    "sha256": "c0ff2bf4c80955d8b6f5ee92e0c4d4557005cd0573e8c5fdf378f17de9b86d88",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0084.jpg",
+    "sha256": "1d73a2fe52ab69361ef01d95af6364f868c2b54ac4dbdc5528cb320557d3d738",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0085.jpg",
+    "sha256": "6d499b17fa477d1cd825fdb2b2febb0b71306a768609ce69c1629be91065becc",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0086.jpg",
+    "sha256": "f2c5b21df4c9ed8b58c3b82ac28e6b2ea420a9e8b43092e07cdf59776707e410",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0087.jpg",
+    "sha256": "c4e849761a646bf0412a9fcec0714709f0f789f1a024cc2072e0dc65ed5de432",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0088.jpg",
+    "sha256": "dfc1b6046f4bad547e9ee0e6972853646cbc44d37ff713d508c665465e33d2e3",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0089.jpg",
+    "sha256": "09d7bc578f76d1fb490d53c21f0b8bfdf89e0366f4cda457133a672bb563d9ac",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0090.jpg",
+    "sha256": "091c94a3e9798901468173bb4988b7b1dbed1580ac90a351c0bd163b44f28856",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0091.jpg",
+    "sha256": "b34792e5f8ae3f5d77a6c448d9f0f9bd3932f950d1ca2329d064dc77fbe1f677",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0092.jpg",
+    "sha256": "9f47d844d9e8d986c16fce62ec23daa9e4df1dc32da858283bedcad6664be5b4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0093.jpg",
+    "sha256": "1cff44de920cd4e5d598e5c11ea12ddd0d014d3561c080f9fcf45cfa545636ef",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0094.jpg",
+    "sha256": "acbd668f7fafc20762512504ed51b0e9b39de394fe0d2d5d6262e3699fe65929",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0095.jpg",
+    "sha256": "c92a6e3daade60c8752089afb5eefc3dbff9bf959e718dc0a04d5c0656158eca",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0096.jpg",
+    "sha256": "bb6baaa75814e9232cad5436f057f16e5e9489248eaf9bfc531ca6a47b135ebf",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0097.jpg",
+    "sha256": "c5918d1b604001befb0607d1f9c4ce339723087a22dbbee31fbe883a25f52a6c",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0098.jpg",
+    "sha256": "2bbed5b1e88b1cdd6835e3479de1abf9e3c4dce964405f3243f8f3dc8098cca2",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0099.jpg",
+    "sha256": "a7b4ece6801298a067c300366aa1d96ef1cf41b59f8ce6d59428103cbddde435",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0100.jpg",
+    "sha256": "e094c6776cffabc29d8e16780db14218b45e58e80841bd4689764b942c5c86d2",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0101.jpg",
+    "sha256": "9296471b26c3845b0d76c6e8c659d6230fa8a031c08bd0332abe1c1c2a5cd3d0",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0102.jpg",
+    "sha256": "37a6a714d7961d0bbc7185a541b1604898252e0a64c7058b6a4273388026e479",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0103.jpg",
+    "sha256": "9c480bc481ef6cbd5593a51627120ed4819a219cb42aba02682be8676f572cd7",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0104.jpg",
+    "sha256": "3d1c1ba0d88253e3be7bd5bfaf8fb02a87732e42bb54584d12637121983c64ac",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0105.jpg",
+    "sha256": "8ff90ef1ca6af4117313ffff9048298e1a1fc4d69ce6b9b8071c79d2ee4a119c",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/frame-0106.jpg",
+    "sha256": "a8518e5b6ffc0cd348d0fdbfb487c4fe6879220afe54748b82d111fd71472cac",
+    "archive": "native-1440/frame-0106.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/trace.json",
+    "sha256": "8dfe26bb5311e084ebf3a9b8cda62ad74738603e5a3211e6a2569957b67db3ff",
+    "archive": null,
+    "reason": "New full traces remain local; prior equivalent full traces already archived. New native JSON and whole-sequence preview retained."
+  },
+  {
+    "source": "temp/gpu-isolation/native-1440/cpu-profile.json",
+    "sha256": "16ade9c44101371ef19cbd7d1c07ce464cf7db55712ff424958e0a889342beac",
+    "archive": null,
+    "reason": "New full traces remain local; prior equivalent full traces already archived. New native JSON and whole-sequence preview retained."
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0000.jpg",
+    "sha256": "4aedf8f36cbe83f1e9d00fe81978ab2f64292d744af0638db3d3db3d366d060a",
+    "archive": "native-390/frame-0000.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0001.jpg",
+    "sha256": "aa2c7ec86eab1d32e7b915dfaec2916172c07fd33b10ca56fbadad3d23930311",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0002.jpg",
+    "sha256": "f371ae745a0e0bcca2cfc18001c7414e92830636aa6f4408963a6ee43067413b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0003.jpg",
+    "sha256": "a929a28ad09434bb6e351a9ddc1f89d0c3094133da9ad0f96b2c8f2209ce6426",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0004.jpg",
+    "sha256": "f6ff1fdf09e21dac77511282eda18c6411ab0a15df52a574ba4454c0b6c74836",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0005.jpg",
+    "sha256": "46711cabef9da2d8eb3630fd8de225a775e6f321b54bc05b6495ff5f6b82bfd9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0006.jpg",
+    "sha256": "1c6dd8a7b61b05f1df9bdd79163d504d5204be7f73afdd11357ce12cd38415ff",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0007.jpg",
+    "sha256": "89b3da774c5f662e4b5ee187df10f7a185ed3cfff2c5716ec101afada1b84bc1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0008.jpg",
+    "sha256": "6e7b12f02dc7529ab2d4d612c56afef92a72708375e50f0e346654e27319f87c",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0009.jpg",
+    "sha256": "d7d6316d6f766809e17eda08b4005ed40378b56e2bcc0473f3e36c7c6f0a45ad",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0010.jpg",
+    "sha256": "f21e774e5638fe0d08a592ce871f1cf1cda0c948d23f45c902194054870d0237",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0011.jpg",
+    "sha256": "5f87fd124f16bf962e605e5eb098d02435ee973364a374f5f5db43189567f049",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0012.jpg",
+    "sha256": "7e693c9a6e04587169b998fa30da736e27b54cee6aac661d2822a602091cf1e3",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0013.jpg",
+    "sha256": "90439b8778a8fc042ef76c9a9c60a7a2e3dffb11a0e0e7db1b3d46944694e1b0",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0014.jpg",
+    "sha256": "d887c0e74265e3700f56c1a6567bfbf7f5344107e06ad9a97b0f9205ffe04dc4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0015.jpg",
+    "sha256": "c6ad35eb7889f1569e86063280cdf30ffe1e89ba4b2ffd578b9510d7cda6b096",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0016.jpg",
+    "sha256": "06fad764f24bd846620c8d99371d52c79ff2f56b1ac7de5d09204a8a1da2d14b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0017.jpg",
+    "sha256": "d7a1f840fbe5dd86f3008fd9b45c93980c08a446c33b7cac37a8b0f2dc1ed027",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0018.jpg",
+    "sha256": "7f6f47fc07bf20f10ac41bc47eea8aca0ee0f7216dff0a5f15fae0d1c194145e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0019.jpg",
+    "sha256": "9be5244e3e07681b8f5d9f13104a4e6c2522bd6bd6137c598b767e6cf796fad5",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0020.jpg",
+    "sha256": "91783e7524ca01c2721618a0bb1426e950e0b4b1d0f9c5f4afa0b218f3dce873",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0021.jpg",
+    "sha256": "debdfb2a45ecf078c8a5cda9c9a01419d240c88ebb49c728634a29f29e9c6d6a",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0022.jpg",
+    "sha256": "1f7cbf6bb7239b7ad36a29a14c01157065d317c890d004d58da30ae1372a21b8",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0023.jpg",
+    "sha256": "95e63896593cc4399685620ddd1df3d2635bb9178d6c2c306651951728e2bb1d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0024.jpg",
+    "sha256": "4573ea54d2d3ce99392440d92cd7d2a3ddc818ce23a8704653247b8b2f56103c",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0025.jpg",
+    "sha256": "1a6e9f4b7e8a59544e636a5caf8c8ec03d70eefb05b688e4d12462d0aeddc826",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0026.jpg",
+    "sha256": "ee2ab08b4c2fcbc4d73c307cc37129eb311876f3b6948ab6b96b353b2c5dac72",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0027.jpg",
+    "sha256": "91266cc659b1ce329d91ec64e4d8ddf75065e607699e8213c665b365591c7804",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0028.jpg",
+    "sha256": "a30784071a8e4df1d52c846c50e048f4bbf8a8006c99911e8d756b118ef48813",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0029.jpg",
+    "sha256": "927824b5871439e64d51a7c70cdf2898ea71ded41a934569e611e804077f3e33",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0030.jpg",
+    "sha256": "008213523da5f1870734f13d6e8f297fc62b1b0d0221f471ba776d41e7c612d1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0031.jpg",
+    "sha256": "3a9abf00897b59567858166108f2cbbd7340c5d49082b48d9dc7c792df62ef9d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0032.jpg",
+    "sha256": "39aa62edc7fb05cf024e1de071ef75951e28ddaabf97fe301c343bcb2546a30b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0033.jpg",
+    "sha256": "454e69959621724ad57652e8f9681a0585f949cd3b3126ea509a2ec7fcdaba66",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0034.jpg",
+    "sha256": "0562439a83a2f35b045a696fc1a941aecb4dce94933700694cbe6c70fc83f6e9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0035.jpg",
+    "sha256": "4a194cb4d18752c9aaadbe943c648badb50e6b09f638ad00a6a5601846b036e7",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0036.jpg",
+    "sha256": "fee3843516f7e87a2bcdcd78c1c97c03cebfd2fe5a71b0c40610a3d80ec6296e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0037.jpg",
+    "sha256": "9d4d00a23267c3a505cf2d5aa2c848fa4e050f0ddfe8e96ad0a2c250aa707631",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0038.jpg",
+    "sha256": "f341464f0cae7cdec95d1aa81fae082c8cb4efef169ebc201bfb5aaed73182f5",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0039.jpg",
+    "sha256": "b7eea2a1a03af424229b9f6c6780756050b660b7b39fd704e31468f99133b021",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0040.jpg",
+    "sha256": "7284848d82e0d2e1c55d5068efb90dcbeb3de56149d0567b35521b08fb0fc765",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0041.jpg",
+    "sha256": "e06ee89de862c9653406503ecd347bfd91801d50927fbc3b509b1469aeee99b6",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0042.jpg",
+    "sha256": "845d121d89a7f023624273ac8575c0a939d50111b2c8298bec585d9c8d3f2c9a",
+    "archive": "native-390/frame-0042.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0043.jpg",
+    "sha256": "843b2c2d7d2ae01c3d057baa622bf79fd1fb711eb1c6748b512842517183e955",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0044.jpg",
+    "sha256": "be2c2ea1d5e24a091b084954970994f37a8580db21d6573a49f520af32f9b28f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0045.jpg",
+    "sha256": "413441ba2e8fd3f9bf20824c284a2c7cecb5539ba374e75e77740df1fbc0067f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0046.jpg",
+    "sha256": "907bb66e8e4fd338d3b79d2e61587df50e06546d510bb4513a33824c4faf65a6",
+    "archive": "native-390/frame-0046.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0047.jpg",
+    "sha256": "0a5daf970171bb1e291a5379d1a4751abb8ed75bf63ed98ce660830d875d8b5b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0048.jpg",
+    "sha256": "0a6ec0f82f817cdd1c98c33ffdc09299331ae19cf0166595e395c7c38a5aed74",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0049.jpg",
+    "sha256": "93cba3adf2da8ba2d1a8d7de6a6e96418863b0635ee186878837fac970f895f5",
+    "archive": "native-390/frame-0049.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0050.jpg",
+    "sha256": "dc193e0bfa41cf4715d157241d4c9e845134b7220d113fc2527fc3c03038fa5d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0051.jpg",
+    "sha256": "49ee45df1a2bd3c127a76e1c73e5d453085f048e73c90c3434940bc0e79be9c0",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0052.jpg",
+    "sha256": "a0c02d269660379bc6e3db5e65d81a0460f25a4ce839723f4caae285050261ef",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0053.jpg",
+    "sha256": "4f2ca513bc0a2efe14d329bbd63c58a4aedd162edc5fcc9c2492fcd846a7cf21",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0054.jpg",
+    "sha256": "0dfe04d0327a875f2bd4dea013e1064a45d5abfe9a2b32b112ee3115ee6d3994",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0055.jpg",
+    "sha256": "541eb5f0b6f923916f731fe27da37352205821da0983397ac573a01f74705cf9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0056.jpg",
+    "sha256": "05cc236b326fc4496a904f80e45ad392c38f1057784b9b4059aa9ebba0896a8c",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0057.jpg",
+    "sha256": "6b87309cfb395d098bc0e427716eeebb68a6ede5ac514b1e17f7241920e77a3d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0058.jpg",
+    "sha256": "f8f7ea84a138eb1a07ac0539bf31825175faa41607402ddfe5a118f357abd996",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0059.jpg",
+    "sha256": "ebcd5a504c7821ad3a150dc1dc6d35a5bd8ade836ad0a48a979ea815229df6b5",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0060.jpg",
+    "sha256": "947700a2b1821e231fe0e3ae4ee78b683a7a7d53a9dc0c303fd139854ee742a1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0061.jpg",
+    "sha256": "7dfe26936363fd733171a6376ee2ed84e2e004fe0c350e9410fa9afcdd8b5239",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0062.jpg",
+    "sha256": "41497bc5286e72a687774112ed2e753976b4bab1c6fc35df3b603a5c21ebacfe",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0063.jpg",
+    "sha256": "69c82bfa88845b77db6647627b6d0d38000dd2c1e936fbe411d2183097535953",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0064.jpg",
+    "sha256": "d3cc025afea9226aceffe4d4d15e26b2cbc03e382f93a5071633fb131e9d796c",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0065.jpg",
+    "sha256": "e214e41ba01b1ce397a33434664f0a7afcce3310c4d5550fbe95aae985b3b014",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0066.jpg",
+    "sha256": "8c8378896fbd9ea20b8f2fa7fa31a9213924d4405169345d28796d0c37351209",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0067.jpg",
+    "sha256": "62578df11679427488624ef7350d06d261a8c1cdf8f43fb96ec252bce589e7a6",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0068.jpg",
+    "sha256": "928ef506de318b13aabed292a1f2738aa01e307835841e701ed07ffd5f547be3",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0069.jpg",
+    "sha256": "80bcefa97274ca98b1c7558999325e309e908d27b0ef3f55ddc40501cd3f2032",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0070.jpg",
+    "sha256": "119cdf39588d74f4f1576917105533f49e6a98029ff1d6443493d4a8bcc92e1f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0071.jpg",
+    "sha256": "30657cd77b12911f62b54134d7b6d9e42d5dafea0e5f76f09c6405929b42c180",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0072.jpg",
+    "sha256": "347ff498fac7ebe985e7e7a1d6ca52467c219defb4019ae7c969ca7c69af8624",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0073.jpg",
+    "sha256": "ed13a7e0e12ff80c34254a2debb6f6cbd5e1b3744a649b9969b6c3f8e9852db7",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0074.jpg",
+    "sha256": "db08a1cfaf25952bdd4f79f97c832727f75626f8d1f9041b0712314207692c49",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0075.jpg",
+    "sha256": "1a59b4e7509aaf05a0b3d283cd637d34599a31ffa4b285b89246b4f0a3f53ef1",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0076.jpg",
+    "sha256": "afce77893e9aa6f7e2cd4fe78a274f2ea018011f5f0be705502f5006c4f47b62",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0077.jpg",
+    "sha256": "afa390f4ddf6cdb538564d713fefecdf4277ef05df0135605f0a87947b76955a",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0078.jpg",
+    "sha256": "0d1a5379a16bb70e09f16b8844e42793365c7d4786460fc6832abfbc74da065f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0079.jpg",
+    "sha256": "62c58bdc371f53a8cf31db0b6788742bfd7a3cfcbefb209a2a7d32537cf8111b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0080.jpg",
+    "sha256": "aab636c34792c86ae7c0dc9f62260268d1dc083a1fdf2602454f42ae6552951b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0081.jpg",
+    "sha256": "42cf01a11a27853368d9895e64353bf155195491b8f6a62a0693ebf1d6797327",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0082.jpg",
+    "sha256": "a354c1a2e606981706dfc3eb39a3ed6aab38b45cbe451cef7713dee160d99213",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0083.jpg",
+    "sha256": "89adcd174f4163de28e7b9370af4a32d600f8afd953d3f72daf0cb2e4bba3c35",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0084.jpg",
+    "sha256": "63e5b7ec24abb1ccd469ede1df375d96d01568c8580c85b23e7d42436c482b6f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0085.jpg",
+    "sha256": "a22707c5c6cd5995a7e0efec1d8a6b56979f416b50e590270177b1cd7900e5f4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0086.jpg",
+    "sha256": "f15ae5a5784c4d65d947438553a1838862bcd2751b7dd3f23305297b0bf9a23e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0087.jpg",
+    "sha256": "494a2142676f871413ac9fff62b4ef201daa01e5a83aef56d874a2daa5d17b17",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0088.jpg",
+    "sha256": "33240b57fe5ea00b12678afa3235c3f258532d3260aa8f1ab3e45075ddf750fd",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0089.jpg",
+    "sha256": "f9ba0be3c24c2ce1c28a6200b0d08dde6707123dd52175c7e63a932577bb87ba",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0090.jpg",
+    "sha256": "bb36bb4026f9781c5b5f700e7bfc64ace9c343cc211b418c800ac6b70995aeec",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0091.jpg",
+    "sha256": "d7d8d5513c799bb6e121feb90ceb3e46376f80760bb3000429327b1f9fb7348d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0092.jpg",
+    "sha256": "6778d0d0bb600cfed15ebb3d84d4ee512a744945c8c25b70268e358d9f73a982",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0093.jpg",
+    "sha256": "cd18223a15316f6e98c7d6b332161f345bba28f2a899afd291f621c14d7be52a",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0094.jpg",
+    "sha256": "ee0eb4036f714550443d6c8d0e9fe6e1416e1e6bc3a4f25ffadd1fb5eef91c3b",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0095.jpg",
+    "sha256": "c364997b97e35bd71fb6b05690d63a9fa161f2aa426d90f482a5c71b9b016001",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0096.jpg",
+    "sha256": "e81ee466ba60b664c9dcf6b9b15aad8cdce32f97cbc3fbc382ac962462435f5e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0097.jpg",
+    "sha256": "337f098fea06141029497aa846ffe9e983105ef58ffee1720dee9bd84e00552a",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0098.jpg",
+    "sha256": "1f1224e22bec59b269132c927bdfdb23bf3b5f5d216a869dc48dfa3eb593a726",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0099.jpg",
+    "sha256": "0c906d5332b352bcdd079d1caf391b1e8f248162a196011738d716b617910935",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0100.jpg",
+    "sha256": "98709fc8387627ebbc702d78d05db58434394cc347e15a22e237c4e3dbe06fa0",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0101.jpg",
+    "sha256": "aa490ed56587382c0112ac425ceff99c09c0704af55bb74e88fab173762ad129",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0102.jpg",
+    "sha256": "bede8541d19d5c7d85dbaf604b082e47154d4b066c035ac6d70415059899cef9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0103.jpg",
+    "sha256": "faea5a3775cbeff327d7d7f6e900e79803e9620d9ba4ca1a3131e401076d2211",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0104.jpg",
+    "sha256": "44ef0847b63943a79b65b1fa7d4108f6f063942077d51aeb2f85137571f87c44",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0105.jpg",
+    "sha256": "7e6df658c32fd50f99418e698f2f829e338234b0a5d83c67d68d66e5a18baf66",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0106.jpg",
+    "sha256": "5cb9c82b4d0e2cc7c48b570af39a6c2e382f6351db55b2f44a2ec1beedb58682",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0107.jpg",
+    "sha256": "eaef7300fa1a40f5ac28c2b4c6ea3d4ce97bbbdbe5148c769d2ded3ce97c763f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0108.jpg",
+    "sha256": "5cd2c4bd7abfad935cac19cbd49ebd8605ffdaf566148cde83ad25018fc56207",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0109.jpg",
+    "sha256": "b2f1ab7bd2f2ba7536aa9e7f0a0388d0914f2456fcf764d612c656668889bee4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0110.jpg",
+    "sha256": "7f5b71daa60d188ce77d8e781df5f1965a886b68f6adbf04e9c6d0436e5ae86e",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0111.jpg",
+    "sha256": "a1e349e0d9cfc9dff657c8c573fe1000d3f9c76ad45f3d26899d55c6e7a6551f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0112.jpg",
+    "sha256": "38d7a59d7c6cf698ea0787ee5f3ad6305be79cf337aad6be9f6d3d64b161c84f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0113.jpg",
+    "sha256": "5306a981770f8d4f326886d33747f2c26a529829dfdf839340f638cc2cf1adf4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0114.jpg",
+    "sha256": "aac26161eff5aad9c12b2a0f4f17fdb262598ac8c0c4ce80f2b0add199696572",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0115.jpg",
+    "sha256": "01bd53dadf827a1ef6d05911edae2d70cf5cf83bc27262de855a358221cbc08d",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0116.jpg",
+    "sha256": "45e28dd328bfc41abd96ce2646b0fbef130c7e98cc6c22beef7b08672f87b07f",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0117.jpg",
+    "sha256": "656200bbdf8cddaf019404c43dfcb9c2593d88e4cbe489e6d542225dfd3e43d9",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0118.jpg",
+    "sha256": "de36a7b7112152e32d59bd196f76ac2f520a87e0bd9d12d7292586b1a0fb79fe",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0119.jpg",
+    "sha256": "abbf36c1285c9155e819f96b8c34d7408fdab1227de78041abaaadde63e572b0",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0120.jpg",
+    "sha256": "6645b8327627d65d96b0415d9df5069c792e7fb74a18dca0f74867eb74ae1063",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0121.jpg",
+    "sha256": "832160f97f2e67a994c6f640a1a8a350ab2fe2462a81b71cc57cdb534ac12b29",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0122.jpg",
+    "sha256": "8c500c625be886c7fdf9ccdbd58b258dd5d7dfa1e17819e27a05788608ae7419",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0123.jpg",
+    "sha256": "40fd9d10a71378c8929ee2c08a110fd99c2ec35e58d95f3c98d56648c14edb07",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0124.jpg",
+    "sha256": "495dfce3b810c067885fbcba57884b055d0f88bf8cbf4f33bb2f0522a75f55cd",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0125.jpg",
+    "sha256": "53c25d42d222f45a4f44a00ec8ccfcef7a24ab6105c2e128d27838cd81742982",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0126.jpg",
+    "sha256": "84b2852cdecd5546480bb905430e5bd224de47df8e14bc2dda4483545533afc4",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0127.jpg",
+    "sha256": "f55d8c61507382f1811f6c7ee8eefc2281a940493ff4c99bb29d03d7097d9edc",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0128.jpg",
+    "sha256": "c8bc0b3f0df0dac4d66518ed118ac7104af038c30a91ff8bd8d52eb2a4b96e93",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0129.jpg",
+    "sha256": "51d388e34fd7753961ff6938cfa09cef344e8b9b89ea9c79573b4edaed18c2fa",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0130.jpg",
+    "sha256": "d413f27ba2979850d08f3c156c8341e60a02fb59b8eaed542dc3338169699b86",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0131.jpg",
+    "sha256": "b136b8ea1b0838e48bf2d5f933dc9c62f239b57028aab9b40daf43d45273a2ce",
+    "archive": null
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/frame-0132.jpg",
+    "sha256": "96d8c83abb44bb600acbcbcb4600da557cf0effb6f78e51bf58fc3cfaf0938b8",
+    "archive": "native-390/frame-0132.jpg"
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/trace.json",
+    "sha256": "fcfe6164b082c4ae046ac466049a7549a1abd22632445b238da20733f97e6942",
+    "archive": null,
+    "reason": "New full traces remain local; prior equivalent full traces already archived. New native JSON and whole-sequence preview retained."
+  },
+  {
+    "source": "temp/gpu-isolation/native-390/cpu-profile.json",
+    "sha256": "ed60c300e55075c9a769f5bc52cb21e39fdcd18df2baafd26867ceae22fb0729",
+    "archive": null,
+    "reason": "New full traces remain local; prior equivalent full traces already archived. New native JSON and whole-sequence preview retained."
+  }
+]

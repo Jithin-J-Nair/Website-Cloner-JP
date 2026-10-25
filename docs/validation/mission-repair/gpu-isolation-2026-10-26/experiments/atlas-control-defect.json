@@ -1,0 +1,14 @@
+{
+  "old": {
+    "sharedSource": true,
+    "before": 1024,
+    "after": 1
+  },
+  "fixed": {
+    "sharedSource": false,
+    "before": 1024,
+    "after": 1024,
+    "clone": 1
+  },
+  "excluded": "atlas-1440 initial matrix; original baseline texture Source could be mutated"
+}

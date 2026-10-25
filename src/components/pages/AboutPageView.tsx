@@ -4,6 +4,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { LUSION_ABOUT } from "@/data/reference";
+import { loadLusionBuf } from "@/lib/lusion-buf-loader";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
 import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
@@ -154,15 +155,42 @@ function AboutWhoExperience({
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
 
-  // Update 8,192-point 3D portrait geometry whenever 'activeMemberIdx' changes (zero React loop!)
+  // Load the captured Lusion team .buf for the selected specialist. Keep the procedural
+  // portrait only as a graceful fallback when the bundled reference asset is unavailable.
   useEffect(() => {
     const geo = portraitGeoRef.current;
-    if (!geo) return;
-    const positions = buildSculpturalPortraitPositions(activeMemberIdx, 8192);
-    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geo.attributes.position.needsUpdate = true;
-    geo.computeBoundingSphere();
-  }, [activeMemberIdx]);
+    const member = team[activeMemberIdx] ?? team[0];
+    if (!geo || !member) return;
+
+    let active = true;
+    void loadLusionBuf(member.modelPath)
+      .then(({ geometry: sourceGeometry, attributes }) => {
+        if (!active) {
+          sourceGeometry.dispose();
+          return;
+        }
+        const positions = attributes.position;
+        if (positions) {
+          geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+          geo.attributes.position.needsUpdate = true;
+          geo.computeBoundingSphere();
+        }
+        sourceGeometry.dispose();
+      })
+      .catch(() => {
+        if (!active) return;
+        geo.setAttribute(
+          "position",
+          new THREE.BufferAttribute(buildSculpturalPortraitPositions(activeMemberIdx, 8192), 3)
+        );
+        geo.attributes.position.needsUpdate = true;
+        geo.computeBoundingSphere();
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [activeMemberIdx, team]);
 
   useEffect(() => {
     const sectionEl = sectionRef.current;
@@ -657,6 +685,26 @@ function AboutWhoExperience({
       new THREE.BufferAttribute(buildSculpturalPortraitPositions(0, 8192), 3)
     );
     portraitGeoRef.current = portraitGeo;
+
+    // The first member's captured binary portrait must be requested at scene creation too:
+    // the selection effect can run before this WebGL geometry exists on the initial mount.
+    void loadLusionBuf(team[0].modelPath)
+      .then(({ geometry: sourceGeometry, attributes }) => {
+        if (portraitGeoRef.current !== portraitGeo) {
+          sourceGeometry.dispose();
+          return;
+        }
+        const positions = attributes.position;
+        if (positions) {
+          portraitGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+          portraitGeo.attributes.position.needsUpdate = true;
+          portraitGeo.computeBoundingSphere();
+        }
+        sourceGeometry.dispose();
+      })
+      .catch(() => {
+        // Keep the procedural portrait initialized above if the reference asset cannot load.
+      });
 
     const portraitMat = track(
       new THREE.ShaderMaterial({

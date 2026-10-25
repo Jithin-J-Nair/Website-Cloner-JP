@@ -1,0 +1,55 @@
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Auto-merging docs/sections/hero.md
+CONFLICT (add/add): Merge conflict in docs/sections/hero.md
+Auto-merging docs/validation/parity-audit/Executive_Completion_Report.md
+CONFLICT (add/add): Merge conflict in docs/validation/parity-audit/Executive_Completion_Report.md
+Auto-merging package.json
+CONFLICT (content): Merge conflict in package.json
+Auto-merging scripts/qa-verify.mjs
+CONFLICT (add/add): Merge conflict in scripts/qa-verify.mjs
+Auto-merging src/app/contact/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/contact/page.tsx
+Auto-merging src/app/design-system/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/design-system/page.tsx
+Auto-merging src/app/globals.css
+CONFLICT (content): Merge conflict in src/app/globals.css
+Auto-merging src/app/labs/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/labs/page.tsx
+Auto-merging src/app/work/[slug]/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/work/[slug]/page.tsx
+Auto-merging src/app/work/page.tsx
+CONFLICT (add/add): Merge conflict in src/app/work/page.tsx
+Auto-merging src/components/foundation/StudioShell.tsx
+CONFLICT (add/add): Merge conflict in src/components/foundation/StudioShell.tsx
+Auto-merging src/components/home/AstronautEmergenceAssets.ts
+CONFLICT (add/add): Merge conflict in src/components/home/AstronautEmergenceAssets.ts
+Auto-merging src/components/home/FeaturedProjectCard.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/FeaturedProjectCard.tsx
+Auto-merging src/components/home/GoalDownstreamScenes.ts
+CONFLICT (add/add): Merge conflict in src/components/home/GoalDownstreamScenes.ts
+Auto-merging src/components/home/GoalTunnelSection.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/GoalTunnelSection.tsx
+Auto-merging src/components/home/HeroCrossesStage.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/HeroCrossesStage.tsx
+Auto-merging src/components/home/HomePageView.tsx
+CONFLICT (add/add): Merge conflict in src/components/home/HomePageView.tsx
+Auto-merging src/components/pages/AboutPageView.tsx
+CONFLICT (add/add): Merge conflict in src/components/pages/AboutPageView.tsx
+Auto-merging src/components/pages/LusionProjectDetailView.tsx
+CONFLICT (add/add): Merge conflict in src/components/pages/LusionProjectDetailView.tsx
+Auto-merging src/components/pages/WorkArchiveView.tsx
+CONFLICT (add/add): Merge conflict in src/components/pages/WorkArchiveView.tsx
+Auto-merging src/components/sections/ContactCtaSection.tsx
+CONFLICT (add/add): Merge conflict in src/components/sections/ContactCtaSection.tsx
+Auto-merging src/components/studio/ProjectCard.tsx
+CONFLICT (add/add): Merge conflict in src/components/studio/ProjectCard.tsx
+Auto-merging src/components/studio/TransitionLink.tsx
+CONFLICT (add/add): Merge conflict in src/components/studio/TransitionLink.tsx
+Auto-merging src/components/ui/GlowCard.tsx
+CONFLICT (add/add): Merge conflict in src/components/ui/GlowCard.tsx
+Auto-merging src/components/ui/ShaderAnimation.tsx
+CONFLICT (add/add): Merge conflict in src/components/ui/ShaderAnimation.tsx
+Auto-merging src/data/reference/index.ts
+CONFLICT (add/add): Merge conflict in src/data/reference/index.ts
+Automatic merge failed; fix conflicts and then commit the result.
