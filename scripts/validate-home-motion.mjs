@@ -41,15 +41,17 @@ const launchBrowser = () => chromium.launch({
 });
 const browser = await launchBrowser();
 const reduced = process.env.HOME_REDUCED === '1';
-const context = await browser.newContext({viewport:{width,height},reducedMotion:reduced?'reduce':'no-preference'});
+const touch = process.env.HOME_TOUCH === '1';
+const context = await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch,reducedMotion:reduced?'reduce':'no-preference'});
 await context.addInitScript(()=>sessionStorage.setItem('lusion_booted_v1','1'));
 const page = await context.newPage();
-const report={viewport:{width,height},reduced,errors:[],failedAssets:[],states:[]};
+const report={viewport:{width,height},reduced,touch,errors:[],failedAssets:[],states:[]};
 page.on('pageerror',e=>report.errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')report.errors.push(m.text())});
 page.on('response',r=>{if(r.url().includes('/assets/')&&!r.ok())report.failedAssets.push(r.url())});
 try {
  await page.goto(baseUrl,{waitUntil:'networkidle',timeout:120000});
+ report.viewportMetrics=await page.evaluate(()=>({width:innerWidth,height:innerHeight,visualWidth:visualViewport?.width,visualHeight:visualViewport?.height}));
  if(width===3840){
   await page.waitForFunction(()=>window.__goalAstronautTelemetry?.glbLoaded,null,{timeout:60000});
   const y=await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForEmergence(.8));
@@ -67,7 +69,7 @@ try {
  const hero=page.locator('#home-hero-visual-container');
  await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container')?.dataset.motionState==='settled',null,{timeout:90000});
  const initial=await hero.evaluate(el=>({...el.dataset}));
- if(!reduced){
+ if(!reduced && !touch){
   const box=await hero.boundingBox();
   await page.mouse.move(box.x+box.width*.49,box.y+box.height*.56);
   await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)>.10,null,{timeout:30000});
@@ -79,20 +81,56 @@ try {
   assert.equal(Number(settled.offsetEnergy),0);
   await page.waitForTimeout(650);
   assert.equal(await hero.getAttribute('data-render-count'),settled.renderCount,'settled hero must not keep submitting 3D frames');
-  report.hero={initial,hovered,settled};
- }else report.hero={initial};
+  // Rapid direction changes followed by cancellation must not leave a displaced connector.
+  for (const x of [.2,.8,.3,.7,.49]) await page.mouse.move(box.x+box.width*x,box.y+box.height*.56);
+  await hero.dispatchEvent('pointercancel',{pointerType:'mouse'});
+  await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)===0,null,{timeout:90000});
+  report.hero={initial,hovered,settled,rapidCancel:true};
+ }else {
+  report.hero={initial};
+  if(touch){
+   const box=await hero.boundingBox();
+   await hero.dispatchEvent('pointermove',{pointerType:'touch',clientX:box.x+box.width*.5,clientY:box.y+box.height*.5});
+   await page.waitForTimeout(350);
+   assert.equal(Number(await hero.getAttribute('data-offset-energy')),0,'touch must not latch mouse repulsion');
+   report.touchNoHover=true;
+   const cdp=await context.newCDPSession(page);
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:width*.5,y:height*.8}]});
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:width*.5,y:height*.4}]});
+   // End a deliberate drag at rest: do not let native fling inertia race the later seeks.
+   await page.waitForTimeout(350);
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:width*.5,y:height*.4}]});
+   await page.waitForTimeout(150);
+   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+   await page.waitForFunction(()=>scrollY>0);
+   report.touchNativeScroll=true;
+  }
+ }
  const layout=await page.evaluate(()=>{
   const top=el=>{let y=0;for(let n=el;n;n=n.offsetParent)y+=n.offsetTop;return y};
   return {reel:top(document.getElementById('home-reel-container')),featured:top(document.getElementById('home-featured'))};
  });
- const seek=async y=>{await page.evaluate(y=>window.__lusionInspector.scrollManager.scrollToPixel(y,true),Math.round(y));await page.waitForTimeout(750)};
+ const seek=async y=>{
+  const target=Math.round(y);
+  await page.evaluate(y=>window.__lusionInspector.scrollManager.scrollToPixel(y,true),target);
+  await page.waitForFunction(y=>Math.abs(scrollY-y)<1.1,target,{timeout:30000});
+  // A wall-clock sleep can expire before a scroll RAF on a stalled software renderer.
+  // Wait for actual browser frames; keep all reverse-transform assertions unchanged.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ };
  const reel=[];
  for(const y of [layout.reel-height*.94,layout.reel-height*.5,layout.reel-height*.12]){
   await seek(y);
   reel.push(await page.locator('#home-reel-video-container').evaluate(el=>({transform:getComputedStyle(el).transform,radius:el.style.getPropertyValue('--reel-radius')})));
  }
- if(!reduced)assert.notEqual(reel[0].transform,reel[2].transform,'reel container expands with scroll');
  report.reel=reel;
+ if(!reduced)assert.notEqual(reel[0].transform,reel[2].transform,'reel container expands with scroll');
+ await seek(layout.reel-height*.94);
+ const reversedReel=await page.locator('#home-reel-video-container').evaluate(el=>getComputedStyle(el).transform);
+ assert.equal(reversedReel,reel[0].transform,'reverse scroll must restore the same container state');
+ await seek(layout.reel-height*.12);
+ report.reel=reel;
+ report.reelReverse=true;
  report.reelBackground=await page.locator('#home-reel-video').evaluate(video=>({paused:video.paused,readyState:video.readyState}));
  assert.ok(report.reelBackground.readyState>=2,'paused footage must still have a decoded visible frame');
  if(reduced)assert.equal(report.reelBackground.paused,true);
@@ -103,7 +141,11 @@ try {
   featured.push(await page.evaluate(()=>({heading:getComputedStyle(document.getElementById('home-featured-title')).transform,cards:[...document.querySelectorAll('.project-item')].slice(0,2).map(el=>({reveal:el.style.getPropertyValue('--project-reveal-y'),image:el.style.getPropertyValue('--project-image-y'),skew:el.style.getPropertyValue('--project-skew')}))})));
  }
  if(!reduced)assert.notEqual(featured[0].heading,featured[2].heading);
+ await seek(layout.featured-height*.8);
+ assert.equal(await page.locator('#home-featured-title').evaluate(el=>getComputedStyle(el).transform),featured[0].heading);
+ await seek(layout.featured+height*.2);
  report.featured=featured;
+ report.featuredReverse=true;
  await page.screenshot({path:out+'/featured.png',timeout:90000});
  await page.waitForFunction(()=>window.__goalAstronautTelemetry?.glbLoaded);
  const titleY=await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForEmergence(.80));
@@ -113,6 +155,18 @@ try {
  assert.equal(report.solar.webglError,0);
  await page.waitForFunction(()=>[...document.querySelectorAll('#home-reel video')].every(video=>video.paused));
  report.offscreenVideosPaused=true;
+ const firstSolar=report.solar.telemetry.solar;
+ assert.ok(firstSolar.visibility>=0 && firstSolar.visibility<=1);
+ assert.ok(firstSolar.focalScale>0 && firstSolar.focalScale<2);
+ assert.equal(report.solar.telemetry.gpuTiming.enabled,baseUrl.includes('profileGoal=1') && await page.evaluate(()=>!!document.querySelector('#home-goal canvas').getContext('webgl2').getExtension('EXT_disjoint_timer_query_webgl2')));
+ const otherY=await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForEmergence(.64));
+ await seek(otherY);
+ const movedSolar=await page.evaluate(()=>({...window.__goalAstronautTelemetry.solar}));
+ assert.ok(Math.hypot(movedSolar.x-firstSolar.x,movedSolar.y-firstSolar.y)>.001,'source projection must respond to camera choreography');
+ await page.screenshot({path:out+"/solar-oblique.png",timeout:90000});
+ assert.notEqual(movedSolar.focalScale,firstSolar.focalScale,'pupil footprint must respond to camera field of view');
+ report.solarCameraResponse={first:firstSolar,other:movedSolar};
+ await seek(titleY);
  if(width===3840)assert.deepEqual([report.solar.telemetry.renderWidth,report.solar.telemetry.renderHeight],[3840,2160]);
  await seek(layout.reel-height*.12);
  await page.locator('#home-reel-video-watch-btn').click();

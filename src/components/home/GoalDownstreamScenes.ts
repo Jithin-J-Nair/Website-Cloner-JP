@@ -429,17 +429,21 @@ export function buildTunnelGlazing(
           vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);
           vec3 V = normalize(cameraPosition - vWorldPos);
           float fres = pow(1.0 - abs(dot(N, V)), 4.0);
-          vec3 reflection = textureCube(uEnvironment, reflect(-V, N)).rgb;
-          vec3 refracted = textureCube(uEnvironment, refract(-V, N, 1.0 / 1.46)).rgb;
           float border = min(min(vUv.x, 1.0 - vUv.x), min(vUv.y, 1.0 - vUv.y));
           float edge = 1.0 - smoothstep(0.003, 0.017, border);
-          float sweep = pow(0.5 + 0.5 * sin(vWorldPos.z * 0.35 + uPhase * 10.0 - uLayer * 0.7), 8.0);
+          float sweep = pow(0.5 + 0.5 * cos(vWorldPos.z * 0.62 + uPhase * 18.0 - uLayer * 1.3), 12.0);
           float depth = smoothstep(-40.0, -5.0, vWorldPos.z);
           vec3 tint = vec3(0.16, 0.58, 0.73);
-          vec3 col = reflection * (0.16 + fres * 0.48) + refracted * tint * 0.18;
-          col += tint * edge * (0.18 + sweep * 0.08);
-          float alpha = (0.035 + fres * 0.13 + edge * 0.14) * uOpacity * depth;
+          float alpha = (0.018 + fres * 0.14 + edge * 0.22) * uOpacity * depth;
+          // Skip optically negligible fragments before the two environment lookups.
+          if (alpha < 0.006) discard;
+          vec3 reflection = textureCube(uEnvironment, reflect(-V, N)).rgb;
+          vec3 refracted = textureCube(uEnvironment, refract(-V, N, 1.0 / 1.46)).rgb;
+          vec3 col = reflection * (0.16 + fres * 0.52) + refracted * tint * 0.16;
+          col += tint * edge * (0.32 + sweep * 0.65);
           gl_FragColor = vec4(col, alpha);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
         }`,
     }));
     const mesh = new THREE.Mesh(geometry, material);
@@ -456,8 +460,12 @@ export function buildTunnelGlazing(
       const mesh = layers[i];
       mesh.material.uniforms.uOpacity.value = opacity;
       mesh.material.uniforms.uPhase.value = phase;
-      mesh.rotation.z = reduced ? 0 : Math.sin(phase * 2.8 + i * 0.45) * (0.025 + i * 0.018);
-      mesh.position.z = -i * 1.35 + phase * (1.6 + i * 0.4);
+      const turn = phase * (1.8 + i * 0.38);
+      const direction = i % 2 === 0 ? 1 : -1;
+      mesh.rotation.z = reduced ? 0 : direction * Math.sin(turn) * (0.025 + i * 0.020);
+      mesh.position.x = reduced ? 0 : Math.sin(turn * 0.65) * i * 0.018;
+      mesh.position.y = reduced ? 0 : Math.sin(turn * 0.8) * i * 0.014;
+      mesh.position.z = -i * 1.35 + (0.28 * phase + 0.72 * phase * phase) * (2.2 + i * 0.65);
     }
   } };
 }
@@ -732,7 +740,8 @@ export function buildArchitecturalTrussTunnel(
 }
 export function buildBlueArchCorridor(
   track: <T extends { dispose: () => void }>(item: T) => T,
-  onAssetsReady?: (group: THREE.Group) => void
+  onAssetsReady?: (group: THREE.Group) => void,
+  compact = false
 ): {
   group: THREE.Group;
   travelGroup: THREE.Group;
@@ -999,14 +1008,14 @@ export function buildBlueArchCorridor(
       heart.bezierCurveTo(-1.0,1.10,-0.24,1.15,0,0.62);
       heart.bezierCurveTo(0.24,1.15,1.0,1.10,1.0,0.42);
       heart.bezierCurveTo(1.0,-0.12,0.18,-0.78,0,-0.9);
-      const heartHole = new THREE.Path(heart.getPoints(24).map((p) => p.multiplyScalar(0.68)));
+      const heartHole = new THREE.Path(heart.getPoints(compact ? 12 : 24).map((p) => p.multiplyScalar(0.68)));
       heart.holes.push(heartHole);
       const ring = new THREE.Shape();
       ring.absarc(0,0,0.82,0,Math.PI*2,false);
       const ringHole = new THREE.Path();
       ringHole.absarc(0,0,0.57,0,Math.PI*2,true);
       ring.holes.push(ringHole);
-      const motifs = [heart,ring].map((shape) => new THREE.ExtrudeGeometry(shape,{depth:0.07,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:0.008,bevelThickness:0.008,curveSegments:24}));
+      const motifs = [heart,ring].map((shape) => new THREE.ExtrudeGeometry(shape,{depth:0.07,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:0.008,bevelThickness:0.008,curveSegments:compact ? 12 : 24}));
       const motifParts: THREE.BufferGeometry[] = [];
       for (let bay = 0; bay < 8; bay++) {
         for (let side = 0; side < 4; side++) {

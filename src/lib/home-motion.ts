@@ -1,5 +1,5 @@
 /** Shared, allocation-free motion math. Rendering and DOM ownership stay with their components. */
-export const GOAL_CINEMATIC_SECONDS = 23.5;
+export const GOAL_CINEMATIC_SECONDS = 22.5;
 export const UHD_PIXEL_BUDGET = 3840 * 2160;
 export const clampMotion = (value: number) => Math.max(0, Math.min(1, value));
 
@@ -33,4 +33,16 @@ export function stepMotionSpring(spring: MotionSpring, target: number, delta: nu
 export function motionEase(progress: number): number {
   const t = clampMotion(progress);
   return t * t * (3 - 2 * t);
+}
+
+/** One continuous flight coordinate; the glass approach must not freeze at tunnel progress 1. */
+export function blueFlightDistance(tunnel: number, shatter: number): number {
+  const travel = clampMotion((tunnel - 0.815) / 0.185) + 0.24 * clampMotion(shatter);
+  return 22 * (0.28 * travel + 0.72 * travel * travel);
+}
+
+/** Software rasterizers are fill-bound: conserve pixels during motion, not static UHD inspection. */
+export function cinematicRenderDpr(width: number, height: number, deviceDpr: number, software: boolean, reduced: boolean): number {
+  const native = homeRenderDpr(width, height, deviceDpr);
+  return software && !reduced ? Math.min(native, Math.sqrt(960 * 600 / Math.max(1, width * height))) : native;
 }

@@ -7,7 +7,9 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
-import { acceleratedFall, GOAL_CINEMATIC_SECONDS, homeRenderDpr } from "@/lib/home-motion";
+import { acceleratedFall, blueFlightDistance, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
+import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
+import { createGpuFrameTimer } from "@/lib/gpu-frame-timer";
 import { LUSION_HOME } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
 import {
@@ -75,6 +77,8 @@ declare global {
       drawCalls: number;
       triangles: number;
       lastFrameMs: number;
+      gpuTiming: { enabled: boolean; lastMs: number | null; phase: string; samples: number; disjoints: number; recent?: { id: number; ms: number; phase: string }[] };
+      solar: { x: number; y: number; facing: number; visibility: number; occlusion: number; focalScale: number };
       emergenceProgress: number;
       portalStencilActive: boolean;
       fallbackVisible: boolean;
@@ -229,11 +233,12 @@ export function GoalTunnelSection() {
     const initW = Math.max(2, window.innerWidth);
     const initH = Math.max(2, window.innerHeight);
     const isMobileInit = initW < 820;
-    const initDpr = homeRenderDpr(initW,initH,window.devicePixelRatio || 1);
+    const initDpr = cinematicRenderDpr(initW,initH,window.devicePixelRatio || 1,isSoftwareRenderer,reducedMotion);
 
     glRenderer.setPixelRatio(initDpr);
     glRenderer.setSize(initW, initH, false);
     glRenderer.setClearColor(0x000000, 0);
+    glRenderer.info.autoReset = false; // Count all composer passes, not just its final fullscreen quad.
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.02;
@@ -369,14 +374,14 @@ export function GoalTunnelSection() {
         reflectionScene.clear();
       }
     };
-    const blueCorridor = buildBlueArchCorridor(track,captureCorridorEnvironment);
+    const blueCorridor = buildBlueArchCorridor(track,captureCorridorEnvironment,isMobileInit || isSoftwareRenderer);
     blueCorridor.group.visible = false;
     scene.add(blueCorridor.group);
     scene.add(blueCorridor.monitorStencilMask);
     // Initial fallback capture; refresh once when authoritative architecture is ready.
     // No cube renders or PMREM generation occur in the animation loop.
     captureCorridorEnvironment(blueCorridor.group);
-    const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit, corridorEnvironment.texture);
+    const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit || isSoftwareRenderer, corridorEnvironment.texture);
     trussSystem.group.visible = false;
     scene.add(trussSystem.group);
     const glazing = buildTunnelGlazing(track, corridorEnvironment.texture, isMobileInit);
@@ -727,6 +732,8 @@ export function GoalTunnelSection() {
       drawCalls: 0,
       triangles: 0,
       lastFrameMs: 0,
+      gpuTiming: { enabled: false, lastMs: null, phase: "", samples: 0, disjoints: 0 },
+      solar: { x: 0, y: 0, facing: 0, visibility: 0, occlusion: 1, focalScale: 1 },
       emergenceProgress: 0,
       portalStencilActive: true,
       fallbackVisible: false,
@@ -744,6 +751,30 @@ export function GoalTunnelSection() {
         return m.emergenceStart + clamp01(u) * m.emergenceSpan;
       },
     };
+
+    // Explicit opt-in: bounded query ring, asynchronous reads, no GPU waits or normal-mode polling.
+    const profilingContext = new URLSearchParams(window.location.search).get("profileGoal") === "1" ? glRenderer.getContext() : null;
+    const gpuTimer = profilingContext && typeof WebGL2RenderingContext !== "undefined" && profilingContext instanceof WebGL2RenderingContext
+      ? createGpuFrameTimer(profilingContext, (ms, phase) => {
+        const timing = window.__goalAstronautTelemetry?.gpuTiming;
+        if (timing) {
+          timing.lastMs = ms; timing.phase = phase; timing.samples++;
+          // Several queries can finish together. Retain each result for the sampling harness.
+          const recent = timing.recent;
+          if (recent) {
+            const entry = recent[(timing.samples - 1) % recent.length];
+            entry.id = timing.samples; entry.ms = ms; entry.phase = phase;
+          }
+        }
+      }, () => {
+        const timing = window.__goalAstronautTelemetry?.gpuTiming;
+        if (timing) { timing.lastMs = null; timing.disjoints++; }
+      }) : null;
+    if (gpuTimer) {
+      track(gpuTimer);
+      window.__goalAstronautTelemetry.gpuTiming.enabled = true;
+      window.__goalAstronautTelemetry.gpuTiming.recent = Array.from({ length: 16 }, () => ({ id: 0, ms: 0, phase: "" }));
+    }
 
     const docOffsetTop = (el: HTMLElement): number => {
       let top = 0;
@@ -856,7 +887,7 @@ export function GoalTunnelSection() {
         window.__goalAstronautTelemetry.playback.end = playbackPath(1);
       }
 
-      const dpr = homeRenderDpr(W,H,window.devicePixelRatio || 1);
+      const dpr = cinematicRenderDpr(W,H,window.devicePixelRatio || 1,isSoftwareRenderer,reducedMotion);
       glRenderer.setPixelRatio(dpr);
       glRenderer.setSize(W, H, false);
       camera.aspect = W / H;
@@ -951,6 +982,10 @@ export function GoalTunnelSection() {
     };
 
     const _sunClip = new THREE.Vector3();
+    const _sunView = new THREE.Vector3();
+    const _sunWorld = new THREE.Vector3();
+    const _solarBlocker = new THREE.Vector3();
+    const _cameraForward = new THREE.Vector3();
     const _rootPosition = new THREE.Vector3();
     const _outPosition = new THREE.Vector3();
     const _rootOrientation = new THREE.Quaternion();
@@ -1279,14 +1314,13 @@ export function GoalTunnelSection() {
       }
 
       // Source-driven open spectral arcs during emergence only, never a filled tunnel halo.
-      const ringVis = inEmergencePhase ? kf.ringFlare * 0.30 : 0;
+      const ringVis = inEmergencePhase ? Math.max(kf.ringFlare * 0.50, kf.sunFlare * 0.12) : 0;
       optics.chromaticRingMesh.visible = ringVis > 0.002;
       if (optics.chromaticRingMesh.visible) {
-        _sunClip.copy(sunKeyLight.position).project(camera);
-        optics.chromaticRingMat.uniforms.uSource.value.set(_sunClip.x*0.5+0.5,_sunClip.y*0.5+0.5);
         optics.chromaticRingMat.uniforms.uResolution.value.set(glRenderer.domElement.width,glRenderer.domElement.height);
         optics.chromaticRingMat.uniforms.uOpacity.value = ringVis;
         optics.chromaticRingMat.uniforms.uAspect.value = W / H;
+        optics.chromaticRingMat.uniforms.uFocalScale.value = solarFocalScale(camera.fov);
         // Height-normalized shader coordinates: fit the two arcs to portrait width too.
         optics.chromaticRingMat.uniforms.uRadius.value = m.isMobile ? Math.min(0.64, 0.45 * W / H) : 0.72;
         optics.chromaticRingMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
@@ -1356,9 +1390,9 @@ export function GoalTunnelSection() {
       _monitorRotation.copy(camera.quaternion).multiply(_screenRotation);
 
       if (blueCorridor.group.visible) {
-        const blueFlight = smoothstep(0.815, 0.995, tTunnel);
-        blueCorridor.travelGroup.position.z = 22 * Math.pow(blueFlight, 1.6);
-        blueCorridor.wallTexture.offset.y = reducedMotion ? 0 : -blueFlight * 0.42;
+        const distance = blueFlightDistance(tTunnel, tShatter);
+        blueCorridor.travelGroup.position.z = distance;
+        blueCorridor.wallTexture.offset.y = reducedMotion ? 0 : -distance / 22 * 0.42;
         if (clipToMonitor) {
           blueCorridor.monitorStencilMask.position.copy(_monitorCenter);
           blueCorridor.monitorStencilMask.quaternion.copy(_monitorRotation);
@@ -1475,6 +1509,11 @@ export function GoalTunnelSection() {
           ay = lerp(entryPos[1], lerp(0.0, -0.02, inBlueDive), entry);
           az = lerp(entryPos[2], lerp(-1.12 - vortexShrink * 4.2, -3.75, inBlueDive), entry);
 
+          // Flight-axis gravity adds increasing descent/depth through the shaft, then blends
+          // into the authored blue-flight pose; never introduce another playhead.
+          const descent = acceleratedFall(clamp01((tTunnel - 0.08) / 0.72)) * (1 - inBlueDive);
+          ay -= descent * 0.24;
+          az -= descent * 1.05;
           const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
           const trussRz = intoCurl * (-1.15 - tTunnel * 3.1);
           rx = lerp(kf.astroRot[0] - pyParallax * 0.045, lerp(0.18, 0.24, inBlueDive), entry);
@@ -1648,12 +1687,48 @@ export function GoalTunnelSection() {
         lensPass.uniforms.uAmount.value = inEmergencePhase || reducedMotion ? 0 : Math.max(shaftVelocity,blueVelocity)*0.012;
         lensPass.enabled = lensPass.uniforms.uAmount.value > 0.00001;
       }
+      // Evaluate after the current bone/root matrices: no stale silhouette or one-frame flare lag.
+      if (optics.chromaticRingMesh.visible) {
+        sunKeyLight.getWorldPosition(_sunWorld);
+        _sunView.copy(_sunWorld).sub(camera.position);
+        camera.getWorldDirection(_cameraForward);
+        const facing = _sunView.dot(_cameraForward) / Math.max(1e-5, _sunView.length());
+        _sunClip.copy(_sunWorld).project(camera);
+        let visible = 1;
+        if (mainAstro) {
+          if (mainAstro.bones.Head) {
+            _solarBlocker.copy(mainAstro.visorAnchorLocal);
+            mainAstro.bones.Head.localToWorld(_solarBlocker);
+            visible *= solarOcclusion(camera.position, _sunWorld, _solarBlocker, mainAstro.root.scale.x * 0.19);
+          }
+          _solarBlocker.set(0, -0.22, 0);
+          mainAstro.root.localToWorld(_solarBlocker);
+          visible *= solarOcclusion(camera.position, _sunWorld, _solarBlocker, mainAstro.root.scale.x * 0.31);
+        }
+        if (earthSystem.group.visible) {
+          earthSystem.group.children[0].getWorldPosition(_solarBlocker);
+          visible *= solarOcclusion(camera.position, _sunWorld, _solarBlocker, 5.5);
+        }
+        const uv = optics.chromaticRingMat.uniforms.uSource.value as THREE.Vector2;
+        uv.set(_sunClip.x * 0.5 + 0.5, _sunClip.y * 0.5 + 0.5);
+        optics.chromaticRingMat.uniforms.uVisibility.value = solarAcceptance(uv.x, uv.y, facing, visible, W / H);
+        if (window.__goalAstronautTelemetry) {
+          const solar = window.__goalAstronautTelemetry.solar;
+          solar.x = uv.x; solar.y = uv.y; solar.facing = facing;
+          solar.visibility = optics.chromaticRingMat.uniforms.uVisibility.value;
+          solar.occlusion = visible;
+          solar.focalScale = optics.chromaticRingMat.uniforms.uFocalScale.value;
+        }
+      }
+      gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0 ? "shatter" : tTunnel > 0.845 ? "blue" : "tesseract");
+      glRenderer.info.reset();
       if (composer) {
         composer.render(1 / 60);
       } else {
         glRenderer.render(scene, camera);
       }
 
+      gpuTimer?.end();
       const dtMs = performance.now() - t0;
       if (window.__goalAstronautTelemetry) {
         window.__goalAstronautTelemetry.drawCalls = glRenderer.info.render.calls;
@@ -1843,7 +1918,7 @@ export function GoalTunnelSection() {
         pointerTarget.x = pointerTarget.y = pointerSmooth.x = pointerSmooth.y = 0;
         releasePlayback(true);
       }
-      ensureLoop();
+      onResize(); // Preference changes also restore the full static inspection resolution.
     };
     pauseButton?.addEventListener("click", onPausePlayback);
     skipButton?.addEventListener("click", onSkipPlayback);

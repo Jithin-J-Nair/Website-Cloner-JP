@@ -1416,8 +1416,10 @@ export function buildSpaceOpticalOverlays(
       blendDstAlpha: THREE.OneFactor,
       uniforms: {
         uOpacity: { value: 0.0 },
+        uVisibility: { value: 0.0 },
         uAspect: { value: 1.6 },
         uRadius: { value: 0.625 },
+        uFocalScale: { value: 1.0 },
         uTime: { value: 0.0 },
         uSource: { value: new THREE.Vector2(-0.25,0.90) },
         uResolution: { value: new THREE.Vector2(1440,900) },
@@ -1432,43 +1434,61 @@ export function buildSpaceOpticalOverlays(
       fragmentShader: `
         varying vec2 vUv;
         uniform float uOpacity;
+        uniform float uVisibility;
         uniform float uAspect;
         uniform float uRadius;
+        uniform float uFocalScale;
         uniform float uTime;
         uniform vec2 uSource;
         uniform vec2 uResolution;
-        // Off-axis lens scattering. A thin spectral caustic, NOT a filled circle or texture.
-        float spectralBand(float distanceToBand, float width) {
-          return exp(-distanceToBand*distanceToBand/(width*width));
-        }
+        // Pupil-scatter / two-surface spectral caustic approximation, in height-normalized units.
+        // Source radiance and internally reflected caustics share one camera/occlusion exposure.
+        float band(float d, float width) { return exp(-d*d/(width*width)); }
         void main() {
-          vec2 source = (uSource-0.5)*vec2(uAspect,1.0);
+          if (uOpacity*uVisibility < 0.0001) discard;
+          vec2 metric = vec2(uAspect,1.0);
+          vec2 source = (uSource-0.5)*metric;
           vec2 axis = normalize(source+vec2(-0.0001,0.0001));
-          // Camera/light coupling plus a slow, bounded optical-axis drift.
-          vec2 center = vec2(0.50,0.48) - clamp(source,vec2(-1.0),vec2(1.0))*0.025;
-          center += vec2(sin(uTime*0.18),sin(uTime*0.13+0.7))*0.004;
-          vec2 p = (vUv-center)*vec2(uAspect,1.0);
-          float radius = length(p);
-          vec2 direction = p/max(radius,0.0001);
+          float pixel = 1.0/max(uResolution.y,1.0);
+          vec2 q = (vUv-uSource)*metric;
+          float rq = dot(q,q);
+          // Finite emitter convolved with a Moffat pupil scatter tail. No opaque glow disc.
+          float focalSq = uFocalScale*uFocalScale;
+          float core = exp(-rq/(0.000018*focalSq+pixel*pixel*2.0))*2.4;
+          float scatter = pow(1.0+rq/(0.00055*focalSq),-1.55)*0.16;
+          float streak = exp(-abs(q.x)*6.5)*band(q.y,0.0015*uFocalScale+pixel*1.5)*0.26;
+          vec3 direct = vec3(0.86,0.95,1.0)*(core+scatter+streak);
+
+          // A decentered lens produces incomplete, asymmetric arcs. Their center, radius and
+          // pupil acceptance change with incidence, rather than remaining a stationary rainbow.
+          // Rational compression retains source response outside the viewport (no hard clamp).
+          vec2 pupilOffset = source/(vec2(1.0)+0.35*abs(source));
+          vec2 center = vec2(0.50,0.48)-pupilOffset*0.075;
+          vec2 p = (vUv-center)*metric;
+          float r = length(p);
+          vec2 direction = p/max(r,0.0001);
           float angle = atan(p.y,p.x);
-          float offAxis = clamp(length(source)*0.18,0.0,0.035);
-          float causticRadius = uRadius + offAxis*cos(angle-atan(axis.y,axis.x));
-          float d = radius-causticRadius;
-          float pixel = max(fwidth(radius),1.0/max(uResolution.y,1.0));
-          // Spectral splitting of the same caustic: blue outside, muted gold inside.
-          float blue = spectralBand(d-0.025,0.034+pixel);
-          float green = spectralBand(d,0.028+pixel);
-          float red = spectralBand(d+0.022,0.036+pixel);
-          // Aperture/film interference: filtered fine fringes; stable at native UHD resolution.
-          float cycles = min(170.0,0.22/max(pixel,0.00001));
-          float fringe = 0.86+0.14*cos(d*cycles*6.28318 + 1.2*sin(angle*2.0)-uTime*0.22);
-          float radialRays = 0.91+0.09*sin(angle*118.0+sin(angle*17.0));
-          // The reference has two open arcs, with no luminous top/bottom circumference.
-          float sector = pow(abs(cos(angle+0.22+axis.y*0.06)),6.0);
-          vec3 spectrum = vec3(red*0.20,green*0.30,blue*0.57);
-          spectrum += vec3(0.16,0.20,0.24)*spectralBand(d,0.018+pixel);
-          vec3 col = spectrum*sector*fringe*radialRays*uOpacity;
-          gl_FragColor = vec4(col,0.0);
+          float incidence = clamp(length(source),0.0,1.5);
+          float radius = uRadius*(1.0+0.04*(uFocalScale-1.0)) + incidence*0.025 + 0.024*dot(direction,axis);
+          float d = r-radius;
+          float filterWidth = max(fwidth(r),pixel);
+          // Off-axis pupil defocus broadens the caustic continuously with source incidence.
+          // A low-energy neutral tail avoids a hard, uniformly coloured ring edge.
+          float pupilBlur = 1.0 + incidence*0.30 + abs(uFocalScale-1.0)*0.15;
+          // Dispersion remains subordinate to the neutral/cyan scattering energy.
+          vec3 spectral = vec3(band(d+0.012,0.030*pupilBlur+filterWidth)*0.10,
+                               band(d,0.027*pupilBlur+filterWidth)*0.17,
+                               band(d-0.014,0.032*pupilBlur+filterWidth)*0.30);
+          spectral += vec3(0.22,0.26,0.29)*band(d,0.021*pupilBlur+filterWidth);
+          float tailD = d/(0.055*pupilBlur+filterWidth);
+          spectral += vec3(0.16,0.18,0.20)*pow(1.0+tailD*tailD,-1.8);
+          float cycles = min(150.0,0.20/max(filterWidth,0.00001));
+          float interference = 0.93+0.07*cos(d*cycles*6.28318+sin(angle*2.0)-uTime*0.15);
+          float aperture = 0.97+0.03*sin(angle*106.0+sin(angle*13.0));
+          float sector = pow(abs(cos(angle+0.24+axis.y*0.12)),5.0);
+          sector *= 0.60+0.40*smoothstep(-0.6,0.8,dot(direction,-axis));
+          vec3 caustic = spectral*sector*interference*aperture;
+          gl_FragColor = vec4((direct+caustic)*uOpacity*uVisibility,0.0);
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
         }

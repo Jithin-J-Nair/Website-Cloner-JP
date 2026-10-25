@@ -57,12 +57,27 @@ try {
       return remove(name, fn, options);
     };
     window.__goalTestListeners = callbacks;
+    const queries = new Set();
+    window.__goalTestGpuQueries = queries;
+    if (typeof WebGL2RenderingContext !== 'undefined') {
+      const proto = WebGL2RenderingContext.prototype;
+      const create = proto.createQuery, destroy = proto.deleteQuery;
+      proto.createQuery = function (...args) {
+        const query = Reflect.apply(create, this, args);
+        if (query) queries.add(query);
+        return query;
+      };
+      proto.deleteQuery = function (query) {
+        queries.delete(query);
+        return Reflect.apply(destroy, this, [query]);
+      };
+    }
   });
   const page = await context.newPage();
   page.on('pageerror', (e) => report.errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') report.errors.push(m.text()); });
   page.on('response', (r) => { if (r.url().includes('/assets/') && !r.ok()) report.failedAssets.push(`${r.status()} ${r.url()}`); });
-  await page.goto(baseUrl, { waitUntil: 'networkidle', timeout: 120000 });
+  await page.goto(baseUrl + (process.env.GOAL_PROFILE_GPU === '1' ? '/?profileGoal=1' : ''), { waitUntil: 'networkidle', timeout: 120000 });
   await page.waitForFunction(() => window.__goalAstronautTelemetry?.glbLoaded, null, { timeout: 45000 });
   const layout = await page.evaluate(() => {
     const r = window.__lusionInspector.homeGoalSectionRanges.items;
@@ -316,17 +331,24 @@ try {
     await page.evaluate(() => window.scrollTo(0, window.__goalAstronautTelemetry.playback.activation + 2));
     await page.waitForFunction(() => window.__goalAstronautTelemetry.playback.state === 'playing');
   }
+  report.gpuQueriesBeforeCleanup = await page.evaluate(() => window.__goalTestGpuQueries.size);
+  if (await page.evaluate(() => window.__goalAstronautTelemetry.gpuTiming.enabled)) {
+    assert.equal(report.gpuQueriesBeforeCleanup,3,'profiling allocates exactly the bounded three-query ring');
+  }
   await page.evaluate(() => { window.__goalBeforeListeners = [...window.__goalTestListeners]; });
   await page.evaluate(() => document.querySelector('a[href="/projects"]').click());
   await page.waitForURL('**/projects', { timeout: 30000 });
   await page.waitForFunction(() => !window.__goalAstronautTelemetry);
   const cleanup = await page.evaluate(() => ({
+    activeGpuQueries: window.__goalTestGpuQueries.size,
     retained: window.__goalBeforeListeners.filter((fn) => window.__goalTestListeners.has(fn) && fn.name === 'onVisibility').length,
     goalCanvas: document.querySelector('#home-goal canvas') !== null,
     staleGoalRanges: Boolean(window.__lusionInspector?.homeGoalSectionRanges),
   }));
   assert.equal(await page.evaluate(() => Boolean(window.__lenis?.isStopped)), false);
   assert.equal(cleanup.retained, 0); assert.equal(cleanup.goalCanvas, false); assert.equal(cleanup.staleGoalRanges, false);
+  assert.equal(cleanup.activeGpuQueries,0,"client navigation must dispose every instrumented WebGL query");
+  assert.deepEqual(report.errors,[]);
   report.cleanup = cleanup;
   await context.close();
   await browser.close();
