@@ -33,3 +33,7 @@ A passing build validates compilation and static generation; it does not establi
 ## Important limitations
 
 Lusion's complete production source and some original assets are not available in this repository. Use captured public reference data and assets that are actually present. Where a source asset cannot be obtained, document the substitution instead of claiming a pixel-perfect match. Do not commit credentials, environment files, or unrelated changes.
+
+## Preserved upstream work
+
+The master integration retains its reference timeline and side-by-side captures under `reference/`, design proposals under `docs/lusion-fix/`, and experimental Three modules without introducing a competing production playhead. Original upstream notes are preserved in `docs/integration/`; current acceptance is documented in `docs/validation/mission-repair.md`.

@@ -353,3 +353,34 @@ body {
     display: none !important;
   }
 }
+
+.spotlight-card {
+  --x: 50%;
+  --y: 50%;
+}
+.spotlight-card:not(.is-reduced) .spotlight-glow {
+  top: var(--y);
+  left: var(--x);
+  width: calc(var(--spotlight-spread) * 2);
+  height: calc(var(--spotlight-spread) * 2);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at center, var(--spotlight-color), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  mix-blend-mode: screen;
+}
+.spotlight-card:not(.is-reduced):hover .spotlight-glow {
+  opacity: 1;
+}
+.spotlight-border {
+  border: 1px solid transparent;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background-image: linear-gradient(#0e121c, #0e121c), radial-gradient(calc(var(--spotlight-spread) * 0.8) circle at var(--x) var(--y), rgba(255,255,255,0.8), transparent 100%);
+}
+.spotlight-card:not(.is-reduced):hover .spotlight-border,
+.spotlight-card:focus-visible .spotlight-border {
+  opacity: 1;
+}
