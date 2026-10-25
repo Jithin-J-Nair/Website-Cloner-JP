@@ -1,0 +1,43 @@
+{
+  "errors": [],
+  "issues": [],
+  "pause": {
+    "before": {
+      "draws": 137,
+      "progress": 0.00807999999999172
+    },
+    "after": {
+      "draws": 137,
+      "progress": 0.00807999999999172
+    }
+  },
+  "stall": {
+    "before": 0.00807999999999172,
+    "blockedMs": 650.0999999996275,
+    "after": 0.038599999999958605,
+    "advancedSeconds": 0.6866999999992549
+  },
+  "completion": {
+    "wallSeconds": 27.229,
+    "authoredSeconds": 22.5,
+    "includesDeliberatePause": true,
+    "deliberateMainThreadStallMs": 650,
+    "final": {
+      "state": "completed",
+      "progress": 1,
+      "virtualScroll": 40733.44,
+      "activation": 8431.56,
+      "end": 40733.44,
+      "runs": 1
+    }
+  },
+  "policy": {
+    "pauseInputAndResizeStable": true,
+    "menuPauseResume": true,
+    "skip": true,
+    "replayRuns": 2,
+    "contactBypassWithoutReplay": true,
+    "contactDuringPlayback": true,
+    "liveReducedReleasesScroll": true
+  }
+}

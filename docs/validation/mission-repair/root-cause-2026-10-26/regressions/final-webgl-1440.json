@@ -1,0 +1,17 @@
+{
+  "scenario": "webgl",
+  "errors": [],
+  "warnings": [
+    "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context.",
+    "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+  ],
+  "issues": [],
+  "loss": {
+    "stopped": false,
+    "poster": "flex",
+    "track": "none",
+    "staticFallback": "true"
+  },
+  "contactReachable": true,
+  "contactAccessibleSnapshot": "- link \"Let's work together!\":\n  - /url: mailto:business@lusion.co"
+}

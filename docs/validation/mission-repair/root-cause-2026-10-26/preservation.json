@@ -1,0 +1,50 @@
+[
+  {
+    "path": "scripts/validate-goal-sequence.mjs",
+    "entry": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910",
+    "final": "d417ee59798b40d0434e3cdeffe069b8f70dc3096c58479f635f102a198cb910",
+    "identical": true
+  },
+  {
+    "path": "scripts/test-goal-sequence.mjs",
+    "entry": "90652b3cf68e9338e010116bffe935414a0221269179040601593c0e379b9d96",
+    "final": "90652b3cf68e9338e010116bffe935414a0221269179040601593c0e379b9d96",
+    "identical": true
+  },
+  {
+    "path": "src/components/home/GoalDownstreamScenes.ts",
+    "entry": "9311544a834a3001c706aa952e13a399cbdb044b51e36373d37c7ebbec75eb05",
+    "final": "9311544a834a3001c706aa952e13a399cbdb044b51e36373d37c7ebbec75eb05",
+    "identical": true
+  },
+  {
+    "path": "src/components/home/AstronautEmergenceAssets.ts",
+    "entry": "33b5d2d89135f2fa59b8e1533fe7670d82845293166a81a541944f23a8d9ebb2",
+    "final": "33b5d2d89135f2fa59b8e1533fe7670d82845293166a81a541944f23a8d9ebb2",
+    "identical": true
+  },
+  {
+    "path": "src/components/home/HeroCrossesStage.tsx",
+    "entry": "cb6c4cce96f7ff2d0846c1a94132f77d864c1a35df0b184f87fe541643733ddc",
+    "final": "cb6c4cce96f7ff2d0846c1a94132f77d864c1a35df0b184f87fe541643733ddc",
+    "identical": true
+  },
+  {
+    "path": "src/components/home/HomePageView.tsx",
+    "entry": "3cf36cdb6db7707f4f5d966b52ec39f77739aa14ca13bae83fff7b00df204165",
+    "final": "3cf36cdb6db7707f4f5d966b52ec39f77739aa14ca13bae83fff7b00df204165",
+    "identical": true
+  },
+  {
+    "path": "package.json",
+    "entry": "d35f12aa40da9c01553d484637b0e56c1f528fe1ff9e829a83357b1a631e187d",
+    "final": "d35f12aa40da9c01553d484637b0e56c1f528fe1ff9e829a83357b1a631e187d",
+    "identical": true
+  },
+  {
+    "path": "package-lock.json",
+    "entry": "2e4a57007989d0552a9f6b73f91a340a2ec2751bba1368e626ad235d7508b3c5",
+    "final": "2e4a57007989d0552a9f6b73f91a340a2ec2751bba1368e626ad235d7508b3c5",
+    "identical": true
+  }
+]

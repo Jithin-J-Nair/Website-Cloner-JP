@@ -1,0 +1,8 @@
+{
+  "scope": "Argument filtering only; fake executable, not a hardware browser run.",
+  "retainedArgs": [
+    "--remote-debugging-pipe",
+    "--user-data-dir=test"
+  ],
+  "pass": true
+}

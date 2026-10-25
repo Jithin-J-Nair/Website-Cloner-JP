@@ -49,6 +49,11 @@ import {
 
 declare global {
   interface Window {
+    /** Opt-in observation only; submission does not imply GPU completion or presentation. */
+    __goalPipelineProbe?: (renderer: THREE.WebGLRenderer, observation: {
+      authoredAt: number; sceneStartedAt: number; submittedAt: number;
+      virtualScroll: number; glassMatrix: number[] | null; blueMatrix: number[];
+    }) => void;
     __lusionInspector?: {
       properties?: { hasStarted: boolean };
       scrollManager?: {
@@ -1768,6 +1773,13 @@ export function GoalTunnelSection() {
         state.glassOpacity = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uOpacity.value : 0;
         state.crackProgress = crackProgress;
         state.ringVisible = optics.chromaticRingMesh.visible;
+      }
+      if (window.__goalPipelineProbe) {
+        window.__goalPipelineProbe(glRenderer, {
+          authoredAt: frameClock, sceneStartedAt: t0, submittedAt: performance.now(),
+          virtualScroll: sy, glassMatrix: shardsMesh ? Array.from(shardsMesh.matrixWorld.elements) : null,
+          blueMatrix: Array.from(blueCorridor.travelGroup.matrixWorld.elements),
+        });
       }
     };
 

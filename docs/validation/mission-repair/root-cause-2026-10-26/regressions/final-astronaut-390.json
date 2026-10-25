@@ -1,0 +1,109 @@
+{
+  "scenario": "astronaut",
+  "errors": [],
+  "warnings": [],
+  "issues": [],
+  "loss": {
+    "telemetry": {
+      "glbLoaded": false,
+      "glbError": "Simulated astronaut asset failure (?simulateGlbError=1)",
+      "qualityTier": "mobile",
+      "renderWidth": 390,
+      "renderHeight": 844,
+      "pixelRatio": 1,
+      "textureMaxDim": 1024,
+      "drawCalls": 0,
+      "triangles": 0,
+      "lastFrameMs": 0,
+      "renderCount": 0,
+      "resources": {
+        "geometries": 0,
+        "textures": 0,
+        "programs": 0
+      },
+      "gpuTiming": {
+        "enabled": false,
+        "lastMs": null,
+        "phase": "",
+        "samples": 0,
+        "disjoints": 0
+      },
+      "solar": {
+        "x": 0,
+        "y": 0,
+        "facing": 0,
+        "visibility": 0,
+        "occlusion": 1,
+        "focalScale": 1
+      },
+      "emergenceProgress": 0,
+      "portalStencilActive": true,
+      "fallbackVisible": true,
+      "sceneState": {
+        "tunnelProgress": 0,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 0,
+        "astronautMatrix": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "cameraMatrix": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "trussLoaded": false,
+        "shardsLoaded": false,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": false
+      },
+      "playback": {
+        "state": "armed",
+        "progress": 0,
+        "virtualScroll": 0,
+        "activation": 7984.7696,
+        "end": 7763.48,
+        "runs": 0
+      }
+    },
+    "stopped": false,
+    "poster": "flex",
+    "track": "none",
+    "staticFallback": "true"
+  },
+  "contactReachable": true,
+  "contactAccessibleSnapshot": "- link \"Let's work together!\":\n  - /url: mailto:business@lusion.co"
+}
