@@ -7,6 +7,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { acceleratedFall, GOAL_CINEMATIC_SECONDS, homeRenderDpr } from "@/lib/home-motion";
 import { LUSION_HOME } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
 import {
@@ -228,7 +229,7 @@ export function GoalTunnelSection() {
     const initW = Math.max(2, window.innerWidth);
     const initH = Math.max(2, window.innerHeight);
     const isMobileInit = initW < 820;
-    const initDpr = Math.min(2, window.devicePixelRatio || 1);
+    const initDpr = homeRenderDpr(initW,initH,window.devicePixelRatio || 1);
 
     glRenderer.setPixelRatio(initDpr);
     glRenderer.setSize(initW, initH, false);
@@ -692,7 +693,7 @@ export function GoalTunnelSection() {
         syncDocument(y);
         targetScrollY = smoothScrollY = y;
       }
-      cinematicTimeOffset = (performance.now() - startClock) * 0.001 - (playbackTimeOrigin + playbackProgress * 26);
+      cinematicTimeOffset = (performance.now() - startClock) * 0.001 - (playbackTimeOrigin + playbackProgress * GOAL_CINEMATIC_SECONDS);
       playbackState = "completed";
       userPaused = false;
       if (complete && controls?.contains(document.activeElement)) {
@@ -855,7 +856,7 @@ export function GoalTunnelSection() {
         window.__goalAstronautTelemetry.playback.end = playbackPath(1);
       }
 
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const dpr = homeRenderDpr(W,H,window.devicePixelRatio || 1);
       glRenderer.setPixelRatio(dpr);
       glRenderer.setSize(W, H, false);
       camera.aspect = W / H;
@@ -949,6 +950,7 @@ export function GoalTunnelSection() {
       ownedScrollManager = window.__lusionInspector.scrollManager;
     };
 
+    const _sunClip = new THREE.Vector3();
     const _rootPosition = new THREE.Vector3();
     const _outPosition = new THREE.Vector3();
     const _rootOrientation = new THREE.Quaternion();
@@ -962,7 +964,7 @@ export function GoalTunnelSection() {
     const _zAxis = new THREE.Vector3(0, 0, 1);
 
     const renderSceneAtScroll = (sy: number, wallElapsedSec: number) => {
-      const elapsedSec = playing() ? playbackTimeOrigin + playbackProgress * 26 : wallElapsedSec - cinematicTimeOffset;
+      const elapsedSec = playing() ? playbackTimeOrigin + playbackProgress * GOAL_CINEMATIC_SECONDS : wallElapsedSec - cinematicTimeOffset;
       const t0 = performance.now();
       if (!metrics) measure();
       const m = metrics;
@@ -1276,20 +1278,17 @@ export function GoalTunnelSection() {
         optics.spaceHaloMat.uniforms.uOpacity.value = haloVis;
       }
 
-      // The downstream full-screen ring is an independent additive overlay, not bloom or light.
-      // Remove it locally; preserve the established orbital optics before the shaft.
-      const ringVis = inEmergencePhase ? kf.ringFlare * 0.34 : 0;
+      // Source-driven open spectral arcs during emergence only, never a filled tunnel halo.
+      const ringVis = inEmergencePhase ? kf.ringFlare * 0.30 : 0;
       optics.chromaticRingMesh.visible = ringVis > 0.002;
       if (optics.chromaticRingMesh.visible) {
+        _sunClip.copy(sunKeyLight.position).project(camera);
+        optics.chromaticRingMat.uniforms.uSource.value.set(_sunClip.x*0.5+0.5,_sunClip.y*0.5+0.5);
+        optics.chromaticRingMat.uniforms.uResolution.value.set(glRenderer.domElement.width,glRenderer.domElement.height);
         optics.chromaticRingMat.uniforms.uOpacity.value = ringVis;
         optics.chromaticRingMat.uniforms.uAspect.value = W / H;
-        optics.chromaticRingMat.uniforms.uRadius.value = inEmergencePhase
-          ? m.isMobile
-            ? 0.385
-            : 0.625
-          : m.isMobile
-            ? 0.44
-            : 0.56;
+        // Height-normalized shader coordinates: fit the two arcs to portrait width too.
+        optics.chromaticRingMat.uniforms.uRadius.value = m.isMobile ? Math.min(0.64, 0.45 * W / H) : 0.72;
         optics.chromaticRingMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
       }
 
@@ -1319,7 +1318,7 @@ export function GoalTunnelSection() {
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
         trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
         trussSystem.tunnelMaterial.uniforms.uVortexPinch.value = vortexPinch;
-        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = tTunnel * 44;
+        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = acceleratedFall(tTunnel) * 44;
         const pinkVortexGlow = smoothstep(0.69, 0.755, tTunnel);
         trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.66, 0.71, tTunnel);
         trussSystem.vortexCoreMat.uniforms.uIntensity.value =
@@ -1383,7 +1382,7 @@ export function GoalTunnelSection() {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
           
-          const burst = smoothstep(0.32, 0.84, tShatter);
+          const burst = acceleratedFall(clamp01((tShatter-0.32)/0.52));
           const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
           sampleFrame(clamp01(burst) * (framesPerShard - 1));
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
@@ -1499,7 +1498,8 @@ export function GoalTunnelSection() {
             settleSalute
           );
           ax = lerp(0.04, pxParallax * 0.05, burst);
-          ay = lerp(-0.02, m.isMobile ? -0.18 : -0.32, lerp(burst * 0.65, 1.0, settleSalute));
+          const gravityDrop = acceleratedFall(clamp01((tShatter-0.14)/0.70));
+          ay = lerp(-0.02,m.isMobile ? -0.18 : -0.32,gravityDrop);
           az = lerp(-3.75, m.isMobile ? 0.68 : 1.72, burst);
           az = lerp(az, m.isMobile ? 1.24 : 2.66, settleSalute);
           rx = lerp(0.24, -pyParallax * 0.04, burst);
@@ -1646,6 +1646,7 @@ export function GoalTunnelSection() {
         const shaftVelocity = smoothstep(0.13,0.70,tTunnel)*(1-smoothstep(0.79,0.84,tTunnel));
         const blueVelocity = smoothstep(0.815,0.97,tTunnel)*(1-smoothstep(0,0.12,tOutPull));
         lensPass.uniforms.uAmount.value = inEmergencePhase || reducedMotion ? 0 : Math.max(shaftVelocity,blueVelocity)*0.012;
+        lensPass.enabled = lensPass.uniforms.uAmount.value > 0.00001;
       }
       if (composer) {
         composer.render(1 / 60);
@@ -1707,7 +1708,7 @@ export function GoalTunnelSection() {
         } else if (playing()) {
           const paused = userPaused || blockedByChrome();
           playbackState = paused ? "paused" : "playing";
-          if (!paused) playbackProgress = Math.min(1, playbackProgress + deltaSeconds / 26);
+          if (!paused) playbackProgress = Math.min(1, playbackProgress + deltaSeconds / GOAL_CINEMATIC_SECONDS);
         }
         if (playing()) {
           // Only this clock drives both scene pose and document placement during playback.
@@ -1744,15 +1745,15 @@ export function GoalTunnelSection() {
       if (Math.abs(diff) > vhNow * 0.42 || reducedMotion) {
         smoothScrollY = targetScrollY;
       } else {
-        smoothScrollY += diff * 0.34;
+        smoothScrollY += diff * (1-Math.exp(-25*deltaSeconds));
         if (Math.abs(targetScrollY - smoothScrollY) < 0.12) {
           smoothScrollY = targetScrollY;
         }
       }
 
       if (playbackState !== "paused") {
-        pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * 0.075;
-        pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * 0.075;
+        pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * (1-Math.exp(-4.7*deltaSeconds));
+        pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * (1-Math.exp(-4.7*deltaSeconds));
       }
 
       renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);

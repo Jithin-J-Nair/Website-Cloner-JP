@@ -1403,7 +1403,7 @@ export function buildSpaceOpticalOverlays(
   spaceHaloMesh.position.set(0, -0.35, -0.85);
   spaceHaloMesh.renderOrder = 2;
 
-  // 3. Screen-Space Optical Chromatic Dispersion Ring (`Frames 05–08` — silky circumference + zero alpha overwrite!)
+  // 3. Analytic off-axis solar lens scatter. Keep the public mesh handle for controller ownership.
   const chromaticRingMat = track(
     new THREE.ShaderMaterial({
       transparent: true,
@@ -1419,6 +1419,8 @@ export function buildSpaceOpticalOverlays(
         uAspect: { value: 1.6 },
         uRadius: { value: 0.625 },
         uTime: { value: 0.0 },
+        uSource: { value: new THREE.Vector2(-0.25,0.90) },
+        uResolution: { value: new THREE.Vector2(1440,900) },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -1433,41 +1435,42 @@ export function buildSpaceOpticalOverlays(
         uniform float uAspect;
         uniform float uRadius;
         uniform float uTime;
-
+        uniform vec2 uSource;
+        uniform vec2 uResolution;
+        // Off-axis lens scattering. A thin spectral caustic, NOT a filled circle or texture.
+        float spectralBand(float distanceToBand, float width) {
+          return exp(-distanceToBand*distanceToBand/(width*width));
+        }
         void main() {
-          // Height-normalized screen coords centered slightly left-low matching Frame 07/08 (cx = 47.2%)
-          vec2 p = (vUv - vec2(0.472, 0.495)) * vec2(uAspect, 1.0);
-          float ang = atan(p.y, p.x);
-
-          // Gentle organic lower-arc caustics matching 07_t08.4s & 08_t09.8s!
-          float lowerMask = smoothstep(-0.05, -0.75, sin(ang));
-          float wobble = lowerMask * (0.018 * sin(ang * 5.0 + 0.6) + 0.010 * cos(ang * 9.0 - 0.4));
-          float rLocal = uRadius + wobble;
-
-          float r = length(p);
-          float dr = r - rLocal;
-
-          // Smooth optical azimuthal intensity envelope (softly brighter on left & right arcs, zero moiré banding!)
-          float azim = 0.76 + 0.24 * cos(ang * 2.0 + 0.45);
-
-          // Authentic spectral dispersion: inner warm amber -> middle soft cream -> outer cyan/royal-blue
-          float disp = 0.026;
-          float w = 17.5;
-          float rAmber = exp(-pow((dr + disp) * w, 2.0));
-          float rCream = exp(-pow(dr * (w * 1.25), 2.0));
-          float rBlue  = exp(-pow((dr - disp) * w, 2.0));
-          float veil   = exp(-pow(dr * 5.6, 2.0)) * 0.14;
-
-          vec3 col = (
-            vec3(1.00, 0.50, 0.14) * rAmber * 1.05 +
-            vec3(0.95, 0.93, 0.86) * rCream * 0.30 +
-            vec3(0.16, 0.56, 1.05) * rBlue * 1.10 +
-            vec3(0.32, 0.44, 0.72) * veil
-          ) * azim * uOpacity;
-
-          // Note: CustomBlending (RGB: ONE+ONE, Alpha: ZERO+ONE) preserves canvas alpha = 0 in empty space
-          // so behind-astronaut white headline at z=6 shines through space while astronaut silhouette occludes LET!
-          gl_FragColor = vec4(col, 0.0);
+          vec2 source = (uSource-0.5)*vec2(uAspect,1.0);
+          vec2 axis = normalize(source+vec2(-0.0001,0.0001));
+          // Camera/light coupling plus a slow, bounded optical-axis drift.
+          vec2 center = vec2(0.50,0.48) - clamp(source,vec2(-1.0),vec2(1.0))*0.025;
+          center += vec2(sin(uTime*0.18),sin(uTime*0.13+0.7))*0.004;
+          vec2 p = (vUv-center)*vec2(uAspect,1.0);
+          float radius = length(p);
+          vec2 direction = p/max(radius,0.0001);
+          float angle = atan(p.y,p.x);
+          float offAxis = clamp(length(source)*0.18,0.0,0.035);
+          float causticRadius = uRadius + offAxis*cos(angle-atan(axis.y,axis.x));
+          float d = radius-causticRadius;
+          float pixel = max(fwidth(radius),1.0/max(uResolution.y,1.0));
+          // Spectral splitting of the same caustic: blue outside, muted gold inside.
+          float blue = spectralBand(d-0.025,0.034+pixel);
+          float green = spectralBand(d,0.028+pixel);
+          float red = spectralBand(d+0.022,0.036+pixel);
+          // Aperture/film interference: filtered fine fringes; stable at native UHD resolution.
+          float cycles = min(170.0,0.22/max(pixel,0.00001));
+          float fringe = 0.86+0.14*cos(d*cycles*6.28318 + 1.2*sin(angle*2.0)-uTime*0.22);
+          float radialRays = 0.91+0.09*sin(angle*118.0+sin(angle*17.0));
+          // The reference has two open arcs, with no luminous top/bottom circumference.
+          float sector = pow(abs(cos(angle+0.22+axis.y*0.06)),6.0);
+          vec3 spectrum = vec3(red*0.20,green*0.30,blue*0.57);
+          spectrum += vec3(0.16,0.20,0.24)*spectralBand(d,0.018+pixel);
+          vec3 col = spectrum*sector*fringe*radialRays*uOpacity;
+          gl_FragColor = vec4(col,0.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
         }
       `,
     })

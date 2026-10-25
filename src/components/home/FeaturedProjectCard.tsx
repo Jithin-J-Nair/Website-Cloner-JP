@@ -41,9 +41,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
   useEffect(() => {
     const el = cardStageRef.current;
     if (!el) return;
-    let rafId = 0;
     let decodeRaf = 0;
-    let smoothSkew = 0;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -86,44 +84,8 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
     );
     io.observe(el);
 
-    let lastY = window.scrollY;
-    let lastT = performance.now();
-
-    const applyVelocityShear = (now: number) => {
-      rafId = 0;
-      const stage = cardStageRef.current;
-      if (!stage || reducedMotion) {
-        if (stage) stage.style.transform = "";
-        return;
-      }
-      const curY = window.scrollY;
-      const dt = Math.max(16, now - lastT);
-      const instantVel = ((curY - lastY) / dt) * 16;
-      lastY = curY;
-      lastT = now;
-
-      const targetSkew = Math.max(-2.2, Math.min(2.2, instantVel * -0.045));
-      smoothSkew += (targetSkew - smoothSkew) * 0.26;
-      if (Math.abs(smoothSkew) < 0.02 && Math.abs(targetSkew) < 0.02) {
-        smoothSkew = 0;
-        stage.style.transform = "";
-        return;
-      }
-      stage.style.transform = `skewY(${smoothSkew.toFixed(3)}deg)`;
-      rafId = window.requestAnimationFrame(applyVelocityShear);
-    };
-
-    const onScroll = () => {
-      if (!rafId && !reducedMotion) {
-        rafId = window.requestAnimationFrame(applyVelocityShear);
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       io.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      if (rafId) window.cancelAnimationFrame(rafId);
       if (decodeRaf) window.cancelAnimationFrame(decodeRaf);
     };
   }, [project.categoriesText, reducedMotion]);
@@ -171,7 +133,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
       <div
         ref={cardStageRef}
         onPointerMove={handlePointerMove}
-        style={{ backgroundColor: project.colorBg }}
+        style={{ backgroundColor: project.colorBg, transform: reducedMotion ? "none" : "translate3d(0,var(--project-reveal-y,0px),0) scale(var(--project-reveal-scale,1)) skewY(var(--project-skew,0deg))" }}
         className="project-item-main relative w-full overflow-hidden rounded-[15px] pt-[65%] shadow-[0_14px_34px_rgba(10,14,28,0.06)] transition-shadow duration-500 will-change-transform group-hover:shadow-[0_24px_54px_rgba(26,47,251,0.14)]"
       >
         <div
@@ -192,6 +154,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
               loading={index < 4 ? "eager" : "lazy"}
               decoding="async"
               onError={() => setImgFailed(true)}
+              style={{ transform: reducedMotion ? "none" : "translate3d(0,var(--project-image-y,0px),0) scale(1.08)" }}
               className="project-item-image h-full w-full rounded-[15px] object-cover"
             />
           ) : (

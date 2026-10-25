@@ -11,6 +11,7 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 import { createHollowCrossGeometry } from "@/components/home/HollowCrossGeometry";
 import { loadLusionBuf } from "@/lib/lusion-buf-loader";
+import { homeRenderDpr, stepMotionSpring } from "@/lib/home-motion";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
@@ -341,15 +342,18 @@ export function HeroCrossesStage() {
   const mountRef = useRef<HTMLDivElement>(null);
   const blueMaterialsRef = useRef<THREE.MeshPhysicalMaterial[]>([]);
   const impulseVelRef = useRef<Array<{ pos: THREE.Vector3; rot: THREE.Vector3 }>>([]);
+  const wakeSceneRef = useRef<() => void>(() => {});
   const reducedMotionRef = useRef(reducedMotion);
   const preloaderDoneRef = useRef(preloaderDone);
 
   useEffect(() => {
     reducedMotionRef.current = reducedMotion;
+    wakeSceneRef.current();
   }, [reducedMotion]);
 
   useEffect(() => {
     preloaderDoneRef.current = preloaderDone;
+    wakeSceneRef.current();
   }, [preloaderDone]);
 
   const pointerNdcRef = useRef<{ x: number; y: number; active: boolean }>({
@@ -367,6 +371,7 @@ export function HeroCrossesStage() {
     for (const mat of blueMaterialsRef.current) {
       mat.color.copy(col);
     }
+    wakeSceneRef.current();
   }, [accentHex]);
 
   // Single imperative Three.js studio scene + single EffectComposer + single RAF loop
@@ -400,7 +405,7 @@ export function HeroCrossesStage() {
 
     const initialW = Math.max(1, container.clientWidth);
     const initialH = Math.max(1, container.clientHeight);
-    const initialDpr = Math.min(window.devicePixelRatio || 1, 2);
+    const initialDpr = homeRenderDpr(initialW,initialH,window.devicePixelRatio || 1);
 
     renderer.setPixelRatio(initialDpr);
     renderer.setSize(initialW, initialH, false);
@@ -531,13 +536,11 @@ export function HeroCrossesStage() {
     let sceneDisposed = false;
     void loadLusionBuf("/assets/models/home/cross.buf")
       .then(({ geometry: referenceGeometry }) => {
-        if (sceneDisposed) {
-          referenceGeometry.dispose();
-          return;
-        }
-        loadedCrossGeometry = referenceGeometry;
-        for (const mesh of meshes) mesh.geometry = referenceGeometry;
+        if (sceneDisposed) return;
+        loadedCrossGeometry = referenceGeometry.clone();
+        for (const mesh of meshes) mesh.geometry = loadedCrossGeometry;
         crossGeometry.dispose();
+        wakeSceneRef.current();
       })
       .catch(() => {
         // The already-rendering procedural geometry remains available as a fallback.
@@ -627,7 +630,7 @@ export function HeroCrossesStage() {
     const handleResize = () => {
       const w = Math.max(1, container.clientWidth);
       const h = Math.max(1, container.clientHeight);
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = homeRenderDpr(w,h,window.devicePixelRatio || 1);
 
       updateCameraFraming(w, h);
       renderer.setPixelRatio(dpr);
@@ -651,12 +654,14 @@ export function HeroCrossesStage() {
         m.scale.setScalar(isPortrait ? spec.scale * 0.72 : spec.scale);
       });
       needsRender = true;
+      wakeSceneRef.current();
     };
 
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
     let inView = true;
+    let documentVisible = !document.hidden;
     let rafId = 0;
     let yieldTimerId = 0;
 
@@ -681,11 +686,18 @@ export function HeroCrossesStage() {
     const targetPos = new THREE.Vector3();
     const targetQuat = new THREE.Quaternion();
     const targetEuler = new THREE.Euler();
+    const pointerSprings = meshes.map(() => Array.from({length:6},() => ({value:0,velocity:0})));
+    const pointerRay = new THREE.Raycaster();
+    const pointerNdc = new THREE.Vector2();
+    const pointerPlane = new THREE.Plane();
+    const planeNormal = new THREE.Vector3();
+    const anchorPosition = new THREE.Vector3();
     const pointerWorld = new THREE.Vector3();
     const pointerDelta = new THREE.Vector3();
 
     let prevTime = performance.now();
-    let elapsed = 0;
+
+    let renderCount = 0;
     let shaderVerified = false;
     let staticRendered = false;
     let needsRender = true;
@@ -693,6 +705,7 @@ export function HeroCrossesStage() {
     const scheduleNext = (frameCostMs: number) => {
       if (isSoftwareRenderer && frameCostMs > 40) {
         yieldTimerId = window.setTimeout(() => {
+          yieldTimerId = 0;
           rafId = window.requestAnimationFrame(renderFrame);
         }, 220);
       } else {
@@ -702,6 +715,7 @@ export function HeroCrossesStage() {
 
     const renderFrame = (now: number) => {
       rafId = 0;
+      if (!documentVisible || sceneDisposed) return;
       const frameStart = performance.now();
       const rawDt = Math.max(0.0005, (now - prevTime) * 0.001);
       prevTime = now;
@@ -720,18 +734,18 @@ export function HeroCrossesStage() {
       needsRender = false;
 
       const isReduced = reducedMotionRef.current;
-      if (!isReduced) {
-        elapsed += dt;
-      }
 
       // Exponential smoothing equivalent to ~0.05 lerp at 60fps, strictly delta-time invariant
       const alpha = 1 - Math.exp(-3.1 * dt);
       const decay = Math.exp(-2.6 * dt);
       const isPortrait = camera.aspect < 0.85;
 
+      let moving = false;
       const ptr = pointerNdcRef.current;
       if (ptr.active && !isReduced) {
-        pointerWorld.set(ptr.x * 3.8, ptr.y * 2.4, 0.6);
+        pointerNdc.set(ptr.x,ptr.y);
+        pointerRay.setFromCamera(pointerNdc,camera);
+        camera.getWorldDirection(planeNormal);
       }
 
       for (let i = 0; i < meshes.length; i++) {
@@ -740,40 +754,48 @@ export function HeroCrossesStage() {
         const imp = impulseStates[i];
         const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
 
-        const t = elapsed * 0.42 + spec.driftPhase;
-        const dx = isReduced ? 0 : Math.sin(t) * spec.driftAmp[0];
-        const dy = isReduced ? 0 : Math.cos(t * 0.87) * spec.driftAmp[1];
-        const dz = isReduced ? 0 : Math.sin(t * 0.63) * spec.driftAmp[2];
-
-        targetPos.set(anchor[0] + dx + imp.pos.x, anchor[1] + dy + imp.pos.y, anchor[2] + dz + imp.pos.z);
-
-        // Smooth restrained pointer repulsion
+        let pushX = 0, pushY = 0, pushZ = 0;
         if (ptr.active && !isReduced) {
-          pointerDelta.copy(targetPos).sub(pointerWorld);
-          const dist = pointerDelta.length();
-          if (dist > 0.001 && dist < 2.5) {
-            const push = (1 - dist / 2.5) * 0.55;
-            pointerDelta.divideScalar(dist).multiplyScalar(push);
-            targetPos.add(pointerDelta);
-            if (!pointerReportedRef.current) {
-              pointerReportedRef.current = true;
-              setPointerHits((c) => c + 1);
+          anchorPosition.set(anchor[0],anchor[1],anchor[2]);
+          pointerPlane.setFromNormalAndCoplanarPoint(planeNormal,anchorPosition);
+          if (pointerRay.ray.intersectPlane(pointerPlane,pointerWorld)) {
+            pointerDelta.copy(anchorPosition).sub(pointerWorld);
+            const distance = pointerDelta.length();
+            const radius = 1.85 * spec.scale;
+            if (distance < radius) {
+              if (distance < 0.001) pointerDelta.set(0.6,0.4,0);
+              pointerDelta.normalize().multiplyScalar(Math.pow(1-distance/radius,2)*0.82);
+              pushX = pointerDelta.x;
+              pushY = pointerDelta.y;
+              pushZ = -0.12*Math.pow(1-distance/radius,2);
+              if (!pointerReportedRef.current) {
+                pointerReportedRef.current = true;
+                setPointerHits((c) => c+1);
+              }
             }
           }
         }
-
-        targetEuler.set(
-          spec.euler[0] + (isReduced ? 0 : Math.sin(t * 0.78) * spec.rotAmp[0]) + imp.rot.x,
-          spec.euler[1] + (isReduced ? 0 : Math.cos(t * 0.66) * spec.rotAmp[1]) + imp.rot.y,
-          spec.euler[2] + (isReduced ? 0 : Math.sin(t * 0.54) * spec.rotAmp[2]) + imp.rot.z
-        );
+        const springs = pointerSprings[i];
+        for (let axis = 0; axis < 6; axis++) {
+          const target = axis === 0 ? pushX : axis === 1 ? pushY : axis === 2 ? pushZ : axis === 3 ? -pushY*0.5 : axis === 4 ? pushX*0.55 : pushX*0.18;
+          if (isReduced) { springs[axis].value = springs[axis].velocity = 0; }
+          else stepMotionSpring(springs[axis],target,dt);
+          moving ||= Math.abs(springs[axis].value-target)>0.0001 || Math.abs(springs[axis].velocity)>0.0001;
+        }
+        targetPos.set(anchor[0]+springs[0].value+imp.pos.x,anchor[1]+springs[1].value+imp.pos.y,anchor[2]+springs[2].value+imp.pos.z);
+        targetEuler.set(spec.euler[0]+springs[3].value+imp.rot.x,spec.euler[1]+springs[4].value+imp.rot.y,spec.euler[2]+springs[5].value+imp.rot.z);
         targetQuat.setFromEuler(targetEuler);
 
+        if (mesh.position.distanceToSquared(targetPos)>0.00000001 || mesh.quaternion.angleTo(targetQuat)>0.0001) moving = true;
         mesh.position.lerp(targetPos, alpha);
         mesh.quaternion.slerp(targetQuat, alpha);
+        if (!moving && !ptr.active) { mesh.position.copy(targetPos); mesh.quaternion.copy(targetQuat); }
 
         imp.pos.multiplyScalar(decay);
         imp.rot.multiplyScalar(decay);
+        if (imp.pos.lengthSq()<0.00000001) imp.pos.set(0,0,0);
+        if (imp.rot.lengthSq()<0.00000001) imp.rot.set(0,0,0);
+        moving ||= imp.pos.lengthSq()>0 || imp.rot.lengthSq()>0;
       }
 
       // Dynamic view-space DOF focus locked every frame onto the royal-blue hero connector
@@ -785,8 +807,17 @@ export function HeroCrossesStage() {
         (bokehPass.uniforms as Record<string, THREE.IUniform>).focus.value = -heroViewPos.z;
       }
 
+      renderer.info.autoReset = false;
+      renderer.info.reset();
       composer.render(dt);
+      container.dataset.motionState = moving ? "responding" : "settled";
+      container.dataset.activeRaf = moving ? "true" : "false";
+      container.dataset.renderPixels = `${renderer.domElement.width}x${renderer.domElement.height}`;
+      container.dataset.offsetEnergy = pointerSprings.reduce((sum,axes) => sum+axes.reduce((total,axis) => total+Math.abs(axis.value),0),0).toFixed(5);
       const elapsedFrameMs = performance.now() - frameStart;
+      container.dataset.renderCount = String(++renderCount);
+      container.dataset.frameCpuMs = elapsedFrameMs.toFixed(2);
+      container.dataset.drawCalls = String(renderer.info.render.calls);
       // Automatic adaptive post-processing fallback if software rasterization / disabled GPU
       // exceeds 140ms on initial frame (keeps real hardware GPUs at 100% full GTAO + Bokeh + Bloom)
       if (!staticRendered && elapsedFrameMs > 140) {
@@ -810,18 +841,32 @@ export function HeroCrossesStage() {
       }
 
       // True zero-loop accessibility under `prefers-reduced-motion: reduce` once static frame is painted
-      if (isReduced) {
-        return;
-      }
+      if (isReduced || !moving) return;
 
       scheduleNext(elapsedFrameMs);
     };
+
+    const wakeScene = () => {
+      needsRender = true;
+      if (!rafId && !yieldTimerId && !sceneDisposed && documentVisible) {
+        prevTime = performance.now();
+        rafId = window.requestAnimationFrame(renderFrame);
+      }
+    };
+    wakeSceneRef.current = wakeScene;
+    const onVisibility = () => {
+      documentVisible = !document.hidden;
+      if (documentVisible) wakeScene();
+    };
+    document.addEventListener("visibilitychange",onVisibility);
 
     // Render immediate deterministic frame 0 so screenshots never catch an unrendered frame
     renderFrame(performance.now());
 
     return () => {
       sceneDisposed = true;
+      wakeSceneRef.current = () => {};
+      document.removeEventListener("visibilitychange",onVisibility);
       window.cancelAnimationFrame(rafId);
       window.clearTimeout(yieldTimerId);
       resizeObserver.disconnect();
@@ -855,16 +900,19 @@ export function HeroCrossesStage() {
     if (!rect) return;
     pointerNdcRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     pointerNdcRef.current.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-    pointerNdcRef.current.active = true;
+    pointerNdcRef.current.active = e.pointerType !== "touch";
+    wakeSceneRef.current();
   }, []);
 
   const handlePointerLeave = useCallback(() => {
     pointerNdcRef.current.active = false;
+    wakeSceneRef.current();
   }, []);
 
   const handleStageClick = useCallback(() => {
     soundEngine.playClick();
     setColorIdx((prev) => (prev + 1) % HERO_ACCENT_PALETTE.length);
+    if (reducedMotionRef.current) return;
     impulseVelRef.current.forEach((imp, idx) => {
       const angle = idx * 1.9;
       imp.pos.set(Math.cos(angle) * 0.42, Math.sin(angle) * 0.36, Math.sin(idx) * 0.25);
@@ -874,6 +922,7 @@ export function HeroCrossesStage() {
         Math.sin(idx * 0.9) * 0.45
       );
     });
+    wakeSceneRef.current();
   }, []);
 
   const handleKeyDown = useCallback(
@@ -903,6 +952,7 @@ export function HeroCrossesStage() {
       onKeyDown={handleKeyDown}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
+      onPointerCancel={handlePointerLeave}
       className="relative h-full w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#13151d] select-none focus-visible:outline-2 focus-visible:outline-[#1a2ffb]"
     >
       {webglSupported ? (
