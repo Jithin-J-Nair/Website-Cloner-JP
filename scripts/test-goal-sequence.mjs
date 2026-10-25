@@ -17,7 +17,7 @@ try {
   }
   const { parseLusionBuf } = await import(pathToFileURL(path.join(dir, 'lusion-buf-loader.mjs')));
   const { decodeCapturedGirder, createGlassFrameSampler, createGoalPlaybackPath } = await import(pathToFileURL(path.join(dir, 'GoalDownstreamScenes.mjs')));
-  const { createCapturedPoseSampler } = await import(pathToFileURL(path.join(dir, 'AstronautEmergenceAssets.mjs')));
+  const { createCapturedPoseSampler, createCapturedRootSampler, applyCapturedDualQuaternionSkinning } = await import(pathToFileURL(path.join(dir, 'AstronautEmergenceAssets.mjs')));
   const load = (name) => {
     const data = fs.readFileSync(`media-bundle/models/tunnels/${name}.buf`);
     return parseLusionBuf(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
@@ -58,6 +58,55 @@ try {
   const normals = girder.getAttribute('normal');
   for (let i = 0; i < normals.count; i++) assert.ok(Math.abs(Math.hypot(normals.getX(i), normals.getY(i), normals.getZ(i)) - 1) < 1e-5);
   console.log('PASS: four encoded girder faces decode to the captured low-detail cross-section; source immutable');
+
+  const tangent = girder.getAttribute('tangent');
+  for (let i = 0; i < tangent.count; i++) {
+    const n = new THREE.Vector3().fromBufferAttribute(normals,i);
+    const t = new THREE.Vector3().fromBufferAttribute(tangent,i);
+    assert.ok(Math.abs(n.dot(t)) < 0.005, 'decoded atlas tangent stays orthogonal to its face normal');
+    assert.ok(Math.abs(t.length()-1) < 0.005);
+    assert.equal(tangent.getW(i),source.geometry.getAttribute('tangent').getW(i));
+  }
+  const inner = load('grid_structure_hd'), outer = load('grid_structure_ld');
+  assert.equal(inner.header.vertexCount,96);
+  assert.equal(outer.header.vertexCount,456);
+  assert.equal(inner.header.vertexCount * 3 + outer.header.vertexCount * 3,1656);
+  assert.ok([...outer.attributes.position].every(Number.isFinite));
+  console.log('PASS: decoded TBN handedness and captured 96-inner / 456-outer placement budget');
+
+  for (const name of ['astronaut_in_animation','astronaut_out_animation']) {
+    const data = load(name);
+    const sampleRoot = createCapturedRootSampler(data);
+    const p = new THREE.Vector3(), q = new THREE.Quaternion();
+    const states = [];
+    for (let i = 0; i <= 200; i++) {
+      const frame = i*99/200;
+      sampleRoot(frame,p,q);
+      assert.ok([...p.toArray(),...q.toArray()].every(Number.isFinite));
+      assert.ok(Math.abs(q.length()-1) < 1e-7);
+      states.push({frame,p:p.toArray(),q:q.toArray()});
+    }
+    for (const state of states.reverse()) {
+      sampleRoot(state.frame,p,q);
+      assert.deepEqual(p.toArray(),state.p);
+      assert.deepEqual(q.toArray(),state.q,'root quaternions may not accumulate through reverse samples');
+    }
+    sampleRoot(-5,p,q);
+    assert.ok(p.distanceTo(new THREE.Vector3().fromArray(data.attributes.position)) < 1e-7);
+    sampleRoot(1000,p,q);
+    assert.ok(p.distanceTo(new THREE.Vector3().fromArray(data.attributes.position,99*3)) < 1e-7);
+  }
+  const skinMaterial = new THREE.MeshPhysicalMaterial();
+  applyCapturedDualQuaternionSkinning(skinMaterial);
+  const shader = {vertexShader:['skinning_pars_vertex','skinbase_vertex','skinnormal_vertex','skinning_vertex'].map((c)=>`#include <${c}>`).join('\n')};
+  skinMaterial.onBeforeCompile(shader,null);
+  for (const chunk of ['skinbase_vertex','skinnormal_vertex','skinning_vertex']) {
+    assert.ok(!shader.vertexShader.includes(`#include <${chunk}>`));
+  }
+  assert.ok(shader.vertexShader.includes('getBoneMatrix(skinIndex.x)'), 'rig palette remains Three-owned, not a captured shared-material uniform');
+  assert.ok(shader.vertexShader.includes('dqSign') && shader.vertexShader.includes('dqD -= dqR * dot(dqR,dqD)'));
+  skinMaterial.dispose();
+  console.log('PASS: two 100-frame root curves clamp/interpolate/reverse; DQ replaces position/normal/tangent skin chunks');
 
   const animation = load('astronaut_animations');
   const bones = Array.from({ length: 53 }, () => new THREE.Bone());

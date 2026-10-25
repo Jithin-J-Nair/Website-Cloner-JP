@@ -35,6 +35,7 @@ export interface LoadedAstronautRig {
   triangles: number;
   /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
   sampleBakedPose?: (frame: number, influence: number) => void;
+  sampleCapturedRoot?: (stage: "in" | "out", frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void;
 }
 
 export interface SuitJointPose {
@@ -566,6 +567,84 @@ export async function loadLicensedAstronautGlb(
   return { primary, createClone };
 }
 
+/** Allocation-free sampler for the separately captured whole-body trajectories (100 frames). */
+export function createCapturedRootSampler(data: ParsedBufData): (frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void {
+  const frames = data.header.vertexCount;
+  if (frames !== 100 || data.header.attributes.find((a) => a.id === "orient")?.componentSize !== 4) {
+    throw new Error("Unexpected captured root animation layout");
+  }
+  const q1 = new THREE.Quaternion();
+  return (frame, position, orientation) => {
+    const f = THREE.MathUtils.clamp(frame,0,frames-1);
+    const a = Math.floor(f), b = Math.min(frames-1,a+1), t = f-a;
+    const p = data.attributes.position, q = data.attributes.orient;
+    position.set(THREE.MathUtils.lerp(p[a*3],p[b*3],t),THREE.MathUtils.lerp(p[a*3+1],p[b*3+1],t),THREE.MathUtils.lerp(p[a*3+2],p[b*3+2],t));
+    orientation.fromArray(q,a*4).normalize();
+    q1.fromArray(q,b*4).normalize();
+    orientation.slerp(q1,t);
+  };
+}
+
+/** Rigid two-influence dual-quaternion skinning using Three's per-skeleton bone texture.
+ * Preserve the existing bind/palette ownership: shared materials must never close over a
+ * particular rig. Only the captured astronaut uses this patch, not the legacy GLB fallback.
+ */
+export function applyCapturedDualQuaternionSkinning(material: THREE.Material): void {
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace("#include <skinning_pars_vertex>", `
+      #include <skinning_pars_vertex>
+      vec4 capturedQuat(mat3 m) {
+        float trace = m[0][0]+m[1][1]+m[2][2];
+        vec4 q;
+        if (trace > 0.0) {
+          float s = 2.0 * sqrt(trace+1.0);
+          q = vec4((m[1][2]-m[2][1])/s, (m[2][0]-m[0][2])/s, (m[0][1]-m[1][0])/s, 0.25*s);
+        } else if (m[0][0] > m[1][1] && m[0][0] > m[2][2]) {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[0][0]-m[1][1]-m[2][2]));
+          q = vec4(0.25*s,(m[1][0]+m[0][1])/s,(m[2][0]+m[0][2])/s,(m[1][2]-m[2][1])/s);
+        } else if (m[1][1] > m[2][2]) {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[1][1]-m[0][0]-m[2][2]));
+          q = vec4((m[1][0]+m[0][1])/s,0.25*s,(m[2][1]+m[1][2])/s,(m[2][0]-m[0][2])/s);
+        } else {
+          float s = 2.0 * sqrt(max(0.000001,1.0+m[2][2]-m[0][0]-m[1][1]));
+          q = vec4((m[2][0]+m[0][2])/s,(m[2][1]+m[1][2])/s,0.25*s,(m[0][1]-m[1][0])/s);
+        }
+        return normalize(q);
+      }
+      vec4 capturedDual(vec4 r, vec3 t) {
+        return 0.5 * vec4(r.w*t + cross(t,r.xyz),-dot(t,r.xyz));
+      }
+      vec3 capturedRotate(vec4 q, vec3 p) {
+        return p + 2.0 * cross(q.xyz,cross(q.xyz,p)+q.w*p);
+      }
+    `).replace("#include <skinbase_vertex>", `
+      mat4 dqBone0 = getBoneMatrix(skinIndex.x);
+      mat4 dqBone1 = getBoneMatrix(skinIndex.y);
+      vec4 dqR0 = capturedQuat(mat3(dqBone0));
+      vec4 dqR1 = capturedQuat(mat3(dqBone1));
+      vec4 dqD0 = capturedDual(dqR0,dqBone0[3].xyz);
+      vec4 dqD1 = capturedDual(dqR1,dqBone1[3].xyz);
+      float dqSign = dot(dqR0,dqR1) < 0.0 ? -1.0 : 1.0;
+      vec4 dqR = skinWeight.x*dqR0 + skinWeight.y*dqSign*dqR1;
+      vec4 dqD = skinWeight.x*dqD0 + skinWeight.y*dqSign*dqD1;
+      float dqLength = max(length(dqR),0.000001);
+      dqR /= dqLength;
+      dqD /= dqLength;
+      dqD -= dqR * dot(dqR,dqD);
+    `).replace("#include <skinnormal_vertex>", `
+      objectNormal = capturedRotate(dqR,objectNormal);
+      #ifdef USE_TANGENT
+        objectTangent = capturedRotate(dqR,objectTangent);
+      #endif
+    `).replace("#include <skinning_vertex>", `
+      transformed = capturedRotate(dqR,transformed) +
+        2.0 * (dqR.w*dqD.xyz - dqD.w*dqR.xyz + cross(dqR.xyz,dqD.xyz));
+    `);
+  };
+  material.customProgramCacheKey = () => "captured-two-weight-dq-v1";
+  material.needsUpdate = true;
+}
+
 /** Sample the capture's model-space (inverse-bind-applied) transforms without advancing wall time. */
 export function createCapturedPoseSampler(
   animation: ParsedBufData,
@@ -635,7 +714,7 @@ export async function loadLusionAstronautParts(
   const textureLoader = new THREE.TextureLoader();
   const loadTexture = (name: string) => textureLoader.loadAsync(`${textureRoot}${name}`).then(track);
   const [helmetData, visorData, glovesData, packData, helmetBase, helmetNormal, helmetArm,
-    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm, animation] = await Promise.all([
+    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm, animation, inAnimation, outAnimation] = await Promise.all([
     loadLusionBuf(`${assetRoot}astronaut_helmet.buf`),
     loadLusionBuf(`${assetRoot}astronaut_helmet_glass.buf`),
     loadLusionBuf(`${assetRoot}astronaut_glove_shoes.buf`),
@@ -650,6 +729,8 @@ export async function loadLusionAstronautParts(
     loadTexture("astronaut_wearpack_nor.webp"),
     loadTexture("astronaut_wearpack_arm.webp"),
     loadLusionBuf(`${assetRoot}astronaut_animations.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_in_animation.buf`),
+    loadLusionBuf(`${assetRoot}astronaut_out_animation.buf`),
   ]);
 
   for (const tex of [helmetBase, glovesBase, packBase]) tex.colorSpace = THREE.SRGBColorSpace;
@@ -712,6 +793,7 @@ export async function loadLusionAstronautParts(
   }
   const parts = [helmetData, visorData, glovesData, packData];
   const partMaterials = [helmetMaterial, visorMaterial, glovesMaterial, packMaterial];
+  partMaterials.forEach(applyCapturedDualQuaternionSkinning);
   const geometries = parts.map(({ geometry: source }) => {
     const geometry = track(source.clone());
     const indices = source.getAttribute("boneIndices");
@@ -736,6 +818,11 @@ export async function loadLusionAstronautParts(
     0
   );
 
+  const sampleIn = createCapturedRootSampler(inAnimation);
+  const sampleOut = createCapturedRootSampler(outAnimation);
+  const sampleCapturedRoot: NonNullable<LoadedAstronautRig["sampleCapturedRoot"]> = (stage,frame,position,orientation) => {
+    (stage === "in" ? sampleIn : sampleOut)(frame,position,orientation);
+  };
   const buildCapturedRig = (): LoadedAstronautRig => {
     const root = new THREE.Group();
     const modelRoot = new THREE.Group();
@@ -764,7 +851,7 @@ export async function loadLusionAstronautParts(
     for (const bone of bones) bone.matrixWorldAutoUpdate = false;
     return {
       root, modelRoot, bones: {}, restQuats: {}, materials: partMaterials,
-      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose,
+      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose, sampleCapturedRoot,
     };
   };
   const primary = buildCapturedRig();

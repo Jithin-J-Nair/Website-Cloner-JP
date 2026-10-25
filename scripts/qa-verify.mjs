@@ -191,6 +191,10 @@ const referenceSceneAssets = [
   "/assets/models/tunnels/astronaut_helmet_glass.buf",
   "/assets/models/tunnels/astronaut_glove_shoes.buf",
   "/assets/models/tunnels/astronaut_wearpack.buf",
+  // Captured skeletal/root curves, both lattice levels, PBR atlases and corridor modules.
+  ...["astronaut_animations","astronaut_in_animation","astronaut_out_animation","grid_base_hd","grid_base_ld","grid_structure_hd","grid_structure_ld","tunnel_block_base","tunnel_block_wall"].map((name) => `/assets/models/tunnels/${name}.buf`),
+  ...["base","arm","nor"].map((name) => `/assets/textures/tunnels/grids/greeble_${name}.webp`),
+  "/assets/textures/tunnels/white_block.webp",
   "/assets/textures/tunnels/astronaut/astronaut_helmet_base.webp",
   "/assets/textures/tunnels/astronaut/astronaut_helmet_nor.webp",
   "/assets/textures/tunnels/astronaut/astronaut_glove_shoes_base.webp",
