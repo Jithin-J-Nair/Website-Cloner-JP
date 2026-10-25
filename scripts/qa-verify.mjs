@@ -179,6 +179,13 @@ if (!assetOk) failures += 1;
 // These are the actual captured Lusion hero/suit assets used by the WebGL scenes.
 // Check the delivered bytes, not merely whether a manifest entry or source path exists.
 const referenceSceneAssets = [
+  // The actual captured showreel must remain available. If either video 404s,
+  // HomePageView silently switches to the procedural approximation, a major visual regression.
+  "/assets/textures/reel/desktop.mp4",
+  "/assets/textures/reel/mobile.mp4",
+  // Captured spline geometry drives the homepage's two large ribbon transitions.
+  "/assets/models/lines/line_reel.buf",
+  "/assets/models/lines/line_goal.buf",
   "/assets/models/home/cross.buf",
   "/assets/models/tunnels/astronaut_helmet.buf",
   "/assets/models/tunnels/astronaut_helmet_glass.buf",
