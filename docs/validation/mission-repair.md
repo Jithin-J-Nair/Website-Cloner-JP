@@ -1,3 +1,114 @@
+# Cinematic website repair — follow-up status and remaining blockers
+
+Date: **2026-10-25**. Existing [PR #12](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/12); branch `arena/6d83ea00-website-cloner-jp`, base `master`. Verified entry **7c81b44** (not assumed from the earlier conversation). Integration commit **3d53161**; source/security/diagnostics commit **d15f49d**.
+
+**FOLLOW-UP OUTCOME: INCOMPLETE.** Master conflicts and the audited critical dependency graph are repaired. Original normal-motion desktop/mobile acceptance still fails. No complete cinematic, smoothness, glare/tesseract parity, physical-GPU or 4K60 acceptance is claimed. Build/CI success does not override those failures.
+
+[Evidence index, exact interpretation and reproduction](mission-repair/followup-2026-10-25/README.md) · [Full execution results](mission-repair/followup-2026-10-25/final-results.json) · [Additional checks](mission-repair/followup-2026-10-25/extra-results.json) · [Aggregate FAILED acceptance](mission-repair/followup-2026-10-25/aggregate-results.json) · [Uninterrupted replay with capture tail](mission-repair/followup-2026-10-25/recorded-final/replay.mp4)
+
+## 1. What this follow-up actually changed
+
+- **Resolved all 27 target conflicts deliberately** with both parent blobs and exact merge base reviewed; merged `master` **into this PR branch**, never the PR into master. Target `1bc32be7de206ded61be0bba4942feeb3c159bba`, merge base `3ec20e525669f6778278940c7d4d052f65630f44`. [Per-path decisions and preserved user work](../integration/master-resolution.md). Both parents remain in history; safety stash retained. Canonical Contact CTA fallback spacing and both reduced-motion footer controls are byte-identical to entry, not overwritten by target's regressions. Alternate upstream archive/card/docs and its novel reference/three/provider work are preserved without activating a second scene/transition owner.
+- Repaired the retained **inactive** upstream provider's declaration/hook error and pending timeout/frame cleanup. Restored its no-op comparison script as real aspect-preserving, same-name image comparison, with explicit absent-reference failures; synthetic 4×1 pixel output/missing-reference tests pass. These are not new canonical-route integrations or reference parity certificates.
+- **Patched dependencies, not animation quality:** Next/eslint config `16.3.5 → 16.4.3` (pinned matching versions), shadcn generator `4.1.0 → 4.22.1` moved to development scope; compatible remaining transitive patches via ordinary `npm audit fix`, no force/override. React and Three unchanged. Node minimum corrected to Next's actual >=20.9 requirement.
+- Added cold/replay/GL/long-task observation and a post-completion recording tail. Split opt-in GPU phase tagging and profiling into separate **pre-burst glass** and **shatter**. Observer RAF rate, submission-count changes, CPU and asynchronous GPU execution are explicitly separate. The sole active scene source change is that opt-in phase **label**, not its render content or clock.
+
+**Preservation proof:** [SHA-256 comparison](mission-repair/followup-2026-10-25/preserved-source-sha256.json) confirms the original autonomous script, trajectory/glass sampler, captured actor/poses, clock, hero/card resets and Contact CTA are byte-identical to verified entry. [Scene diff](mission-repair/followup-2026-10-25/application-scene-diff.patch) is the one phase-label change. No whole-sequence stretch, dt truncation, competing playhead, resolution/quality reduction, speculative warm-up or acceptance expectation change was applied.
+
+## 2. Original failures: reproduced, not hidden or waived
+
+The fresh unchanged baseline failed **both** normal configurations at `validate-goal-sequence.mjs:124`: desktop 162 / mobile 153 playing telemetry samples, **zero mid-glass samples each**, no recorded JS/asset errors. Final original-script results:
+
+| Viewport width | Playing telemetry samples | Shaft / blue / mid-glass samples | Unique blue poses | Original result |
+| --- | ---: | --- | ---: | --- |
+| 1440 | 159 | 22 / 33 / 1 | 5 | **FAIL**, line 124: all intermediate stages visibly play |
+| 390 | 148 | 30 / 16 / 7 | 3 | **FAIL**, line 126: captured blue-flight pose keeps advancing |
+
+The unchanged gates require shaft >5, blue >5, glass >3 and unique blue poses >5, plus the downstream opacity/crack/handoff/CTA/ownership assertions. Desktop stops at its first failure; its later pose assertion is **not reached** (the computed five unique poses would also be insufficient). No downstream assertion not reached in that test is represented as passed. Mobile's phase-count pass is not proof of presented-frame density. Counts fluctuate between runs; this is not an animation fix.
+
+### Rendered evidence and root-cause limit
+
+The new native replay contains **67 timestamped capture frames over 44.435 s**, including a requested 20 s tail. There is no input or seek between activation and completion. CPU telemetry says completed at page time **72,646.2 ms**, but individually reviewed frame 40 still shows the blue corridor at **78,916.1 ms**, and frames 41/42 show the monitor at **79,568.9 / 80,158.4 ms**. Frames 43/44 show the astronaut/sticker scene and CTA. [Timestamp associations](mission-repair/followup-2026-10-25/recorded-final/temporal-associations.json) explicitly distinguish latest CPU observations from image causality.
+
+This proves that stopping capture at CPU completion misses later images in this environment. It does **not** establish enough visibly presented fracture/glass frames, or authorize changing the original acceptance test. Seeked captures show crack/fracture geometry exists; they do not prove its native cadence.
+
+The final diagnostic observes **39/41 playing submission changes cold/replay**, one mid-glass observation in each. Replay moves from glass=.2710 at 66,952.4 ms to .7983 at 68,754.5 ms with CPU submission durations .9 / 1.5 ms; it records no replay long task or wrapped GL call >20 ms. Cold has long tasks up to **1909 ms**, and slow texture uploads 22–68.7 ms primarily before/early in playback. Replay sparsity rules out first-use shader compilation as a sufficient sole explanation. Separate software-backend execution queries are hundreds of milliseconds, not the CPU's 1–2 ms steady submission times.
+
+**Established:** insufficient observed cadence across short authored phases, plus capture/presentation lag. **Not established:** exact shader/driver/overdraw/compositor attribution or a quality-preserving fix. Wrapped GL coverage is not exhaustive; timer results are delayed, not frame-paired. No invented exact compiler bottleneck or claim of a harmless observation-only defect is made. **Priority 1 remains open.**
+
+## 3. Performance — software evidence, not hardware certification
+
+Environment: HeadlessChrome **153.0.8010.0**, Linux x86_64, two reported cores, DPR 1, ANGLE Vulkan **SwiftShader**. Viewport **1440×900**, existing software drawing buffer **960×600**. `/dev/dri` and a system hardware browser are absent. Production Next 16.4.3; Node 22.22.3 locally. Requested sweep duration **10 s/phase**, actual observation spans may overshoot with slow RAFs. No physical-GPU, device, delivered 60 FPS or native 4K60 result exists.
+
+### Equivalent before/after settings — original four-phase script, queries off
+
+The comparison reruns the **exact entry profiler** against the final source, same viewport, render mode, requested duration, phase order and settings in separate browsers. No added glass prewarm is inserted into this comparison. Raw distributions and counts are retained in [before](mission-repair/followup-2026-10-25/profile-before/report.json) / [after](mission-repair/followup-2026-10-25/profile-equivalent/report.json). Rates below are **observer RAF callbacks/s, not presented FPS**; CPU telemetry is latest submission timing, not GPU work.
+
+| Phase | Observer rate before → after | CPU p95 ms before → after | Observer interval p95 ms before → after | Samples before / after |
+| --- | --- | --- | --- | --- |
+| solar | 3.89 → 3.41 | 1.8 → 2.3 | 533.3 → 533.3 | 39 / 35 |
+| tesseract | 1.50 → 1.56 | 1.2 → 1.6 | 1516.6 → 1650.0 | 17 / 18 |
+| blue | 0.79 → 0.79 | 1649.9 → 2488.5 | 1650.0 → 1883.3 | 9 / 8 |
+| shatter | 1.34 → 1.08 | 1453.6 → 1904.5 | 1450.0 → 1916.6 | 14 / 12 |
+
+No active performance optimization or causal speed gain is claimed. Software results remain far above a 16.7 ms budget, and run variance is not a fix.
+
+### Separate five-phase GPU diagnostic (queries on; not the paired speed comparison)
+
+| Phase | Observer / submission rate per s | Observed s | CPU p50 / p95 ms | Deferred backend p50 / p95 ms | Max calls / triangles |
+| --- | --- | ---: | --- | --- | --- |
+| solar | 3.79 / 3.89 | 10.02 | 0.9 / 1.0 | 237.6 / 663.8 (n=13) | 6 / 13,241 |
+| tesseract | 1.86 / 1.96 | 10.20 | 1.0 / 1.7 | 677.8 / 785.3 (n=8) | 11 / 143,609 |
+| blue | 0.89 / 0.97 | 12.37 | 0.9 / 2866.4 | 526.1 / 709.8 (n=6) | 10 / 103,163 |
+| glass | 1.14 / 1.22 | 12.32 | 0.9 / 2.0 | 357.9 / 373.9 (n=8) | 10 / 103,163 |
+| shatter | 0.99 / 1.09 | 10.07 | 1.1 / 1188.7 | 363.0 / 363.0 (n=1) | 11 / 115,193 |
+
+GPU rows deduplicate phase-tagged late results; they are **not paired to RAF/images or strictly in-window**. The shatter n=1 tail is not a reliable distribution. Pre-burst glass sweeps shatter-progress .05–.20, fracture .30–.65. Geometry/texture/program counts and browser metrics are in the report. Some query-run activity overlaps lightweight agent/encoding work; it is diagnostic and not the isolated paired comparison. Shader-specific cost, exact overdraw and full GPU resource lifetime are not measured; actual query teardown/context-loss behavior is covered by regressions. No quality-reducing speculative optimization was substituted for attribution. **Priority 3 remains partially measured, not closed.**
+
+## 4. Visual/reference assessment
+
+Fresh running-build captures include camera-dependent solar states, axial/rotated colored glazing, blue approach, crack/fracture, contact and responsive states in `mission-repair/followup-2026-10-25/visual/`; the native replay is separate from seeked state captures. Individually reviewed solar samples show cool peripheral arcs; the .42 tunnel capture shows layered rotated grid structure; .5 glass capture shows the monitor/subject with plate cracks. These observations are not an improvement or optical-quality certification.
+
+Available target evidence is the newly preserved upstream `reference/side-by-side` images and `reference/TIMELINE_OFFICIAL.md`. Its labeled left-hand target is useful static evidence; its right-hand build is an **older generic reconstruction**, not current output. The supplied recording is hand-scrolled; its timestamps are explicitly order/keyframes, not authored durations. Fresh live `https://lusion.co/` access again fails **ERR_CONNECTION_CLOSED**. No inaccessible live behavior/timing was invented, and no optics/tesseract rewrite was justified from mismatched camera/time samples. Continuous visual parity, fracture visibility and glare quality remain unaccepted. **Priority 4 remains open.**
+
+## 5. Security result
+
+Fresh full audit: **11 vulnerable package records, 2 critical / 6 high / 3 moderate → 0**. Fresh production-only audit: **0**. [Exact installed versions, severity, dependency paths, decisions](mission-repair/followup-2026-10-25/security-remediation.md), [before](mission-repair/followup-2026-10-25/audit-before.json), [after](mission-repair/followup-2026-10-25/audit-after.json), [production-only](mission-repair/followup-2026-10-25/audit-production-after.json).
+
+Critical Next is a direct production framework dependency. Critical proxy-addr is under the production-declared generator → MCP SDK → Express tool graph, not an identified application Express service. It is actually updated to 2.0.8 under SDK 1.32.2 / Express 5.3.0, not merely omitted by moving the CLI. Remaining brace-expansion, source-map-js, Zod and related tool transitives are patched; all dependency records and advisory URLs are retained. Registry-recommended compatible Next 16.4.3 is built and tested with retained React 19.2.4. There is **no unresolved critical npm audit record** in this graph as of this run; advisory absence is not an exploitability/security certification. **Priority 5's audited remediation is closed.**
+
+## 6. Fresh regression and integration status
+
+| Check | Result and scope |
+| --- | --- |
+| `npm run check` | **PASS** lint/types/production build; lint retains two pre-existing warnings (About `team` hook dependency; project-detail unused `highlight`). No suppressions |
+| Motion/goal units; asset units | **PASS** `test-home-motion`, `test-goal-sequence`; 18 asset tests |
+| Route/asset QA | **PASS** 22 canonical routes + unknown-route 404 + 50/50 captured assets/security checks |
+| Original normal desktop/mobile | **FAIL**, unchanged assertions above; not waived |
+| Reduced forward/reverse | **PASS** both widths: 11 states, four handoffs, failure isolation, query/listener teardown |
+| Pause/resume/menu/resize/replay/skip/contact/live preference | **PASS** both widths; paused additional draw submissions **0**; imposed 650 ms stall advances authored clock **.6914 / .6886 s**, not .25 s |
+| Genuine context loss / unavailable WebGL / astronaut failure | **PASS** both widths, readable fallback/contact and released scrolling; actual context-loss extension used, constructor and astronaut failure scenarios separate |
+| Home/reel/featured/camera/modal/media | **PASS** desktop/mobile normal, tablet reduced; responsive normal tablet audit also run separately |
+| Extended viewport audits | **PASS** desktop/mobile normal and tablet normal/reduced: no issues, JS/console errors, failed responses, duplicate IDs or horizontal overflow in checked states |
+| Live hero reduced reset | **PASS**, mean absolute channel error **0**, changed channels >3 **0**, settled/no active RAF |
+| Live reference | **BLOCKED**, recorded ERR_CONNECTION_CLOSED; process exit zero does not mean loaded reference |
+| GitHub source CI | **PASS** quality at `d15f49d`: clean npm install, lint, types, build on Node 24; this workflow does **not** run the cinematic browser gates |
+| Target conflicts | **Resolved**; fresh target is ancestor; no unmerged paths. GitHub source head **MERGEABLE / CLEAN**, PR **OPEN**. Mechanical mergeability is not cinematic acceptance; PR not merged |
+
+All raw command exits are retained. Two collection invocations mistakenly used unsupported `AUDIT_FAILURE=glb` and timed out without injecting a failure; their logs/nonzero exits remain. Correct `AUDIT_FAILURE=astronaut` reruns pass separately. Collection-runner completion is not a passing aggregate gate: aggregate acceptance remains **FAILED**. Tests were not disabled, thresholds not relaxed and expected images not replaced.
+
+## 7. Remaining blockers / next acceptance work
+
+1. **Priority 1:** isolate the submission/presentation bottleneck through the glass/blue handoff, implement a measured quality-preserving fix, and pass the original desktop/mobile normal gates with timestamped uninterrupted visible fracture evidence. Do not stretch the sole 22.5 s trajectory or reinstate time truncation.
+2. **Priorities 3/4:** obtain a physical-GPU browser for complementary measurements, isolate shader/overdraw/driver cost here, and review matched camera/motion reference states before any optical change. Hardware success alone would not waive a failing required test here.
+3. **Priority 6:** re-run the full suite after the eventual cinematic fix, including the presently unreached original assertions. Current units/build/CI and fallback/control successes cannot close those gaps.
+
+**Definition of done is not met.** The report and existing PR are updated to preserve the failures and evidence, not to claim all blockers are closed.
+
+---
+
+# Earlier mission report — historical snapshot, not the follow-up's current status
+
 # Cinematic website repair — verified fixes and open acceptance failures
 
 Date: **2026-10-25**. Branch: `arena/6d83ea00-website-cloner-jp`. Existing [PR #12](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/12), base `master`. Entry commit: `e69e401306d46f79ee5b3b81ee5ba1f3b75ed30d`. Repair/test commit: **`16de3439c7902b460b38be268b5e67055d54c397`**.

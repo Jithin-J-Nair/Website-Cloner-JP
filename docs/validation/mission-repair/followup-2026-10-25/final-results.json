@@ -1,0 +1,299 @@
+[
+  {
+    "name": "final-goal-unit",
+    "command": "node scripts/test-goal-sequence.mjs",
+    "env": {},
+    "exit": 0,
+    "seconds": 0.98
+  },
+  {
+    "name": "final-motion",
+    "command": "npm run test:motion",
+    "env": {},
+    "exit": 0,
+    "seconds": 0.62
+  },
+  {
+    "name": "final-assets",
+    "command": "npm run test:assets",
+    "env": {},
+    "exit": 0,
+    "seconds": 0.73
+  },
+  {
+    "name": "final-qa",
+    "command": "npm run qa",
+    "env": {},
+    "exit": 0,
+    "seconds": 0.83
+  },
+  {
+    "name": "final-normal-1440",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_MOTION": "normal",
+      "GOAL_VIEWPORT_WIDTH": "1440"
+    },
+    "exit": 1,
+    "seconds": 54.88,
+    "report": "temp/followup/final-normal-1440.json",
+    "evidenceReport": "final-normal-1440.json"
+  },
+  {
+    "name": "final-normal-390",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_MOTION": "normal",
+      "GOAL_VIEWPORT_WIDTH": "390"
+    },
+    "exit": 1,
+    "seconds": 47.32,
+    "report": "temp/followup/final-normal-390.json",
+    "evidenceReport": "final-normal-390.json"
+  },
+  {
+    "name": "final-reduced-1440",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_VIEWPORT_WIDTH": "1440"
+    },
+    "exit": 0,
+    "seconds": 139.23,
+    "report": "temp/followup/final-reduced-1440.json",
+    "evidenceReport": "final-reduced-1440.json"
+  },
+  {
+    "name": "final-reduced-390",
+    "command": "node scripts/validate-goal-sequence.mjs",
+    "env": {
+      "GOAL_VIEWPORT_WIDTH": "390"
+    },
+    "exit": 0,
+    "seconds": 86.44,
+    "report": "temp/followup/final-reduced-390.json",
+    "evidenceReport": "final-reduced-390.json"
+  },
+  {
+    "name": "final-recorded-diagnostic",
+    "command": "node scripts/diagnose-goal-startup.mjs",
+    "env": {
+      "DIAGNOSTIC_RECORD": "1",
+      "DIAGNOSTIC_OUT": "temp/followup/recorded-final",
+      "BASE_URL": "http://127.0.0.1:3000/?profileGoal=1"
+    },
+    "exit": 0,
+    "seconds": 99.0,
+    "report": "temp/followup/final-recorded-diagnostic.json",
+    "evidenceReport": "final-recorded-diagnostic.json"
+  },
+  {
+    "name": "final-profile",
+    "command": "node scripts/profile-goal-motion.mjs",
+    "env": {
+      "PROFILE_TAG": "followup-after",
+      "PROFILE_DURATION": "10000",
+      "PROFILE_GPU": "1"
+    },
+    "exit": 0,
+    "seconds": 160.29,
+    "report": "temp/followup/final-profile.json",
+    "evidenceReport": "final-profile.json"
+  },
+  {
+    "name": "final-clock-1440",
+    "command": "node scripts/validate-playback-clock.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "followup-clock-1440"
+    },
+    "exit": 0,
+    "seconds": 77.43,
+    "evidenceReport": "final-clock-1440.json"
+  },
+  {
+    "name": "final-clock-390",
+    "command": "node scripts/validate-playback-clock.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "followup-clock-390"
+    },
+    "exit": 0,
+    "seconds": 74.04,
+    "evidenceReport": "final-clock-390.json"
+  },
+  {
+    "name": "final-context-loss-1440",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "followup-context-loss-1440",
+      "AUDIT_FAILURE": "context-loss"
+    },
+    "exit": 0,
+    "seconds": 24.61,
+    "report": "temp/followup/final-context-loss-1440.json",
+    "evidenceReport": "final-context-loss-1440.json"
+  },
+  {
+    "name": "final-webgl-1440",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "followup-webgl-1440",
+      "AUDIT_FAILURE": "webgl"
+    },
+    "exit": 0,
+    "seconds": 5.01,
+    "report": "temp/followup/final-webgl-1440.json",
+    "evidenceReport": "final-webgl-1440.json"
+  },
+  {
+    "name": "final-glb-1440",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "followup-glb-1440",
+      "AUDIT_FAILURE": "glb"
+    },
+    "exit": 1,
+    "seconds": 62.11,
+    "report": "temp/followup/final-glb-1440.json",
+    "evidenceReport": "final-glb-1440.json"
+  },
+  {
+    "name": "final-context-loss-390",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "followup-context-loss-390",
+      "AUDIT_FAILURE": "context-loss"
+    },
+    "exit": 0,
+    "seconds": 20.54,
+    "report": "temp/followup/final-context-loss-390.json",
+    "evidenceReport": "final-context-loss-390.json"
+  },
+  {
+    "name": "final-webgl-390",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "followup-webgl-390",
+      "AUDIT_FAILURE": "webgl"
+    },
+    "exit": 0,
+    "seconds": 4.42,
+    "report": "temp/followup/final-webgl-390.json",
+    "evidenceReport": "final-webgl-390.json"
+  },
+  {
+    "name": "final-glb-390",
+    "command": "node scripts/validate-context-loss.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "followup-glb-390",
+      "AUDIT_FAILURE": "glb"
+    },
+    "exit": 1,
+    "seconds": 61.37,
+    "report": "temp/followup/final-glb-390.json",
+    "evidenceReport": "final-glb-390.json"
+  },
+  {
+    "name": "final-home-1440",
+    "command": "node scripts/validate-home-motion.mjs",
+    "env": {
+      "HOME_VIEWPORT_WIDTH": "1440",
+      "HOME_REDUCED": "0"
+    },
+    "exit": 0,
+    "seconds": 138.01,
+    "report": "temp/followup/final-home-1440.json",
+    "evidenceReport": "final-home-1440.json"
+  },
+  {
+    "name": "final-home-390",
+    "command": "node scripts/validate-home-motion.mjs",
+    "env": {
+      "HOME_VIEWPORT_WIDTH": "390",
+      "HOME_REDUCED": "0"
+    },
+    "exit": 0,
+    "seconds": 95.26,
+    "report": "temp/followup/final-home-390.json",
+    "evidenceReport": "final-home-390.json"
+  },
+  {
+    "name": "final-home-1024",
+    "command": "node scripts/validate-home-motion.mjs",
+    "env": {
+      "HOME_VIEWPORT_WIDTH": "1024",
+      "HOME_REDUCED": "1"
+    },
+    "exit": 0,
+    "seconds": 35.36,
+    "report": "temp/followup/final-home-1024.json",
+    "evidenceReport": "final-home-1024.json"
+  },
+  {
+    "name": "final-audit-1440",
+    "command": "node scripts/audit-home-experience.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1440",
+      "AUDIT_TAG": "followup-home-1440",
+      "AUDIT_REDUCED": "0"
+    },
+    "exit": 0,
+    "seconds": 340.14,
+    "report": "temp/followup/final-audit-1440.json",
+    "evidenceReport": "final-audit-1440.json"
+  },
+  {
+    "name": "final-audit-390",
+    "command": "node scripts/audit-home-experience.mjs",
+    "env": {
+      "AUDIT_WIDTH": "390",
+      "AUDIT_TAG": "followup-home-390",
+      "AUDIT_REDUCED": "0"
+    },
+    "exit": 0,
+    "seconds": 234.63,
+    "report": "temp/followup/final-audit-390.json",
+    "evidenceReport": "final-audit-390.json"
+  },
+  {
+    "name": "final-audit-1024",
+    "command": "node scripts/audit-home-experience.mjs",
+    "env": {
+      "AUDIT_WIDTH": "1024",
+      "AUDIT_TAG": "followup-home-1024",
+      "AUDIT_REDUCED": "1"
+    },
+    "exit": 0,
+    "seconds": 51.15,
+    "report": "temp/followup/final-audit-1024.json",
+    "evidenceReport": "final-audit-1024.json"
+  },
+  {
+    "name": "final-live-reset",
+    "command": "node scripts/validate-live-motion.mjs",
+    "env": {
+      "AUDIT_TAG": "followup-live"
+    },
+    "exit": 0,
+    "seconds": 46.53,
+    "evidenceReport": "final-live-reset.json"
+  },
+  {
+    "name": "final-reference",
+    "command": "node scripts/audit-home-experience.mjs",
+    "env": {
+      "AUDIT_REFERENCE": "1",
+      "AUDIT_TAG": "followup-reference"
+    },
+    "exit": 0,
+    "seconds": 0.68,
+    "report": "temp/followup/final-reference.json",
+    "evidenceReport": "final-reference.json"
+  }
+]

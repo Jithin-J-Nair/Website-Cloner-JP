@@ -1,0 +1,50 @@
+
+> lusion-studio-reconstruction@1.0.0 lint
+> eslint
+
+
+/home/user/Website-Cloner-JP/scripts/sbs.mjs
+   2:8   warning  'sharp' is defined but never used            @typescript-eslint/no-unused-vars
+   6:7   warning  'refDir' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  15:14  warning  'cap' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+/home/user/Website-Cloner-JP/src/components/foundation/TransitionProvider.tsx
+  37:7  error    Error: Cannot access variable before it is declared
+
+`startClose` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/home/user/Website-Cloner-JP/src/components/foundation/TransitionProvider.tsx:37:7
+  35 |     if (!isTransitioning && isActive && phase === "covered") {
+  36 |       // route changed successfully and lifted transition curtain
+> 37 |       startClose();
+     |       ^^^^^^^^^^ `startClose` accessed before it is declared
+  38 |     }
+  39 |   }, [isTransitioning, isActive, phase]);
+  40 |
+
+/home/user/Website-Cloner-JP/src/components/foundation/TransitionProvider.tsx:91:3
+   89 |   };
+   90 |
+>  91 |   const startClose = () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  92 |     window.clearTimeout(timeoutRef.current);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |     setPhase("closing");
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 109 |     }, 620);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 110 |   };
+      | ^^^^^ `startClose` is declared here
+  111 |
+  112 |   return (
+  113 |     <TransitionContext.Provider value={{ navigate }}>  react-hooks/immutability
+  39:6  warning  React Hook useEffect has a missing dependency: 'startClose'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+
+/home/user/Website-Cloner-JP/src/components/pages/AboutPageView.tsx
+  1044:6  warning  React Hook useEffect has a missing dependency: 'team'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/user/Website-Cloner-JP/src/components/pages/LusionProjectDetailView.tsx
+  85:3  warning  'highlight' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 7 problems (1 error, 6 warnings)
