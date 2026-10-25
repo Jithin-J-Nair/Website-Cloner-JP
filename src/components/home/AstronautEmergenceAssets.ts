@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
-import { loadLusionBuf } from "@/lib/lusion-buf-loader";
+import { loadLusionBuf, type ParsedBufData } from "@/lib/lusion-buf-loader";
 
 export interface AstronautBoneMap {
   Hips?: THREE.Bone;
@@ -33,6 +33,8 @@ export interface LoadedAstronautRig {
   visorAnchorLocal: THREE.Vector3;
   drawCalls: number;
   triangles: number;
+  /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
+  sampleBakedPose?: (frame: number, influence: number) => void;
 }
 
 export interface SuitJointPose {
@@ -564,12 +566,61 @@ export async function loadLicensedAstronautGlb(
   return { primary, createClone };
 }
 
+/** Sample the capture's model-space (inverse-bind-applied) transforms without advancing wall time. */
+export function createCapturedPoseSampler(
+  animation: ParsedBufData,
+  bones: THREE.Bone[],
+  skeleton: THREE.Skeleton,
+  visorAnchorLocal: THREE.Vector3
+): (frame: number, influence: number) => void {
+  const boneCount = bones.length;
+  const frameCount = animation.header.vertexCount / boneCount;
+  if (boneCount !== 53 || frameCount !== 288) throw new Error("Unexpected captured astronaut animation layout");
+  const orientations = animation.attributes.orient;
+  const translations = animation.attributes.position;
+  const q0 = new THREE.Quaternion();
+  const q1 = new THREE.Quaternion();
+  const identity = new THREE.Quaternion();
+  const sourceVisorAnchor = new THREE.Vector3(0, 1.685, 0.132);
+  let previousFrame = -1;
+  let previousInfluence = -1;
+  return (frame: number, influence: number) => {
+    const f = THREE.MathUtils.clamp(frame, 0, frameCount - 1);
+    const weight = THREE.MathUtils.clamp(influence, 0, 1);
+    if (f === previousFrame && weight === previousInfluence) return;
+    previousFrame = f;
+    previousInfluence = weight;
+    const from = Math.floor(f);
+    const to = Math.min(frameCount - 1, from + 1);
+    const alpha = f - from;
+    for (let i = 0; i < boneCount; i++) {
+      const a = from * boneCount + i;
+      const b = to * boneCount + i;
+      q0.fromArray(orientations, a * 4).normalize();
+      q1.fromArray(orientations, b * 4).normalize();
+      q0.slerp(q1, alpha);
+      bones[i].quaternion.slerpQuaternions(identity, q0, weight);
+      bones[i].position.set(
+        THREE.MathUtils.lerp(translations[a * 3], translations[b * 3], alpha) * weight,
+        (THREE.MathUtils.lerp(translations[a * 3 + 1], translations[b * 3 + 1], alpha) + 0.9) * weight,
+        THREE.MathUtils.lerp(translations[a * 3 + 2], translations[b * 3 + 2], alpha) * weight
+      );
+      bones[i].updateMatrix();
+      // These are already model-space deformation matrices, not a hierarchy of joint locals.
+      bones[i].matrixWorld.copy(bones[i].matrix);
+    }
+    skeleton.update();
+    visorAnchorLocal.copy(sourceVisorAnchor).applyMatrix4(bones[0].matrix);
+    visorAnchorLocal.y -= 0.9;
+  };
+}
+
 /**
  * Loads the captured Lusion astronaut parts from the repository's approved .buf asset bundle.
  * These source meshes are preferred over the unrelated generic GLB placeholder; the parts share
  * the captured model coordinate space, so the suit silhouette and visor line up without guessed
- * per-part offsets. This loader preserves the source geometry and materials but does not yet decode
- * the baked per-bone animation buffer; existing root-level emergence and zero-G motion still applies.
+ * per-part offsets. This loader preserves the source geometry and materials and decodes
+ * the baked per-bone animation buffer for downstream motion, while leaving emergence unchanged.
  */
 export async function loadLusionAstronautParts(
   visorEnvTex: THREE.Texture,
@@ -581,27 +632,26 @@ export async function loadLusionAstronautParts(
 }> {
   const assetRoot = "/assets/models/tunnels/";
   const textureRoot = "/assets/textures/tunnels/astronaut/";
+  const textureLoader = new THREE.TextureLoader();
+  const loadTexture = (name: string) => textureLoader.loadAsync(`${textureRoot}${name}`).then(track);
   const [helmetData, visorData, glovesData, packData, helmetBase, helmetNormal, helmetArm,
-    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm] = await Promise.all([
+    glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm, animation] = await Promise.all([
     loadLusionBuf(`${assetRoot}astronaut_helmet.buf`),
     loadLusionBuf(`${assetRoot}astronaut_helmet_glass.buf`),
     loadLusionBuf(`${assetRoot}astronaut_glove_shoes.buf`),
     loadLusionBuf(`${assetRoot}astronaut_wearpack.buf`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_helmet_base.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_helmet_nor.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_helmet_arm.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_glove_shoes_base.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_glove_shoes_nor.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_glove_shoes_arm.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_wearpack_base.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_wearpack_nor.webp`),
-    new THREE.TextureLoader().loadAsync(`${textureRoot}astronaut_wearpack_arm.webp`),
+    loadTexture("astronaut_helmet_base.webp"),
+    loadTexture("astronaut_helmet_nor.webp"),
+    loadTexture("astronaut_helmet_arm.webp"),
+    loadTexture("astronaut_glove_shoes_base.webp"),
+    loadTexture("astronaut_glove_shoes_nor.webp"),
+    loadTexture("astronaut_glove_shoes_arm.webp"),
+    loadTexture("astronaut_wearpack_base.webp"),
+    loadTexture("astronaut_wearpack_nor.webp"),
+    loadTexture("astronaut_wearpack_arm.webp"),
+    loadLusionBuf(`${assetRoot}astronaut_animations.buf`),
   ]);
 
-  const textures = [
-    helmetBase, helmetNormal, helmetArm, glovesBase, glovesNormal, glovesArm, packBase, packNormal, packArm,
-  ];
-  for (const tex of textures) track(tex);
   for (const tex of [helmetBase, glovesBase, packBase]) tex.colorSpace = THREE.SRGBColorSpace;
   for (const tex of [helmetNormal, helmetArm, glovesNormal, glovesArm, packNormal, packArm]) {
     tex.colorSpace = THREE.NoColorSpace;
@@ -653,76 +703,72 @@ export async function loadLusionAstronautParts(
   }));
   materials.push(visorMaterial);
 
-  const createPart = (source: THREE.BufferGeometry, material: THREE.Material) => {
-    // The loader caches parsed buffers. Clone geometry before lifecycle tracking so one scene's
-    // cleanup cannot dispose the shared cached source used by a later mount.
+  // The capture ledger identifies 53 deformation transforms per frame (288 frames).
+  // They already include inverse bind transforms: do NOT calculate a second inverse bind pose.
+  const boneCount = 53;
+  const frameCount = animation.header.vertexCount / boneCount;
+  if (!Number.isInteger(frameCount) || frameCount !== 288) {
+    throw new Error("Unexpected captured astronaut animation layout");
+  }
+  const parts = [helmetData, visorData, glovesData, packData];
+  const partMaterials = [helmetMaterial, visorMaterial, glovesMaterial, packMaterial];
+  const geometries = parts.map(({ geometry: source }) => {
     const geometry = track(source.clone());
+    const indices = source.getAttribute("boneIndices");
+    const weights = source.getAttribute("boneWeights");
+    const skinIndex = new Uint16Array(indices.count * 4);
+    const skinWeight = new Float32Array(indices.count * 4);
+    for (let i = 0; i < indices.count; i++) {
+      skinIndex[i * 4] = indices.getX(i);
+      skinIndex[i * 4 + 1] = indices.getY(i);
+      const total = weights.getX(i) + weights.getY(i);
+      skinWeight[i * 4] = weights.getX(i) / total;
+      skinWeight[i * 4 + 1] = weights.getY(i) / total;
+    }
+    geometry.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(skinIndex, 4));
+    geometry.setAttribute("skinWeight", new THREE.Float32BufferAttribute(skinWeight, 4));
     const uv = geometry.getAttribute("uv");
     if (uv) geometry.setAttribute("uv2", uv);
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.frustumCulled = false;
-    mesh.renderOrder = 4;
-    return mesh;
-  };
-
-  const root = new THREE.Group();
-  const modelRoot = new THREE.Group();
-  modelRoot.name = "LusionAstronautBufModel";
-  // Center the captured 0..1.8m suit around the root origin expected by the scroll choreography.
-  modelRoot.position.y = -0.9;
-  modelRoot.add(
-    createPart(helmetData.geometry, helmetMaterial),
-    createPart(visorData.geometry, visorMaterial),
-    createPart(glovesData.geometry, glovesMaterial),
-    createPart(packData.geometry, packMaterial)
-  );
-  root.add(modelRoot);
-
-  const drawCalls = 4;
-  const triangles = [helmetData, visorData, glovesData, packData].reduce(
+    return geometry;
+  });
+  const triangles = parts.reduce(
     (sum, part) => sum + (part.geometry.index?.count ?? part.geometry.getAttribute("position").count) / 3,
     0
   );
 
-  const primary: LoadedAstronautRig = {
-    root,
-    modelRoot,
-    bones: {},
-    restQuats: {},
-    materials,
-    visorMaterial,
-    visorEarthUniform,
-    // The captured model's visor is centred near y=1.68 in the shared suit coordinate space.
-    visorAnchorLocal: new THREE.Vector3(-0.076, 0.80, 0.132),
-    drawCalls,
-    triangles,
-  };
-
-  const createClone = (): LoadedAstronautRig => {
-    const cloneRoot = root.clone(true) as THREE.Group;
-    const cloneModel = cloneRoot.getObjectByName("LusionAstronautBufModel") ?? cloneRoot;
-    cloneModel.traverse((node) => {
-      if ((node as THREE.Mesh).isMesh) {
-        const mesh = node as THREE.Mesh;
-        mesh.castShadow = false;
-        mesh.receiveShadow = false;
-      }
+  const buildCapturedRig = (): LoadedAstronautRig => {
+    const root = new THREE.Group();
+    const modelRoot = new THREE.Group();
+    modelRoot.name = "LusionAstronautBufModel";
+    modelRoot.position.y = -0.9;
+    root.add(modelRoot);
+    const bones = Array.from({ length: boneCount }, () => new THREE.Bone());
+    modelRoot.add(...bones);
+    const skeleton = track(new THREE.Skeleton(bones, bones.map(() => new THREE.Matrix4())));
+    geometries.forEach((geometry, i) => {
+      const mesh = new THREE.SkinnedMesh(geometry, partMaterials[i]);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.frustumCulled = false;
+      mesh.renderOrder = 4;
+      // Bind in model-local coordinates. The existing -0.9 model centering remains untouched.
+      mesh.bind(skeleton, new THREE.Matrix4());
+      mesh.bindMode = THREE.DetachedBindMode;
+      modelRoot.add(mesh);
     });
+    const visorAnchorLocal = new THREE.Vector3(-0.076, 0.80, 0.132);
+    const sampleBakedPose = createCapturedPoseSampler(animation, bones, skeleton, visorAnchorLocal);
+    // Keep the source bind silhouette until the downstream timeline explicitly samples it.
+    sampleBakedPose(0, 0);
+    // Skeleton.update reads matrixWorld; do not let parent transforms enter the baked palette.
+    for (const bone of bones) bone.matrixWorldAutoUpdate = false;
     return {
-      root: cloneRoot,
-      modelRoot: cloneModel,
-      bones: {},
-      restQuats: {},
-      materials: [],
-      visorMaterial: null,
-      visorEarthUniform: { value: 0 },
-      visorAnchorLocal: primary.visorAnchorLocal.clone(),
-      drawCalls,
-      triangles,
+      root, modelRoot, bones: {}, restQuats: {}, materials: partMaterials,
+      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose,
     };
   };
+  const primary = buildCapturedRig();
+  const createClone = () => buildCapturedRig();
 
   return { primary, createClone };
 }
