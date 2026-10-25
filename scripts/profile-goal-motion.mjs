@@ -45,7 +45,7 @@ const browser = await launchBrowser();
 const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'no-preference' });
 await context.addInitScript(() => sessionStorage.setItem('lusion_booted_v1', '1'));
 const page = await context.newPage();
-const report = { viewport: { width, height }, method: 'RAF intervals during native phase sweep; one application render-loop owner; CPU submission telemetry; optional asynchronous GPU queries, unavailable reported as null', errors: [], failedAssets: [], phases: [] };
+const report = { viewport: { width, height }, method: 'Observer RAF intervals during native phase sweep, NOT presented FPS. Submission counts/observations are separate; CPU submission telemetry is not GPU execution. Optional asynchronous phase-tagged GPU queries are not frame-paired; unavailable reported as null', errors: [], failedAssets: [], phases: [] };
 page.on('pageerror', e => report.errors.push(e.message));
 page.on('response', r => { if(r.url().includes('/assets/') && !r.ok()) report.failedAssets.push(r.url()); });
 try {
@@ -70,6 +70,7 @@ try {
       {name:'solar',start:layout.solar,end:layout.solar+30},
       {name:'tesseract',start:layout.start+.34*layout.span,end:layout.start+.42*layout.span},
       {name:'blue',start:layout.start+.89*layout.span,end:layout.start+.98*layout.span},
+      {name:'glass',start:layout.ranges.astronautDrop.pixelFrom+.05*layout.ranges.astronautDrop.pixelCount,end:layout.ranges.astronautDrop.pixelFrom+.20*layout.ranges.astronautDrop.pixelCount},
       {name:'shatter',start:layout.ranges.astronautDrop.pixelFrom+.30*layout.ranges.astronautDrop.pixelCount,end:layout.ranges.astronautDrop.pixelFrom+.65*layout.ranges.astronautDrop.pixelCount},
     ];
     for(const phase of phases) {
@@ -77,12 +78,13 @@ try {
       await page.waitForTimeout(1200);
       const measured = await page.evaluate(async phase => {
         const samples = [], gpuSamples = [], duration = Number(phase.duration);
+        const initialRenderCount = window.__goalAstronautTelemetry.renderCount;
         let lastGpuCount = window.__goalAstronautTelemetry.gpuTiming?.samples ?? 0;
         await new Promise(resolve => {
           let start = 0, previous = 0;
           const tick = now => {
             if(!start) start=previous=now;
-            else { samples.push({ interval:now-previous, cpu:window.__goalAstronautTelemetry.lastFrameMs, calls:window.__goalAstronautTelemetry.drawCalls, triangles:window.__goalAstronautTelemetry.triangles }); previous=now; }
+            else { samples.push({ interval:now-previous, cpu:window.__goalAstronautTelemetry.lastFrameMs, calls:window.__goalAstronautTelemetry.drawCalls, renderCount:window.__goalAstronautTelemetry.renderCount, observedAt:now, triangles:window.__goalAstronautTelemetry.triangles }); previous=now; }
             const timing = window.__goalAstronautTelemetry.gpuTiming;
             if (timing && timing.samples > lastGpuCount) {
               for (const entry of timing.recent ?? []) {
@@ -101,8 +103,12 @@ try {
         const stats = values => { const sorted=[...values].sort((a,b)=>a-b);return {mean:values.reduce((a,b)=>a+b,0)/values.length,p50:sorted[Math.floor(sorted.length*.5)],p95:sorted[Math.min(sorted.length-1,Math.floor(sorted.length*.95))]}; };
         const intervals=stats(samples.map(s=>s.interval));
         const telemetry=JSON.parse(JSON.stringify(window.__goalAstronautTelemetry));
+        const changedSamples = samples.filter((s, i) => i === 0 || s.renderCount !== samples[i - 1].renderCount);
+        const submissionIntervals = changedSamples.slice(1).map((s, i) => s.observedAt - changedSamples[i].observedAt);
+        const observedDurationMs = samples.reduce((n, s) => n + s.interval, 0);
+        const submissions = telemetry.renderCount - initialRenderCount;
         const gl = document.querySelector("#home-goal canvas").getContext("webgl2");
-        return { webglError:gl.getError(), gpuExecutionMs:gpuSamples.length ? {samples:gpuSamples.length,...stats(gpuSamples)} : null, frames:samples.length, intervalsMs:intervals, observedFps:1000/intervals.mean, cpuSubmissionMs:stats(samples.map(s=>s.cpu)), maxCalls:Math.max(...samples.map(s=>s.calls)), maxTriangles:Math.max(...samples.map(s=>s.triangles)), telemetry };
+        return { webglError:gl.getError(), gpuExecutionMs:gpuSamples.length ? {samples:gpuSamples.length,...stats(gpuSamples)} : null, frames:samples.length, observerRafSamples:samples.length, observedDurationMs, intervalsMs:intervals, observedFps:1000/intervals.mean, observerRafFps:1000/intervals.mean, submittedFramesDelta:submissions, submissionRatePerSecond:1000*submissions/observedDurationMs, repeatedTelemetrySamples:samples.length-changedSamples.length, submissionObservationIntervalsMs:submissionIntervals.length ? stats(submissionIntervals) : null, cpuSubmissionMs:stats(samples.map(s=>s.cpu)), maxCalls:Math.max(...samples.map(s=>s.calls)), maxTriangles:Math.max(...samples.map(s=>s.triangles)), telemetry };
       }, {...phase,duration:process.env.PROFILE_DURATION || 5000});
       assert.equal(measured.webglError,0,"profile must not produce WebGL query/render errors");
       report.phases.push({name:phase.name,...measured});

@@ -1732,7 +1732,7 @@ export function GoalTunnelSection() {
           solar.focalScale = optics.chromaticRingMat.uniforms.uFocalScale.value;
         }
       }
-      gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0 ? "shatter" : tTunnel > 0.845 ? "blue" : "tesseract");
+      gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.25 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "tesseract");
       glRenderer.info.reset();
       if (composer) {
         composer.render(1 / 60);

@@ -12,7 +12,7 @@ The homepage reference data identifies the hero model as `/assets/models/home/cr
 
 ## Development
 
-Requires Node.js 20 or newer.
+Requires Node.js 20.9 or newer (Next.js 16.4.3); validation uses Node.js 22.
 
 ```bash
 npm install --legacy-peer-deps
