@@ -1,0 +1,127 @@
+{
+  "failure": "resume",
+  "errors": [],
+  "audio": {
+    "status": "unavailable",
+    "enabled": false,
+    "error": "test resume rejection",
+    "stage": "home",
+    "gains": [
+      0.2,
+      0,
+      0,
+      0,
+      0.1
+    ],
+    "cutoff": 2300,
+    "held": false,
+    "hidden": false,
+    "paused": false,
+    "contextState": "running",
+    "contextCreations": 1,
+    "loops": 0,
+    "voices": 0,
+    "fractureEvents": 0,
+    "input": {
+      "active": false,
+      "title": false,
+      "emergence": false,
+      "tunnel": 0,
+      "drop": 0,
+      "wait": 0,
+      "fractureVisible": false,
+      "paused": false
+    },
+    "events": []
+  },
+  "scene": {
+    "tunnelProgress": 0,
+    "shatterProgress": 0,
+    "waitProgress": 0,
+    "bakedFrame": 0,
+    "astronautMatrix": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "cameraMatrix": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "trussLoaded": false,
+    "shardsLoaded": false,
+    "portalFlash": 0,
+    "flashVisible": false,
+    "corridorTravel": 0,
+    "glazingLayers": 0,
+    "glassOpacity": 0,
+    "crackProgress": 0,
+    "ringVisible": false
+  },
+  "recovered": {
+    "status": "on",
+    "enabled": true,
+    "error": null,
+    "stage": "home",
+    "gains": [
+      0.2,
+      0,
+      0,
+      0,
+      0.1
+    ],
+    "cutoff": 2300,
+    "held": false,
+    "hidden": false,
+    "paused": false,
+    "contextState": "running",
+    "contextCreations": 1,
+    "loops": 5,
+    "voices": 0,
+    "fractureEvents": 0,
+    "input": {
+      "active": false,
+      "title": false,
+      "emergence": false,
+      "tunnel": 0,
+      "drop": 0,
+      "wait": 0,
+      "fractureVisible": false,
+      "paused": false
+    },
+    "events": [
+      {
+        "at": 0.3512018140589569,
+        "type": "sources-started",
+        "stage": "home"
+      }
+    ]
+  }
+}

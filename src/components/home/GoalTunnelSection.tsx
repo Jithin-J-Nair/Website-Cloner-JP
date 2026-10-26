@@ -12,6 +12,8 @@ import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-op
 import { createGpuFrameTimer } from "@/lib/gpu-frame-timer";
 import { LUSION_HOME } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
+import { soundEngine } from "@/lib/audio";
+import { IDLE_JOURNEY } from "@/lib/journey-audio-state";
 import {
   applySuitJointPose,
   blendSuitPose,
@@ -240,6 +242,7 @@ export function GoalTunnelSection() {
       return;
     }
 
+    const audioJourney = soundEngine.acquireJourney();
     const glRenderer = renderer;
     const glCtx = glRenderer.getContext();
     const dbgExt = glCtx.getExtension("WEBGL_debug_renderer_info");
@@ -603,6 +606,7 @@ export function GoalTunnelSection() {
         const msg = err instanceof Error ? err.message : "Failed to load astronaut.glb";
         tablet3D.group.visible = false;
         earthSystem.group.visible = false;
+        audioJourney.release();
         showStaticFallback();
         if (window.__goalAstronautTelemetry) {
           window.__goalAstronautTelemetry.glbLoaded = false;
@@ -1035,6 +1039,7 @@ export function GoalTunnelSection() {
       const activeEnd = m.endTop + m.endHeight + H * 1.05;
 
       if (sy < activeStart || sy > activeEnd) {
+        audioJourney.update(IDLE_JOURNEY);
         overlayEl.style.visibility = "hidden";
         if (titleHeadingEl) {
           titleHeadingEl.style.transform = "";
@@ -1446,6 +1451,15 @@ export function GoalTunnelSection() {
           texOrient.needsUpdate = true;
         }
       }
+
+      // Audio receives the SAME evaluated coordinates/visibility as this render.
+      // No sources/filters are allocated here; the engine coalesces control work.
+      audioJourney.update({
+        active: true, title: sy < m.emergenceStart, emergence: inEmergencePhase,
+        tunnel: tTunnel, drop: tShatter, wait: tWait,
+        fractureVisible: Boolean(shardsMesh?.visible),
+        paused: playbackState === "paused" || blockedByChrome() || !docVisible,
+      });
 
       // 4. Faceted Glass Diamonds + Star Flares + 18 Die-Cut Pop-Art Stickers (`Frames 17–20`)
       const waitVis = smoothstep(0.92, 0.99, tShatter);
@@ -1888,6 +1902,7 @@ export function GoalTunnelSection() {
       event.preventDefault();
       contextLost = true;
       releasePlayback(false);
+      audioJourney.release();
       if (rafId) window.cancelAnimationFrame(rafId);
       rafId = 0;
       gpuTimer?.dispose();
@@ -2001,6 +2016,7 @@ export function GoalTunnelSection() {
     ensureLoop();
 
     return () => {
+      audioJourney.release();
       releasePlayback(false);
       unmounted = true;
       unsubscribeChrome();

@@ -32,5 +32,8 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Deterministic journey audio tests
+        run: node scripts/test-journey-audio.mjs
+
       - name: Build
         run: npm run build

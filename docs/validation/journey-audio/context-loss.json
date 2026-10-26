@@ -1,0 +1,109 @@
+{
+  "scenario": "context-loss",
+  "errors": [],
+  "warnings": [],
+  "issues": [],
+  "loss": {
+    "telemetry": {
+      "glbLoaded": true,
+      "glbError": "WebGL context lost; static experience is available",
+      "qualityTier": "desktop",
+      "renderWidth": 960,
+      "renderHeight": 600,
+      "pixelRatio": 0.6666666666666666,
+      "textureMaxDim": 2048,
+      "drawCalls": 11,
+      "triangles": 143609,
+      "lastFrameMs": 4.1,
+      "renderCount": 3,
+      "resources": {
+        "geometries": 26,
+        "textures": 15,
+        "programs": 20
+      },
+      "gpuTiming": {
+        "enabled": false,
+        "lastMs": null,
+        "phase": "",
+        "samples": 0,
+        "disjoints": 0
+      },
+      "solar": {
+        "x": -0.6938084555064732,
+        "y": 1.6517285528732581,
+        "facing": 0.49880600798462316,
+        "visibility": 0.2478666299646305,
+        "occlusion": 1,
+        "focalScale": 1.0182912315903923
+      },
+      "emergenceProgress": 1,
+      "portalStencilActive": false,
+      "fallbackVisible": true,
+      "sceneState": {
+        "tunnelProgress": 0.07516292002674226,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 6.7655022881301905,
+        "astronautMatrix": [
+          -0.5787188151583512,
+          -0.15892487654903645,
+          0.15140466620611687,
+          0,
+          -0.21027831091931642,
+          0.2789539540037394,
+          -0.5109439106751318,
+          0,
+          0.06295650317506075,
+          -0.5291724969354996,
+          -0.3148156659831517,
+          0,
+          -0.009307220429974073,
+          -0.060069924780383976,
+          -1.1224208455061324,
+          1
+        ],
+        "cameraMatrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 3,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": false
+      },
+      "playback": {
+        "state": "completed",
+        "progress": 0.2023111111111111,
+        "virtualScroll": 13394.778279902252,
+        "activation": 8431.56,
+        "end": 8224,
+        "runs": 1
+      }
+    },
+    "stopped": false,
+    "poster": "flex",
+    "track": "none",
+    "staticFallback": "true"
+  },
+  "contactReachable": true,
+  "contactAccessibleSnapshot": "- link \"Let's work together!\":\n  - /url: mailto:business@lusion.co"
+}

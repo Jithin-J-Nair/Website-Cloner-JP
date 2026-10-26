@@ -1,0 +1,66 @@
+{
+  "base": "b0a96a8881d79257200b246a05304dc11356a17f",
+  "browserCommandExitCodes": {
+    "audio-controlled": 0,
+    "audio-native-1440": 0,
+    "audio-native-390": 0,
+    "goal-normal-1440": 1,
+    "goal-reduce-1440": 0,
+    "goal-normal-390": 1,
+    "goal-reduce-390": 0,
+    "playback-clock": 0,
+    "context-loss": 0,
+    "home-motion": 0
+  },
+  "originalBaseline": {
+    "1440": {
+      "wallSeconds": 24.559,
+      "playingSamples": 163,
+      "blueSamples": 28,
+      "distinctBlueBakedFrames": 5,
+      "glassSamples": 0,
+      "error": "AssertionError [ERR_ASSERTION]: all intermediate stages visibly play",
+      "scope": "Source/CPU sampled pose counts, not GPU display FPS."
+    },
+    "390": {
+      "wallSeconds": 23.031,
+      "playingSamples": 185,
+      "blueSamples": 14,
+      "distinctBlueBakedFrames": 4,
+      "glassSamples": 16,
+      "error": "AssertionError [ERR_ASSERTION]: captured blue-flight pose keeps advancing",
+      "scope": "Source/CPU sampled pose counts, not GPU display FPS."
+    }
+  },
+  "finalNormalGates": {
+    "1440": {
+      "wallSeconds": 24.491,
+      "playingSamples": 178,
+      "blueSamples": 38,
+      "distinctBlueBakedFrames": 4,
+      "glassSamples": 13,
+      "error": "AssertionError [ERR_ASSERTION]: captured blue-flight pose keeps advancing",
+      "scope": "Source/CPU sampled pose counts, not GPU display FPS."
+    },
+    "390": {
+      "wallSeconds": 23.636,
+      "playingSamples": 172,
+      "blueSamples": 18,
+      "distinctBlueBakedFrames": 5,
+      "glassSamples": 6,
+      "error": "AssertionError [ERR_ASSERTION]: captured blue-flight pose keeps advancing",
+      "scope": "Source/CPU sampled pose counts, not GPU display FPS."
+    }
+  },
+  "sourceSha256": {
+    "src/lib/audio.ts": "5440d5fa4791cb7d1435cd1127a79d6e36f86e0be53cc503ecf414f0b69c1117",
+    "src/lib/journey-audio-state.ts": "05096319f5fa261b56e44be2d3927fb79fa60da4748d3e715d4498f8b16f7e58",
+    "src/lib/journey-score.ts": "1f0ed255f0ff5e1b91172e5a9a0fd4ab37ac009549a609918d90e1297afdaf8c",
+    "src/components/home/GoalTunnelSection.tsx": "0874c9e1fd362f7b57054c8fec21fc075f29d4d322404f18475de8081378171d",
+    "src/components/foundation/StudioHud.tsx": "1b65660654dbf7ea67aba508c3137f57764647b23ea889e52c833de92972b90f",
+    "scripts/test-journey-audio.mjs": "2db3b33279dfe8654a1cb6a280ee19c9ab2e8808f6220bcea13e11d0f6cfa641",
+    "scripts/validate-journey-audio.mjs": "5f6c73a03cb15dc738e92dd5124dde2461738165ab158a1b3826b6a0cde2016b",
+    ".github/workflows/ci.yml": "c7009e6e203bb162df12314d0ed9aed5e3bde453f644e687ae5d738637ebbbfb"
+  },
+  "qualification": "Partial acceptance. Reference listening, physical playback/device sync, and full cinematic fidelity not certified. Two fresh unchanged normal motion gates FAIL."
+}
