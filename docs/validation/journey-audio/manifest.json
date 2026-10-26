@@ -89,8 +89,8 @@
     },
     {
       "file": "baseline-check.log",
-      "bytes": 1937,
-      "sha256": "2c258116a231a8e9e772712563a37db278f767be0ddd71ee683e3c675fe70960"
+      "bytes": 1930,
+      "sha256": "fe2e57b5a3810395f8581e3a0d5e683cc5c55dfc33103e4971af78573aa383a4"
     },
     {
       "file": "baseline-normal-1440.json.gz",
@@ -114,8 +114,8 @@
     },
     {
       "file": "check.log",
-      "bytes": 1938,
-      "sha256": "42300b8633f9031800676a70802037bb5f3e6c3cc18f696663959f3e46f70aee"
+      "bytes": 1931,
+      "sha256": "50f8570ee8a3d1888b919bd8c0deafdac775c02c0ac4e47130061f2f89358f32"
     },
     {
       "file": "context-loss.json",
@@ -308,5 +308,18 @@
       "sha256": "1762c0d4d1b1a0120bd21eabe89a9ddd23caf3e845d84336873fbeec44b2ea48"
     }
   ],
-  "totalBytes": 2291062
+  "totalBytes": 2291048,
+  "textLogNormalization": {
+    "policy": "LF line endings, trailing spaces and excess final blank lines removed only; test/error content unchanged. Raw capture logs remain in ignored temp/journey-audio/.",
+    "changedFiles": [
+      {
+        "file": "check.log",
+        "capturedSha256BeforeNormalization": "42300b8633f9031800676a70802037bb5f3e6c3cc18f696663959f3e46f70aee"
+      },
+      {
+        "file": "baseline-check.log",
+        "capturedSha256BeforeNormalization": "2c258116a231a8e9e772712563a37db278f767be0ddd71ee683e3c675fe70960"
+      }
+    ]
+  }
 }

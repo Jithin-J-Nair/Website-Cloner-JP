@@ -126,7 +126,7 @@ Both native recordings sample all **seven** journey states from solar through co
 
 **Recording limitation:** desktop CDP initially delivered two frame metadata timestamps out of order by **2.284 ms**. The existing encoder correctly rejected that raw ordering; [its error is preserved](journey-audio/encoding-raw-order-rejected.log), not hidden and its assertion is unchanged. Encoding used a separate chronological timestamp-sorted index retaining **every** original frame/time; the raw indices are preserved in `native-*-frames.json`. Mobile timestamps were monotonic. [encoding.json](journey-audio/encoding.json) records the exact permutation, commands, offsets and FFmpeg version. Previews are VFR, downsampled to at most 640px wide, without interpolation, and aligned to audio by capture-request timestamps only. They are not calibrated audiovisual latency or smooth-motion certification. Full original Opus recordings and source logs are also retained independently of that derived preview.
 
-Large raw JSON is losslessly gzip-compressed; e.g. `python -c "import gzip; print(gzip.open('docs/validation/journey-audio/native-1440.json.gz','rt').read())"`. Raw JPEG packet sequences and encoder intermediates remain in ignored `temp/journey-audio/`; compact deliverables are archived here. No existing assertion, expected baseline, motion script or failure was changed to pass.
+Archived text logs normalize LF/trailing whitespace only; their before-normalization hashes are recorded in `manifest.json`, with all test/error content preserved. Large raw JSON is losslessly gzip-compressed; e.g. `python -c "import gzip; print(gzip.open('docs/validation/journey-audio/native-1440.json.gz','rt').read())"`. Raw JPEG packet sequences and encoder intermediates remain in ignored `temp/journey-audio/`; compact deliverables are archived here. No existing assertion, expected baseline, motion script or failure was changed to pass.
 
 ## Scope of proof / remaining acceptance gaps
 
@@ -153,4 +153,10 @@ Large raw JSON is losslessly gzip-compressed; e.g. `python -c "import gzip; prin
 
 **Licensing:** score/generator/transient code and their generated audio are original work for this repository, under its existing [MIT license](../../LICENSE). No new runtime audio binaries, samples, fonts, models, textures or npm dependencies were added. Evidence audio is solely the new synthesizer's tapped bus, not reference audio or native video audio. Screenshots/native visual recordings show the existing clone and retain those existing visual assets' separate provenance; MIT for the new score does not relicense pre-existing/reference visuals. Optional external FFmpeg is used only for evidence encoding/analysis, not shipped or added as an app dependency.
 
-<!-- DELIVERY: populated after commit / PR creation -->
+## Delivery / PR status
+
+- Implementation and tested runtime source commit: **`0f3e9c54492f16c4678c01ab9a08678b195b9c74`**.
+- **[PR #13](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/13): OPEN, DRAFT, NOT MERGED.** Head branch remains `arena/ae2b5fad-website-cloner-jp`, base `master`.
+- This documentation-only follow-up records delivery and normalizes archived text-log whitespace/manifests; runtime/test source is unchanged from the implementation commit. The manifest hashes describe the final archived bytes.
+- GitHub quality checks cover lint/typecheck/deterministic audio/build, not the red software-renderer motion gates or physical listening. See current PR check state; green quality CI would not remove the acceptance gaps above.
+- No merge was performed or requested for this work. The draft intentionally retains incomplete reference/device/motion acceptance rather than presenting build success as full completion.
