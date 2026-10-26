@@ -1,0 +1,14 @@
+{
+  "attemptAt": "2026-10-26T04:41:34.278Z",
+  "results": [
+    {
+      "width": 1440,
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "width": 390,
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"domcontentloaded\"\n"
+    }
+  ],
+  "listeningVerified": false
+}

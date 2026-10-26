@@ -7,6 +7,13 @@ import { useStudioStore, type ProjectThemeConfig } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
 import { LUSION_GLOBAL_CHROME, LUSION_PROJECT_DETAILS } from "@/data/reference";
 
+declare global {
+  interface Window {
+    __enableJourneyAudioProbe?: boolean;
+    __journeyAudioProbe?: () => ReturnType<typeof soundEngine.snapshot>;
+  }
+}
+
 const PROJECT_THEME_MAP = new Map<string, ProjectThemeConfig>(
   LUSION_PROJECT_DETAILS.map((p) => [
     p.id,
@@ -68,6 +75,30 @@ export function StudioHud() {
   const activeSurface = useStudioStore((s) => s.activeSurface);
   const audioEnabled = useStudioStore((s) => s.audioEnabled);
   const setAudioEnabled = useStudioStore((s) => s.setAudioEnabled);
+  const [audioStatus, setAudioStatus] = useState(soundEngine.getStatus);
+  const [audioStage, setAudioStage] = useState("home");
+  useEffect(() => {
+    const detach = soundEngine.attach();
+    const sync = () => {
+      setAudioStatus(soundEngine.getStatus());
+      setAudioStage(soundEngine.snapshot().stage);
+      setAudioEnabled(soundEngine.isEnabled());
+    };
+    const unsubscribe = soundEngine.subscribe(sync);
+    const syncChrome = () => {
+      const state = useStudioStore.getState();
+      soundEngine.setOverlayPaused(state.reelOpen || state.menuOpen || state.isTransitioning);
+    };
+    const unsubscribeChrome = useStudioStore.subscribe(syncChrome);
+    syncChrome();
+    const probe = () => soundEngine.snapshot();
+    if (window.__enableJourneyAudioProbe) window.__journeyAudioProbe = probe;
+    sync();
+    return () => {
+      unsubscribe(); unsubscribeChrome(); detach(); setAudioEnabled(false);
+      if (window.__journeyAudioProbe === probe) delete window.__journeyAudioProbe;
+    };
+  }, [setAudioEnabled]);
   const navMenuOpen = useStudioStore((s) => s.menuOpen);
   const setNavMenuOpen = useStudioStore((s) => s.setMenuOpen);
   const activeProjectTheme = useStudioStore((s) => s.activeProjectTheme);
@@ -256,7 +287,7 @@ export function StudioHud() {
   }, [pathname]);
 
   const toggleSound = () => {
-    const next = !audioEnabled;
+    const next = audioStatus === "suspended" || audioStatus === "unavailable" ? true : !soundEngine.isEnabled();
     const ok = soundEngine.setEnabled(next);
     setAudioEnabled(ok);
   };
@@ -453,15 +484,21 @@ export function StudioHud() {
               id="header-right-sound-btn"
               type="button"
               onClick={toggleSound}
+              data-audio-status={audioStatus}
+              data-audio-stage={audioStage}
+              aria-describedby="studio-audio-status"
               aria-pressed={audioEnabled}
-              aria-label={audioEnabled ? "Mute studio sound" : "Enable studio sound"}
-              title={audioEnabled ? "Mute sound" : "Enable sound"}
+              aria-label={audioStatus === "suspended" ? "Resume studio sound" : audioEnabled ? "Mute studio sound" : "Enable studio sound"}
+              title={audioStatus === "suspended" ? "Resume sound" : audioEnabled ? "Mute sound" : "Enable sound"}
               className={`relative flex h-[3.2em] w-[3.2em] cursor-pointer items-center justify-center overflow-hidden rounded-full text-[0.875em] transition-colors duration-300 max-[812px]:hidden ${
                 navMenuOpen || audioEnabled || isDarkSurface
                   ? "bg-white text-black shadow-xs hover:bg-[#eaecf6]"
                   : "bg-[#e4e6ef] text-black hover:bg-white"
               }`}
             >
+              <span id="studio-audio-status" role="status" className="sr-only">
+                {audioStatus === "unavailable" ? "Sound unavailable. The visual experience is unaffected; activate to retry." : audioStatus === "starting" ? "Starting sound" : audioStatus === "suspended" ? "Sound suspended by browser; activate to resume" : audioEnabled ? "Original journey sound enabled" : "Sound off"}
+              </span>
               <canvas ref={waveCanvasRef} className="h-full w-full" aria-hidden="true" />
             </button>
 

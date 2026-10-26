@@ -1,0 +1,66 @@
+
+> lusion-studio-reconstruction@1.0.0 check
+> npm run lint && npm run typecheck && npm run build
+
+
+> lusion-studio-reconstruction@1.0.0 lint
+> eslint
+
+
+/home/user/Website-Cloner-JP/src/components/pages/AboutPageView.tsx
+  1044:6  warning  React Hook useEffect has a missing dependency: 'team'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/user/Website-Cloner-JP/src/components/pages/LusionProjectDetailView.tsx
+  85:3  warning  'highlight' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (0 errors, 2 warnings)
+
+
+> lusion-studio-reconstruction@1.0.0 typecheck
+> tsc --noEmit
+
+
+> lusion-studio-reconstruction@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 43ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 825ms
+  Running TypeScript ...
+  Finished TypeScript in 3.0s ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/29) ...
+  Generating static pages using 1 worker (7/29)
+  Generating static pages using 1 worker (14/29)
+  Generating static pages using 1 worker (21/29)
+✓ Generating static pages using 1 worker (29/29) in 709ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ƒ /assets/[...path]
+├ ○ /contact
+├ ○ /design-system
+├ ○ /icon.svg
+├ ○ /labs
+├ ○ /projects
+├   /projects/[slug]
+│ ├ ● /projects/oryzo_ai
+│ ├ ● /projects/atlas_motion
+│ ├ ● /projects/devin_ai
+│ └ ● [+16 more paths]
+├ ○ /work
+└ ƒ /work/[slug]
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> lusion-studio-reconstruction@1.0.0 postbuild
+> cp -r public .next/standalone/ && cp -r media-bundle .next/standalone/ && cp -r .next/static .next/standalone/.next/

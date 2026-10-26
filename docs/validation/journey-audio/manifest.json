@@ -1,0 +1,325 @@
+{
+  "date": "2026-10-26",
+  "scope": "Only new original-score evidence; no reference audio. Normal cinematic failures and raw timestamp encoding rejection preserved. Paths relative to this directory.",
+  "files": [
+    {
+      "file": "1440-0-solar.jpg",
+      "bytes": 53584,
+      "sha256": "f3ba8ab1b4380f57b39f300eb9568d47f96fd929a190b76ea4d832844f8d3223"
+    },
+    {
+      "file": "1440-1-tesseract.jpg",
+      "bytes": 87665,
+      "sha256": "9e6f28a0de8874506ef188e56544dd4e3ab0a952d28bbd84ca21ded45bfd8773"
+    },
+    {
+      "file": "1440-3-blue.jpg",
+      "bytes": 88748,
+      "sha256": "d2ef6524009db7079cc2eff44088535e0d075385a43dd30d0a78b9c256e4138d"
+    },
+    {
+      "file": "1440-5-fracture.jpg",
+      "bytes": 81975,
+      "sha256": "9832e73ee0b7b63375cf6d069703d1e266616bc189d699b909bc021b0a8b12da"
+    },
+    {
+      "file": "1440-9-contact.jpg",
+      "bytes": 70266,
+      "sha256": "6f7c34043ae9f08733759196eb7785df6efb79d54f33e1f263ba04ef08247059"
+    },
+    {
+      "file": "1440-controlled.webm",
+      "bytes": 91838,
+      "sha256": "c2bb4a0c6e631d82023c744e363346a66e1a2d7198f83bc525474ffcc2ebde37"
+    },
+    {
+      "file": "1440.json",
+      "bytes": 46168,
+      "sha256": "77b06a8a646f495b8646662d04d710fdfaadd0033bfc0226151d6e9fac7f9e90"
+    },
+    {
+      "file": "390-0-solar.jpg",
+      "bytes": 22786,
+      "sha256": "892bb7bbf0ce37fb61d3c96fd9ffc7b25dc2683b4d14381bb636138cd87b81c4"
+    },
+    {
+      "file": "390-1-tesseract.jpg",
+      "bytes": 38648,
+      "sha256": "ef1e665f80746b8fdf65e6bf6fc259c92a86abddc6578af98228cd8495880e2b"
+    },
+    {
+      "file": "390-3-blue.jpg",
+      "bytes": 39873,
+      "sha256": "3e7600c1a879533ee07005056095dbd58aac11071f555e21d0e539689215c025"
+    },
+    {
+      "file": "390-5-fracture.jpg",
+      "bytes": 22936,
+      "sha256": "ea7bbf9ac75b67f1ef4b999d6511fae27cef195e18baab702052eca54e0d13f1"
+    },
+    {
+      "file": "390-9-contact.jpg",
+      "bytes": 32718,
+      "sha256": "a36b8b9b499d1ed862c265e8e8674951643cb60eea3e9bf11e26f875a36df3ca"
+    },
+    {
+      "file": "390-controlled.webm",
+      "bytes": 73196,
+      "sha256": "c595dd2a3c329a8988a3811b385342b9f62b2061bdeb69056782a83bba308f95"
+    },
+    {
+      "file": "390.json",
+      "bytes": 41644,
+      "sha256": "7347ccc2125727f72e42d12c404f24f4e7008bd8c56966a81818089623a56852"
+    },
+    {
+      "file": "audio-controlled.log",
+      "bytes": 226,
+      "sha256": "5c7114d2530cedf25f19caa0f23dfc3e81136fa16e51637a017c85e3c4a413ff"
+    },
+    {
+      "file": "audio-native-1440.log",
+      "bytes": 160,
+      "sha256": "e42e8e88ec9aa96c9f2c0358c57cfd78fddb2d7cdbea7a6db0e25cb79bbdae78"
+    },
+    {
+      "file": "audio-native-390.log",
+      "bytes": 159,
+      "sha256": "5c4f3213a165b8b7b92d4cdc984f564bbeeb721c3b85d0280d430a0af4e7bce4"
+    },
+    {
+      "file": "baseline-check.log",
+      "bytes": 1930,
+      "sha256": "fe2e57b5a3810395f8581e3a0d5e683cc5c55dfc33103e4971af78573aa383a4"
+    },
+    {
+      "file": "baseline-normal-1440.json.gz",
+      "bytes": 4775,
+      "sha256": "a6f8e74fd94851e2e55e85cae0b52bc1754d0e8bf1e2328dd225fffa9d1378ee"
+    },
+    {
+      "file": "baseline-normal-1440.log",
+      "bytes": 370,
+      "sha256": "92b46cc6a00f8dfda8b9a4443ce1ac75ce0da474c72ee1292bbe1cfd52b806b5"
+    },
+    {
+      "file": "baseline-normal-390.json.gz",
+      "bytes": 5363,
+      "sha256": "ee22f393ff24c4078f451b50cf7250e062d232034cf90bfb7e117ec2f52f5356"
+    },
+    {
+      "file": "baseline-normal-390.log",
+      "bytes": 375,
+      "sha256": "2f3acf36d3eba0a43dc196aaa99336acba10522b8ce85121d4d38aa2bf07edcd"
+    },
+    {
+      "file": "check.log",
+      "bytes": 1931,
+      "sha256": "50f8570ee8a3d1888b919bd8c0deafdac775c02c0ac4e47130061f2f89358f32"
+    },
+    {
+      "file": "context-loss.json",
+      "bytes": 2648,
+      "sha256": "817783cac0c9dc409572274ff0efd995f9ccc480336502eac3c2f6106d36d008"
+    },
+    {
+      "file": "context-loss.log",
+      "bytes": 56,
+      "sha256": "c4bffb24c736418e681276a95e460fe7e6ba80c84c75b870effe8e15b89c93f0"
+    },
+    {
+      "file": "decoded-audio-analysis.json",
+      "bytes": 17496,
+      "sha256": "684641ab150071296578217829c87f5579b1c5a6fc1969168a6fed2653cfbc72"
+    },
+    {
+      "file": "encoding-raw-order-rejected.log",
+      "bytes": 609,
+      "sha256": "3435d028762f637b744cdcaf47d32a9dcfb0ce8651b6305bfe1b2e2616b73ca7"
+    },
+    {
+      "file": "encoding.json",
+      "bytes": 4026,
+      "sha256": "f30c2ff992ddbd577ceabcd609fa7ddd55d7e426044657799921dbe1eb360023"
+    },
+    {
+      "file": "environment.json",
+      "bytes": 543,
+      "sha256": "e9fcb87090fabbc1f4b9b1d66c638f81346dde12427b950b4d6c8ba4a2f00cd7"
+    },
+    {
+      "file": "failure-resume.json",
+      "bytes": 2037,
+      "sha256": "9f6240dc5cc44690ef8ec0bf86e4db6eba4cd015c1c4400afe72cae5a57c8e50"
+    },
+    {
+      "file": "failure-synthesis.json",
+      "bytes": 2053,
+      "sha256": "8358213f5b4891f1a7d99f8e0a985241d566daa8c8b00678f723cbf5d7f0182d"
+    },
+    {
+      "file": "failure-unsupported.json",
+      "bytes": 2089,
+      "sha256": "cc2704fe5728f04e1ec776952538bc429d66ce8f767cd29a665cfce53aebc585"
+    },
+    {
+      "file": "goal-normal-1440.json.gz",
+      "bytes": 4876,
+      "sha256": "ac2395188241dc18d43e38c14d871db85f617585d40afba62431b1c65c7ce8b7"
+    },
+    {
+      "file": "goal-normal-1440.log",
+      "bytes": 375,
+      "sha256": "2f3acf36d3eba0a43dc196aaa99336acba10522b8ce85121d4d38aa2bf07edcd"
+    },
+    {
+      "file": "goal-normal-390.json.gz",
+      "bytes": 5291,
+      "sha256": "027e61ed488df83c078e7b9cf5947e39762089a3ac845631a53c440a8bc6f598"
+    },
+    {
+      "file": "goal-normal-390.log",
+      "bytes": 375,
+      "sha256": "2f3acf36d3eba0a43dc196aaa99336acba10522b8ce85121d4d38aa2bf07edcd"
+    },
+    {
+      "file": "goal-reduce-1440.json.gz",
+      "bytes": 3645,
+      "sha256": "4c8b2ddeba6e6432ed484b2372839b39c7413498510f9172503df62968b72e07"
+    },
+    {
+      "file": "goal-reduce-1440.log",
+      "bytes": 125,
+      "sha256": "4ac917b48076ea96779cf0ddc6030a3344acf8ef2812222dcb7b67e65b305565"
+    },
+    {
+      "file": "goal-reduce-390.json.gz",
+      "bytes": 3781,
+      "sha256": "5d9e6462a7ee4a2928f36f94440ce60f79a04aa8f0bde5141dce61b96d7df44c"
+    },
+    {
+      "file": "goal-reduce-390.log",
+      "bytes": 124,
+      "sha256": "966967444ba6ffe5eb1f46cb86b0be22eb017a75031c99e45a29b851c07f0002"
+    },
+    {
+      "file": "home-motion.log",
+      "bytes": 94,
+      "sha256": "614bcea7c5254cdc2de9a50f528aece1e4dda8bea507d0c1fadbf23f9d27d452"
+    },
+    {
+      "file": "native-1440-audio.webm",
+      "bytes": 210248,
+      "sha256": "1a9666549668d0e83e1f2780af5ddc3df3b2bc7b77aa7e90e50547aa465bff0f"
+    },
+    {
+      "file": "native-1440-frames.json",
+      "bytes": 3485,
+      "sha256": "71fce43cdd1c4fbbfea7a28db9ffab5b70596cc84f28a2f8cf924c6bbd5ad230"
+    },
+    {
+      "file": "native-1440-preview.mp4",
+      "bytes": 438612,
+      "sha256": "ad2e29697ddea39237776bc3b671d8ce83c9fd3eee232544a8ca9aeef8b8d7e2"
+    },
+    {
+      "file": "native-1440-summary.json",
+      "bytes": 27578,
+      "sha256": "48e2b70bf3b7d9d79e8707a5a60b91562847b8284f259517a822d62fa0c366da"
+    },
+    {
+      "file": "native-1440.json.gz",
+      "bytes": 16298,
+      "sha256": "f2a0d62cac7b76615883044d2d263efff7a8893aa2e6d40579762514dcb0079c"
+    },
+    {
+      "file": "native-390-audio.webm",
+      "bytes": 191294,
+      "sha256": "d9b282a5e63d1488f40a0a58a4687a015be11f4a9b62ff2bf93c2dc27a4788e3"
+    },
+    {
+      "file": "native-390-frames.json",
+      "bytes": 4731,
+      "sha256": "d6807213ada9bf547ba1251eb6fa63c48a3adc29ba923f982623f108950625cf"
+    },
+    {
+      "file": "native-390-preview.mp4",
+      "bytes": 489810,
+      "sha256": "7243832dd0cb4d0cc979d116b9939857e93ce4cb15cff390b8498e72f28479c2"
+    },
+    {
+      "file": "native-390-summary.json",
+      "bytes": 24306,
+      "sha256": "adbee906e3f10dcd565e3151ac16ea985d7d5fa8da3301db6f11c24adccdeddd"
+    },
+    {
+      "file": "native-390.json.gz",
+      "bytes": 17364,
+      "sha256": "a8bdccd2df8c41d096368b521fb639f146bfa365e4615bab714f84b557e1ee9f"
+    },
+    {
+      "file": "playback-clock.json",
+      "bytes": 932,
+      "sha256": "ce6600500f855a092b69b5f85e9f67c450e31d709d61ed43bd36cfa09a902b8b"
+    },
+    {
+      "file": "playback-clock.log",
+      "bytes": 693,
+      "sha256": "179fc83d65c299c13459831c2d389877cc176d8e9972e16ca1a60697712aa857"
+    },
+    {
+      "file": "reduced-motion.json",
+      "bytes": 1901,
+      "sha256": "e879c1de358075d834dff4a4b3ea0707c875f5bbc01436f223bf0b366033733f"
+    },
+    {
+      "file": "reference-attempt.json",
+      "bytes": 497,
+      "sha256": "e470998a44a6c88a930464777795d6a386811e2ab026f154c774ceff6380f4b2"
+    },
+    {
+      "file": "results-summary.json",
+      "bytes": 2762,
+      "sha256": "396001e0ebf366ac0f32e2e1c3ce4a2646a323ff3290a0e965a7fa51de8de0d7"
+    },
+    {
+      "file": "results.tsv",
+      "bytes": 178,
+      "sha256": "82ae5845c007ec033c64adb77635253ba07e721a71dc2f4a37ce94756a825b43"
+    },
+    {
+      "file": "test-asset-route.log",
+      "bytes": 1148,
+      "sha256": "8a09c8062dddd3cdcde98429524336fc5420c25f9011614943307864830c2730"
+    },
+    {
+      "file": "test-goal-sequence.log",
+      "bytes": 613,
+      "sha256": "2090a4b66f49e6eaa8b9ac7764d7e02935f78c15474633b652cecd4ad10594c1"
+    },
+    {
+      "file": "test-home-motion.log",
+      "bytes": 353,
+      "sha256": "740b67eebb802c7e3ecf5a4bdcedb4289429520c03e04e05c02720ab52be8061"
+    },
+    {
+      "file": "unit.log",
+      "bytes": 668,
+      "sha256": "1762c0d4d1b1a0120bd21eabe89a9ddd23caf3e845d84336873fbeec44b2ea48"
+    }
+  ],
+  "totalBytes": 2291048,
+  "textLogNormalization": {
+    "policy": "LF line endings, trailing spaces and excess final blank lines removed only; test/error content unchanged. Raw capture logs remain in ignored temp/journey-audio/.",
+    "changedFiles": [
+      {
+        "file": "check.log",
+        "capturedSha256BeforeNormalization": "42300b8633f9031800676a70802037bb5f3e6c3cc18f696663959f3e46f70aee"
+      },
+      {
+        "file": "baseline-check.log",
+        "capturedSha256BeforeNormalization": "2c258116a231a8e9e772712563a37db278f767be0ddd71ee683e3c675fe70960"
+      }
+    ]
+  }
+}

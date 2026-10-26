@@ -1,0 +1,1152 @@
+{
+  "width": 1440,
+  "mode": "uninterrupted native owner clock; sound enabled; audio/video capture instrumentation; NOT a performance gate",
+  "errors": [],
+  "recordStart": 12752.5,
+  "videoFrames": 44,
+  "recording": {
+    "start": 12752.40000000014,
+    "end": 38702.40000000014
+  },
+  "stages": [
+    "solar",
+    "tesseract",
+    "white-transition",
+    "blue",
+    "glass",
+    "fracture",
+    "contact"
+  ],
+  "pause": {
+    "audio": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "solar",
+      "gains": [
+        0.62,
+        0,
+        0.1,
+        0.06,
+        0
+      ],
+      "cutoff": 3800,
+      "held": false,
+      "hidden": false,
+      "paused": true,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 1,
+      "input": {
+        "active": true,
+        "title": false,
+        "emergence": true,
+        "tunnel": 0,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": true
+      },
+      "events": [
+        {
+          "at": 0.42086167800453517,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 1.1900226757369614,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 7.1807709750566895,
+          "type": "stage",
+          "stage": "tesseract"
+        },
+        {
+          "at": 16.152380952380952,
+          "type": "stage",
+          "stage": "white-transition"
+        },
+        {
+          "at": 18.73269841269841,
+          "type": "stage",
+          "stage": "blue"
+        },
+        {
+          "at": 22.11120181405896,
+          "type": "stage",
+          "stage": "glass"
+        },
+        {
+          "at": 24.061678004535146,
+          "type": "stage",
+          "stage": "fracture"
+        },
+        {
+          "at": 24.061678004535146,
+          "type": "fracture",
+          "stage": "fracture"
+        },
+        {
+          "at": 28.50249433106576,
+          "type": "stage",
+          "stage": "contact"
+        },
+        {
+          "at": 30.040816326530614,
+          "type": "stage",
+          "stage": "black-title"
+        },
+        {
+          "at": 30.34267573696145,
+          "type": "stage",
+          "stage": "solar"
+        }
+      ]
+    },
+    "playback": {
+      "state": "paused",
+      "progress": 0.0336577777777695,
+      "virtualScroll": 8610.388074556296,
+      "activation": 8431.56,
+      "end": 40733.44,
+      "runs": 2
+    },
+    "signal": {
+      "at": 40839.90000000014,
+      "audioTime": 31.54140589569161,
+      "rms": 0,
+      "peak": 0,
+      "low": 5.786365866798493e-07,
+      "high": 3.2574385760005026e-10
+    }
+  },
+  "suspended": {
+    "status": "suspended",
+    "enabled": true,
+    "error": null,
+    "stage": "solar",
+    "gains": [
+      0.62,
+      0,
+      0.1,
+      0.06,
+      0
+    ],
+    "cutoff": 3800,
+    "held": false,
+    "hidden": false,
+    "paused": true,
+    "contextState": "suspended",
+    "contextCreations": 1,
+    "loops": 5,
+    "voices": 0,
+    "fractureEvents": 1,
+    "input": {
+      "active": true,
+      "title": false,
+      "emergence": true,
+      "tunnel": 0,
+      "drop": 0,
+      "wait": 0,
+      "fractureVisible": false,
+      "paused": true
+    },
+    "events": [
+      {
+        "at": 0.42086167800453517,
+        "type": "sources-started",
+        "stage": "home"
+      },
+      {
+        "at": 1.1900226757369614,
+        "type": "stage",
+        "stage": "solar"
+      },
+      {
+        "at": 7.1807709750566895,
+        "type": "stage",
+        "stage": "tesseract"
+      },
+      {
+        "at": 16.152380952380952,
+        "type": "stage",
+        "stage": "white-transition"
+      },
+      {
+        "at": 18.73269841269841,
+        "type": "stage",
+        "stage": "blue"
+      },
+      {
+        "at": 22.11120181405896,
+        "type": "stage",
+        "stage": "glass"
+      },
+      {
+        "at": 24.061678004535146,
+        "type": "stage",
+        "stage": "fracture"
+      },
+      {
+        "at": 24.061678004535146,
+        "type": "fracture",
+        "stage": "fracture"
+      },
+      {
+        "at": 28.50249433106576,
+        "type": "stage",
+        "stage": "contact"
+      },
+      {
+        "at": 30.040816326530614,
+        "type": "stage",
+        "stage": "black-title"
+      },
+      {
+        "at": 30.34267573696145,
+        "type": "stage",
+        "stage": "solar"
+      }
+    ]
+  },
+  "resumed": {
+    "audio": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "solar",
+      "gains": [
+        0.62,
+        0,
+        0.1,
+        0.06,
+        0
+      ],
+      "cutoff": 3800,
+      "held": false,
+      "hidden": false,
+      "paused": false,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 1,
+      "input": {
+        "active": true,
+        "title": false,
+        "emergence": true,
+        "tunnel": 0,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": false
+      },
+      "events": [
+        {
+          "at": 0.42086167800453517,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 1.1900226757369614,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 7.1807709750566895,
+          "type": "stage",
+          "stage": "tesseract"
+        },
+        {
+          "at": 16.152380952380952,
+          "type": "stage",
+          "stage": "white-transition"
+        },
+        {
+          "at": 18.73269841269841,
+          "type": "stage",
+          "stage": "blue"
+        },
+        {
+          "at": 22.11120181405896,
+          "type": "stage",
+          "stage": "glass"
+        },
+        {
+          "at": 24.061678004535146,
+          "type": "stage",
+          "stage": "fracture"
+        },
+        {
+          "at": 24.061678004535146,
+          "type": "fracture",
+          "stage": "fracture"
+        },
+        {
+          "at": 28.50249433106576,
+          "type": "stage",
+          "stage": "contact"
+        },
+        {
+          "at": 30.040816326530614,
+          "type": "stage",
+          "stage": "black-title"
+        },
+        {
+          "at": 30.34267573696145,
+          "type": "stage",
+          "stage": "solar"
+        }
+      ]
+    },
+    "playback": {
+      "state": "playing",
+      "progress": 0.035808888888876476,
+      "virtualScroll": 8633.079865894295,
+      "activation": 8431.56,
+      "end": 40733.44,
+      "runs": 2
+    },
+    "signal": {
+      "at": 42875.40000000014,
+      "audioTime": 32.40054421768708,
+      "rms": 0.009140978071974112,
+      "peak": 0.01935534179210663,
+      "low": 6.700160877480417e-07,
+      "high": 2.084882576457087e-10
+    }
+  },
+  "contextLost": {
+    "audio": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "home",
+      "gains": [
+        0.2,
+        0,
+        0,
+        0,
+        0.1
+      ],
+      "cutoff": 2300,
+      "held": false,
+      "hidden": false,
+      "paused": false,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 1,
+      "input": {
+        "active": false,
+        "title": false,
+        "emergence": false,
+        "tunnel": 0,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": false
+      },
+      "events": [
+        {
+          "at": 0.42086167800453517,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 1.1900226757369614,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 7.1807709750566895,
+          "type": "stage",
+          "stage": "tesseract"
+        },
+        {
+          "at": 16.152380952380952,
+          "type": "stage",
+          "stage": "white-transition"
+        },
+        {
+          "at": 18.73269841269841,
+          "type": "stage",
+          "stage": "blue"
+        },
+        {
+          "at": 22.11120181405896,
+          "type": "stage",
+          "stage": "glass"
+        },
+        {
+          "at": 24.061678004535146,
+          "type": "stage",
+          "stage": "fracture"
+        },
+        {
+          "at": 24.061678004535146,
+          "type": "fracture",
+          "stage": "fracture"
+        },
+        {
+          "at": 28.50249433106576,
+          "type": "stage",
+          "stage": "contact"
+        },
+        {
+          "at": 30.040816326530614,
+          "type": "stage",
+          "stage": "black-title"
+        },
+        {
+          "at": 30.34267573696145,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 37.061950113378686,
+          "type": "stage",
+          "stage": "tesseract"
+        },
+        {
+          "at": 37.07065759637188,
+          "type": "stage",
+          "stage": "home"
+        }
+      ]
+    },
+    "nativeReleased": true,
+    "staticFallback": "true"
+  },
+  "samples": [
+    {
+      "at": 12855,
+      "sourceId": 18,
+      "playback": {
+        "state": "playing",
+        "progress": 0,
+        "virtualScroll": 8431.56,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      },
+      "scene": {
+        "tunnelProgress": 0,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 0,
+        "astronautMatrix": [
+          0.9997208914216283,
+          -0.0007928311371607059,
+          -0.02361166393824662,
+          0,
+          5.421010862427522e-20,
+          0.9994367370827529,
+          -0.03355903111504077,
+          0,
+          0.023624971008336656,
+          0.03354966450157472,
+          0.9991577857158933,
+          0,
+          0.025337498982747397,
+          -0.31818583866555056,
+          2.66,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999829060605262,
+          -3.3881317890172014e-21,
+          -0.005847015199632316,
+          0,
+          -4.717482498942747e-05,
+          0.9999674516316756,
+          -0.008068051300566297,
+          0,
+          0.0058468248888279995,
+          0.008068189217704448,
+          0.9999503582485816,
+          0,
+          0.030404998779296876,
+          0.041956666734483505,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": true
+      },
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "at": 12855.40000000014,
+        "audioTime": 3.5584580498866214,
+        "rms": 0.004024820998568523,
+        "peak": 0.009300296194851398,
+        "low": 3.5846465092929744e-09,
+        "high": 1.4373964671363177e-18
+      }
+    },
+    {
+      "at": 16554.600000000093,
+      "sourceId": 33,
+      "playback": {
+        "state": "playing",
+        "progress": 0.1652355555555576,
+        "virtualScroll": 11588.411809521309,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      },
+      "scene": {
+        "tunnelProgress": 0.006375164109722349,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 0.5738359733254955,
+        "astronautMatrix": [
+          0.9997208914216283,
+          -0.0007928311371607059,
+          -0.02361166393824662,
+          0,
+          5.421010862427522e-20,
+          0.9994367370827529,
+          -0.03355903111504077,
+          0,
+          0.023624971008336656,
+          0.03354966450157472,
+          0.9991577857158933,
+          0,
+          0.025337498982747397,
+          -0.31818583866555056,
+          2.66,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999829060605262,
+          -3.3881317890172014e-21,
+          -0.005847015199632316,
+          0,
+          -4.717482498942747e-05,
+          0.9999674516316756,
+          -0.008068051300566297,
+          0,
+          0.0058468248888279995,
+          0.008068189217704448,
+          0.9999503582485816,
+          0,
+          0.030404998779296876,
+          0.041956666734483505,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": false
+      },
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.006375164109722349,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "at": 16554.800000000047,
+        "audioTime": 7.250430839002267,
+        "rms": 0.00738930763544418,
+        "peak": 0.018142737448215485,
+        "low": 9.412345194387606e-07,
+        "high": 4.2409870778327455e-12
+      }
+    },
+    {
+      "at": 25454.699999999953,
+      "sourceId": 57,
+      "playback": {
+        "state": "playing",
+        "progress": 0.5640577777777798,
+        "virtualScroll": 32359.69833399749,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      },
+      "scene": {
+        "tunnelProgress": 0.7973609418887087,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 71.77139039960626,
+        "astronautMatrix": [
+          0.9997208914216283,
+          -0.0007928311371607059,
+          -0.02361166393824662,
+          0,
+          5.421010862427522e-20,
+          0.9994367370827529,
+          -0.03355903111504077,
+          0,
+          0.023624971008336656,
+          0.03354966450157472,
+          0.9991577857158933,
+          0,
+          0.025337498982747397,
+          -0.31818583866555056,
+          2.66,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999829060605262,
+          -3.3881317890172014e-21,
+          -0.005847015199632316,
+          0,
+          -4.717482498942747e-05,
+          0.9999674516316756,
+          -0.008068051300566297,
+          0,
+          0.0058468248888279995,
+          0.008068189217704448,
+          0.9999503582485816,
+          0,
+          0.030404998779296876,
+          0.041956666734483505,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0.26025471810512585,
+        "flashVisible": true,
+        "corridorTravel": 0,
+        "glazingLayers": 3,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": false
+      },
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "white-transition",
+        "gains": [
+          0.21357559290611583,
+          0.6207267787183475,
+          0.5451395256751074,
+          0.11983132398208189,
+          0
+        ],
+        "cutoff": 3611.1620540085873,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7973609418887087,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "at": 25454.800000000047,
+        "audioTime": 16.152380952380952,
+        "rms": 0.06764174621669139,
+        "peak": 0.14279308915138245,
+        "low": 9.509109439238194e-06,
+        "high": 2.3582815329070772e-12
+      }
+    },
+    {
+      "at": 28036.40000000014,
+      "sourceId": 59,
+      "playback": {
+        "state": "playing",
+        "progress": 0.6789733333333291,
+        "virtualScroll": 35434.75133700028,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      },
+      "scene": {
+        "tunnelProgress": 0.9144612085681751,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 82.31172227972365,
+        "astronautMatrix": [
+          0.9997208914216283,
+          -0.0007928311371607059,
+          -0.02361166393824662,
+          0,
+          5.421010862427522e-20,
+          0.9994367370827529,
+          -0.03355903111504077,
+          0,
+          0.023624971008336656,
+          0.03354966450157472,
+          0.9991577857158933,
+          0,
+          0.025337498982747397,
+          -0.31818583866555056,
+          2.66,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999829060605262,
+          -3.3881317890172014e-21,
+          -0.005847015199632316,
+          0,
+          -4.717482498942747e-05,
+          0.9999674516316756,
+          -0.008068051300566297,
+          0,
+          0.0058468248888279995,
+          0.008068189217704448,
+          0.9999503582485816,
+          0,
+          0.030404998779296876,
+          0.041956666734483505,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 7.890246904899648,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": false
+      },
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9144612085681751,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "at": 28036.5,
+        "audioTime": 18.74140589569161,
+        "rms": 0.02410867609635735,
+        "peak": 0.058809421956539154,
+        "low": 5.6667378600818895e-06,
+        "high": 5.53304171605785e-12
+      }
+    },
+    {
+      "at": 31455,
+      "sourceId": 64,
+      "playback": {
+        "state": "playing",
+        "progress": 0.8291955555555514,
+        "virtualScroll": 38096.55798466448,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      },
+      "scene": {
+        "tunnelProgress": 1,
+        "shatterProgress": 0.2948373380350553,
+        "waitProgress": 0,
+        "bakedFrame": 103.74186690175276,
+        "astronautMatrix": [
+          0.9997208914216283,
+          -0.0007928311371607059,
+          -0.02361166393824662,
+          0,
+          5.421010862427522e-20,
+          0.9994367370827529,
+          -0.03355903111504077,
+          0,
+          0.023624971008336656,
+          0.03354966450157472,
+          0.9991577857158933,
+          0,
+          0.025337498982747397,
+          -0.31818583866555056,
+          2.66,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999829060605262,
+          -3.3881317890172014e-21,
+          -0.005847015199632316,
+          0,
+          -4.717482498942747e-05,
+          0.9999674516316756,
+          -0.008068051300566297,
+          0,
+          0.0058468248888279995,
+          0.008068189217704448,
+          0.9999503582485816,
+          0,
+          0.030404998779296876,
+          0.041956666734483505,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 24.756907448837055,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 0.8908765882595128,
+        "ringVisible": false
+      },
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.35978922160855153,
+          0.10021077839144846,
+          0.22035129731908076,
+          0.26038642705098886,
+          0.17984191620641365
+        ],
+        "cutoff": 4612.384190542128,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.2948373380350553,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "at": 31455.40000000014,
+        "audioTime": 22.160544217687075,
+        "rms": 0.024323913659803048,
+        "peak": 0.05509021133184433,
+        "low": 7.751282511987912e-06,
+        "high": 6.0117512830375274e-12
+      }
+    },
+    {
+      "at": 33386.19999999995,
+      "sourceId": 66,
+      "playback": {
+        "state": "playing",
+        "progress": 0.9164222222222221,
+        "virtualScroll": 39417.95967076801,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      },
+      "scene": {
+        "tunnelProgress": 1,
+        "shatterProgress": 0.8431367928497968,
+        "waitProgress": 0,
+        "bakedFrame": 131.15683964248984,
+        "astronautMatrix": [
+          0.9997208914216283,
+          -0.0007928311371607059,
+          -0.02361166393824662,
+          0,
+          5.421010862427522e-20,
+          0.9994367370827529,
+          -0.03355903111504077,
+          0,
+          0.023624971008336656,
+          0.03354966450157472,
+          0.9991577857158933,
+          0,
+          0.025337498982747397,
+          -0.31818583866555056,
+          2.66,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999829060605262,
+          -3.3881317890172014e-21,
+          -0.005847015199632316,
+          0,
+          -4.717482498942747e-05,
+          0.9999674516316756,
+          -0.008068051300566297,
+          0,
+          0.0058468248888279995,
+          0.008068189217704448,
+          0.9999503582485816,
+          0,
+          0.030404998779296876,
+          0.041956666734483505,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 30.305626317859694,
+        "glazingLayers": 0,
+        "glassOpacity": 1,
+        "crackProgress": 1,
+        "ringVisible": false
+      },
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "fracture",
+        "gains": [
+          0.36,
+          0.1,
+          0.21999999999999997,
+          0.26,
+          0.18
+        ],
+        "cutoff": 4608,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.8431367928497968,
+          "wait": 0,
+          "fractureVisible": true,
+          "paused": false
+        }
+      },
+      "signal": {
+        "at": 33386.19999999995,
+        "audioTime": 24.090702947845806,
+        "rms": 0.019749491759763746,
+        "peak": 0.10233260691165924,
+        "low": 5.410959390189495e-06,
+        "high": 3.378180890978482e-10
+      }
+    },
+    {
+      "at": 37851.90000000014,
+      "sourceId": 70,
+      "playback": {
+        "state": "completed",
+        "progress": 1,
+        "virtualScroll": 40733.44,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      },
+      "scene": {
+        "tunnelProgress": 1,
+        "shatterProgress": 1,
+        "waitProgress": 0.42000000000000104,
+        "bakedFrame": 201.16000000000014,
+        "astronautMatrix": [
+          0.9997208914216283,
+          -0.0007928311371607059,
+          -0.02361166393824662,
+          0,
+          5.421010862427522e-20,
+          0.9994367370827529,
+          -0.03355903111504077,
+          0,
+          0.023624971008336656,
+          0.03354966450157472,
+          0.9991577857158933,
+          0,
+          0.025337498982747397,
+          -0.31818583866555056,
+          2.66,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999829060605262,
+          -3.3881317890172014e-21,
+          -0.005847015199632316,
+          0,
+          -4.717482498942747e-05,
+          0.9999674516316756,
+          -0.008068051300566297,
+          0,
+          0.0058468248888279995,
+          0.008068189217704448,
+          0.9999503582485816,
+          0,
+          0.030404998779296876,
+          0.041956666734483505,
+          5.2,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 1,
+        "ringVisible": false
+      },
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.42000000000000104,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "at": 37852,
+        "audioTime": 28.55183673469388,
+        "rms": 0.005353852582422148,
+        "peak": 0.012039009481668472,
+        "low": 9.041197352256879e-07,
+        "high": 5.089747584318659e-10
+      }
+    }
+  ],
+  "fullSampleCount": 138,
+  "fullSamplesFile": "native-1440.json.gz",
+  "summary": "First sampled state at each stage transition; full original samples preserved in gzip."
+}

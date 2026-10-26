@@ -1,0 +1,97 @@
+{
+  "before": {
+    "status": "off",
+    "enabled": false,
+    "error": null,
+    "stage": "home",
+    "gains": [
+      0.2,
+      0,
+      0,
+      0,
+      0.1
+    ],
+    "cutoff": 2300,
+    "held": false,
+    "hidden": false,
+    "paused": false,
+    "contextState": "not-created",
+    "contextCreations": 0,
+    "loops": 0,
+    "voices": 0,
+    "fractureEvents": 0,
+    "input": {
+      "active": false,
+      "title": false,
+      "emergence": false,
+      "tunnel": 0,
+      "drop": 0,
+      "wait": 0,
+      "fractureVisible": false,
+      "paused": false
+    },
+    "events": []
+  },
+  "after": {
+    "audio": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "solar",
+      "gains": [
+        0.62,
+        0,
+        0.1,
+        0.06,
+        0
+      ],
+      "cutoff": 3800,
+      "held": false,
+      "hidden": false,
+      "paused": false,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 0,
+      "input": {
+        "active": true,
+        "title": false,
+        "emergence": true,
+        "tunnel": 0,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": false
+      },
+      "events": [
+        {
+          "at": 0.31056689342403626,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 0.9723356009070295,
+          "type": "stage",
+          "stage": "solar"
+        }
+      ]
+    },
+    "playback": {
+      "state": "armed",
+      "progress": 0,
+      "virtualScroll": 0,
+      "activation": 8431.56,
+      "end": 40733.44,
+      "runs": 0
+    },
+    "signal": {
+      "at": 12772.299999999814,
+      "audioTime": 0.9810430839002268,
+      "rms": 0.0034470359783184386,
+      "peak": 0.008567538112401962,
+      "low": 7.674335719931318e-9,
+      "high": 4.9814376101100556e-20
+    }
+  }
+}

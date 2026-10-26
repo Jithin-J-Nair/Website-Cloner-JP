@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-26T05:21:55.811Z",
+  "node": "v22.22.3",
+  "browser": "153.0.8010.0",
+  "renderBackend": "ANGLE / SwiftShader (explicit launcher flags); not a physical GPU",
+  "cpuQuota": "cgroup quota unavailable in sandbox",
+  "audioBrowserLauncher": "shared launcher, CHROMIUM_MULTIPROCESS=1",
+  "legacyGateLauncher": "unchanged validator uses bundled default single-process/in-process-GPU args; same for original baseline and final comparison",
+  "physicalAudioListeningVerified": false,
+  "referenceListeningVerified": false
+}
