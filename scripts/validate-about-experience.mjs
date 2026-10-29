@@ -9,7 +9,7 @@ try{
  for(const width of [1440,390]){
   const context=await browser.newContext({viewport:{width,height:width===390?844:900},isMobile:width===390,hasTouch:width===390,reducedMotion:'no-preference'});
   await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;});
-  const page=await context.newPage(),report={width,baseline,errors:[],consoleErrors:[],restrictedRequests:[],milestones:[]};
+  const page=await context.newPage(),report={width,height:width===390?844:900,baseline,errors:[],consoleErrors:[],restrictedRequests:[],milestones:[]};
   page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.consoleErrors.push(m.text());});
   page.on('request',r=>{if(/\/team\/.*\.buf|\/images\/logo\//.test(r.url()))report.restrictedRequests.push(r.url());});
   const seek=async y=>{await page.evaluate(top=>{window.__lenis?.scrollTo(top,{immediate:true});window.scrollTo({top,behavior:'instant'});},y);await page.waitForTimeout(500);};
@@ -47,6 +47,7 @@ try{
     // Event-injected visibility tests the listener/scheduler, not physical OS backgrounding.
     await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});await page.waitForTimeout(250);const hiddenFrames=await page.evaluate(()=>window.__aboutProbe().frames);await page.waitForTimeout(300);assert.equal(await page.evaluate(()=>window.__aboutProbe().frames),hiddenFrames);
     await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});await page.waitForTimeout(250);assert.ok(await page.evaluate(()=>window.__aboutProbe().frames)>hiddenFrames);report.injectedVisibilitySleeps=true;
+    if(width===1440){await page.mouse.wheel(0,Math.round(unit*.5));await page.waitForFunction(()=>window.__aboutProbe().u>.2);report.nativeWheelForward=true;await page.mouse.wheel(0,-unit);await page.waitForFunction(()=>scrollY<3);report.nativeWheelReverse=true;}
     // A real continuous native interaction recording, distinct from milestone stills.
     if(process.env.ABOUT_RECORD==='1'){
      const raw=`${out}/recording-${width}`;fs.mkdirSync(raw,{recursive:true});const recording=await startBrowserRecording(context,page,raw);await recording.waitForFirstFrame();
@@ -58,15 +59,16 @@ try{
     else{await card.tap();assert.ok(!/rotateX\((?!0deg)/.test(await card.evaluate(e=>e.style.transform)));report.touchCardNoTilt=true;}
 
     // Genuine context loss + restoration recreates exactly one canvas and keeps selection/content.
-    await seek(0);const loss=await page.evaluate(()=>{const ext=document.querySelector('#about-who canvas').getContext('webgl2').getExtension('WEBGL_lose_context');window.__restoreAbout=()=>ext.restoreContext();ext.loseContext();return !!ext;});assert.ok(loss);
+    await seek(unit*7.2);const beforeLoss=await page.evaluate(()=>window.__aboutProbe());const loss=await page.evaluate(()=>{const ext=document.querySelector('#about-who canvas').getContext('webgl2').getExtension('WEBGL_lose_context');window.__restoreAbout=()=>ext.restoreContext();ext.loseContext();return !!ext;});assert.ok(loss);
     await page.waitForFunction(()=>document.querySelector('#about-who').dataset.sceneState==='lost');assert.ok(await page.getByText('Continue to studio information',{exact:true}).isVisible());
-    await page.waitForTimeout(500);await page.evaluate(()=>window.__restoreAbout());await page.waitForFunction(()=>document.querySelector('#about-who').dataset.sceneState==='ready');assert.equal(await page.locator('#about-who canvas').count(),1);report.contextRestore=true;
+    await page.waitForTimeout(500);await page.evaluate(()=>window.__restoreAbout());await page.waitForFunction(before=>document.querySelector('#about-who').dataset.sceneState==='ready'&&Math.abs(window.__aboutProbe().u-before.u)<.02,beforeLoss);report.recovered=await page.evaluate(()=>window.__aboutProbe());assert.ok(report.recovered.time>=beforeLoss.time&&report.recovered.time<beforeLoss.time+1);assert.equal(await page.locator('#about-who canvas').count(),1);report.contextRestore=true;
     // Use the real menu/route link, not a test-only navigation control.
     await page.evaluate(()=>{window.__oldAboutContext=document.querySelector('#about-who canvas').getContext('webgl2');});
     await page.getByRole('button',{name:'Open navigation menu',exact:true}).click();await page.waitForTimeout(200);const menuFrame=await page.evaluate(()=>window.__aboutProbe().frames);await page.waitForTimeout(350);assert.equal(await page.evaluate(()=>window.__aboutProbe().frames),menuFrame);report.menuSleeps=true;
     const home=page.locator('#header-menu-links a[href="/"]').first();await home.click();await page.waitForURL('http://127.0.0.1:3000/');await page.waitForTimeout(800);assert.equal(await page.locator('#about-who canvas').count(),0);assert.equal(await page.evaluate(()=>typeof window.__aboutProbe),'undefined');assert.equal(await page.evaluate(()=>window.__oldAboutContext.isContextLost()),true);report.disposedContext=true;
     await page.goto('http://127.0.0.1:3000/about',{waitUntil:'networkidle',timeout:120000});await page.waitForFunction(()=>!!window.__aboutProbe);assert.equal(await page.locator('#about-who canvas').count(),1);report.returned=await page.evaluate(()=>window.__aboutProbe());
     await page.setViewportSize(width===390?{width:844,height:390}:{width:1024,height:768});await page.waitForTimeout(500);report.resized=await page.evaluate(()=>window.__aboutProbe());assert.ok(report.resized.width>0&&report.resized.height>0);assert.ok(Number.isFinite(report.resized.u));
+    await page.evaluate(()=>{window.__oldAboutScrollTo=window.__lusionInspector?.scrollManager?.scrollToPixel;});await page.getByRole('button',{name:'Open navigation menu',exact:true}).click();await page.locator('#header-menu-links a[href="/projects"]').first().click();await page.waitForURL('http://127.0.0.1:3000/projects');await page.waitForTimeout(500);assert.ok(await page.evaluate(()=>window.__lusionInspector?.scrollManager?.scrollToPixel!==window.__oldAboutScrollTo));assert.equal(await page.evaluate(()=>typeof window.__aboutProbe),'undefined');report.resizedInspectorReleased=true;
     assert.deepEqual(report.errors,[]);assert.deepEqual(report.consoleErrors,[]);
    }
   }finally{fs.writeFileSync(`${out}/${width}.json`,JSON.stringify(report,null,2));await context.close();}

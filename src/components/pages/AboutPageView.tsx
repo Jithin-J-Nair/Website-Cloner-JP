@@ -14,7 +14,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 declare global {
   interface Window {
     __enableAboutProbe?: boolean;
-    __aboutProbe?: () => { frames: number; u: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number };
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number };
   }
 }
 
@@ -153,6 +153,7 @@ function AboutWhoExperience({
   const portraitGeoRef = useRef<THREE.BufferGeometry | null>(null);
 
   const [sceneGeneration, setSceneGeneration] = useState(0);
+  const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
@@ -584,7 +585,7 @@ function AboutWhoExperience({
     let smoothScrollY = targetScrollY;
     const chromeBlocked = () => { const s = useStudioStore.getState(); return s.menuOpen || s.reelOpen || s.isTransitioning; };
     let docVisible = document.visibilityState === "visible";
-    let lastTime = performance.now(), sceneTime = 0, frames = 0, lastU = 0;
+    let lastTime = performance.now(), sceneTime = contextRecoveryRef.current?.time ?? 0, frames = 0, lastU = 0;
     const frameTimes: number[] = [];
     const pointerTarget = new THREE.Vector2();
     let rafId = 0;
@@ -595,6 +596,7 @@ function AboutWhoExperience({
     let pointerActive = 0;
 
 
+    let ownedInspector: unknown;
     const syncInspector = () => {
       const H = Math.max(1, window.innerHeight);
       window.__lusionInspector = {
@@ -616,6 +618,7 @@ function AboutWhoExperience({
           },
         },
       };
+      ownedInspector = window.__lusionInspector.scrollManager;
     };
 
     const resize = () => {
@@ -828,9 +831,9 @@ function AboutWhoExperience({
       ensureLoop();
     };
     const onResize = () => { if (!contextLost) { resize(); ensureLoop(); } };
-    const onLost = (event: Event) => { event.preventDefault(); contextLost = true; if (rafId) cancelAnimationFrame(rafId); rafId = 0; fallback("lost"); };
+    const onLost = (event: Event) => { event.preventDefault(); contextRecoveryRef.current = { u: lastU, time: sceneTime }; contextLost = true; if (rafId) cancelAnimationFrame(rafId); rafId = 0; fallback("lost"); };
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
-    const probe = () => ({ frames, u: lastU, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
+    const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
       state: sectionEl.dataset.sceneState, count, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
       memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height });
@@ -852,7 +855,14 @@ function AboutWhoExperience({
     };
 
     resize();
-    const ownedInspector = window.__lusionInspector?.scrollManager;
+    if (contextRecoveryRef.current) {
+      const unit = window.innerWidth < 820 ? window.innerHeight : window.innerWidth;
+      const y = sectionEl.getBoundingClientRect().top + window.scrollY + contextRecoveryRef.current.u * unit;
+      const win = window as unknown as { __lenis?: { resize: () => void; scrollTo: (y: number, o: { immediate: boolean }) => void } };
+      win.__lenis?.resize(); win.__lenis?.scrollTo(y, { immediate: true });
+      window.scrollTo({ top: y, behavior: "instant" }); targetScrollY = smoothScrollY = y;
+      contextRecoveryRef.current = null;
+    }
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
@@ -866,7 +876,7 @@ function AboutWhoExperience({
       disposed = true;
       unsubscribeChrome();
       if (window.__aboutProbe === probe) delete window.__aboutProbe;
-      if (window.__lusionInspector?.scrollManager === ownedInspector) delete window.__lusionInspector;
+      if (window.__lusionInspector?.scrollManager === ownedInspector && window.__lusionInspector) delete window.__lusionInspector.scrollManager;
       portraitGeoRef.current = null; portraitMatRef.current = null;
       glRenderer.domElement.removeEventListener("webglcontextlost", onLost);
       glRenderer.domElement.removeEventListener("webglcontextrestored", onRestored);
