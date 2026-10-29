@@ -164,7 +164,9 @@ function AboutWhoExperience({
     memberRef.current = activeMemberIdx;
     const geo = portraitGeoRef.current;
     if (!geo) return;
-    geo.setAttribute("position", new THREE.BufferAttribute(buildSculpturalPortraitPositions(activeMemberIdx), 3));
+    const position = geo.getAttribute("position") as THREE.BufferAttribute;
+    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx));
+    position.needsUpdate = true;
     geo.computeBoundingSphere();
   }, [activeMemberIdx]);
 

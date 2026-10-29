@@ -8,7 +8,8 @@ const browser=await launchMotionBrowser();
 try{
  for(const width of [1440,390]){
   const context=await browser.newContext({viewport:{width,height:width===390?844:900},isMobile:width===390,hasTouch:width===390,reducedMotion:'no-preference'});
-  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;});
+  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;window.__aboutBuffersCreated=0;
+    const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){const gl=Reflect.apply(get,this,[type,...args]);if(gl&&/webgl/.test(type)&&!gl.__counted){gl.__counted=true;const create=gl.createBuffer;gl.createBuffer=function(...a){window.__aboutBuffersCreated++;return Reflect.apply(create,this,a);};}return gl;};});
   const page=await context.newPage(),report={width,height:width===390?844:900,baseline,errors:[],consoleErrors:[],restrictedRequests:[],milestones:[]};
   page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.consoleErrors.push(m.text());});
   page.on('request',r=>{if(/\/team\/.*\.buf|\/images\/logo\//.test(r.url()))report.restrictedRequests.push(r.url());});
@@ -31,6 +32,7 @@ try{
     await seek(unit*7.2);const beforeName=await page.locator('#about-who-team-name').textContent().catch(()=>null);
     await page.getByRole('button',{name:'Next team member',exact:true}).click();
     report.team={beforeName,selected:await page.getByRole('button',{name:'Select Ffion Morgan',exact:true}).getAttribute('aria-pressed')};assert.equal(report.team.selected,'true');assert.notEqual(beforeName,await page.locator('#about-who-team-name').textContent());
+    const buffersBefore=await page.evaluate(()=>window.__aboutBuffersCreated);for(const member of await page.getByRole('button',{name:/^Select /}).all()){await member.click();await page.waitForTimeout(150);}await page.waitForTimeout(250);const buffersAfter=await page.evaluate(()=>window.__aboutBuffersCreated);assert.equal(buffersAfter,buffersBefore,'team switching must update the existing GPU position buffer');report.selectionBuffers={before:buffersBefore,after:buffersAfter};
     if(width===390){
      const touch=await context.newCDPSession(page);
      const swipe=async(x,y,dx,dy)=>{
@@ -55,7 +57,7 @@ try{
     }
     await seek(await page.locator('#about-capability').evaluate(e=>e.offsetTop));const card=page.getByRole('button',{name:'Creative expertise',exact:true});await card.focus();await page.keyboard.press('Enter');assert.equal(await card.getAttribute('aria-pressed'),'true');
     report.cardKeyboard=true;
-    if(width===1440){await card.hover({position:{x:10,y:10}});const transform=await card.evaluate(e=>e.style.transform),angles=[...transform.matchAll(/rotate[XY]\(([-\d.]+)deg\)/g)].map(m=>Number(m[1]));assert.equal(angles.length,2);assert.ok(angles.every(n=>Math.abs(n)<=4));report.cardHover={transform,bounded:true};await page.mouse.move(0,0);assert.match(await card.evaluate(e=>e.style.transform),/rotateX\(0deg\).*rotateY\(0deg\)/);}
+    if(width===1440){await card.hover({position:{x:10,y:10}});const transform=await card.evaluate(e=>e.style.transform),angles=[...transform.matchAll(/rotate[XY]\(([-\d.]+)deg\)/g)].map(m=>Number(m[1]));assert.equal(angles.length,2);assert.ok(angles.every(n=>Math.abs(n)<=4));report.cardHover={transform,bounded:true};await page.mouse.move(0,0);assert.equal(await card.evaluate(e=>e.style.transform),'');}
     else{await card.tap();assert.ok(!/rotateX\((?!0deg)/.test(await card.evaluate(e=>e.style.transform)));report.touchCardNoTilt=true;}
 
     // Genuine context loss + restoration recreates exactly one canvas and keeps selection/content.
