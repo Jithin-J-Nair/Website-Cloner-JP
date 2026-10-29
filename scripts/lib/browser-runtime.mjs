@@ -9,7 +9,7 @@ import sparticuz from '@sparticuz/chromium';
 const require = createRequire(import.meta.url);
 
 /** Existing Chromium/SwiftShader setup, shared only by the new repair probes. */
-export async function launchMotionBrowser() {
+export async function launchMotionBrowser({ audibleOutput = false } = {}) {
   // Same bundled Chromium/SwiftShader support as capture-astronaut-emergence.mjs.
   const libDir = path.join(os.tmpdir(), 'goal-chromium-libs');
   fs.mkdirSync(libDir, { recursive: true });
@@ -28,7 +28,9 @@ export async function launchMotionBrowser() {
   const launchBrowser = () => chromium.launch({
     executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || executablePath,
     headless: true,
-    args: [...sparticuz.args.filter(arg => process.env.CHROMIUM_MULTIPROCESS !== '1' || !['--single-process','--in-process-gpu'].includes(arg)), '--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
+    // Playwright adds --mute-audio by default (not part of sparticuz.args).
+    ignoreDefaultArgs: audibleOutput ? ["--mute-audio"] : undefined,
+    args: [...sparticuz.args.filter(arg => (!audibleOutput || arg !== '--mute-audio')).filter(arg => process.env.CHROMIUM_MULTIPROCESS !== '1' || !['--single-process','--in-process-gpu'].includes(arg)), '--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
   });
   return launchBrowser();
 }
