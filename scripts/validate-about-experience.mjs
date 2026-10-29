@@ -32,7 +32,11 @@ try{
     await seek(unit*7.2);const beforeName=await page.locator('#about-who-team-name').textContent().catch(()=>null);
     await page.getByRole('button',{name:'Next team member',exact:true}).click();
     report.team={beforeName,selected:await page.getByRole('button',{name:'Select Ffion Morgan',exact:true}).getAttribute('aria-pressed')};assert.equal(report.team.selected,'true');assert.notEqual(beforeName,await page.locator('#about-who-team-name').textContent());
-    const buffersBefore=await page.evaluate(()=>window.__aboutBuffersCreated);for(const member of await page.getByRole('button',{name:/^Select /}).all()){await member.click();await page.waitForTimeout(150);}await page.waitForTimeout(250);const buffersAfter=await page.evaluate(()=>window.__aboutBuffersCreated);assert.equal(buffersAfter,buffersBefore,'team switching must update the existing GPU position buffer');report.selectionBuffers={before:buffersBefore,after:buffersAfter};
+    const buffersBefore=await page.evaluate(()=>window.__aboutBuffersCreated);for(const member of await page.getByRole('button',{name:/^Select /}).all()){
+     // Locator auto-scroll moves Chromium sticky content after screenshots;
+     // real pointer/touch coordinates do not. Keep the human input path intact.
+     const box=await member.boundingBox();assert.ok(box&&box.width>0);const x=box.x+box.width/2,y=box.y+box.height/2;if(width===390)await page.touchscreen.tap(x,y);else await page.mouse.click(x,y);await page.waitForTimeout(150);assert.equal(await member.getAttribute('aria-pressed'),'true');
+    }await page.waitForTimeout(250);const buffersAfter=await page.evaluate(()=>window.__aboutBuffersCreated);assert.equal(buffersAfter,buffersBefore,'team switching must update the existing GPU position buffer');report.selectionBuffers={before:buffersBefore,after:buffersAfter};assert.ok(Math.abs((await page.evaluate(()=>window.__aboutProbe().u))-7.2)<.02);
     if(width===390){
      const touch=await context.newCDPSession(page);
      const swipe=async(x,y,dx,dy)=>{
