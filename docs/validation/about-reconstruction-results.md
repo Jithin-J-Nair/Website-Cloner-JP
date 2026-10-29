@@ -164,4 +164,4 @@ No normal-journey or old audio acceptance predicate was relaxed. The reported fa
 
 ## Delivery
 
-No automatic merge. Runtime source commit: `13e2699`; final diagnostic commit: `e31611f`. The final documentation/evidence commit and draft PR are reported with delivery. See the source specification, this report and `about-reconstruction/` evidence. Raw captures, package/binary tooling and baseline build fixtures remain outside tracked deliverables; only requested compact evidence is retained.
+No automatic merge. Runtime source commit: `13e2699`; final diagnostic commit: `e31611f`. Evidence commit: `9f46541`. **Draft PR: [#14](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/14)**, branch `arena/95a11883-website-cloner-jp`; not merged. The final report-link commit is given with the handoff. See the source specification, this report and `about-reconstruction/` evidence. Raw captures, package/binary tooling and baseline build fixtures remain outside tracked deliverables; only requested compact evidence is retained.
