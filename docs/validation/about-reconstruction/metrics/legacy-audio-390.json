@@ -1,0 +1,42 @@
+{
+  "width": 390,
+  "mobileEmulation": true,
+  "hasTouch": true,
+  "mode": "controlled seeks; RAF frozen after setup, not autonomous",
+  "errors": [],
+  "audioRequests": [],
+  "steps": [],
+  "initial": {
+    "status": "off",
+    "enabled": false,
+    "error": null,
+    "stage": "home",
+    "gains": [
+      0.2,
+      0,
+      0,
+      0,
+      0.1
+    ],
+    "cutoff": 2300,
+    "held": false,
+    "hidden": false,
+    "paused": false,
+    "contextState": "not-created",
+    "contextCreations": 0,
+    "loops": 0,
+    "voices": 0,
+    "fractureEvents": 0,
+    "input": {
+      "active": false,
+      "title": false,
+      "emergence": false,
+      "tunnel": 0,
+      "drop": 0,
+      "wait": 0,
+      "fractureVisible": false,
+      "paused": false
+    },
+    "events": []
+  }
+}
