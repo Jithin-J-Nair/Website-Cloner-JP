@@ -93,6 +93,8 @@ export function HomePageView() {
   const reelVideoAvailable = !reelVideoFailed;
 
   const heroSectionRef = useRef<HTMLElement>(null);
+  const heroHeadingRef = useRef<HTMLHeadingElement>(null);
+  const heroCueRef = useRef<HTMLDivElement>(null);
   const featuredSectionRef = useRef<HTMLElement>(null);
   const featuredTitleRef = useRef<HTMLHeadingElement>(null);
   const reelSectionRef = useRef<HTMLElement>(null);
@@ -138,7 +140,7 @@ export function HomePageView() {
     let previousY = window.scrollY;
     let previousTime = performance.now();
     let skew = 0;
-    let introTop = 0, reelTop = 0, featuredTop = 0;
+    let introTop = 0, reelTop = 0, featuredTop = 0, heroHeight = 1;
     const cards = Array.from(featuredSectionRef.current?.querySelectorAll<HTMLElement>(".project-item") ?? []).map((el) => ({
       el, stage: el.querySelector<HTMLElement>(".project-item-main"),
       image: el.querySelector<HTMLImageElement>("img.project-item-image"),
@@ -158,6 +160,7 @@ export function HomePageView() {
       const vh = Math.max(1,window.innerHeight);
       const y = window.scrollY;
       if (layoutDirty) {
+        heroHeight = Math.max(1, heroSectionRef.current?.offsetHeight ?? vh);
         introTop = naturalTop(reelSectionRef.current);
         reelTop = naturalTop(reelContainerRef.current);
         featuredTop = naturalTop(featuredSectionRef.current);
@@ -176,6 +179,10 @@ export function HomePageView() {
       const targetSkew = reducedMotion ? 0 : Math.max(-1.6,Math.min(1.6,-velocity*0.0007));
       skew += (targetSkew-skew)*(1-Math.exp(-14*dt));
       if (Math.abs(skew)<0.005 && targetSkew===0) skew = 0;
+      // Hand the invitation to the next act; do not touch the journey's own clock.
+      const heroProgress = reducedMotion ? 0 : Math.max(0, Math.min(1, y / heroHeight));
+      if (heroCueRef.current) heroCueRef.current.style.opacity = (1 - motionEase((heroProgress - .06) / .54)).toFixed(4);
+      if (heroHeadingRef.current) heroHeadingRef.current.style.transform = `translate3d(0,${(heroProgress * 24).toFixed(2)}px,0)`;
       const intro = reducedMotion ? 1 : motionEase((vh*0.76-(introTop-y))/(vh*0.7));
       // A translated word gives spacing motion without reflowing the editorial headline.
       for (const word of introWords) word.style.transform = `translate3d(${((1-intro)*0.34).toFixed(4)}em,0,0)`;
@@ -217,7 +224,11 @@ export function HomePageView() {
     for (const el of [reelSectionRef.current,reelContainerRef.current,featuredSectionRef.current]) if (el) observer.observe(el);
     window.addEventListener("scroll",schedule,{passive:true});
     window.addEventListener("resize",resize,{passive:true});
-    document.addEventListener("visibilitychange",schedule);
+    const visibility = () => {
+      previousY = window.scrollY; previousTime = performance.now(); skew = 0;
+      layoutDirty = true; schedule();
+    };
+    document.addEventListener("visibilitychange",visibility);
     document.fonts.ready.then(resize);
     schedule();
     return () => {
@@ -225,7 +236,7 @@ export function HomePageView() {
       observer.disconnect();
       window.removeEventListener("scroll",schedule);
       window.removeEventListener("resize",resize);
-      document.removeEventListener("visibilitychange",schedule);
+      document.removeEventListener("visibilitychange",visibility);
       if (rafId) window.cancelAnimationFrame(rafId);
     };
   }, [reducedMotion]);
@@ -289,6 +300,7 @@ export function HomePageView() {
         {/* Reference Headline (`#home-hero-title`: cols 4..8 desktop, cols 1..6 mobile) */}
         <h1
           id="home-hero-title"
+          ref={heroHeadingRef}
           className="relative col-span-6 m-0 h-fit font-sans text-[5.9vw] leading-[1.09] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[6.8vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.25vw]"
         >
           {heroWords.map((word, idx) => (
@@ -318,6 +330,7 @@ export function HomePageView() {
         {/* Bottom Crosshair + `SCROLL TO EXPLORE` Bar (`#home-hero-scroll-container`) */}
         <div
           id="home-hero-scroll-container"
+          ref={heroCueRef}
           className="pointer-events-none absolute right-[var(--base-padding-x)] bottom-[calc(var(--base-padding-y)*0.32)] left-[var(--base-padding-x)] flex h-[var(--base-padding-y)] items-center justify-between"
         >
           <div

@@ -1,0 +1,93 @@
+{
+  "width": 1440,
+  "height": 900,
+  "samples": [
+    {
+      "u": 0,
+      "wallMs": 5005.299999999814,
+      "submittedFrames": 75,
+      "renderSubmissionsPerSecond": 14.984116836154234,
+      "medianRafIntervalMs": 61.299999999813735,
+      "p95RafIntervalMs": 97.59999999962747,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 3600,
+      "memory": {
+        "geometries": 2,
+        "textures": 0
+      },
+      "webglError": 0
+    },
+    {
+      "u": 1.6,
+      "wallMs": 5005.799999999814,
+      "submittedFrames": 33,
+      "renderSubmissionsPerSecond": 6.592352870670268,
+      "medianRafIntervalMs": 81.40000000037253,
+      "p95RafIntervalMs": 297.70000000018626,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 13,
+      "triangles": 62745,
+      "memory": {
+        "geometries": 13,
+        "textures": 1
+      },
+      "webglError": 0
+    },
+    {
+      "u": 5.35,
+      "wallMs": 5005.5999999996275,
+      "submittedFrames": 21,
+      "renderSubmissionsPerSecond": 4.195301262586216,
+      "medianRafIntervalMs": 245.29999999981374,
+      "p95RafIntervalMs": 569.2000000001863,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 36992,
+      "memory": {
+        "geometries": 14,
+        "textures": 1
+      },
+      "webglError": 0
+    },
+    {
+      "u": 7.2,
+      "wallMs": 5006.9000000003725,
+      "submittedFrames": 46,
+      "renderSubmissionsPerSecond": 9.187321496334373,
+      "medianRafIntervalMs": 141.70000000018626,
+      "p95RafIntervalMs": 222.09999999962747,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 3,
+      "triangles": 0,
+      "memory": {
+        "geometries": 16,
+        "textures": 1
+      },
+      "webglError": 0
+    }
+  ],
+  "errors": [],
+  "physicalGpuTiming": "NOT MEASURED",
+  "device": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "timerQuerySupported": true,
+    "policy": "existing cinematic pixel budget; original About software/low/mobile tier=1800; high=4800"
+  }
+}

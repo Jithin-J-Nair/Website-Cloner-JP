@@ -384,3 +384,25 @@ body {
 .spotlight-card:focus-visible .spotlight-border {
   opacity: 1;
 }
+
+/* About's recognition is a typographic act, not another UI-card section. */
+.about-awards-monument {
+  position: relative;
+  margin-inline: calc(var(--base-padding-x) * -1);
+  margin-bottom: clamp(2rem, 5vw, 6rem);
+  overflow: hidden;
+  line-height: .9;
+  letter-spacing: -.055em;
+  font-size: 23vw;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(255 255 255 / .5);
+  user-select: none;
+}
+.about-awards-monument span { display: block; width: max-content; }
+.about-expertise-diagram { contain: layout; }
+@media (hover: hover) and (pointer: fine) {
+  .about-expertise-column:hover { border-color: white; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-expertise-column { transform: none !important; }
+}

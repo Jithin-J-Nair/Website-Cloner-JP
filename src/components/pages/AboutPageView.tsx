@@ -1,8 +1,8 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { AboutExpertiseDiagram } from "@/components/pages/AboutExpertiseDiagram";
 import { LUSION_ABOUT } from "@/data/reference";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
@@ -499,6 +499,35 @@ function AboutWhoExperience({
     portraitPoints.visible = false;
     scene.add(portraitPoints);
 
+    // Original depth-layered vertical light field, sharing the portrait clock.
+    // These are abstract atmosphere, never a replacement claim for an employee likeness.
+    const lightPositions = new Float32Array(96 * 6);
+    for (let i = 0; i < 96; i++) {
+      const x = (i / 95 - .5) * 3.5;
+      const z = Math.sin(i * 17.31) * .7 - .3;
+      const bottom = -1.8 + Math.sin(i * 9.1) * .2;
+      const top = 1.7 + Math.cos(i * 4.7) * .65;
+      lightPositions.set([x, bottom, z, x, top, z], i * 6);
+    }
+    const lightGeometry = track(new THREE.BufferGeometry());
+    lightGeometry.setAttribute("position", new THREE.BufferAttribute(lightPositions, 3));
+    const lightMaterial = track(new THREE.ShaderMaterial({
+      uniforms: portraitMat.uniforms, transparent: true, depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexShader: `varying vec3 vLocal; void main() { vLocal = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+      fragmentShader: `uniform float uTime, uOpacity; varying vec3 vLocal;
+        void main() {
+          float envelope = smoothstep(-1.9, -.9, vLocal.y) * (1. - smoothstep(.8, 2.35, vLocal.y));
+          float scan = pow(.5 + .5 * sin(vLocal.y * 3. - uTime * .65 + vLocal.x * 7.), 8.);
+          float edge = .25 + .75 * smoothstep(.3, 1.6, abs(vLocal.x));
+          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.08 + scan * .19) * uOpacity);
+        }`,
+    }));
+    const portraitLightField = new THREE.LineSegments(lightGeometry, lightMaterial);
+    portraitLightField.visible = false;
+    scene.add(portraitLightField);
+
+
     // -------------------------------------------------------------------------
     // Scroll & Camera Spline Update Loop
     // -------------------------------------------------------------------------
@@ -666,6 +695,7 @@ function AboutWhoExperience({
 
       // 4. Subtle Lower-Pedestal Team Hologram Shimmer ('about-04' — upper sky kept pure deep `#000000`!)
       portraitPoints.visible = tTeamPhase > 0.02;
+      portraitLightField.visible = portraitPoints.visible;
       if (portraitPoints.visible) {
         portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
@@ -675,6 +705,7 @@ function AboutWhoExperience({
           camera.position.y - (isMobile ? 2.65 : 2.55),
           camera.position.z - 5.8
         );
+        portraitLightField.position.copy(portraitPoints.position);
         portraitPoints.rotation.set(
           pointerNDC.y * -0.10,
           pointerNDC.x * 0.14 + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05),
@@ -1103,7 +1134,7 @@ function AboutWhoExperience({
                 ))}
               </p>
               <div className="mt-3 h-[1px] w-40 bg-white/35" />
-              <p className="mt-2 max-w-[26ch] font-mono text-[9px] leading-relaxed text-white/60">Original abstract study — not a captured likeness.</p>
+              <p className="mt-2 max-w-[28ch] font-sans text-xs leading-relaxed text-white/80">Abstract visualization — not a likeness of {activeMember.name}.</p>
             </div>
 
             <div className="flex items-end gap-6">
@@ -1140,7 +1171,7 @@ function ClientLogoTile({ name }: { name: string }) {
 /** Historical-evidence reconstruction, not a claim of exact current live parity.
  * Sticky native Three world → brands → recognition → expertise → shared CTA/footer.
  * Original generic portrait and procedural terrain replace restricted capture data;
- * the shared CTA is its existing bounded 2D heap implementation, not a FLIP solver.
+ * the shared CTA uses original GPU-instanced analytical flow, not a FLIP solver.
  */
 export function AboutPageView() {
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
@@ -1205,6 +1236,41 @@ export function AboutPageView() {
       setActiveSurface("ice");
     };
   }, [setActiveSurface]);
+
+  useEffect(() => {
+    const award = document.getElementById("about-award");
+    const expertise = capabilityBandRef.current;
+    const word = award?.querySelector<HTMLElement>("[data-awards-word]");
+    const planes = Array.from(expertise?.querySelectorAll<SVGGElement>("[data-expertise-plane]") ?? []);
+    let raf = 0, dirty = true, disposed = false, awardTop = 0, expertiseTop = 0;
+    const measure = (el: HTMLElement | null) => el ? el.getBoundingClientRect().top + window.scrollY : 0;
+    const render = () => {
+      raf = 0;
+      if (document.hidden) return;
+      if (dirty) { awardTop = measure(award); expertiseTop = measure(expertise); dirty = false; }
+      const vh = Math.max(1, window.innerHeight), y = window.scrollY;
+      const awardsP = reducedMotion ? .5 : clamp01((y - awardTop + vh) / (vh * 2));
+      if (word) word.style.transform = `translate3d(${lerp(3, -3, awardsP)}%,0,0)`;
+      const p = reducedMotion ? 1 : clamp01((y - expertiseTop + vh) / (vh * 1.2));
+      planes.forEach((plane, i) => {
+        const assembled = smoothstep(.12 + i * .06, .7 + i * .06, p);
+        plane.style.transform = `translate3d(0,${(1 - assembled) * (i % 2 ? -14 : 14)}px,0)`;
+      });
+    };
+    const schedule = () => { if (!disposed && !raf && !document.hidden) raf = requestAnimationFrame(render); };
+    const reflow = () => { dirty = true; schedule(); };
+    const ro = new ResizeObserver(reflow);
+    if (award) ro.observe(award); if (expertise) ro.observe(expertise);
+    document.fonts.ready.then(reflow); schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", reflow, { passive: true });
+    document.addEventListener("visibilitychange", reflow);
+    return () => {
+      disposed = true; cancelAnimationFrame(raf); ro.disconnect();
+      window.removeEventListener("scroll", schedule); window.removeEventListener("resize", reflow);
+      document.removeEventListener("visibilitychange", reflow);
+    };
+  }, [reducedMotion]);
 
   const stepMember = (delta: number) => {
     soundEngine.playClick();
@@ -1272,9 +1338,10 @@ export function AboutPageView() {
            ===================================================================== */}
         <section
           id="about-award"
-          className="border-t border-white/10 bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+          className="relative overflow-hidden bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
         >
-          <div className="grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">
+          <div aria-hidden="true" className="about-awards-monument"><span data-awards-word>AWARDS</span></div>
+          <div className="relative grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">
             <div className="col-span-6 min-[813px]:col-span-4">
               <div className="flex items-start gap-3">
                 <h2 className="font-sans text-5xl font-normal tracking-[-0.025em] text-white md:text-6xl">
@@ -1382,11 +1449,11 @@ export function AboutPageView() {
       <section
         id="about-capability"
         ref={capabilityBandRef}
-        className="relative overflow-hidden bg-[linear-gradient(90deg,#1a2ffb_0%,#1527dc_48%,#1e35ff_55%,#1a2ffb_100%)] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+        className="relative overflow-hidden bg-[#1a2ffb] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
       >
         <div className="grid grid-cols-6 gap-6 min-[813px]:grid-cols-12">
           <div className="col-span-6 min-[813px]:col-span-7">
-            <h2 className="font-sans text-[11vw] leading-[0.95] font-normal tracking-[-0.025em] text-white uppercase min-[813px]:text-[5.2vw]">
+            <h2 className="font-sans text-[11vw] leading-[0.95] font-normal tracking-[-0.025em] text-white uppercase min-[813px]:text-[7.5vw]">
               {LUSION_ABOUT.capability.titleLines.map((line, idx) => (
                 <span key={idx} className="block">
                   {line}
@@ -1411,7 +1478,9 @@ export function AboutPageView() {
                     setActiveCapabilityIdx(idx);
                   }}
                   aria-label={`Focus ${card.title}`}
-                  className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl border font-sans text-xl font-medium transition-all ${
+                  aria-pressed={selected}
+                  aria-controls={`expertise-${idx}`}
+                  className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border font-sans text-xl font-medium transition-[background-color,color,border-color,transform] duration-200 active:scale-95 ${
                     selected
                       ? "border-white bg-white text-[#1a2ffb]"
                       : "border-white/55 bg-white/8 text-white hover:border-white"
@@ -1424,23 +1493,24 @@ export function AboutPageView() {
           </div>
         </div>
 
-        {/* 4 Sacred-Geometry White-Line Capability Cards on Cobalt */}
-        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Four transparent editorial columns; diagrams carry the technical act. */}
+        <div className="about-expertise-grid mt-16 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
           {LUSION_ABOUT.capability.cards.map((card, idx) => {
             const active = activeCapabilityIdx === idx;
             return (
               <div
                 key={card.title}
+                id={`expertise-${idx}`}
                 tabIndex={0}
                 role="button"
                 aria-label={`${card.title} expertise`}
                 aria-pressed={active}
                 onPointerMove={(event) => {
-                  if (reducedMotion || event.pointerType === "touch") return;
+                  if (reducedMotion || event.pointerType === "touch" || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
                   const rect = event.currentTarget.getBoundingClientRect();
                   const x = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
                   const y = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
-                  event.currentTarget.style.transform = `perspective(900px) rotateX(${-y * 4}deg) rotateY(${x * 4}deg)`;
+                  event.currentTarget.style.transform = `perspective(900px) rotateX(${-y * 2}deg) rotateY(${x * 2}deg)`;
                 }}
                 onPointerLeave={(event) => { event.currentTarget.style.transform = ""; }}
                 onPointerCancel={(event) => { event.currentTarget.style.transform = ""; }}
@@ -1456,10 +1526,8 @@ export function AboutPageView() {
                     setActiveCapabilityIdx(idx);
                   }
                 }}
-                className={`group flex min-h-[410px] cursor-pointer flex-col justify-between rounded-[22px] border p-7 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-white ${
-                  active
-                    ? "border-white bg-[#1323c9]/85 text-white shadow-[0_24px_60px_rgba(4,9,56,0.35)]"
-                    : "border-white/25 bg-[#1628df]/60 text-white hover:-translate-y-1 hover:border-white/60"
+                className={`about-expertise-column group flex cursor-pointer flex-col border-t pt-6 transition-[transform,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-white ${
+                  active ? "border-white text-white" : "border-white/35 text-white"
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -1471,18 +1539,11 @@ export function AboutPageView() {
                   </span>
                 </div>
 
-                {/* Large White-Stroke Sacred Geometry Emblem (`cleanRoomIconSvg` inverted to crisp white) */}
-                <div className="my-6 flex items-center justify-center">
-                  <img
-                    src={card.cleanRoomIconSvg}
-                    alt={`${card.title} emblem`}
-                    width={140}
-                    height={140}
-                    className="h-32 w-32 object-contain brightness-0 invert opacity-92 transition-transform duration-500 group-hover:scale-105"
-                  />
+                <div className="my-6 w-full" data-expertise-drawing>
+                  <AboutExpertiseDiagram index={idx} />
                 </div>
 
-                <ul className="space-y-2 border-t border-white/20 pt-4 text-sm text-white/90">
+                <ul className="mt-auto space-y-2 pt-4 text-[14px] leading-relaxed text-white/95">
                   {card.items.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
