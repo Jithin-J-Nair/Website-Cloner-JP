@@ -1,14 +1,24 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { AboutExpertiseDiagram } from "@/components/pages/AboutExpertiseDiagram";
 import { LUSION_ABOUT } from "@/data/reference";
-import { loadLusionBuf } from "@/lib/lusion-buf-loader";
+import { createAboutPlume } from "@/components/three/AboutPlume";
+import { createAboutExplorer } from "@/components/three/AboutExplorer";
+import { createAboutTerrainMaterial, terrainHeightAt } from "@/components/three/AboutTerrain";
+import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
 import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
 import { StudioFooter } from "@/components/sections/StudioFooter";
+
+declare global {
+  interface Window {
+    __enableAboutProbe?: boolean;
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number };
+  }
+}
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -17,32 +27,8 @@ const smoothstep = (e0: number, e1: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/**
- * Deterministic 3D height function modeling Lusion's sculptural crater basin:
- * - Smooth misty central lunar valley floor around `x ∈ [-7, 7], z ∈ [-4, 14]`
- * - Dramatic flanking volcanic/mountain ridges rising steeply on left & right (`|x| = 8..30`)
- * - Secondary ridge folds & contour terraces so the 42 topographic contour lines match `about-03` & `about-04`!
- */
-function terrainHeightAt(x: number, z: number): number {
-  const valleyDist = Math.hypot(x * 0.92, (z - 3.5) * 0.52);
-  const rimRise = smoothstep(5.2, 23.0, valleyDist) * 9.6;
-
-  // Jagged multi-octave mountain ridges stronger on left & right flanks ('about-02', 'about-04')
-  const n1 = Math.sin(x * 0.21 + z * 0.14) * Math.cos(z * 0.19 - x * 0.11);
-  const n2 = Math.sin(x * 0.47 - z * 0.36) * 0.52 + Math.cos(x * 0.83 + z * 0.61) * 0.26;
-  const n3 = Math.abs(Math.sin(x * 0.33 + Math.cos(z * 0.28) * 1.6));
-  const flankMask = smoothstep(3.4, 13.5, Math.abs(x) + Math.max(0, -z) * 0.38);
-
-  const micro = Math.sin(x * 1.45 + z * 1.32) * 0.11 * (0.35 + flankMask);
-  return rimRise + (n1 * 2.35 + n2 * 1.45 + n3 * 2.15) * flankMask + micro - 1.35;
-}
-
-/**
- * Generates an 8,192-vertex 3D sculptural human portrait relief buffer
- * parameterized by `memberIndex` so every one of the 7 verified Lusion team specialists
- * renders a crisp, distinct 3D point-cloud hologram with Depth-of-Field bokeh & pointer displacement
- * even when `/api/local-assets/team/*.buf` returns HTTP 403 in default security mode.
- */
+/** Original deterministic generic portrait study; not the likeness of a named
+ * team member and not decoded from captured/restricted models. */
 function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Float32Array {
   const out = new Float32Array(count * 3);
   let seed = (memberIndex * 2654435761 + 1013904223) >>> 0;
@@ -110,21 +96,9 @@ function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Fl
   return out;
 }
 
-/**
- * Full-Viewport Sticky WebGL 3D World + Synchronized Architectural HUD (`#about-who`)
- * Implements Lusion's complete `/about/` scroll-driven 3D experience:
- *   1. `u = 0.0` (`about-01-hero-top`): Close-up volumetric 3D curl-noise + spin sphere storm (`3,600`
- *      GPU-instanced 3D icospheres with velocity motion stretch, depth AO, cyan inner core glow & pointer swirl),
- *      5 horizontal `+` crosshairs, monumental double-stroke `LUSION` wordmark & `SCROLL TO EXPLORE`.
- *   2. `u = 1.6` (`about-02-we-are-reveal` & `about-06-reverse-we-are`): Smooth 3D spline pullback revealing
- *      sculpted dark crater mountain ridges, misty bright lunar valley floor, vertical volumetric God-Ray column,
- *      elevated swirling sphere cloud, lone white standing explorer with glowing cyan pack, 92 levitating basalt
- *      boulders, and horizontal `WE ARE / A CREATIVE / PRODUCTION STUDIO` manifesto transition.
- *   3. `u = 5.35` (`about-03-details-hud`): Obsidian sky + 42 glowing white 3D topographic contour lines
- *      sweeping across the mountain relief beneath the studio narrative statement.
- *   4. `u = 7.2 / 8.85` (`about-04-team-hologram`): Interactive `T E A M` hologram stage with `[[ 001 ]]`,
- *      tick ruler, `2x13` dot matrix, royal-blue `#223aff` cursor orb (`→` / `SWIPE TO CHANGE`), glowing contour
- *      terrain, 8,192-vertex 3D point-cloud portrait sculpture, falling glyph stream & glitch tile matrix.
+/** Native Three.js sticky world. Retains local legacy scroll coordinates for
+ * camera/DOM choreography; original shader filament flow and sculptural studies.
+ * Historical captures support the layout; current live fidelity is unverified.
  */
 interface AboutWhoStageProps {
   activeMemberIdx: number;
@@ -147,56 +121,41 @@ function AboutWhoExperience({
   const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
 
   const portraitMatRef = useRef<THREE.ShaderMaterial | null>(null);
   const portraitGeoRef = useRef<THREE.BufferGeometry | null>(null);
 
+  const [sceneGeneration, setSceneGeneration] = useState(0);
+  const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
+  const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
 
-  // Load the captured Lusion team .buf for the selected specialist. Keep the procedural
-  // portrait only as a graceful fallback when the bundled reference asset is unavailable.
+  // Original generic sculptural study, NOT an authentic likeness of the named member.
+  // Never request restricted captured portrait buffers.
   useEffect(() => {
+    memberRef.current = activeMemberIdx;
     const geo = portraitGeoRef.current;
-    const member = team[activeMemberIdx] ?? team[0];
-    if (!geo || !member) return;
-
-    let active = true;
-    void loadLusionBuf(member.modelPath)
-      .then(({ geometry: sourceGeometry, attributes }) => {
-        if (!active) {
-          sourceGeometry.dispose();
-          return;
-        }
-        const positions = attributes.position;
-        if (positions) {
-          geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-          geo.attributes.position.needsUpdate = true;
-          geo.computeBoundingSphere();
-        }
-        sourceGeometry.dispose();
-      })
-      .catch(() => {
-        if (!active) return;
-        geo.setAttribute(
-          "position",
-          new THREE.BufferAttribute(buildSculpturalPortraitPositions(activeMemberIdx, 8192), 3)
-        );
-        geo.attributes.position.needsUpdate = true;
-        geo.computeBoundingSphere();
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [activeMemberIdx, team]);
+    if (!geo) return;
+    const position = geo.getAttribute("position") as THREE.BufferAttribute;
+    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx));
+    position.needsUpdate = true;
+    geo.computeBoundingSphere();
+  }, [activeMemberIdx]);
 
   useEffect(() => {
     const sectionEl = sectionRef.current;
     const hostEl = canvasHostRef.current;
     if (!sectionEl || !hostEl) return;
 
+    let contextLost = false, disposed = false;
+    const fallback = (reason: string) => {
+      sectionEl.dataset.sceneState = reason;
+      if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "flex";
+    };
+    sectionEl.dataset.sceneState = "initializing";
     let renderer: THREE.WebGLRenderer | null = null;
     try {
       renderer = new THREE.WebGLRenderer({
@@ -205,13 +164,17 @@ function AboutWhoExperience({
         powerPreference: "high-performance",
       });
     } catch {
-      if (fallbackPosterRef.current) {
-        fallbackPosterRef.current.style.display = "flex";
-      }
+      fallback("unavailable");
       return;
     }
 
     const glRenderer = renderer;
+    if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "none";
+    sectionEl.dataset.sceneState = "ready";
+    const ctx = glRenderer.getContext(), debug = ctx.getExtension("WEBGL_debug_renderer_info");
+    const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
+    const tier = useStudioStore.getState().qualityTier;
+    const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
     glRenderer.setClearColor(0x000000, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -233,7 +196,7 @@ function AboutWhoExperience({
     const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);
 
     // Moody monochrome lunar lighting matching 'about-01' & 'about-02'
-    const ambient = new THREE.AmbientLight(0x8892a4, 0.55);
+    const ambient = new THREE.AmbientLight(0xd4d9dd, .85);
     scene.add(ambient);
 
     const overheadBeamLight = new THREE.SpotLight(0xf1f5f9, 48, 52, Math.PI * 0.22, 0.85, 1.3);
@@ -242,159 +205,18 @@ function AboutWhoExperience({
     scene.add(overheadBeamLight);
     scene.add(overheadBeamLight.target);
 
-    const coolRimLight = new THREE.DirectionalLight(0xcbd5e1, 1.35);
+    const coolRimLight = new THREE.DirectionalLight(0xe5edf1, 2.5);
     coolRimLight.position.set(-8, 14, 10);
     scene.add(coolRimLight);
 
     // -------------------------------------------------------------------------
-    // 1. 3D Curl-Noise + Vortex Sphere Storm ('6,400' GPU-Instanced Fine Icospheres)
+    // 1. Original GPU filament field: instanced grains and seeded fine silver dust
     // -------------------------------------------------------------------------
-    const SPHERE_COUNT = 6400;
-    const sphereGeo = track(new THREE.IcosahedronGeometry(0.042, 1));
-
-    const instSeed = new Float32Array(SPHERE_COUNT * 4);
-    let prng = 20260822;
-    const nextRnd = () => {
-      prng = (prng * 1664525 + 1013904223) >>> 0;
-      return prng / 4294967296;
-    };
-    for (let i = 0; i < SPHERE_COUNT; i++) {
-      // Polar/shell distribution forming dense swirling core + diagonal tail ('about-01-hero-top'!)
-      const u = nextRnd();
-      const theta = nextRnd() * Math.PI * 2;
-      const phi = Math.acos(2 * nextRnd() - 1);
-      instSeed[i * 4 + 0] = Math.pow(u, 0.78); // radial shell factor
-      instSeed[i * 4 + 1] = theta;
-      instSeed[i * 4 + 2] = phi;
-      instSeed[i * 4 + 3] = nextRnd(); // size & cyan core selector
-    }
-    sphereGeo.setAttribute("aSeed", new THREE.InstancedBufferAttribute(instSeed, 4));
-
-    const stormMat = track(
-      new THREE.ShaderMaterial({
-        uniforms: {
-          uTime: { value: 0 },
-          uCompact: { value: 0 }, // 0 at hero close-up, 1 when pulled back above valley ('about-02')
-          uMobile: { value: 0 },
-          uPointer: { value: new THREE.Vector3(0, 8.2, 0) },
-          uPointerStrength: { value: 0 },
-          uCyanBoost: { value: 0.0 },
-          uOpacity: { value: 1 },
-        },
-        transparent: true,
-        vertexShader: `
-          attribute vec4 aSeed;
-          uniform float uTime;
-          uniform float uCompact;
-          uniform float uMobile;
-          uniform vec3 uPointer;
-          uniform float uPointerStrength;
-          varying vec3 vNormalV;
-          varying float vCoreDist;
-          varying float vCyanMask;
-
-          vec3 hash3(vec3 p) {
-            p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
-                     dot(p, vec3(269.5, 183.3, 246.1)),
-                     dot(p, vec3(113.5, 271.9, 124.6)));
-            return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
-          }
-
-          void main() {
-            float radFrac = aSeed.x;
-            float theta = aSeed.y;
-            float phi = aSeed.z;
-            float rnd = aSeed.w;
-
-            // Orbiting swirl around vortex center + diagonal hero plume tail ('about-01-hero-top')!
-            float spinSpeed = (0.45 + (1.0 - radFrac) * 0.90);
-            float ang = theta + uTime * spinSpeed * 0.45;
-            float heroR = mix(1.92, 2.95, uMobile);
-            float baseR = mix(heroR, 1.34, uCompact) * radFrac;
-
-            vec3 localPos = vec3(
-              sin(phi) * cos(ang),
-              cos(phi) * mix(1.18, 1.48, uMobile * (1.0 - uCompact)),
-              sin(phi) * sin(ang)
-            ) * baseR;
-
-            // Diagonal upper-right to lower-left turbulent curl stream prominent in 'about-01-hero-top'
-            float tail = pow(radFrac, 1.25) * mix(1.0, 0.32, uCompact);
-            localPos.x += sin(ang * 2.0 + phi) * 0.72 * tail - tail * 0.62;
-            localPos.y += sin(ang * 1.5 - uTime * 0.35) * 0.74 * tail;
-            localPos.z += cos(ang * 2.2 + uTime * 0.25) * 0.44;
-
-            // Turbulent curl displacement
-            localPos += sin(localPos.yzx * 2.1 + uTime * 0.75 + rnd * 6.28) * 0.22;
-
-            vec3 heroAnchor = vec3(mix(-0.52, -0.15, uMobile), mix(9.28, 8.85, uMobile), 0.0);
-            vec3 valleyAnchor = vec3(-0.65, 9.25, 0.0);
-            vec3 worldCenter = mix(heroAnchor, valleyAnchor, uCompact) + localPos;
-
-            // Interactive 3D pointer repulsion swirl
-            vec3 toPtr = worldCenter - uPointer;
-            float pd = length(toPtr);
-            if (uPointerStrength > 0.001 && pd < 2.6 && pd > 0.001) {
-              worldCenter += normalize(toPtr) * (1.0 - pd / 2.6) * 1.15 * uPointerStrength;
-            }
-
-            // Velocity tangent stretch along swirl direction (authentic motion-stretched spheres in 'about-01'!)
-            vec3 tangent = normalize(vec3(-sin(ang), 0.28 * cos(phi), cos(ang)));
-            vec3 p = position;
-            float stretch = 1.0 + (1.0 - radFrac * 0.4) * 1.05 * (1.0 - uCompact * 0.45);
-            p += tangent * dot(p, tangent) * (stretch - 1.0);
-
-            float sizeVar = mix(0.42, 1.55, pow(rnd, 1.6)) * mix(1.0, 0.62, uCompact);
-            p *= sizeVar;
-
-            vCoreDist = radFrac;
-            vCyanMask = step(0.968, rnd) * (1.0 - smoothstep(0.25, 0.72, radFrac));
-            vNormalV = normalize(normalMatrix * normal);
-
-            gl_Position = projectionMatrix * viewMatrix * vec4(worldCenter + p, 1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform float uCyanBoost;
-          uniform float uOpacity;
-          varying vec3 vNormalV;
-          varying float vCoreDist;
-          varying float vCyanMask;
-
-          void main() {
-            vec3 lightDir = normalize(vec3(-0.28, 0.86, 0.42));
-            float diff = clamp(dot(normalize(vNormalV), lightDir) * 0.5 + 0.5, 0.0, 1.0);
-
-            // Volumetric core illumination + ambient occlusion shadowing
-            float coreGlow = exp(-vCoreDist * 2.35);
-            vec3 darkSlate = vec3(0.16, 0.19, 0.23);
-            vec3 silverWhite = vec3(0.88, 0.92, 0.96);
-            vec3 col = mix(darkSlate, silverWhite, pow(diff, 1.15) * (0.42 + coreGlow * 0.78));
-
-            // Soft central god-ray scatter highlight
-            col += vec3(0.32, 0.36, 0.40) * coreGlow * 0.65;
-
-            // Crisp glowing electric-cyan inner spheres ('#00f7ff') visible inside cluster pockets!
-            if (vCyanMask > 0.5) {
-              col = mix(col, vec3(0.04, 0.97, 1.0), clamp(uCyanBoost, 0.0, 1.0));
-            }
-
-            float softAlpha = uOpacity * mix(0.24, 0.96, pow(1.0 - vCoreDist, 1.45));
-            gl_FragColor = vec4(col, softAlpha);
-          }
-        `,
-      })
-    );
-
-    const instancedGeo = track(new THREE.InstancedBufferGeometry());
-    instancedGeo.index = sphereGeo.index;
-    instancedGeo.setAttribute("position", sphereGeo.attributes.position);
-    instancedGeo.setAttribute("normal", sphereGeo.attributes.normal);
-    instancedGeo.setAttribute("uv", sphereGeo.attributes.uv);
-    instancedGeo.setAttribute("aSeed", sphereGeo.attributes.aSeed);
-    instancedGeo.instanceCount = SPHERE_COUNT;
-    const sphereStorm = new THREE.Mesh(instancedGeo, stormMat);
-    sphereStorm.frustumCulled = false;
+    const plume = track(createAboutPlume(count));
+    const sphereStorm = plume.group, stormMat = plume.material;
+    // GPU-displaced points have a CPU sorting centre at the origin. Render the
+    // transparent background first, not over the fine plume after its draw.
+    sphereStorm.renderOrder = 1;
     scene.add(sphereStorm);
 
     // Soft Volumetric Core Haze & Vertical God-Ray Shaft ('about-01' & 'about-02'!)
@@ -436,6 +258,7 @@ function AboutWhoExperience({
     );
     const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 26.0)), godRayMat);
     godRayPlane.position.set(0, 10.5, -2.5);
+    godRayPlane.renderOrder = -1;
     scene.add(godRayPlane);
 
     // -------------------------------------------------------------------------
@@ -453,55 +276,13 @@ function AboutWhoExperience({
     }
     terrainGeo.computeVertexNormals();
 
-    const terrainMat = track(
-      new THREE.ShaderMaterial({
-        uniforms: {
-          uValleyBrightness: { value: 1.0 },
-          uOpacity: { value: 0 },
-        },
-        transparent: true,
-        vertexShader: `
-          varying vec3 vWorldPos;
-          varying vec3 vNormalW;
-          void main() {
-            vec4 wp = modelMatrix * vec4(position, 1.0);
-            vWorldPos = wp.xyz;
-            vNormalW = normalize(mat3(modelMatrix) * normal);
-            gl_Position = projectionMatrix * viewMatrix * wp;
-          }
-        `,
-        fragmentShader: `
-          uniform float uValleyBrightness;
-          uniform float uOpacity;
-          varying vec3 vWorldPos;
-          varying vec3 vNormalW;
-          void main() {
-            // Overhead spotlight pool brightening the misty dusty valley center ('about-02'!)
-            float distFromCenter = length(vWorldPos.xz - vec2(0.0, 4.2));
-            float spotPool = exp(-pow(distFromCenter / 12.8, 1.75));
-            float slope = clamp(vNormalW.y, 0.0, 1.0);
-            vec3 lightDir = normalize(vec3(-0.15, 0.92, 0.25));
-            float diff = clamp(dot(vNormalW, lightDir), 0.0, 1.0);
-
-            vec3 darkRock = vec3(0.035, 0.04, 0.05);
-            vec3 ridgeGrey = vec3(0.22, 0.25, 0.29);
-            vec3 mistySand = vec3(0.76, 0.80, 0.85);
-
-            vec3 col = mix(darkRock, ridgeGrey, diff * 0.85);
-            col = mix(col, mistySand, spotPool * slope * uValleyBrightness * 0.94);
-
-            // Soft distance horizon fade
-            float farFade = 1.0 - smoothstep(18.0, 32.0, length(vWorldPos.xz));
-            gl_FragColor = vec4(col * farFade, uOpacity);
-          }
-        `,
-      })
-    );
+    const terrainMat = track(createAboutTerrainMaterial());
     const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
+    terrainMesh.renderOrder = -2;
     scene.add(terrainMesh);
 
     // -------------------------------------------------------------------------
-    // 3. 42 Glowing 3D Topographic Elevation Contour Lines ('about-03' & 'about-04')
+    // 3. 36 Glowing 3D Topographic Elevation Contour Lines ('about-03' & 'about-04')
     // -------------------------------------------------------------------------
     const contourSegments: number[] = [];
     const C_GRID = 112;
@@ -608,43 +389,16 @@ function AboutWhoExperience({
     // -------------------------------------------------------------------------
     // 4. Lone White Explorer / Astronaut Figure Standing on Valley Floor ('about-02')
     // -------------------------------------------------------------------------
-    const explorerGroup = new THREE.Group();
-    const gy = terrainHeightAt(-0.85, -1.8);
-    explorerGroup.position.set(-0.85, gy + 0.58, -1.8);
-    explorerGroup.scale.setScalar(0.64);
+    const explorer = track(createAboutExplorer());
+    const explorerGroup = explorer.group;
+    // Feet, not the centre of a capsule, are anchored to the same basin function.
+    explorerGroup.position.set(-.85, terrainHeightAt(-.85, -1.8) + .012, -1.8);
     scene.add(explorerGroup);
 
-    const explorerMat = track(
-      new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.45, metalness: 0.08 })
-    );
-    const cyanPackMat = track(
-      new THREE.MeshBasicMaterial({ color: 0x06f6ff })
-    );
-
-    const exTorso = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.18, 0.34, 6, 12)), explorerMat);
-    explorerGroup.add(exTorso);
-    const exHead = new THREE.Mesh(track(new THREE.SphereGeometry(0.16, 14, 12)), explorerMat);
-    exHead.position.y = 0.38;
-    explorerGroup.add(exHead);
-    // Glowing electric-cyan collar/backpack light visible in both '1440x900' & '390x844/about-02'!
-    const exPackGlow = new THREE.Mesh(track(new THREE.BoxGeometry(0.24, 0.28, 0.14)), cyanPackMat);
-    exPackGlow.position.set(0, 0.08, 0.14);
-    explorerGroup.add(exPackGlow);
-
-    for (const sx of [-1, 1]) {
-      const leg = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.068, 0.42, 6, 10)), explorerMat);
-      leg.position.set(sx * 0.10, -0.45, 0);
-      explorerGroup.add(leg);
-      const arm = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.055, 0.34, 6, 10)), explorerMat);
-      arm.position.set(sx * 0.24, -0.02, 0);
-      arm.rotation.z = sx * 0.16;
-      explorerGroup.add(arm);
-    }
-
     // -------------------------------------------------------------------------
-    // 5. 92 Levitating & Ground-Scattered 3D Basalt Boulders ('about-02')
+    // 5. One instanced draw: 48 suspended stones and 272 grounded grains.
     // -------------------------------------------------------------------------
-    const ROCK_COUNT = 92;
+    const ROCK_COUNT = 320, FLOATING_ROCK_COUNT = 48;
     const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
     const rockMat = track(
       new THREE.MeshStandardMaterial({
@@ -657,9 +411,9 @@ function AboutWhoExperience({
     const rocksMesh = new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT);
     const rockDummy = new THREE.Object3D();
     const rockSeeds = Array.from({ length: ROCK_COUNT }, (_, i) => {
-      const floating = i < 48;
+      const floating = i < FLOATING_ROCK_COUNT;
       const ang = (i * 2.39996) % (Math.PI * 2);
-      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 11.0;
+      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 16.0;
       const rx = Math.cos(ang) * rad;
       const rz = 3.5 + Math.sin(ang) * rad * 0.72;
       const ry = floating
@@ -670,10 +424,19 @@ function AboutWhoExperience({
         y: ry,
         z: rz,
         floating,
-        scale: floating ? 0.35 + ((i * 19) % 10) * 0.11 : 0.25 + ((i * 17) % 8) * 0.09,
+        scale: floating ? 0.35 + ((i * 19) % 10) * 0.11 : 0.045 + Math.pow(((i * 17) % 100) / 100, 3) * .5,
         phase: i * 0.73,
       };
     });
+    // Bake grounded transforms once; the stones on the basin must not rotate.
+    for (let i = 0; i < ROCK_COUNT; i++) {
+      const rs = rockSeeds[i];
+      rockDummy.position.set(rs.x, rs.y, rs.z);
+      rockDummy.rotation.set(rs.phase, rs.phase * 1.4, 0);
+      rockDummy.scale.setScalar(rs.scale * .58);
+      rockDummy.updateMatrix(); rocksMesh.setMatrixAt(i, rockDummy.matrix);
+    }
+    rocksMesh.instanceMatrix.needsUpdate = true;
     scene.add(rocksMesh);
 
     // -------------------------------------------------------------------------
@@ -682,29 +445,9 @@ function AboutWhoExperience({
     const portraitGeo = track(new THREE.BufferGeometry());
     portraitGeo.setAttribute(
       "position",
-      new THREE.BufferAttribute(buildSculpturalPortraitPositions(0, 8192), 3)
+      new THREE.BufferAttribute(buildSculpturalPortraitPositions(memberRef.current, 8192), 3)
     );
     portraitGeoRef.current = portraitGeo;
-
-    // The first member's captured binary portrait must be requested at scene creation too:
-    // the selection effect can run before this WebGL geometry exists on the initial mount.
-    void loadLusionBuf(team[0].modelPath)
-      .then(({ geometry: sourceGeometry, attributes }) => {
-        if (portraitGeoRef.current !== portraitGeo) {
-          sourceGeometry.dispose();
-          return;
-        }
-        const positions = attributes.position;
-        if (positions) {
-          portraitGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-          portraitGeo.attributes.position.needsUpdate = true;
-          portraitGeo.computeBoundingSphere();
-        }
-        sourceGeometry.dispose();
-      })
-      .catch(() => {
-        // Keep the procedural portrait initialized above if the reference asset cannot load.
-      });
 
     const portraitMat = track(
       new THREE.ShaderMaterial({
@@ -756,20 +499,54 @@ function AboutWhoExperience({
     portraitPoints.visible = false;
     scene.add(portraitPoints);
 
+    // Original depth-layered vertical light field, sharing the portrait clock.
+    // These are abstract atmosphere, never a replacement claim for an employee likeness.
+    const lightPositions = new Float32Array(96 * 6);
+    for (let i = 0; i < 96; i++) {
+      const x = (i / 95 - .5) * 3.5;
+      const z = Math.sin(i * 17.31) * .7 - .3;
+      const bottom = -1.8 + Math.sin(i * 9.1) * .2;
+      const top = 1.7 + Math.cos(i * 4.7) * .65;
+      lightPositions.set([x, bottom, z, x, top, z], i * 6);
+    }
+    const lightGeometry = track(new THREE.BufferGeometry());
+    lightGeometry.setAttribute("position", new THREE.BufferAttribute(lightPositions, 3));
+    const lightMaterial = track(new THREE.ShaderMaterial({
+      uniforms: portraitMat.uniforms, transparent: true, depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexShader: `varying vec3 vLocal; void main() { vLocal = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+      fragmentShader: `uniform float uTime, uOpacity; varying vec3 vLocal;
+        void main() {
+          float envelope = smoothstep(-1.9, -.9, vLocal.y) * (1. - smoothstep(.8, 2.35, vLocal.y));
+          float scan = pow(.5 + .5 * sin(vLocal.y * 3. - uTime * .65 + vLocal.x * 7.), 8.);
+          float edge = .25 + .75 * smoothstep(.3, 1.6, abs(vLocal.x));
+          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.08 + scan * .19) * uOpacity);
+        }`,
+    }));
+    const portraitLightField = new THREE.LineSegments(lightGeometry, lightMaterial);
+    portraitLightField.visible = false;
+    scene.add(portraitLightField);
+
+
     // -------------------------------------------------------------------------
     // Scroll & Camera Spline Update Loop
     // -------------------------------------------------------------------------
     let targetScrollY = typeof window !== "undefined" ? window.scrollY : 0;
     let smoothScrollY = targetScrollY;
-    let docVisible = true;
+    const chromeBlocked = () => { const s = useStudioStore.getState(); return s.menuOpen || s.reelOpen || s.isTransitioning; };
+    let docVisible = document.visibilityState === "visible";
+    let lastTime = performance.now(), sceneTime = contextRecoveryRef.current?.time ?? 0, frames = 0, lastU = 0;
+    const frameTimes: number[] = [];
+    const pointerTarget = new THREE.Vector2();
     let rafId = 0;
     const pointerNDC = new THREE.Vector2(0, 0);
     const raycaster = new THREE.Raycaster();
     const pointerPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
     const pointerWorld = new THREE.Vector3(0, 8.35, 0);
     let pointerActive = 0;
-    const startClock = performance.now();
 
+
+    let ownedInspector: unknown;
     const syncInspector = () => {
       const H = Math.max(1, window.innerHeight);
       window.__lusionInspector = {
@@ -791,17 +568,19 @@ function AboutWhoExperience({
           },
         },
       };
+      ownedInspector = window.__lusionInspector.scrollManager;
     };
 
     const resize = () => {
       const W = Math.max(1, window.innerWidth);
       const H = Math.max(1, window.innerHeight);
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const dpr = Math.min(tier === "low" ? 1 : 1.5, cinematicRenderDpr(W, H, window.devicePixelRatio || 1, software, reducedMotion));
       glRenderer.setPixelRatio(dpr);
       glRenderer.setSize(W, H, false);
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
       portraitMat.uniforms.uPixelRatio.value = dpr;
+      stormMat.uniforms.uPixelRatio.value = dpr;
       syncInspector();
     };
 
@@ -810,13 +589,14 @@ function AboutWhoExperience({
       const H = Math.max(1, window.innerHeight);
       const isMobile = W < 820;
 
-      // Exact unit scroll parameter matching live 'lusion.co/about/':
+      // Retained legacy unit scroll parameter, not a fresh live measurement of 'lusion.co/about/':
       // Desktop: 'u = (sy - sectionTop) / W' in '[0 .. 9.5]'
       // Mobile:  'u = (sy - sectionTop) / H' in '[0 .. 11.25]'
       const secRect = sectionEl.getBoundingClientRect();
       const secTop = secRect.top + window.scrollY;
       const unit = isMobile ? H : W;
       const u = Math.max(0, (sy - secTop) / Math.max(1, unit));
+      lastU = u;
 
       if (window.__lusionInspector?.scrollManager) {
         window.__lusionInspector.scrollManager.scrollPixel = sy;
@@ -829,10 +609,17 @@ function AboutWhoExperience({
       const tContourPhase = smoothstep(3.6, 5.0, u);
       const tTeamPhase = smoothstep(6.2, 6.95, u);
 
-      const camZ = lerp(isMobile ? 8.6 : 6.9, isMobile ? 21.5 : 18.2, tPullback);
+      // Historical stills place the grounded figure near the lower middle,
+      // with both the floor and suspended plume visible. Return to the existing
+      // narrative/portrait distance rather than perturbing those later beats.
+      const wideZ = lerp(isMobile ? 26 : 28, isMobile ? 21.5 : 18.2, tContourPhase);
+      const camZ = lerp(isMobile ? 8.6 : 6.9, wideZ, tPullback);
       const camY = lerp(8.15, lerp(4.35, 6.6, tContourPhase), tPullback);
       const camX = Math.sin(tContourPhase * 1.2) * 0.6;
-      const lookY = lerp(8.15, lerp(4.15, 0.85, tContourPhase), tPullback);
+      // Raise the sightline during the editorial beat to leave black negative
+      // space above the basin; return to the portrait framing in team mode.
+      const editorialLookY = lerp(7.6, .85, tTeamPhase);
+      const lookY = lerp(8.15, lerp(.6, editorialLookY, tContourPhase), tPullback);
 
       camera.fov = isMobile ? 54 : 45;
       camera.position.set(camX, camY, camZ);
@@ -865,17 +652,22 @@ function AboutWhoExperience({
       godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
       godRayMat.uniforms.uCyanCore.value = isMobile ? 0.85 : 0.32;
 
-      // Fade solid grey terrain into pure `#000000` obsidian in `about-03` & `about-04` so ONLY crisp white contour lines glow!
-      terrainMesh.visible = landscapeVis * darkHudFade > 0.01;
-      terrainMat.uniforms.uOpacity.value = landscapeVis * darkHudFade;
-      terrainMat.uniforms.uValleyBrightness.value = darkHudFade;
+      // Keep a faint real rock surface beneath the narrative/contours, as in the historical still.
+      // Team mode returns to black to preserve portrait contrast.
+      const narrativeGround = (1 - tTeamPhase) * .22;
+      const terrainVis = landscapeVis * Math.max(darkHudFade, narrativeGround);
+      terrainMesh.visible = terrainVis > .01;
+      terrainMat.uniforms.uOpacity.value = terrainVis;
+      terrainMat.uniforms.uValleyBrightness.value = lerp(.16, 1, darkHudFade);
 
       const explorerVis = landscapeVis * (1 - smoothstep(3.3, 4.3, u));
       explorerGroup.visible = explorerVis > 0.02;
+      explorerGroup.scale.setScalar(isMobile ? 1 : .85);
+      if (explorerGroup.visible) explorer.pose(elapsedSec, pointerNDC.x, pointerNDC.y, reducedMotion);
 
       rocksMesh.visible = explorerVis > 0.02;
       if (rocksMesh.visible) {
-        for (let i = 0; i < ROCK_COUNT; i++) {
+        for (let i = 0; i < FLOATING_ROCK_COUNT; i++) {
           const rs = rockSeeds[i];
           const bob = rs.floating && !reducedMotion ? Math.sin(elapsedSec * 0.9 + rs.phase) * 0.22 : 0;
           rockDummy.position.set(rs.x, rs.y + bob, rs.z);
@@ -888,10 +680,11 @@ function AboutWhoExperience({
           rockDummy.updateMatrix();
           rocksMesh.setMatrixAt(i, rockDummy.matrix);
         }
+        rocksMesh.instanceMatrix.addUpdateRange(0, FLOATING_ROCK_COUNT * 16);
         rocksMesh.instanceMatrix.needsUpdate = true;
       }
 
-      // 3. 42 Topographic Elevation Contour Lines ('about-03' & 'about-04')
+      // 3. 36 Topographic Elevation Contour Lines ('about-03' & 'about-04')
       const contourVis = smoothstep(3.75, 4.85, u);
       contourLines.visible = contourVis > 0.01;
       if (contourLines.visible) {
@@ -902,8 +695,9 @@ function AboutWhoExperience({
 
       // 4. Subtle Lower-Pedestal Team Hologram Shimmer ('about-04' — upper sky kept pure deep `#000000`!)
       portraitPoints.visible = tTeamPhase > 0.02;
+      portraitLightField.visible = portraitPoints.visible;
       if (portraitPoints.visible) {
-        portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.06;
+        portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
         portraitPoints.position.set(
@@ -911,6 +705,7 @@ function AboutWhoExperience({
           camera.position.y - (isMobile ? 2.65 : 2.55),
           camera.position.z - 5.8
         );
+        portraitLightField.position.copy(portraitPoints.position);
         portraitPoints.rotation.set(
           pointerNDC.y * -0.10,
           pointerNDC.x * 0.14 + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05),
@@ -923,7 +718,7 @@ function AboutWhoExperience({
       // -----------------------------------------------------------------------
       // A. Monumental Double-Stroke 'LUSION' Wordmark ('about-01' & 'about-02', sweeps left across '1.85..3.1')
       if (heroWordmarkRef.current) {
-        const wordOut = 1 - smoothstep(2.25, 3.15, u);
+        const wordOut = 1 - smoothstep(isMobile ? 2.25 : .45, isMobile ? 3.15 : 1.1, u);
         if (wordOut > 0.005) {
           const slideX = -smoothstep(1.75, 3.15, u) * 65;
           heroWordmarkRef.current.style.opacity = String(wordOut);
@@ -941,12 +736,12 @@ function AboutWhoExperience({
 
       // B. 'WE ARE A CREATIVE PRODUCTION STUDIO' Manifesto Band ('u = 2.05 .. 4.35')
       if (manifestoOverlayRef.current) {
-        const manIn = smoothstep(2.05, 2.65, u);
+        const manIn = smoothstep(isMobile ? 2.05 : 1.1, isMobile ? 2.65 : 1.6, u);
         const manOut = 1 - smoothstep(3.65, 4.35, u);
         const manVis = manIn * manOut;
         manifestoOverlayRef.current.style.opacity = String(manVis);
         manifestoOverlayRef.current.style.visibility = manVis > 0.005 ? "visible" : "hidden";
-        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(18, -12, smoothstep(2.05, 4.35, u))}vw, 0, 0)`;
+        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(1.1, 1.6, u))}vw, 0, 0)`;
       }
 
       // C. Studio Narrative HUD ('about-03-details-hud', 'u = 4.45 .. 6.35')
@@ -966,49 +761,54 @@ function AboutWhoExperience({
       }
 
       glRenderer.render(scene, camera);
+      frames++;
     };
 
     const tick = () => {
-      if (!docVisible) {
-        rafId = 0;
-        return;
-      }
+      rafId = 0;
+      if (!docVisible || disposed || contextLost || chromeBlocked()) return;
+      const now = performance.now(), elapsed = Math.max(0, (now - lastTime) / 1000), dt = Math.min(.08, elapsed);
+      lastTime = now;
+      const rect = sectionEl.getBoundingClientRect();
+      if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+      if (!reducedMotion) sceneTime += dt;
+      frameTimes.push(elapsed * 1000); if (frameTimes.length > 180) frameTimes.shift();
       targetScrollY = window.scrollY;
-      if (targetScrollY > sectionEl.offsetHeight + window.innerHeight * 0.5) {
-        // Scrolled completely below sticky `#about-who` stage: render final resting state once and sleep RAF cleanly!
-        renderAtScroll(targetScrollY, (performance.now() - startClock) * 0.001);
-        rafId = 0;
-        return;
-      }
       const diff = targetScrollY - smoothScrollY;
-      if (Math.abs(diff) > window.innerHeight * 0.42 || reducedMotion) {
-        smoothScrollY = targetScrollY;
-      } else {
-        smoothScrollY += diff * 0.34;
-        if (Math.abs(targetScrollY - smoothScrollY) < 0.15) {
-          smoothScrollY = targetScrollY;
-        }
-      }
-      pointerActive *= 0.96;
-
-      renderAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);
-      rafId = window.requestAnimationFrame(tick);
+      smoothScrollY = reducedMotion || Math.abs(diff) > window.innerHeight * .42 ? targetScrollY : smoothScrollY + diff * (1 - Math.exp(-25 * dt));
+      if (Math.abs(targetScrollY - smoothScrollY) < .15) smoothScrollY = targetScrollY;
+      pointerNDC.lerp(pointerTarget, 1 - Math.exp(-12 * dt));
+      pointerActive *= Math.exp(-3.8 * dt);
+      renderAtScroll(smoothScrollY, sceneTime);
+      if (!reducedMotion) rafId = window.requestAnimationFrame(tick);
     };
-
     const ensureLoop = () => {
-      if (!rafId && docVisible) {
+      if (!rafId && docVisible && !disposed && !contextLost && !chromeBlocked()) {
+        lastTime = performance.now();
         rafId = window.requestAnimationFrame(tick);
       }
     };
-
+    const releasePointer = () => { pointerTarget.set(0, 0); ensureLoop(); };
     const onPointerMove = (e: PointerEvent) => {
-      pointerNDC.set(
-        (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1,
-        -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1
-      );
-      pointerActive = 1.0;
+      if (e.pointerType === "touch" || reducedMotion) return;
+      pointerTarget.set(Math.max(-1, Math.min(1, e.clientX / Math.max(1, window.innerWidth) * 2 - 1)), Math.max(-1, Math.min(1, 1 - e.clientY / Math.max(1, window.innerHeight) * 2)));
+      pointerActive = 1;
+      ensureLoop();
     };
+    const onResize = () => { if (!contextLost) { resize(); ensureLoop(); } };
+    const onLost = (event: Event) => { event.preventDefault(); contextRecoveryRef.current = { u: lastU, time: sceneTime }; contextLost = true; if (rafId) cancelAnimationFrame(rafId); rafId = 0; fallback("lost"); };
+    const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
+    const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
+      state: sectionEl.dataset.sceneState, count, frameTimes: [...frameTimes],
+      draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
+      memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height });
+    if (window.__enableAboutProbe) window.__aboutProbe = probe;
+    glRenderer.domElement.addEventListener("webglcontextlost", onLost);
+    glRenderer.domElement.addEventListener("webglcontextrestored", onRestored);
 
+    const unsubscribeChrome = useStudioStore.subscribe((state, previous) => {
+      if (state.menuOpen !== previous.menuOpen || state.reelOpen !== previous.reelOpen || state.isTransitioning !== previous.isTransitioning) ensureLoop();
+    });
     const onScroll = () => {
       targetScrollY = window.scrollY;
       ensureLoop();
@@ -1020,15 +820,36 @@ function AboutWhoExperience({
     };
 
     resize();
-    window.addEventListener("resize", resize, { passive: true });
+    if (contextRecoveryRef.current) {
+      const unit = window.innerWidth < 820 ? window.innerHeight : window.innerWidth;
+      const y = sectionEl.getBoundingClientRect().top + window.scrollY + contextRecoveryRef.current.u * unit;
+      const win = window as unknown as { __lenis?: { resize: () => void; scrollTo: (y: number, o: { immediate: boolean }) => void } };
+      win.__lenis?.resize(); win.__lenis?.scrollTo(y, { immediate: true });
+      window.scrollTo({ top: y, behavior: "instant" }); targetScrollY = smoothScrollY = y;
+      contextRecoveryRef.current = null;
+    }
+    window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pointercancel", releasePointer);
+    window.addEventListener("blur", releasePointer);
+    document.documentElement.addEventListener("pointerleave", releasePointer);
     ensureLoop();
 
     return () => {
+      disposed = true;
+      unsubscribeChrome();
+      if (window.__aboutProbe === probe) delete window.__aboutProbe;
+      if (window.__lusionInspector?.scrollManager === ownedInspector && window.__lusionInspector) delete window.__lusionInspector.scrollManager;
+      portraitGeoRef.current = null; portraitMatRef.current = null;
+      glRenderer.domElement.removeEventListener("webglcontextlost", onLost);
+      glRenderer.domElement.removeEventListener("webglcontextrestored", onRestored);
+      window.removeEventListener("pointercancel", releasePointer);
+      window.removeEventListener("blur", releasePointer);
+      document.documentElement.removeEventListener("pointerleave", releasePointer);
       if (rafId) window.cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -1037,11 +858,12 @@ function AboutWhoExperience({
         item.dispose();
       }
       glRenderer.dispose();
+      glRenderer.forceContextLoss();
       if (glRenderer.domElement.parentElement === hostEl) {
         hostEl.removeChild(glRenderer.domElement);
       }
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, sceneGeneration]);
 
   return (
     <section
@@ -1049,11 +871,13 @@ function AboutWhoExperience({
       id="about-who"
       className="about-who-track relative w-full bg-[#000000] text-white"
     >
-      {/* Exact Reference Scroll Span: `100vh + 950vw` on desktop, `1225vh` on mobile */}
+      {/* Retained local scroll span: `100vh + 950vw` on desktop, `1225vh` on mobile */}
       <style>{`
         .about-who-track {
           height: calc(100vh + 950vw);
         }
+        .about-who-track[data-scene-state="unavailable"], .about-who-track[data-scene-state="lost"] { height: auto; }
+        .about-who-track[data-scene-state="unavailable"] > .sticky, .about-who-track[data-scene-state="lost"] > .sticky { position: relative; height: auto; min-height: 100svh; }
         @media (max-width: 819px) {
           .about-who-track {
             height: 1225vh;
@@ -1073,14 +897,17 @@ function AboutWhoExperience({
       {/* Sticky 100vh Full-Bleed WebGL + Architectural HUD Stage */}
       <div
         onTouchStart={(e) => {
+          touchStartYRef.current = e.touches[0]?.clientY ?? null;
           touchStartXRef.current = e.touches[0]?.clientX ?? null;
         }}
         onTouchEnd={(e) => {
           if (touchStartXRef.current === null) return;
           const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartXRef.current;
           touchStartXRef.current = null;
-          if (Math.abs(dx) > 40) onStepMember(dx < 0 ? 1 : -1);
+          const dy = (e.changedTouches[0]?.clientY ?? 0) - (touchStartYRef.current ?? 0);
+          if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5 && Number(teamOverlayRef.current?.style.opacity) > .45) onStepMember(dx < 0 ? 1 : -1);
         }}
+        onTouchCancel={() => { touchStartXRef.current = null; touchStartYRef.current = null; }}
         className="sticky top-0 h-screen w-full overflow-hidden bg-[#000000]"
       >
         {/* Full-Bleed WebGL Canvas Host */}
@@ -1090,8 +917,15 @@ function AboutWhoExperience({
         <div
           ref={fallbackPosterRef}
           style={{ display: "none" }}
-          className="absolute inset-0 items-center justify-center bg-[radial-gradient(circle_at_45%_32%,#273244_0%,#05070c_72%)]"
-        />
+          role="status"
+          className="relative z-40 min-h-svh flex-col items-start justify-center gap-6 bg-[#080a0e] px-[var(--base-padding-x)] py-32"
+        >
+          <h2 className="max-w-3xl text-5xl">We are a creative production studio.</h2>
+          <p className="max-w-xl text-xl">A worldwide team of specialists in design, motion, 3D, and technology working together to turn ambitious ideas into immersive digital experiences.</p>
+          <p>The interactive scene is unavailable. All studio information remains below; a restored graphics context will retry automatically.</p>
+          <a className="underline" href="#about-clients">Continue to studio information</a>
+          <ul>{team.map(member => <li key={member.id}>{member.name} — {member.rolePlain}</li>)}</ul>
+        </div>
 
         {/* Constant 5 Mid-Viewport Horizontal Registration Crosses (`+  +  +  +  +`) */}
         <div
@@ -1121,23 +955,7 @@ function AboutWhoExperience({
               y="256"
               textLength="1388"
               lengthAdjust="spacingAndGlyphs"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="6.5"
-              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-              fontSize="306"
-              fontWeight="400"
-            >
-              LUSION
-            </text>
-            <text
-              x="16"
-              y="264"
-              textLength="1368"
-              lengthAdjust="spacingAndGlyphs"
-              fill="none"
-              stroke="rgba(255,255,255,0.85)"
-              strokeWidth="3.0"
+              fill="#ffffff"
               fontFamily="LusionSansCalibrated, system-ui, sans-serif"
               fontSize="306"
               fontWeight="400"
@@ -1166,8 +984,8 @@ function AboutWhoExperience({
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
         >
           <div id="about-who-title-left" className="min-[820px]:col-span-7">
-            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[4.8vw]">
-              {LUSION_ABOUT.who.leftLines.map((line, idx) => (
+            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[3.4vw]">
+              {[LUSION_ABOUT.who.leftLines[0], "LUSION", ...LUSION_ABOUT.who.leftLines.slice(1)].map((line, idx) => (
                 <span key={idx} className="block">
                   {line}
                 </span>
@@ -1177,7 +995,7 @@ function AboutWhoExperience({
           <div className="flex items-end min-[820px]:col-span-5">
             <p
               id="about-who-title-right"
-              className="font-sans text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[2.3vw]"
+              className="font-sans text-right italic text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[2.3vw]"
             >
               {LUSION_ABOUT.who.rightHeadline}
             </p>
@@ -1188,17 +1006,17 @@ function AboutWhoExperience({
         <div
           ref={narrativeOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[18vh] bottom-[6vh] z-20 flex flex-col justify-between"
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[16vh] bottom-[6vh] z-20 flex flex-col justify-between"
         >
           <p
             id="about-who-desc-top"
-            className="whitespace-pre-line font-sans text-[clamp(1.85rem,3.35vw,3.15rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
+            className="whitespace-pre-line font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
           >
-            {"A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"}
+            <em className="font-normal">A worldwide team</em>{" of\nspecialists in design,\nmotion, 3D, and technology"}
           </p>
           <p
             id="about-who-desc-bottom"
-            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.7rem,2.95vw,2.75rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
           >
             {"working together to\nturn ambitious ideas into\nimmersive digital experiences."}
           </p>
@@ -1247,6 +1065,7 @@ function AboutWhoExperience({
                       key={member.id}
                       type="button"
                       aria-label={`Select ${member.name}`}
+                      aria-pressed={idx === activeMemberIdx}
                       onClick={() => onSelectMember(idx)}
                       className={`h-2 w-2 rounded-full transition-transform ${
                         idx === activeMemberIdx
@@ -1303,7 +1122,7 @@ function AboutWhoExperience({
                 <span aria-hidden="true" className="font-mono text-xs tracking-widest text-white/75">
                   ::
                 </span>
-                <h3 className="font-sans text-xl font-normal tracking-[-0.01em] text-white md:text-2xl">
+                <h3 id="about-who-team-name" aria-live="polite" className="font-sans text-xl font-normal tracking-[-0.01em] text-white md:text-2xl">
                   {activeMember.name}
                 </h3>
               </div>
@@ -1315,6 +1134,7 @@ function AboutWhoExperience({
                 ))}
               </p>
               <div className="mt-3 h-[1px] w-40 bg-white/35" />
+              <p className="mt-2 max-w-[28ch] font-sans text-xs leading-relaxed text-white/80">Abstract visualization — not a likeness of {activeMember.name}.</p>
             </div>
 
             <div className="flex items-end gap-6">
@@ -1339,42 +1159,19 @@ function AboutWhoExperience({
   );
 }
 
-/**
- * Verified Client Logo Tile (`/assets/images/logo/@logo--*.svg` white mark with clean text fallback)
- */
-function ClientLogoTile({ name, src }: { name: string; src: string }) {
-  const [failed, setFailed] = useState(false);
-
+/** Brand names retain verified content without reusing captured trademark SVGs. */
+function ClientLogoTile({ name }: { name: string }) {
   return (
-    <div className="flex h-20 items-center justify-center px-3 transition-opacity duration-300 opacity-85 hover:opacity-100 md:h-24 md:px-5">
-      {!failed ? (
-        <img
-          src={src}
-          alt={name}
-          loading="lazy"
-          decoding="async"
-          onError={() => setFailed(true)}
-          className="h-12 w-auto max-w-[140px] object-contain brightness-0 invert md:h-16 md:max-w-[175px]"
-        />
-      ) : (
-        <span className="font-sans text-xs font-medium tracking-[0.06em] text-white/90 uppercase md:text-sm">
-          {name}
-        </span>
-      )}
+    <div className="flex h-20 items-center justify-center px-3 opacity-85 transition-opacity duration-300 hover:opacity-100 md:h-24 md:px-5">
+      <span className="text-center font-sans text-base font-medium tracking-[-0.02em] text-white/90 md:text-xl">{name}</span>
     </div>
   );
 }
 
-/**
- * Verified Lusion About Page (`/about`)
- *
- * Matches all desktop (`1440x900`, `1024x768`) & mobile (`390x844`) reference states:
- *   1. `#about-who`: Full Three.js 3D sphere storm, crater mountain basin, vertical God-Ray, explorer,
- *      floating rocks, 42 topographic contour lines & 8,192-vertex 3D team portrait stage
- *   2. `#about-clients`: `BRANDS WE WORK WITH` + 3 rows of crisp white client SVG emblems
- *   3. `#about-award`: Recognition ledger (`58` awards, `03` articles, `5` talks)
- *   4. `#about-capability`: Electric cobalt `AREA OF EXPERTISE` + `S / C / T / P` tabs & sacred-geometry cards
- *   5. `#end-section`: Royal-blue FLIP geometric particle heap CTA + `#footer-section`
+/** Historical-evidence reconstruction, not a claim of exact current live parity.
+ * Sticky native Three world → brands → recognition → expertise → shared CTA/footer.
+ * Original generic portrait and procedural terrain replace restricted capture data;
+ * the shared CTA uses original GPU-instanced analytical flow, not a FLIP solver.
  */
 export function AboutPageView() {
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
@@ -1388,41 +1185,92 @@ export function AboutPageView() {
 
   const team = LUSION_ABOUT.who.team;
 
-  // Sync fixed '#header' contrast across '#000000' ('void'), '#1a2ffb' ('cobalt'), and '#f0f1fa' ('ice')
-  // Guarded with 'lastSurfaceRef' so React never re-renders unless the band boundary actually crosses!
+  // Measure only after reflow. Scroll frames compare cached document-space bounds,
+  // so a fast wheel burst never forces three synchronous layouts per native event.
   useEffect(() => {
+    let rafId = 0;
+    let dirty = true;
+    let disposed = false;
+    const elements = [capabilityBandRef.current, darkUpperRef.current, document.getElementById("end-section")];
+    let bands: ({ top: number; bottom: number } | null)[] = [];
     const syncHeaderSurface = () => {
-      const vhMid = window.innerHeight * 0.12;
-      const capRect = capabilityBandRef.current?.getBoundingClientRect();
-      const darkRect = darkUpperRef.current?.getBoundingClientRect();
-      const endRect = document.getElementById("end-section")?.getBoundingClientRect();
-
-      let nextSurface: "ice" | "void" | "cobalt" = "ice";
-      if (
-        (capRect && capRect.top <= vhMid && capRect.bottom >= vhMid) ||
-        (endRect && endRect.top <= vhMid && endRect.bottom >= vhMid)
-      ) {
-        nextSurface = "cobalt";
-      } else if (darkRect && darkRect.bottom >= vhMid) {
-        nextSurface = "void";
+      rafId = 0;
+      if (document.hidden) return;
+      const y = window.scrollY;
+      if (dirty) {
+        bands = elements.map((el) => {
+          if (!el) return null;
+          const rect = el.getBoundingClientRect();
+          return { top: rect.top + y, bottom: rect.bottom + y };
+        });
+        dirty = false;
       }
-
+      const line = y + window.innerHeight * 0.12;
+      const [cap, dark, end] = bands;
+      const covers = (band: { top: number; bottom: number } | null) => band && band.top <= line && band.bottom >= line;
+      const nextSurface = covers(cap) || covers(end) ? "cobalt" : dark && dark.bottom >= line ? "void" : "ice";
       if (lastSurfaceRef.current !== nextSurface) {
         lastSurfaceRef.current = nextSurface;
         setActiveSurface(nextSurface);
       }
     };
-
-    syncHeaderSurface();
-    window.addEventListener("scroll", syncHeaderSurface, { passive: true });
-    window.addEventListener("resize", syncHeaderSurface, { passive: true });
+    const schedule = () => {
+      if (!disposed && !rafId && !document.hidden) rafId = window.requestAnimationFrame(syncHeaderSurface);
+    };
+    const reflow = () => { dirty = true; schedule(); };
+    const observer = new ResizeObserver(reflow);
+    for (const el of elements) if (el) observer.observe(el);
+    document.fonts.ready.then(reflow);
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", reflow, { passive: true });
+    document.addEventListener("visibilitychange", reflow);
     return () => {
-      window.removeEventListener("scroll", syncHeaderSurface);
-      window.removeEventListener("resize", syncHeaderSurface);
+      disposed = true;
+      window.cancelAnimationFrame(rafId);
+      observer.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", reflow);
+      document.removeEventListener("visibilitychange", reflow);
       lastSurfaceRef.current = null;
       setActiveSurface("ice");
     };
   }, [setActiveSurface]);
+
+  useEffect(() => {
+    const award = document.getElementById("about-award");
+    const expertise = capabilityBandRef.current;
+    const word = award?.querySelector<HTMLElement>("[data-awards-word]");
+    const planes = Array.from(expertise?.querySelectorAll<SVGGElement>("[data-expertise-plane]") ?? []);
+    let raf = 0, dirty = true, disposed = false, awardTop = 0, expertiseTop = 0;
+    const measure = (el: HTMLElement | null) => el ? el.getBoundingClientRect().top + window.scrollY : 0;
+    const render = () => {
+      raf = 0;
+      if (document.hidden) return;
+      if (dirty) { awardTop = measure(award); expertiseTop = measure(expertise); dirty = false; }
+      const vh = Math.max(1, window.innerHeight), y = window.scrollY;
+      const awardsP = reducedMotion ? .5 : clamp01((y - awardTop + vh) / (vh * 2));
+      if (word) word.style.transform = `translate3d(${lerp(3, -3, awardsP)}%,0,0)`;
+      const p = reducedMotion ? 1 : clamp01((y - expertiseTop + vh) / (vh * 1.2));
+      planes.forEach((plane, i) => {
+        const assembled = smoothstep(.12 + i * .06, .7 + i * .06, p);
+        plane.style.transform = `translate3d(0,${(1 - assembled) * (i % 2 ? -14 : 14)}px,0)`;
+      });
+    };
+    const schedule = () => { if (!disposed && !raf && !document.hidden) raf = requestAnimationFrame(render); };
+    const reflow = () => { dirty = true; schedule(); };
+    const ro = new ResizeObserver(reflow);
+    if (award) ro.observe(award); if (expertise) ro.observe(expertise);
+    document.fonts.ready.then(reflow); schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", reflow, { passive: true });
+    document.addEventListener("visibilitychange", reflow);
+    return () => {
+      disposed = true; cancelAnimationFrame(raf); ro.disconnect();
+      window.removeEventListener("scroll", schedule); window.removeEventListener("resize", reflow);
+      document.removeEventListener("visibilitychange", reflow);
+    };
+  }, [reducedMotion]);
 
   const stepMember = (delta: number) => {
     soundEngine.playClick();
@@ -1478,7 +1326,6 @@ export function AboutPageView() {
                   <ClientLogoTile
                     key={`${client.id}-${cIdx}`}
                     name={client.name}
-                    src={client.src}
                   />
                 ))}
               </div>
@@ -1491,9 +1338,10 @@ export function AboutPageView() {
            ===================================================================== */}
         <section
           id="about-award"
-          className="border-t border-white/10 bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+          className="relative overflow-hidden bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
         >
-          <div className="grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">
+          <div aria-hidden="true" className="about-awards-monument"><span data-awards-word>AWARDS</span></div>
+          <div className="relative grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">
             <div className="col-span-6 min-[813px]:col-span-4">
               <div className="flex items-start gap-3">
                 <h2 className="font-sans text-5xl font-normal tracking-[-0.025em] text-white md:text-6xl">
@@ -1509,7 +1357,7 @@ export function AboutPageView() {
               {LUSION_ABOUT.recognition.awardGroups.map((group) => (
                 <div
                   key={group.organization}
-                  className="rounded-2xl border border-white/10 bg-[#0b0d13] p-6"
+                  className="border-t border-white/20 py-5"
                 >
                   <div className="flex items-center justify-between border-b border-white/10 pb-3">
                     <h3 className="font-sans text-lg font-medium text-white">
@@ -1601,11 +1449,11 @@ export function AboutPageView() {
       <section
         id="about-capability"
         ref={capabilityBandRef}
-        className="relative overflow-hidden bg-[linear-gradient(90deg,#1a2ffb_0%,#1527dc_48%,#1e35ff_55%,#1a2ffb_100%)] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+        className="relative overflow-hidden bg-[#1a2ffb] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
       >
         <div className="grid grid-cols-6 gap-6 min-[813px]:grid-cols-12">
           <div className="col-span-6 min-[813px]:col-span-7">
-            <h2 className="font-sans text-[11vw] leading-[0.95] font-normal tracking-[-0.025em] text-white uppercase min-[813px]:text-[5.2vw]">
+            <h2 className="font-sans text-[11vw] leading-[0.95] font-normal tracking-[-0.025em] text-white uppercase min-[813px]:text-[7.5vw]">
               {LUSION_ABOUT.capability.titleLines.map((line, idx) => (
                 <span key={idx} className="block">
                   {line}
@@ -1630,7 +1478,9 @@ export function AboutPageView() {
                     setActiveCapabilityIdx(idx);
                   }}
                   aria-label={`Focus ${card.title}`}
-                  className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl border font-sans text-xl font-medium transition-all ${
+                  aria-pressed={selected}
+                  aria-controls={`expertise-${idx}`}
+                  className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border font-sans text-xl font-medium transition-[background-color,color,border-color,transform] duration-200 active:scale-95 ${
                     selected
                       ? "border-white bg-white text-[#1a2ffb]"
                       : "border-white/55 bg-white/8 text-white hover:border-white"
@@ -1643,16 +1493,28 @@ export function AboutPageView() {
           </div>
         </div>
 
-        {/* 4 Sacred-Geometry White-Line Capability Cards on Cobalt */}
-        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Four transparent editorial columns; diagrams carry the technical act. */}
+        <div className="about-expertise-grid mt-16 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
           {LUSION_ABOUT.capability.cards.map((card, idx) => {
             const active = activeCapabilityIdx === idx;
             return (
               <div
                 key={card.title}
+                id={`expertise-${idx}`}
                 tabIndex={0}
                 role="button"
+                aria-label={`${card.title} expertise`}
                 aria-pressed={active}
+                onPointerMove={(event) => {
+                  if (reducedMotion || event.pointerType === "touch" || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  const x = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
+                  const y = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
+                  event.currentTarget.style.transform = `perspective(900px) rotateX(${-y * 2}deg) rotateY(${x * 2}deg)`;
+                }}
+                onPointerLeave={(event) => { event.currentTarget.style.transform = ""; }}
+                onPointerCancel={(event) => { event.currentTarget.style.transform = ""; }}
+                onBlur={(event) => { event.currentTarget.style.transform = ""; }}
                 onClick={() => {
                   soundEngine.playClick();
                   setActiveCapabilityIdx(idx);
@@ -1664,10 +1526,8 @@ export function AboutPageView() {
                     setActiveCapabilityIdx(idx);
                   }
                 }}
-                className={`group flex min-h-[410px] cursor-pointer flex-col justify-between rounded-[22px] border p-7 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-white ${
-                  active
-                    ? "border-white bg-[#1323c9]/85 text-white shadow-[0_24px_60px_rgba(4,9,56,0.35)]"
-                    : "border-white/25 bg-[#1628df]/60 text-white hover:-translate-y-1 hover:border-white/60"
+                className={`about-expertise-column group flex cursor-pointer flex-col border-t pt-6 transition-[transform,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-white ${
+                  active ? "border-white text-white" : "border-white/35 text-white"
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -1679,18 +1539,11 @@ export function AboutPageView() {
                   </span>
                 </div>
 
-                {/* Large White-Stroke Sacred Geometry Emblem (`cleanRoomIconSvg` inverted to crisp white) */}
-                <div className="my-6 flex items-center justify-center">
-                  <img
-                    src={card.cleanRoomIconSvg}
-                    alt={`${card.title} emblem`}
-                    width={140}
-                    height={140}
-                    className="h-32 w-32 object-contain brightness-0 invert opacity-92 transition-transform duration-500 group-hover:scale-105"
-                  />
+                <div className="my-6 w-full" data-expertise-drawing>
+                  <AboutExpertiseDiagram index={idx} />
                 </div>
 
-                <ul className="space-y-2 border-t border-white/20 pt-4 text-sm text-white/90">
+                <ul className="mt-auto space-y-2 pt-4 text-[14px] leading-relaxed text-white/95">
                   {card.items.map((item) => (
                     <li key={item}>{item}</li>
                   ))}

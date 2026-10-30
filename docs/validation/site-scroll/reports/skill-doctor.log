@@ -1,0 +1,17 @@
+
+scrollcraft preflight
+
+ [[32m ok [0m] node                   v22.22.3
+ [[31mFAIL[0m] ffmpeg (full build)    not found
+        [2mA stripped ffmpeg lacks scale/fps/psnr and the webp muxer. Install a full build (Windows: winget install Gyan.FFmpeg) or set SCROLLCRAFT_FFMPEG to one.[0m
+ [[32m ok [0m] playwright-core        resolves from cwd
+ [[33mwarn[0m] Chrome                 not found
+        [2mInstall Chrome, or set SCROLLCRAFT_CHROME to an executable.[0m
+ [[33mwarn[0m] KIE_AI_API_KEY         not set
+        [2mOnly needed to GENERATE imagery. Building from your own photos and footage needs no key and no spend. Copy .env.example to .env to set one.[0m
+ [[32m ok [0m] workspace              /home/user/Website-Cloner-JP/scrollcraft
+      via project root (.git)
+ [[33mwarn[0m]   └ registry           not created yet
+        [2mRun `node scripts/workspace.mjs --ensure` to create it.[0m
+
+[31m1 required check(s) failed. Fix these before building.[0m

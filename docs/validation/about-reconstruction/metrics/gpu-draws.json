@@ -1,0 +1,476 @@
+{
+  "viewport": [
+    1440,
+    900
+  ],
+  "u": 1.6,
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "supported": true,
+  "disjoints": 0,
+  "issued": 64,
+  "eligibleDrawCalls": 576,
+  "nestedOrCapacitySkips": 512,
+  "probe": {
+    "frames": 77,
+    "u": 1.6,
+    "time": 2.886000000000467,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": true,
+    "state": "ready",
+    "count": 1800,
+    "frameTimes": [
+      24.800000000279397,
+      109.79999999981374,
+      21.300000000279397,
+      10.5,
+      18.899999999906868,
+      11,
+      16.699999999720603,
+      17.5,
+      16.600000000093132,
+      16.5,
+      16.600000000093132,
+      15.899999999906868,
+      17.5,
+      17.300000000279397,
+      16.199999999720603,
+      17.5,
+      15.600000000093132,
+      16.299999999813735,
+      16.700000000186265,
+      16.799999999813735,
+      17.200000000186265,
+      16.799999999813735,
+      15.900000000372529,
+      16.299999999813735,
+      4238.700000000186,
+      15.699999999720603,
+      13.200000000186265,
+      99.60000000009313,
+      7.199999999720603,
+      9.100000000093132,
+      16.299999999813735,
+      16.300000000279397,
+      16.799999999813735,
+      16.600000000093132,
+      16.899999999906868,
+      16.600000000093132,
+      16.5,
+      16.799999999813735,
+      16.800000000279397,
+      16.5,
+      17.299999999813735,
+      16.100000000093132,
+      16.600000000093132,
+      16.600000000093132,
+      16.799999999813735,
+      17,
+      16.200000000186265,
+      16.59999999962747,
+      16.800000000279397,
+      16.699999999720603,
+      16.90000000037253,
+      68.5,
+      51.59999999962747,
+      269.5,
+      80.10000000009313,
+      291.89999999990687,
+      21.40000000037253,
+      245.79999999981374,
+      254.70000000018626,
+      486.29999999981374,
+      260.89999999990687,
+      248,
+      251.39999999990687,
+      249.10000000009313,
+      254.80000000027943,
+      245.39999999990687,
+      225.39999999990687,
+      225.79999999981374,
+      223.90000000037253,
+      207.09999999962747,
+      417.5,
+      15.5,
+      431.70000000018626,
+      27.700000000186265,
+      204.39999999990687,
+      202.29999999981374,
+      230.89999999990687
+    ],
+    "draws": 12,
+    "triangles": 185978,
+    "memory": {
+      "geometries": 12,
+      "textures": 1
+    },
+    "width": 960,
+    "height": 600
+  },
+  "webglError": 0,
+  "samples": [
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        110976,
+        5123,
+        0
+      ],
+      "ms": 48.690456,
+      "resultLatencyMs": 1385.4000000003725
+    },
+    {
+      "method": "drawArrays",
+      "arguments": [
+        0,
+        0,
+        600
+      ],
+      "ms": 1.47856,
+      "resultLatencyMs": 1385.4000000003725
+    },
+    {
+      "method": "drawArraysInstanced",
+      "arguments": [
+        4,
+        0,
+        240,
+        1800
+      ],
+      "ms": 158.80823,
+      "resultLatencyMs": 1385.4000000003725
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        6,
+        5123,
+        0
+      ],
+      "ms": 12.881951,
+      "resultLatencyMs": 1385.4000000003725
+    },
+    {
+      "method": "drawArraysInstanced",
+      "arguments": [
+        4,
+        0,
+        108,
+        92
+      ],
+      "ms": 6.688286,
+      "resultLatencyMs": 1385.5
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        36,
+        5123,
+        0
+      ],
+      "ms": 0.075077,
+      "resultLatencyMs": 1385.6000000000931
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.356861,
+      "resultLatencyMs": 1385.6000000000931
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.49687,
+      "resultLatencyMs": 1386.9000000003725
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.322909,
+      "resultLatencyMs": 1387.0999999996275
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.28705,
+      "resultLatencyMs": 1387.1999999997206
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        936,
+        5123,
+        0
+      ],
+      "ms": 0.35652,
+      "resultLatencyMs": 1387.1999999997206
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        924,
+        5123,
+        0
+      ],
+      "ms": 2.751177,
+      "resultLatencyMs": 1387.1999999997206
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        110976,
+        5123,
+        0
+      ],
+      "ms": 51.566905,
+      "resultLatencyMs": 1632
+    },
+    {
+      "method": "drawArrays",
+      "arguments": [
+        0,
+        0,
+        600
+      ],
+      "ms": 1.557035,
+      "resultLatencyMs": 1632.1999999997206
+    },
+    {
+      "method": "drawArraysInstanced",
+      "arguments": [
+        4,
+        0,
+        240,
+        1800
+      ],
+      "ms": 156.268731,
+      "resultLatencyMs": 1632.1999999997206
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        6,
+        5123,
+        0
+      ],
+      "ms": 12.046429,
+      "resultLatencyMs": 1632.2999999998137
+    },
+    {
+      "method": "drawArraysInstanced",
+      "arguments": [
+        4,
+        0,
+        108,
+        92
+      ],
+      "ms": 5.897819,
+      "resultLatencyMs": 1632.2999999998137
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        36,
+        5123,
+        0
+      ],
+      "ms": 0.080245,
+      "resultLatencyMs": 1632.3999999999069
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.337048,
+      "resultLatencyMs": 1632.3999999999069
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.340562,
+      "resultLatencyMs": 1632.3999999999069
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.289392,
+      "resultLatencyMs": 1632.3999999999069
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.356294,
+      "resultLatencyMs": 1632.5
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        936,
+        5123,
+        0
+      ],
+      "ms": 0.575262,
+      "resultLatencyMs": 1632.5
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        924,
+        5123,
+        0
+      ],
+      "ms": 4.384149,
+      "resultLatencyMs": 1632.5999999996275
+    },
+    {
+      "method": "drawArraysInstanced",
+      "arguments": [
+        4,
+        0,
+        108,
+        92
+      ],
+      "ms": 5.63778,
+      "resultLatencyMs": 2102.8000000002794
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        36,
+        5123,
+        0
+      ],
+      "ms": 0.060073,
+      "resultLatencyMs": 2102.8000000002794
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.305133,
+      "resultLatencyMs": 2102.899999999907
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.3,
+      "resultLatencyMs": 2102.899999999907
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.250427,
+      "resultLatencyMs": 2102.899999999907
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        780,
+        5123,
+        0
+      ],
+      "ms": 0.26755,
+      "resultLatencyMs": 2103.399999999907
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        936,
+        5123,
+        0
+      ],
+      "ms": 0.437471,
+      "resultLatencyMs": 2103.399999999907
+    },
+    {
+      "method": "drawElements",
+      "arguments": [
+        4,
+        924,
+        5123,
+        0
+      ],
+      "ms": 4.729344,
+      "resultLatencyMs": 2103.399999999907
+    }
+  ],
+  "note": "Instrumented asynchronous TIME_ELAPSED_EXT per draw only. Excludes clears, transfers, composition and unsampled draws; cannot be called whole-frame GPU time, physical GPU certification, display FPS or untimed frame cadence.",
+  "errors": [],
+  "summary": {
+    "samples": 32,
+    "unresolvedAtContextClose": 32,
+    "ringCapacity": 32,
+    "medianDrawMs": 0.49687,
+    "p95DrawMs": 156.268731,
+    "totalSampledDrawMs": 478.88159599999994
+  }
+}
