@@ -4,6 +4,8 @@
 
 This report covers the new skills-first pass on top of `26b914bb6471935c25bc8840f4805f171d8efd40`. The [previous report](about-reconstruction-results.md) remains a historical record; its particle-density figures and captures do not describe this revision.
 
+> Newer revision: [About astronaut and valley pass](about-explorer-results.md), including preview recovery and the original modeled explorer. Figures/captures below remain the previous revision.
+
 ## Reference research
 
 - Studied all three requested skill repositories before application edits; pinned revisions, applicable guidance and scope decisions: [about-skill-study.md](about-skill-study.md).

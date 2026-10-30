@@ -18,7 +18,7 @@ vec3 plume(vec4 seed) {
   float fringe = smoothstep(.88, 1., seed.w);
   p += vec3(cos(seed.y) * 2.6, sin(seed.y * 2.) * 1.4, sin(seed.y) * 1.6) * fringe;
   p *= mix(1.16, .72, uCompact);
-  p += vec3(-.35, 9.1, 0.);
+  p += vec3(-.35, mix(9.1, 6., uCompact), 0.);
   vec3 away = p - uPointer;
   float distanceToPointer = length(away);
   p += away / max(.01, distanceToPointer) * pow(max(0., 1. - distanceToPointer / 2.4), 2.) * uPointerStrength * .62;
@@ -53,7 +53,7 @@ export function createAboutPlume(count: number) {
   const material = new THREE.ShaderMaterial({
     uniforms, transparent: true,
     vertexShader: `${declarations}
-varying vec3 vNormal, vEye; varying float vDepth, vSeed;
+varying vec3 vNormal, vEye; varying float vDepth, vSeed, vCore;
 ${flow}
 void main() {
   float scale = mix(.16, 1.8, pow(aSeed.w, 6.));
@@ -63,16 +63,18 @@ void main() {
   vec4 eye = modelViewMatrix * vec4(plume(aSeed) + shape * scale, 1.);
   vNormal = normalize(normalMatrix * (normal - tangent * dot(normal, tangent) * (1. - 1. / stretch)));
   vEye = -eye.xyz; vDepth = -eye.z; vSeed = aSeed.w;
+  vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
 }`,
-    fragmentShader: `uniform float uOpacity;
-varying vec3 vNormal, vEye; varying float vDepth, vSeed;
+    fragmentShader: `uniform float uOpacity, uCyanBoost;
+varying vec3 vNormal, vEye; varying float vDepth, vSeed, vCore;
 void main() {
   vec3 n = normalize(vNormal), light = normalize(vec3(-.3, .8, .7));
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
   vec3 color = vec3(.035, .045, .05) + vec3(.46, .5, .52) * diffuse + specular * .9 + fresnel * .16;
+  color = mix(color, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   color *= mix(1., .48, smoothstep(8., 22., vDepth));
   gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed));
   #include <tonemapping_fragment>
@@ -92,7 +94,7 @@ void main() {
   const dustMaterial = new THREE.ShaderMaterial({
     uniforms, transparent: true, depthWrite: false,
     vertexShader: `${declarations}
-varying float vFade, vBlur, vSeed;
+varying float vFade, vBlur, vSeed, vCore;
 ${flow}
 void main() {
   vec3 p = plume(aSeed);
@@ -103,9 +105,11 @@ void main() {
   gl_PointSize = clamp((1.25 + aSeed.x * 1.2 + vBlur * 7.) * perspective * uPixelRatio, 1., 12.);
   vFade = uOpacity * mix(.62, .25, vBlur);
   vSeed = aSeed.w;
+  vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
 }`,
-    fragmentShader: `varying float vFade, vBlur, vSeed;
+    fragmentShader: `uniform float uCyanBoost;
+varying float vFade, vBlur, vSeed, vCore;
 void main() {
   vec2 p = (gl_PointCoord - .5) * 2.;
   float r2 = dot(p, p);
@@ -116,6 +120,7 @@ void main() {
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + vec3(0., 0., 1.)))), 20.);
   vec3 silver = vec3(.055) + vec3(.6, .65, .67) * diffuse + specular * .9;
+  silver = mix(silver, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   float edge = 1. - smoothstep(mix(.62, .05, vBlur), 1., r2);
   gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed), edge * vFade);
   #include <tonemapping_fragment>

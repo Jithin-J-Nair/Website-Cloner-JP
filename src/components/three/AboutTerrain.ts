@@ -85,8 +85,8 @@ export function createAboutTerrainMaterial() {
         float slope = clamp(vNormalW.y, 0., 1.);
         float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 64.);
         float crevice = clamp(.72 + grain * 4.5, .35, 1.);
-        vec3 rock = vec3(.004, .006, .008) + vec3(.10, .115, .125) * diffuse * crevice;
-        vec3 sand = vec3(.31, .34, .35) * (.48 + diffuse * .52) * crevice;
+        vec3 rock = vec3(.004, .006, .008) + vec3(.024, .029, .035) * diffuse * crevice;
+        vec3 sand = vec3(.43, .46, .47) * (.48 + diffuse * .52) * crevice;
         vec3 color = mix(rock, sand, pool * slope * uValleyBrightness);
         color += vec3(.11, .13, .14) * specular * (.25 + pool * .75);
         // During the editorial passage retain only the low pool, not a grey

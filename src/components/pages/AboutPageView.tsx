@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { LUSION_ABOUT } from "@/data/reference";
 import { createAboutPlume } from "@/components/three/AboutPlume";
+import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { createAboutTerrainMaterial, terrainHeightAt } from "@/components/three/AboutTerrain";
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
@@ -195,7 +196,7 @@ function AboutWhoExperience({
     const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);
 
     // Moody monochrome lunar lighting matching 'about-01' & 'about-02'
-    const ambient = new THREE.AmbientLight(0x8892a4, 0.55);
+    const ambient = new THREE.AmbientLight(0xd4d9dd, .85);
     scene.add(ambient);
 
     const overheadBeamLight = new THREE.SpotLight(0xf1f5f9, 48, 52, Math.PI * 0.22, 0.85, 1.3);
@@ -204,7 +205,7 @@ function AboutWhoExperience({
     scene.add(overheadBeamLight);
     scene.add(overheadBeamLight.target);
 
-    const coolRimLight = new THREE.DirectionalLight(0xcbd5e1, 1.35);
+    const coolRimLight = new THREE.DirectionalLight(0xe5edf1, 2.5);
     coolRimLight.position.set(-8, 14, 10);
     scene.add(coolRimLight);
 
@@ -213,6 +214,9 @@ function AboutWhoExperience({
     // -------------------------------------------------------------------------
     const plume = track(createAboutPlume(count));
     const sphereStorm = plume.group, stormMat = plume.material;
+    // GPU-displaced points have a CPU sorting centre at the origin. Render the
+    // transparent background first, not over the fine plume after its draw.
+    sphereStorm.renderOrder = 1;
     scene.add(sphereStorm);
 
     // Soft Volumetric Core Haze & Vertical God-Ray Shaft ('about-01' & 'about-02'!)
@@ -254,6 +258,7 @@ function AboutWhoExperience({
     );
     const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 26.0)), godRayMat);
     godRayPlane.position.set(0, 10.5, -2.5);
+    godRayPlane.renderOrder = -1;
     scene.add(godRayPlane);
 
     // -------------------------------------------------------------------------
@@ -273,6 +278,7 @@ function AboutWhoExperience({
 
     const terrainMat = track(createAboutTerrainMaterial());
     const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
+    terrainMesh.renderOrder = -2;
     scene.add(terrainMesh);
 
     // -------------------------------------------------------------------------
@@ -383,43 +389,16 @@ function AboutWhoExperience({
     // -------------------------------------------------------------------------
     // 4. Lone White Explorer / Astronaut Figure Standing on Valley Floor ('about-02')
     // -------------------------------------------------------------------------
-    const explorerGroup = new THREE.Group();
-    const gy = terrainHeightAt(-0.85, -1.8);
-    explorerGroup.position.set(-0.85, gy + 0.58, -1.8);
-    explorerGroup.scale.setScalar(0.85);
+    const explorer = track(createAboutExplorer());
+    const explorerGroup = explorer.group;
+    // Feet, not the centre of a capsule, are anchored to the same basin function.
+    explorerGroup.position.set(-.85, terrainHeightAt(-.85, -1.8) + .012, -1.8);
     scene.add(explorerGroup);
 
-    const explorerMat = track(
-      new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.45, metalness: 0.08 })
-    );
-    const cyanPackMat = track(
-      new THREE.MeshBasicMaterial({ color: 0x06f6ff })
-    );
-
-    const exTorso = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.18, 0.34, 6, 12)), explorerMat);
-    explorerGroup.add(exTorso);
-    const exHead = new THREE.Mesh(track(new THREE.SphereGeometry(0.16, 14, 12)), explorerMat);
-    exHead.position.y = 0.38;
-    explorerGroup.add(exHead);
-    // Glowing electric-cyan collar/backpack light visible in both '1440x900' & '390x844/about-02'!
-    const exPackGlow = new THREE.Mesh(track(new THREE.BoxGeometry(0.24, 0.28, 0.14)), cyanPackMat);
-    exPackGlow.position.set(0, 0.08, 0.14);
-    explorerGroup.add(exPackGlow);
-
-    for (const sx of [-1, 1]) {
-      const leg = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.068, 0.42, 6, 10)), explorerMat);
-      leg.position.set(sx * 0.10, -0.45, 0);
-      explorerGroup.add(leg);
-      const arm = new THREE.Mesh(track(new THREE.CapsuleGeometry(0.055, 0.34, 6, 10)), explorerMat);
-      arm.position.set(sx * 0.24, -0.02, 0);
-      arm.rotation.z = sx * 0.16;
-      explorerGroup.add(arm);
-    }
-
     // -------------------------------------------------------------------------
-    // 5. 92 Levitating & Ground-Scattered 3D Basalt Boulders ('about-02')
+    // 5. One instanced draw: 48 suspended stones and 272 grounded grains.
     // -------------------------------------------------------------------------
-    const ROCK_COUNT = 92;
+    const ROCK_COUNT = 320, FLOATING_ROCK_COUNT = 48;
     const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
     const rockMat = track(
       new THREE.MeshStandardMaterial({
@@ -432,9 +411,9 @@ function AboutWhoExperience({
     const rocksMesh = new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT);
     const rockDummy = new THREE.Object3D();
     const rockSeeds = Array.from({ length: ROCK_COUNT }, (_, i) => {
-      const floating = i < 48;
+      const floating = i < FLOATING_ROCK_COUNT;
       const ang = (i * 2.39996) % (Math.PI * 2);
-      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 11.0;
+      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 16.0;
       const rx = Math.cos(ang) * rad;
       const rz = 3.5 + Math.sin(ang) * rad * 0.72;
       const ry = floating
@@ -445,10 +424,19 @@ function AboutWhoExperience({
         y: ry,
         z: rz,
         floating,
-        scale: floating ? 0.35 + ((i * 19) % 10) * 0.11 : 0.25 + ((i * 17) % 8) * 0.09,
+        scale: floating ? 0.35 + ((i * 19) % 10) * 0.11 : 0.045 + Math.pow(((i * 17) % 100) / 100, 3) * .5,
         phase: i * 0.73,
       };
     });
+    // Bake grounded transforms once; the stones on the basin must not rotate.
+    for (let i = 0; i < ROCK_COUNT; i++) {
+      const rs = rockSeeds[i];
+      rockDummy.position.set(rs.x, rs.y, rs.z);
+      rockDummy.rotation.set(rs.phase, rs.phase * 1.4, 0);
+      rockDummy.scale.setScalar(rs.scale * .58);
+      rockDummy.updateMatrix(); rocksMesh.setMatrixAt(i, rockDummy.matrix);
+    }
+    rocksMesh.instanceMatrix.needsUpdate = true;
     scene.add(rocksMesh);
 
     // -------------------------------------------------------------------------
@@ -592,13 +580,17 @@ function AboutWhoExperience({
       const tContourPhase = smoothstep(3.6, 5.0, u);
       const tTeamPhase = smoothstep(6.2, 6.95, u);
 
-      const camZ = lerp(isMobile ? 8.6 : 6.9, isMobile ? 21.5 : 18.2, tPullback);
+      // Historical stills place the grounded figure near the lower middle,
+      // with both the floor and suspended plume visible. Return to the existing
+      // narrative/portrait distance rather than perturbing those later beats.
+      const wideZ = lerp(isMobile ? 26 : 28, isMobile ? 21.5 : 18.2, tContourPhase);
+      const camZ = lerp(isMobile ? 8.6 : 6.9, wideZ, tPullback);
       const camY = lerp(8.15, lerp(4.35, 6.6, tContourPhase), tPullback);
       const camX = Math.sin(tContourPhase * 1.2) * 0.6;
       // Raise the sightline during the editorial beat to leave black negative
       // space above the basin; return to the portrait framing in team mode.
       const editorialLookY = lerp(7.6, .85, tTeamPhase);
-      const lookY = lerp(8.15, lerp(4.15, editorialLookY, tContourPhase), tPullback);
+      const lookY = lerp(8.15, lerp(.6, editorialLookY, tContourPhase), tPullback);
 
       camera.fov = isMobile ? 54 : 45;
       camera.position.set(camX, camY, camZ);
@@ -641,10 +633,12 @@ function AboutWhoExperience({
 
       const explorerVis = landscapeVis * (1 - smoothstep(3.3, 4.3, u));
       explorerGroup.visible = explorerVis > 0.02;
+      explorerGroup.scale.setScalar(isMobile ? 1 : .85);
+      if (explorerGroup.visible) explorer.pose(elapsedSec, pointerNDC.x, pointerNDC.y, reducedMotion);
 
       rocksMesh.visible = explorerVis > 0.02;
       if (rocksMesh.visible) {
-        for (let i = 0; i < ROCK_COUNT; i++) {
+        for (let i = 0; i < FLOATING_ROCK_COUNT; i++) {
           const rs = rockSeeds[i];
           const bob = rs.floating && !reducedMotion ? Math.sin(elapsedSec * 0.9 + rs.phase) * 0.22 : 0;
           rockDummy.position.set(rs.x, rs.y + bob, rs.z);
@@ -657,6 +651,7 @@ function AboutWhoExperience({
           rockDummy.updateMatrix();
           rocksMesh.setMatrixAt(i, rockDummy.matrix);
         }
+        rocksMesh.instanceMatrix.addUpdateRange(0, FLOATING_ROCK_COUNT * 16);
         rocksMesh.instanceMatrix.needsUpdate = true;
       }
 

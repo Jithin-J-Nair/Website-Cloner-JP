@@ -12,6 +12,10 @@ try{
   assert.deepEqual(fine,b.group.children[1].geometry.attributes.aSeed.array);
   assert.notDeepEqual(fine.slice(0,16),mesh.geometry.attributes.aSeed.array.slice(0,16),'fine grains have independent positions, not duplicate overlapping instances');
   assert.match(dust.material.fragmentShader,/#include <colorspace_fragment>/);
+  for (const material of [mesh.material, dust.material]) {
+    assert.match(material.fragmentShader, /uniform float[^;]*uCyanBoost/);
+    assert.match(material.fragmentShader, /clamp\(uCyanBoost \* vCore/);
+  }
   assert.match(mesh.material.fragmentShader,/#include <tonemapping_fragment>/);
   const seeds=mesh.geometry.attributes.aSeed.array;assert.ok(seeds.every(Number.isFinite));for(let i=0;i<count;i++){assert.ok(seeds[i*4]>=0&&seeds[i*4]<=1);assert.ok(seeds[i*4+2]>=0&&seeds[i*4+2]<=Math.PI);}
   assert.equal(mesh.material.uniforms,dust.material.uniforms,'layers share one transport/pointer packet');assert.match(mesh.material.vertexShader,/plume\(aSeed\)/);assert.match(mesh.material.fragmentShader,/specular/);
