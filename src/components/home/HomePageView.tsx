@@ -42,7 +42,7 @@ function LusionExpandingCta({
       <span
         id={dotId}
         aria-hidden="true"
-        className="relative z-10 inline-block h-[0.5em] w-[0.5em] rounded-full bg-[#000000] transition-all duration-500 ease-[cubic-bezier(0.35,0,0,1)] group-hover:translate-x-[3.2em] group-hover:scale-[26] group-hover:bg-[#1a2ffb]"
+        className="relative z-10 inline-block h-[0.5em] w-[0.5em] rounded-full bg-[#000000] transition-[transform,translate,scale,background-color] duration-500 ease-[cubic-bezier(0.35,0,0,1)] group-hover:translate-x-[3.2em] group-hover:scale-[26] group-hover:bg-[#1a2ffb]"
       />
       <span
         id={textId}
@@ -98,6 +98,7 @@ export function HomePageView() {
   const reelSectionRef = useRef<HTMLElement>(null);
   const reelContainerRef = useRef<HTMLDivElement>(null);
   const reelVideoStageRef = useRef<HTMLDivElement>(null);
+  const reelViewportRef = useRef<HTMLDivElement>(null);
   const reelThumbCardRef = useRef<HTMLDivElement>(null);
   const reelTitleLine1Ref = useRef<HTMLSpanElement>(null);
   const reelOverlayTitleRef = useRef<HTMLDivElement>(null);
@@ -138,7 +139,13 @@ export function HomePageView() {
     let previousTime = performance.now();
     let skew = 0;
     let introTop = 0, reelTop = 0, featuredTop = 0;
-    const cards = Array.from(featuredSectionRef.current?.querySelectorAll<HTMLElement>(".project-item") ?? []).map((el) => ({el,top:0,height:0,imageTravel:0}));
+    const cards = Array.from(featuredSectionRef.current?.querySelectorAll<HTMLElement>(".project-item") ?? []).map((el) => ({
+      el, stage: el.querySelector<HTMLElement>(".project-item-main"),
+      image: el.querySelector<HTMLImageElement>("img.project-item-image"),
+      top: 0, height: 0, imageTravel: 0,
+    }));
+    const introWords = Array.from(reelTitleLine1Ref.current?.querySelectorAll<HTMLElement>("span") ?? []).slice(1);
+    const splitWords = Array.from(reelOverlayTitleRef.current?.children ?? []) as HTMLElement[];
     const naturalTop = (el: HTMLElement | null) => {
       if (!el) return 0;
       let top = 0;
@@ -158,7 +165,7 @@ export function HomePageView() {
           card.top = naturalTop(card.el);
           card.height = card.el.offsetHeight;
           // Stay inside the image's 4% overscan, including narrow portrait cards.
-          card.imageTravel = Math.min(18, (card.el.querySelector<HTMLElement>(".project-item-image")?.offsetHeight ?? card.height) * 0.035);
+          card.imageTravel = Math.min(18, (card.image?.offsetHeight ?? card.height) * 0.035);
         }
         layoutDirty = false;
       }
@@ -171,7 +178,7 @@ export function HomePageView() {
       if (Math.abs(skew)<0.005 && targetSkew===0) skew = 0;
       const intro = reducedMotion ? 1 : motionEase((vh*0.76-(introTop-y))/(vh*0.7));
       // A translated word gives spacing motion without reflowing the editorial headline.
-      reelTitleLine1Ref.current?.style.setProperty("--reel-word-shift",`${((1-intro)*0.34).toFixed(4)}em`);
+      for (const word of introWords) word.style.transform = `translate3d(${((1-intro)*0.34).toFixed(4)}em,0,0)`;
       for (let i = 0; i < reelWordRefs.current.length; i++) {
         const word = reelWordRefs.current[i];
         if (!word) continue;
@@ -181,9 +188,15 @@ export function HomePageView() {
       const expansion = reducedMotion ? 1 : motionEase((vh*0.98-(reelTop-y))/(vh*0.85));
       if (reelVideoStageRef.current) {
         reelVideoStageRef.current.style.transform = `translate3d(0,${((1-expansion)*52).toFixed(2)}px,0) scale(${(0.86+expansion*0.14).toFixed(5)})`;
-        reelVideoStageRef.current.style.setProperty("--reel-radius",`${(36-expansion*16).toFixed(2)}px`);
       }
-      if (reelOverlayTitleRef.current) reelOverlayTitleRef.current.style.columnGap = `${(1.95+expansion*0.55).toFixed(3)}em`;
+      if (reelViewportRef.current) {
+        reelViewportRef.current.style.borderRadius = `${(36-expansion*16).toFixed(2)}px`;
+      }
+      // Keep the flex layout fixed; equal/opposite offsets reproduce the old visual gap.
+      const split = (1.95 + expansion * 0.55 - 2.25) / 2;
+      splitWords.forEach((word, i) => {
+        word.style.transform = `translate3d(${((i === 0 ? -1 : 1) * split).toFixed(4)}em,0,0)`;
+      });
       if (reelThumbCardRef.current) reelThumbCardRef.current.style.opacity = reducedMotion ? "1" : (1-expansion*0.75).toFixed(3);
       const heading = reducedMotion ? 1 : motionEase((vh*0.9-(featuredTop-y))/(vh*0.48));
       if (featuredTitleRef.current) featuredTitleRef.current.style.transform = `translate3d(0,${((1-heading)*0.32).toFixed(4)}em,0)`;
@@ -192,10 +205,8 @@ export function HomePageView() {
         if (top>vh+180 || top+card.height < -180) continue;
         const entrance = reducedMotion ? 1 : motionEase((vh*1.02-top)/(vh*0.45));
         const parallax = reducedMotion ? 0 : Math.max(-1,Math.min(1,(top+card.height*0.5-vh*0.5)/vh))*card.imageTravel;
-        card.el.style.setProperty("--project-reveal-y",`${((1-entrance)*44).toFixed(2)}px`);
-        card.el.style.setProperty("--project-reveal-scale",(0.97+entrance*0.03).toFixed(5));
-        card.el.style.setProperty("--project-skew",`${skew.toFixed(4)}deg`);
-        card.el.style.setProperty("--project-image-y",`${parallax.toFixed(2)}px`);
+        if (card.stage) card.stage.style.transform = `translate3d(0,${((1-entrance)*44).toFixed(2)}px,0) scale(${(0.97+entrance*0.03).toFixed(5)}) skewY(${skew.toFixed(4)}deg)`;
+        if (card.image) card.image.style.transform = reducedMotion ? "none" : `translate3d(0,${parallax.toFixed(2)}px,0) scale(1.08)`;
       }
       // The small inertial shear settles to zero, then there is no idle scroll loop.
       if (skew!==0) rafId = window.requestAnimationFrame(sample);
@@ -283,8 +294,8 @@ export function HomePageView() {
           {heroWords.map((word, idx) => (
             <React.Fragment key={idx}>
               <motion.span
-                initial={reducedMotion ? false : { y: "115%", rotate: 7, opacity: 0 }}
-                animate={{ y: "0%", rotate: 0, opacity: 1 }}
+                initial={reducedMotion ? false : { transform: "translate3d(0,115%,0) rotate(7deg)", opacity: 0 }}
+                animate={{ transform: "translate3d(0,0%,0) rotate(0deg)", opacity: 1 }}
                 transition={{
                   duration: 0.62,
                   delay: Math.min(0.45, idx * 0.024),
@@ -386,7 +397,7 @@ export function HomePageView() {
               className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*0.92+var(--grid-gap))]"
             >
               {LUSION_HOME.reel.eyebrowLine1.split(" ").filter(Boolean).map((word,i) => (
-                <React.Fragment key={word}>{i>0 ? " " : ""}<span className="inline-block" style={i>0 ? {transform:"translate3d(var(--reel-word-shift,0em),0,0)"} : undefined}>{word}</span></React.Fragment>
+                <React.Fragment key={word}>{i>0 ? " " : ""}<span className="inline-block">{word}</span></React.Fragment>
               ))}
             </span>
             <span id="home-reel-title-line-2" className="block max-[812px]:max-w-[8.8ch]">
@@ -498,7 +509,7 @@ export function HomePageView() {
               {/* Rounded Interactive Reel Viewport (`aspect-[1.85/1]` desktop matching `ref-03-reel-stage`) */}
               <div
                 onClick={handleOpenReel}
-                style={{ borderRadius: "var(--reel-radius,var(--global-border-radius))" }}
+                ref={reelViewportRef}
                 className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#0b0d14] shadow-[0_24px_64px_rgba(12,18,42,0.18)] min-[813px]:aspect-[1.85/1]"
               >
                 {reelVideoAvailable ? (

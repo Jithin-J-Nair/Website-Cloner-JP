@@ -43,33 +43,42 @@ export function createAboutPlume(count: number) {
   for (let i = 0; i < count; i++) {
     seeds.set([random(), random() * Math.PI * 2, Math.acos(2 * random() - 1), random()], i * 4);
   }
-  const base = new THREE.IcosahedronGeometry(.025, 1);
+  // Camera-facing analytic grains: evaluate the expensive trajectory on four
+  // vertices, not 240. Curved normals and per-fragment surface depth retain
+  // spherical lighting/occlusion in the real 3D world; no captured texture.
+  const base = new THREE.PlaneGeometry(2, 2);
   const geometry = new THREE.InstancedBufferGeometry();
   geometry.index = base.index;
   geometry.setAttribute("position", base.attributes.position);
-  geometry.setAttribute("normal", base.attributes.normal);
   geometry.setAttribute("aSeed", new THREE.InstancedBufferAttribute(seeds, 4));
   geometry.instanceCount = count;
   const material = new THREE.ShaderMaterial({
     uniforms, transparent: true,
     vertexShader: `${declarations}
-varying vec3 vNormal, vEye; varying float vDepth, vSeed, vCore;
+varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 ${flow}
 void main() {
-  float scale = mix(.16, 1.8, pow(aSeed.w, 6.));
-  vec3 tangent = normalize(vec3(cos(aSeed.z * 1.62), .6, sin(aSeed.z)));
-  float stretch = 1. + .28 * aSeed.x;
-  vec3 shape = position + tangent * dot(position, tangent) * (stretch - 1.);
-  vec4 eye = modelViewMatrix * vec4(plume(aSeed) + shape * scale, 1.);
-  vNormal = normalize(normalMatrix * (normal - tangent * dot(normal, tangent) * (1. - 1. / stretch)));
-  vEye = -eye.xyz; vDepth = -eye.z; vSeed = aSeed.w;
+  vRadius = .025 * mix(.16, 1.8, pow(aSeed.w, 6.));
+  vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
+  vDisc = position.xy;
+  vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);
+  vSeed = aSeed.w;
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
 }`,
     fragmentShader: `uniform float uOpacity, uCyanBoost;
-varying vec3 vNormal, vEye; varying float vDepth, vSeed, vCore;
+uniform mat4 projectionMatrix;
+varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 void main() {
-  vec3 n = normalize(vNormal), light = normalize(vec3(-.3, .8, .7));
+  float r2 = dot(vDisc, vDisc);
+  if (r2 > 1.) discard;
+  vec3 n = vec3(vDisc, sqrt(max(0., 1. - r2)));
+  vec3 surfaceEye = vCenterEye + n * vRadius;
+  vec3 vEye = -surfaceEye;
+  float vDepth = -surfaceEye.z;
+  vec4 surfaceClip = projectionMatrix * vec4(surfaceEye, 1.);
+  gl_FragDepth = .5 + .5 * surfaceClip.z / surfaceClip.w;
+  vec3 light = normalize(vec3(-.3, .8, .7));
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);

@@ -6,6 +6,10 @@ try{
  const {createAboutPlume}=await import(pathToFileURL(`${dir}/plume.mjs`));
  for(const count of [900,1800,3200,4800]){
   const a=createAboutPlume(count),b=createAboutPlume(count);assert.equal(a.group.children.length,2);const mesh=a.group.children[0],dust=a.group.children[1];
+  assert.equal(mesh.geometry.attributes.position.count,4,'four analytical sphere vertices, not 240 repeated trajectory evaluations');
+  assert.equal(mesh.geometry.index.count,6,'two triangles per analytical sphere at every quality tier');
+  assert.match(mesh.material.fragmentShader,/sqrt\(max\(0\., 1\. - r2\)\)/,'curved sphere normal, not a flat billboard');
+  assert.match(mesh.material.fragmentShader,/gl_FragDepth = .*surfaceClip\.z \/ surfaceClip\.w/,'write projected curved surface depth for world occlusion');
   assert.equal(mesh.geometry.instanceCount,count);assert.equal(dust.geometry.attributes.position.count,count*4);assert.deepEqual(mesh.geometry.attributes.aSeed.array,b.group.children[0].geometry.attributes.aSeed.array);
   const fine=dust.geometry.attributes.aSeed.array;
   assert.equal(fine.length,count*16);assert.ok(fine.every(Number.isFinite));

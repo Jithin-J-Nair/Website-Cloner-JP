@@ -37,8 +37,13 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
         STAGE_TELEMETRY.scrollProgress = window.scrollY / maxScroll;
         STAGE_TELEMETRY.scrollVelocity = 0;
       };
+      onNativeScroll();
       window.addEventListener("scroll", onNativeScroll, { passive: true });
-      return () => window.removeEventListener("scroll", onNativeScroll);
+      window.addEventListener("resize", onNativeScroll, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", onNativeScroll);
+        window.removeEventListener("resize", onNativeScroll);
+      };
     }
 
     const lenis = new Lenis({
@@ -101,7 +106,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     } else {
       lenis.start();
     }
-  }, [menuOpen, reelOpen]);
+  }, [menuOpen, reelOpen, reducedMotion]);
 
   // Reset scroll position and lift transition curtain cleanly upon route commit
   useEffect(() => {
@@ -110,6 +115,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     } else {
       window.scrollTo(0, 0);
     }
+    STAGE_TELEMETRY.scrollY = 0;
     STAGE_TELEMETRY.scrollProgress = 0;
     STAGE_TELEMETRY.scrollVelocity = 0;
 

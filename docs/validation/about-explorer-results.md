@@ -1,5 +1,7 @@
 # About astronaut and valley pass — 2026-10-30
 
+Subsequent revision: [site-wide motion refinement and current measurements](site-scroll-results.md). The results below describe the earlier explorer pass, not the newer optimized plume.
+
 **Status: implemented improvements; strict full-clone acceptance still NOT MET.** This pass builds on `9120a1f`. Earlier reports remain historical; this report and its captures describe the newer explorer/material/framing revision.
 
 ## Reference research

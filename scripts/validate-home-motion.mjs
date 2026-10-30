@@ -121,7 +121,7 @@ try {
  const reel=[];
  for(const y of [layout.reel-height*.94,layout.reel-height*.5,layout.reel-height*.12]){
   await seek(y);
-  reel.push(await page.locator('#home-reel-video-container').evaluate(el=>({transform:getComputedStyle(el).transform,radius:el.style.getPropertyValue('--reel-radius')})));
+  reel.push(await page.locator('#home-reel-video-container').evaluate(el=>({transform:getComputedStyle(el).transform,radius:el.querySelector('.group').style.borderRadius})));
  }
  report.reel=reel;
  if(!reduced)assert.notEqual(reel[0].transform,reel[2].transform,'reel container expands with scroll');
@@ -138,7 +138,7 @@ try {
  const featured=[];
  for(const y of [layout.featured-height*.8,layout.featured-height*.3,layout.featured+height*.2]){
   await seek(y);
-  featured.push(await page.evaluate(()=>({heading:getComputedStyle(document.getElementById('home-featured-title')).transform,cards:[...document.querySelectorAll('.project-item')].slice(0,2).map(el=>({reveal:el.style.getPropertyValue('--project-reveal-y'),image:el.style.getPropertyValue('--project-image-y'),skew:el.style.getPropertyValue('--project-skew')}))})));
+  featured.push(await page.evaluate(()=>({heading:getComputedStyle(document.getElementById('home-featured-title')).transform,cards:[...document.querySelectorAll('.project-item')].slice(0,2).map(el=>({stage:el.querySelector('.project-item-main').style.transform,image:el.querySelector('img.project-item-image')?.style.transform}))})));
  }
  if(!reduced)assert.notEqual(featured[0].heading,featured[2].heading);
  await seek(layout.featured-height*.8);

@@ -1154,37 +1154,53 @@ export function AboutPageView() {
 
   const team = LUSION_ABOUT.who.team;
 
-  // Sync fixed '#header' contrast across '#000000' ('void'), '#1a2ffb' ('cobalt'), and '#f0f1fa' ('ice')
-  // Guarded with 'lastSurfaceRef' so React never re-renders unless the band boundary actually crosses!
+  // Measure only after reflow. Scroll frames compare cached document-space bounds,
+  // so a fast wheel burst never forces three synchronous layouts per native event.
   useEffect(() => {
+    let rafId = 0;
+    let dirty = true;
+    let disposed = false;
+    const elements = [capabilityBandRef.current, darkUpperRef.current, document.getElementById("end-section")];
+    let bands: ({ top: number; bottom: number } | null)[] = [];
     const syncHeaderSurface = () => {
-      const vhMid = window.innerHeight * 0.12;
-      const capRect = capabilityBandRef.current?.getBoundingClientRect();
-      const darkRect = darkUpperRef.current?.getBoundingClientRect();
-      const endRect = document.getElementById("end-section")?.getBoundingClientRect();
-
-      let nextSurface: "ice" | "void" | "cobalt" = "ice";
-      if (
-        (capRect && capRect.top <= vhMid && capRect.bottom >= vhMid) ||
-        (endRect && endRect.top <= vhMid && endRect.bottom >= vhMid)
-      ) {
-        nextSurface = "cobalt";
-      } else if (darkRect && darkRect.bottom >= vhMid) {
-        nextSurface = "void";
+      rafId = 0;
+      if (document.hidden) return;
+      const y = window.scrollY;
+      if (dirty) {
+        bands = elements.map((el) => {
+          if (!el) return null;
+          const rect = el.getBoundingClientRect();
+          return { top: rect.top + y, bottom: rect.bottom + y };
+        });
+        dirty = false;
       }
-
+      const line = y + window.innerHeight * 0.12;
+      const [cap, dark, end] = bands;
+      const covers = (band: { top: number; bottom: number } | null) => band && band.top <= line && band.bottom >= line;
+      const nextSurface = covers(cap) || covers(end) ? "cobalt" : dark && dark.bottom >= line ? "void" : "ice";
       if (lastSurfaceRef.current !== nextSurface) {
         lastSurfaceRef.current = nextSurface;
         setActiveSurface(nextSurface);
       }
     };
-
-    syncHeaderSurface();
-    window.addEventListener("scroll", syncHeaderSurface, { passive: true });
-    window.addEventListener("resize", syncHeaderSurface, { passive: true });
+    const schedule = () => {
+      if (!disposed && !rafId && !document.hidden) rafId = window.requestAnimationFrame(syncHeaderSurface);
+    };
+    const reflow = () => { dirty = true; schedule(); };
+    const observer = new ResizeObserver(reflow);
+    for (const el of elements) if (el) observer.observe(el);
+    document.fonts.ready.then(reflow);
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", reflow, { passive: true });
+    document.addEventListener("visibilitychange", reflow);
     return () => {
-      window.removeEventListener("scroll", syncHeaderSurface);
-      window.removeEventListener("resize", syncHeaderSurface);
+      disposed = true;
+      window.cancelAnimationFrame(rafId);
+      observer.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", reflow);
+      document.removeEventListener("visibilitychange", reflow);
       lastSurfaceRef.current = null;
       setActiveSurface("ice");
     };
