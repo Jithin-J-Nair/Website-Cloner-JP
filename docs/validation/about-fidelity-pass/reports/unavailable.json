@@ -1,0 +1,6 @@
+{
+  "state": "unavailable",
+  "expectedInjectedWebglErrors": [
+    "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+  ]
+}

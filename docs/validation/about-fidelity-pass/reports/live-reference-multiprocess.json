@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-30",
+  "mode": "multiprocess",
+  "results": [
+    {
+      "width": 1440,
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about/\nCall log:\n  - navigating to \"https://lusion.co/about/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "width": 390,
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about/\nCall log:\n  - navigating to \"https://lusion.co/about/\", waiting until \"domcontentloaded\"\n"
+    }
+  ]
+}

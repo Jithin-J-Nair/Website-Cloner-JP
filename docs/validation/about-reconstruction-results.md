@@ -2,6 +2,8 @@
 
 **Delivery status: partial implementation / draft review. Full-fidelity and physical-audio acceptance remain open. Do not merge automatically.**
 
+> **2026-10-30 follow-up:** see [About fidelity pass results](about-fidelity-pass-results.md) for the newer skills-first material/density/composition changes and fresh validation. Numbers and recordings below describe the prior revision.
+
 ## Reference research
 
 - Fresh Chromium attempts to `https://lusion.co/about/` and `/` at desktop/mobile all returned `ERR_CONNECTION_CLOSED`. Current live layout, temporal transitions, hover response and sound could not be observed. Evidence: `about-reconstruction/reference.json`.

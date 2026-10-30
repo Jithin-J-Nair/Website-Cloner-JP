@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { LUSION_ABOUT } from "@/data/reference";
 import { createAboutPlume } from "@/components/three/AboutPlume";
+import { createAboutTerrainMaterial, terrainHeightAt } from "@/components/three/AboutTerrain";
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
@@ -24,33 +25,6 @@ const smoothstep = (e0: number, e1: number, x: number) => {
   const t = clamp01((x - e0) / Math.max(1e-5, e1 - e0));
   return t * t * (3 - 2 * t);
 };
-
-/**
- * Deterministic 3D height function modeling Lusion's sculptural crater basin:
- * - Smooth misty central lunar valley floor around `x ∈ [-7, 7], z ∈ [-4, 14]`
- * - Dramatic flanking volcanic/mountain ridges rising steeply on left & right (`|x| = 8..30`)
- * - Secondary ridge folds & contour terraces so the 36 topographic contour lines match `about-03` & `about-04`!
- */
-function terrainHeightAt(x: number, z: number): number {
-  const valleyDist = Math.hypot(x * 0.92, (z - 3.5) * 0.52);
-  const rimRise = smoothstep(5.2, 23.0, valleyDist) * 9.6;
-
-  // Jagged multi-octave mountain ridges stronger on left & right flanks ('about-02', 'about-04')
-  const n1 = Math.sin(x * 0.21 + z * 0.14) * Math.cos(z * 0.19 - x * 0.11);
-  const n2 = Math.sin(x * 0.47 - z * 0.36) * 0.52 + Math.cos(x * 0.83 + z * 0.61) * 0.26;
-  const n3 = Math.abs(Math.sin(x * 0.33 + Math.cos(z * 0.28) * 1.6));
-  const flankMask = smoothstep(3.4, 13.5, Math.abs(x) + Math.max(0, -z) * 0.38);
-
-  const hash = (a: number, b: number) => { const q = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return q - Math.floor(q); };
-  const noise = (a: number, b: number) => {
-    const ix = Math.floor(a), iz = Math.floor(b), fx = a - ix, fz = b - iz;
-    const u = fx * fx * (3 - 2 * fx), v = fz * fz * (3 - 2 * fz);
-    return lerp(lerp(hash(ix, iz), hash(ix + 1, iz), u), lerp(hash(ix, iz + 1), hash(ix + 1, iz + 1), u), v);
-  };
-  const detail = (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (0.28 + flankMask);
-  const micro = Math.sin(x * 1.45 + z * 1.32) * 0.11 * (0.35 + flankMask);
-  return rimRise + (n1 * 2.35 + n2 * 1.45 + n3 * 2.15) * flankMask + micro + detail - 1.7;
-}
 
 /** Original deterministic generic portrait study; not the likeness of a named
  * team member and not decoded from captured/restricted models. */
@@ -235,7 +209,7 @@ function AboutWhoExperience({
     scene.add(coolRimLight);
 
     // -------------------------------------------------------------------------
-    // 1. 3D Curl-Noise + Vortex Sphere Storm ('6,400' GPU-Instanced Fine Icospheres)
+    // 1. Original GPU filament field: instanced grains and seeded fine silver dust
     // -------------------------------------------------------------------------
     const plume = track(createAboutPlume(count));
     const sphereStorm = plume.group, stormMat = plume.material;
@@ -297,50 +271,7 @@ function AboutWhoExperience({
     }
     terrainGeo.computeVertexNormals();
 
-    const terrainMat = track(
-      new THREE.ShaderMaterial({
-        uniforms: {
-          uValleyBrightness: { value: 1.0 },
-          uOpacity: { value: 0 },
-        },
-        transparent: true,
-        vertexShader: `
-          varying vec3 vWorldPos;
-          varying vec3 vNormalW;
-          void main() {
-            vec4 wp = modelMatrix * vec4(position, 1.0);
-            vWorldPos = wp.xyz;
-            vNormalW = normalize(mat3(modelMatrix) * normal);
-            gl_Position = projectionMatrix * viewMatrix * wp;
-          }
-        `,
-        fragmentShader: `
-          uniform float uValleyBrightness;
-          uniform float uOpacity;
-          varying vec3 vWorldPos;
-          varying vec3 vNormalW;
-          void main() {
-            // Overhead spotlight pool brightening the misty dusty valley center ('about-02'!)
-            float distFromCenter = length(vWorldPos.xz - vec2(0.0, 4.2));
-            float spotPool = exp(-pow(distFromCenter / 12.8, 1.75));
-            float slope = clamp(vNormalW.y, 0.0, 1.0);
-            vec3 lightDir = normalize(vec3(-0.15, 0.92, 0.25));
-            float diff = clamp(dot(vNormalW, lightDir), 0.0, 1.0);
-
-            vec3 darkRock = vec3(0.035, 0.04, 0.05);
-            vec3 ridgeGrey = vec3(0.22, 0.25, 0.29);
-            vec3 mistySand = vec3(0.76, 0.80, 0.85);
-
-            vec3 col = mix(darkRock, ridgeGrey, diff * 0.85);
-            col = mix(col, mistySand, spotPool * slope * uValleyBrightness * 0.94);
-
-            // Soft distance horizon fade
-            float farFade = 1.0 - smoothstep(18.0, 32.0, length(vWorldPos.xz));
-            gl_FragColor = vec4(col * farFade, uOpacity);
-          }
-        `,
-      })
-    );
+    const terrainMat = track(createAboutTerrainMaterial());
     const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
     scene.add(terrainMesh);
 
@@ -664,7 +595,10 @@ function AboutWhoExperience({
       const camZ = lerp(isMobile ? 8.6 : 6.9, isMobile ? 21.5 : 18.2, tPullback);
       const camY = lerp(8.15, lerp(4.35, 6.6, tContourPhase), tPullback);
       const camX = Math.sin(tContourPhase * 1.2) * 0.6;
-      const lookY = lerp(8.15, lerp(4.15, 0.85, tContourPhase), tPullback);
+      // Raise the sightline during the editorial beat to leave black negative
+      // space above the basin; return to the portrait framing in team mode.
+      const editorialLookY = lerp(7.6, .85, tTeamPhase);
+      const lookY = lerp(8.15, lerp(4.15, editorialLookY, tContourPhase), tPullback);
 
       camera.fov = isMobile ? 54 : 45;
       camera.position.set(camX, camY, camZ);
@@ -697,10 +631,13 @@ function AboutWhoExperience({
       godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
       godRayMat.uniforms.uCyanCore.value = isMobile ? 0.85 : 0.32;
 
-      // Fade solid grey terrain into pure `#000000` obsidian in `about-03` & `about-04` so ONLY crisp white contour lines glow!
-      terrainMesh.visible = landscapeVis * darkHudFade > 0.01;
-      terrainMat.uniforms.uOpacity.value = landscapeVis * darkHudFade;
-      terrainMat.uniforms.uValleyBrightness.value = darkHudFade;
+      // Keep a faint real rock surface beneath the narrative/contours, as in the historical still.
+      // Team mode returns to black to preserve portrait contrast.
+      const narrativeGround = (1 - tTeamPhase) * .22;
+      const terrainVis = landscapeVis * Math.max(darkHudFade, narrativeGround);
+      terrainMesh.visible = terrainVis > .01;
+      terrainMat.uniforms.uOpacity.value = terrainVis;
+      terrainMat.uniforms.uValleyBrightness.value = lerp(.16, 1, darkHudFade);
 
       const explorerVis = landscapeVis * (1 - smoothstep(3.3, 4.3, u));
       explorerGroup.visible = explorerVis > 0.02;
@@ -1043,17 +980,17 @@ function AboutWhoExperience({
         <div
           ref={narrativeOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[18vh] bottom-[6vh] z-20 flex flex-col justify-between"
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[16vh] bottom-[6vh] z-20 flex flex-col justify-between"
         >
           <p
             id="about-who-desc-top"
-            className="whitespace-pre-line font-sans text-[clamp(1.85rem,3.35vw,3.15rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
+            className="whitespace-pre-line font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
           >
-            {"A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"}
+            <em className="font-normal">A worldwide team</em>{" of\nspecialists in design,\nmotion, 3D, and technology"}
           </p>
           <p
             id="about-who-desc-bottom"
-            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.7rem,2.95vw,2.75rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
           >
             {"working together to\nturn ambitious ideas into\nimmersive digital experiences."}
           </p>

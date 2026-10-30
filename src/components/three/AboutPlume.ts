@@ -56,7 +56,7 @@ export function createAboutPlume(count: number) {
 varying vec3 vNormal, vEye; varying float vDepth, vSeed;
 ${flow}
 void main() {
-  float scale = mix(.23, 1.9, pow(aSeed.w, 3.));
+  float scale = mix(.16, 1.8, pow(aSeed.w, 6.));
   vec3 tangent = normalize(vec3(cos(aSeed.z * 1.62), .6, sin(aSeed.z)));
   float stretch = 1. + .28 * aSeed.x;
   vec3 shape = position + tangent * dot(position, tangent) * (stretch - 1.);
@@ -72,34 +72,56 @@ void main() {
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
-  vec3 color = vec3(.055, .065, .075) + vec3(.52, .56, .58) * diffuse + specular * .75 + fresnel * .12;
+  vec3 color = vec3(.035, .045, .05) + vec3(.46, .5, .52) * diffuse + specular * .9 + fresnel * .16;
   color *= mix(1., .48, smoothstep(8., 22., vDepth));
-  gl_FragColor = vec4(color, uOpacity * mix(.42, 1., vSeed));
+  gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed));
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
 }`,
   });
   const mesh = new THREE.Mesh(geometry, material); mesh.frustumCulled = false; group.add(mesh);
   const dustGeometry = new THREE.BufferGeometry();
-  const dustCount = Math.floor(count / 3);
+  // Fine grains supply density cheaply; population is fixed at mount, not per-frame.
+  const dustCount = count * 4;
+  const dustSeeds = new Float32Array(dustCount * 4);
+  for (let i = 0; i < dustCount; i++) {
+    dustSeeds.set([random(), random() * Math.PI * 2, Math.acos(2 * random() - 1), random()], i * 4);
+  }
   dustGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(dustCount * 3), 3));
-  dustGeometry.setAttribute("aSeed", new THREE.BufferAttribute(seeds.slice(0, dustCount * 4), 4));
+  dustGeometry.setAttribute("aSeed", new THREE.BufferAttribute(dustSeeds, 4));
   const dustMaterial = new THREE.ShaderMaterial({
     uniforms, transparent: true, depthWrite: false,
     vertexShader: `${declarations}
-varying float vFade;
+varying float vFade, vBlur, vSeed;
 ${flow}
 void main() {
-  vec3 p = plume(aSeed); p.xz *= 1.45;
+  vec3 p = plume(aSeed);
   vec4 eye = modelViewMatrix * vec4(p, 1.);
   float defocus = abs(-eye.z - 7.5);
-  gl_PointSize = clamp((1.5 + defocus * .8) * uPixelRatio, 1., 12.);
-  vFade = uOpacity * (.09 + .15 * aSeed.w);
+  vBlur = smoothstep(1.6, 5., defocus) * (.3 + .7 * pow(aSeed.w, 8.));
+  float perspective = clamp(7.5 / max(1., -eye.z), .4, 2.);
+  gl_PointSize = clamp((1.25 + aSeed.x * 1.2 + vBlur * 7.) * perspective * uPixelRatio, 1., 12.);
+  vFade = uOpacity * mix(.62, .25, vBlur);
+  vSeed = aSeed.w;
   gl_Position = projectionMatrix * eye;
 }`,
-    fragmentShader: `varying float vFade;
-void main() { float r = length(gl_PointCoord - .5) * 2.;
-  if (r > 1.) discard;
-  gl_FragColor = vec4(vec3(.75, .8, .82), (1. - smoothstep(.3, 1., r)) * vFade);
+    fragmentShader: `varying float vFade, vBlur, vSeed;
+void main() {
+  vec2 p = (gl_PointCoord - .5) * 2.;
+  float r2 = dot(p, p);
+  if (r2 > 1.) discard;
+  float z = sqrt(max(0., 1. - r2));
+  vec3 n = vec3(p.x, -p.y, z);
+  vec3 light = normalize(vec3(-.3, .8, .7));
+  float diffuse = max(0., dot(n, light));
+  float specular = pow(max(0., dot(n, normalize(light + vec3(0., 0., 1.)))), 20.);
+  vec3 silver = vec3(.055) + vec3(.6, .65, .67) * diffuse + specular * .9;
+  float edge = 1. - smoothstep(mix(.62, .05, vBlur), 1., r2);
+  gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed), edge * vFade);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
 }`,
+
   });
   const dust = new THREE.Points(dustGeometry, dustMaterial); dust.frustumCulled = false; group.add(dust);
   return { group, material, count, dispose() { geometry.dispose(); base.dispose(); material.dispose(); dustGeometry.dispose(); dustMaterial.dispose(); } };

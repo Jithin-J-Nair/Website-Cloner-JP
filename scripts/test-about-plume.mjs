@@ -6,7 +6,13 @@ try{
  const {createAboutPlume}=await import(pathToFileURL(`${dir}/plume.mjs`));
  for(const count of [900,1800,3200,4800]){
   const a=createAboutPlume(count),b=createAboutPlume(count);assert.equal(a.group.children.length,2);const mesh=a.group.children[0],dust=a.group.children[1];
-  assert.equal(mesh.geometry.instanceCount,count);assert.equal(dust.geometry.attributes.position.count,Math.floor(count/3));assert.deepEqual(mesh.geometry.attributes.aSeed.array,b.group.children[0].geometry.attributes.aSeed.array);
+  assert.equal(mesh.geometry.instanceCount,count);assert.equal(dust.geometry.attributes.position.count,count*4);assert.deepEqual(mesh.geometry.attributes.aSeed.array,b.group.children[0].geometry.attributes.aSeed.array);
+  const fine=dust.geometry.attributes.aSeed.array;
+  assert.equal(fine.length,count*16);assert.ok(fine.every(Number.isFinite));
+  assert.deepEqual(fine,b.group.children[1].geometry.attributes.aSeed.array);
+  assert.notDeepEqual(fine.slice(0,16),mesh.geometry.attributes.aSeed.array.slice(0,16),'fine grains have independent positions, not duplicate overlapping instances');
+  assert.match(dust.material.fragmentShader,/#include <colorspace_fragment>/);
+  assert.match(mesh.material.fragmentShader,/#include <tonemapping_fragment>/);
   const seeds=mesh.geometry.attributes.aSeed.array;assert.ok(seeds.every(Number.isFinite));for(let i=0;i<count;i++){assert.ok(seeds[i*4]>=0&&seeds[i*4]<=1);assert.ok(seeds[i*4+2]>=0&&seeds[i*4+2]<=Math.PI);}
   assert.equal(mesh.material.uniforms,dust.material.uniforms,'layers share one transport/pointer packet');assert.match(mesh.material.vertexShader,/plume\(aSeed\)/);assert.match(mesh.material.fragmentShader,/specular/);
   let disposed=0;for(const child of a.group.children){child.geometry.addEventListener('dispose',()=>disposed++);child.material.addEventListener('dispose',()=>disposed++);}a.dispose();assert.equal(disposed,4);b.dispose();
