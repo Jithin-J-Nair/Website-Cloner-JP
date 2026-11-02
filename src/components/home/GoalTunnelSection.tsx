@@ -345,6 +345,9 @@ export function GoalTunnelSection() {
       ...earthSystem.materials,
       optics.spaceHaloMat,
       optics.visorFlareMat,
+      // The screen-space lens pass must obey the same physical tablet aperture.
+      // Releasing the existing stencil later still permits the open-space effect.
+      optics.chromaticRingMat,
     ];
 
     // -------------------------------------------------------------------------
@@ -821,7 +824,7 @@ export function GoalTunnelSection() {
       titleWrapEl.style.display = "flex";
       titleWrapEl.style.transform = "translate3d(-50%, -50%, 0) scale(1)";
 
-      const baseFontPx = Math.min(Math.max(21, W * 0.0445), 68);
+      const baseFontPx = parseFloat(getComputedStyle(titleLineRefs.current[0] ?? titleWrapEl).fontSize);
       const baseWordGapPx = baseFontPx * 0.28;
       const lineBaseWidths: number[] = [];
       const lineWordCounts: number[] = TITLE_WORD_LINES.map((w) => w.length);
@@ -1260,9 +1263,10 @@ export function GoalTunnelSection() {
 
       // -----------------------------------------------------------------------
       // C. "STEP INTO A NEW WORLD / AND LET YOUR / IMAGINATION RUN WILD" (`Frames 06–08`)
-      //    Smoothly justifies inter-word gaps on each line from natural single-space (`06`)
-      //    out to full `91.2vw` edge-to-edge layout (`08_t09.8s` — 100% inside viewport!),
-      //    passing behind the receding astronaut at `08` so the helmet occludes `"LET"`!
+      //    Retain the existing spread/scale playhead, but cap the inter-word spread.
+      //    Justifying every line to viewport width made the short middle line read
+      //    as three disconnected labels. The source still has natural word groups.
+      //    Late-stage motion amplitudes remain authored, not source measurements.
       // -----------------------------------------------------------------------
       if (inEmergencePhase && kf.titleOpacity > 0.006) {
         titleWrapEl.style.display = "flex";
@@ -1280,7 +1284,7 @@ export function GoalTunnelSection() {
           const kWords = m.lineWordCounts[i];
           const baseW = m.lineBaseWidths[i];
           const maxExtraPerGap =
-            kWords > 1 ? Math.max(0, (targetUnscaledWidth - baseW) / (kWords - 1)) : 0;
+            kWords > 1 ? Math.min(m.baseWordGapPx * 0.65, Math.max(0, (targetUnscaledWidth - baseW) / (kWords - 1))) : 0;
           const gapPx = m.baseWordGapPx + kf.titleSpread * maxExtraPerGap;
           lineEl.style.columnGap = `${gapPx.toFixed(2)}px`;
           lineEl.style.letterSpacing = `${kf.titleLetterSpacingEm.toFixed(4)}em`;
@@ -2128,7 +2132,7 @@ export function GoalTunnelSection() {
             <div
               ref={copyColRef}
               id="home-goal-texts"
-              className="w-full min-[820px]:w-[34.5%] min-[820px]:mr-[6.5vw] space-y-4 min-[820px]:space-y-6 font-sans text-[clamp(0.92rem,1.22vw,1.16rem)] font-normal leading-[1.38] text-[#151821] will-change-transform"
+              className="w-full min-[820px]:w-[34.5%] min-[820px]:mr-0 space-y-4 min-[820px]:space-y-6 font-sans text-[clamp(0.92rem,1.22vw,1.16rem)] min-[820px]:text-[1.65vw] font-normal leading-[1.38] text-[#151821] will-change-transform"
             >
               {LUSION_HOME.goal.paragraphs.map((para, idx) => (
                 <p key={idx} className="home-goal-texts-paragraph">
@@ -2137,11 +2141,11 @@ export function GoalTunnelSection() {
               ))}
             </div>
 
-            {/* Layout slot matching exact Frame 01 46% width & 1.391:1 iPad Pro aspect ratio (`left = 5%..51%`) */}
+            {/* Original tablet layout: match the larger source still silhouette; camera follows this measured slot */}
             <div
               ref={imgInRef}
               id="home-goal-image-in"
-              className="relative w-full min-[820px]:w-[46%] aspect-[1.391/1] rounded-[24px] bg-transparent"
+              className="relative w-full min-[820px]:w-[57%] aspect-[1.391/1] rounded-[24px] bg-transparent"
             >
               {/* Graceful Loading / Asset-Failure / Non-WebGL Fallback Poster */}
               <div
@@ -2271,7 +2275,7 @@ export function GoalTunnelSection() {
               ref={(el) => {
                 titleLineRefs.current[lineIdx] = el;
               }}
-              className="home-goal-tunnel-title-line flex flex-row items-center justify-center font-sans text-[clamp(1.32rem,4.45vw,4.25rem)] font-normal uppercase leading-[1.22] text-white"
+              className="home-goal-tunnel-title-line flex flex-row items-center justify-center font-sans text-[clamp(1.32rem,5.8vw,5.25rem)] font-normal uppercase leading-[1.22] text-white"
             >
               {words.map((word, wIdx) => (
                 <span key={wIdx} className="inline-block">

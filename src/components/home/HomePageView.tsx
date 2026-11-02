@@ -295,13 +295,13 @@ export function HomePageView() {
       <section
         id="home-hero"
         ref={heroSectionRef}
-        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+2.9rem)] pb-[calc(var(--base-padding-y)*1.25)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*8.8)] min-[813px]:pb-[var(--base-padding-y)]"
+        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+2.9rem)] pb-[calc(var(--base-padding-y)*1.25)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*5.6)] min-[813px]:pb-[var(--base-padding-y)]"
       >
         {/* Reference Headline (`#home-hero-title`: cols 4..8 desktop, cols 1..6 mobile) */}
         <h1
           id="home-hero-title"
           ref={heroHeadingRef}
-          className="relative col-span-6 m-0 h-fit font-sans text-[5.9vw] leading-[1.09] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[6.8vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.25vw]"
+          className="relative col-span-6 m-0 h-fit font-sans text-[5.9vw] leading-[1.09] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[6.8vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.7vw]"
         >
           {heroWords.map((word, idx) => (
             <React.Fragment key={idx}>
@@ -318,6 +318,8 @@ export function HomePageView() {
                 {word}
               </motion.span>
               {idx < heroWords.length - 1 ? " " : ""}
+              {/* The source uses three editorial lines on desktop; mobile flows naturally. */}
+              {(idx === 4 || idx === 8) && <br className="hidden min-[813px]:block" />}
             </React.Fragment>
           ))}
         </h1>

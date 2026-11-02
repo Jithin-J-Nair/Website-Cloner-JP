@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/labs",
+    "status": 307,
+    "location": "https://labs.lusion.co/"
+  },
+  {
+    "path": "/contact",
+    "status": 307,
+    "location": "/#footer-section"
+  }
+]

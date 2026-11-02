@@ -1,0 +1,13 @@
+{
+  "status": "FAIL",
+  "assertion": "all intermediate stages visibly play",
+  "seconds": 23.943,
+  "sampledRecords": 148,
+  "shaftRecords": 37,
+  "blueRecords": 25,
+  "glassRecords": 0,
+  "maxReportedCpuFrameMs": 1323.8,
+  "consoleErrors": [],
+  "failedAssets": [],
+  "notes": "Record count is not rendered FPS; later controls/lifecycle assertions did not run after this failure."
+}

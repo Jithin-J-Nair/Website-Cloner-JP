@@ -1,0 +1,149 @@
+PASS route fragments 1440 no-preference: direct footer, no autoplay, menu Contact, logo/top
+PASS route fragments 768 no-preference: direct footer, no autoplay, menu Contact, logo/top
+PASS route fragments 390 no-preference: direct footer, no autoplay, menu Contact, logo/top
+PASS route fragments 390 reduce: direct footer, no autoplay, menu Contact, logo/top
+1440: hero
+1440: reel-intro
+1440: reel-stage
+1440: featured
+1440: tablet
+1440: title
+1440: dark
+1440: pink
+1440: blue
+1440: shards
+1440: contact
+1440: footer
+1440: reversed-hero
+1440: route-projects
+1440: route-contact
+768: hero
+768: reel-intro
+768: reel-stage
+768: featured
+768: tablet
+768: title
+768: dark
+768: pink
+768: blue
+768: shards
+768: contact
+768: footer
+768: reversed-hero
+768: route-projects
+768: route-contact
+390: hero
+390: reel-intro
+390: reel-stage
+390: featured
+390: tablet
+390: title
+390: dark
+390: pink
+390: blue
+390: shards
+390: contact
+390: footer
+390: reversed-hero
+390: route-projects
+390: route-contact
+PASS home motion 1440 { hero: 'settled', reel: true, featured: true, solarGL: 0, errors: [] }
+PASS home motion 390 { hero: undefined, reel: true, featured: true, solarGL: 0, errors: [] }
+
+> lusion-studio-reconstruction@1.0.0 qa
+> node scripts/qa-verify.mjs
+
+=== LUSION RECONSTRUCTION QA VERIFICATION ===
+
+[1/5] Auditing Lusion Design System Contrast Pairs...
+  PASS Off-White Canvas (#f0f1fa) vs Primary Ink (#000000): 18.67:1 (min 7:1)
+  PASS Pure White Footer (#ffffff) vs Primary Ink (#000000): 21.00:1 (min 7:1)
+  PASS Header Pill Dark-White (#e4e6ef) vs Primary Ink (#000000): 16.86:1 (min 7:1)
+  PASS Pure Black Stage (#000000) vs Pure White (#ffffff): 21.00:1 (min 7:1)
+  PASS Scroll Portal Slate (#121416) vs Signal Lime (#c1ff00): 15.45:1 (min 7:1)
+  PASS Lusion Electric Cobalt (#1a2ffb) vs Pure White (#ffffff): 7.39:1 (min 4.5:1)
+  PASS Header Talk Slate (#2b2e3a) vs Pure White (#ffffff): 13.51:1 (min 7:1)
+
+[2/5] Auditing Font Option 2 Licensing & Active Source Modules...
+  PASS Verified 6 active local font files — 0 excluded commercial font binaries.
+  PASS Audited 91 active source files — zero unapproved portfolio references.
+
+[3/5] Auditing Shared Lusion Chrome Landmarks & Page Sections...
+  PASS Header shell (#header)
+  PASS Lusion vector wordmark (#header-logo)
+  PASS Menu toggle (#header-right-menu-btn)
+  PASS Floating menu (#header-menu)
+  PASS Labs card with Lucy (#header-menu-labs-lucy-svg)
+  PASS Scroll indicator (#scroll-indicator)
+  PASS Home hero stage (#home-hero-visual-container)
+  PASS Home showreel section (#home-reel)
+  PASS Home featured grid (#home-featured)
+  PASS Home goal tunnel (#home-goal)
+  PASS End section CTA (#end-section)
+  PASS Footer section (#footer-section)
+  PASS Scroll portal (#scroll-nav-section)
+  PASS Verified Bristol address (9 Marsh Street)
+  PASS Verified Bristol postcode (BS1 4AA)
+  PASS Verified Lusion email (hello@lusion.co)
+  PASS Verified Lusion copyright (©2026 LUSION Creative Studio)
+  PASS /about landmark (#about-who)
+  PASS /about landmark (#about-clients)
+  PASS /about landmark (#about-award)
+  PASS /about landmark (#about-capability)
+
+[4/5] Auditing All 22 Canonical Routes + 2 Negative 404 Routes on http://127.0.0.1:3000...
+  PASS /                                    HTTP 200 | Title:EXACT | H1:true
+  PASS /about                               HTTP 200 | Title:EXACT | H1:true
+  PASS /projects                            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/oryzo_ai                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/atlas_motion               HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/devin_ai                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/of_the_oak                 HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/everswap                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/porsche_dream_machine      HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/synthetic_human            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/ddd_2024                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/spaace                     HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/choo_choo_world            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/zero_tech                  HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/spatial_fusion             HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/worldcoin                  HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/lusion_labs                HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/my_little_story_book       HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/soda_experience            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/infinite_passerella        HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/the_turn_of_the_screw      HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/maxmara_bearings_gifts     HTTP 200 | Title:EXACT | H1:true
+  PASS /non-existent-optical-coordinate     HTTP 404 (expected 404)
+  PASS /projects/non-existent-case-study    HTTP 404 (expected 404)
+
+[5/5] Auditing Clean-Production Asset Route Delivery & Security...
+  PASS Clean card asset HTTP 200 (CSP sandbox=true) & commercial font HTTP 403
+  PASS Captured Lusion scene + project media assets: 50/50 delivered with non-empty bodies
+
+ALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).
+
+> lusion-studio-reconstruction@1.0.0 test:assets
+> node scripts/test-asset-route.mjs
+
+=== ASSET ROUTE SECURITY & RFC 7233 SUITE (port 3199) ===
+  PASS  Blocks URL-encoded traversal (%2e%2e)
+  PASS  Blocks encoded backslash (%5c)
+  PASS  Blocks null-byte injection (%00)
+  PASS  Blocks hidden dotfile (.env)
+  PASS  Blocks symlink escape out of asset root even for allowlisted path
+  PASS  Blocks commercial font in /assets/fonts/
+  PASS  Blocks case-variant /assets/FONTS/
+  PASS  Blocks commercial .woff2 in non-/fonts subfolder
+  PASS  Serves approved SIL OFL font (/assets/fonts/IBMPlexMono-Regular.woff2)
+  PASS  Blocks non-allowlisted .json file (403)
+  PASS  Synthesizes approved fallback SVG with strict sandbox CSP + nosniff
+  PASS  Returns 404 for absent non-synthesized .mp4 stream
+  PASS  HEAD returns 200 with exact Content-Length=10 and 0 body bytes
+  PASS  RFC 7233 explicit Range bytes=2-5 -> 206 '2345' (bytes 2-5/10)
+  PASS  RFC 7233 suffix Range bytes=-4 -> 206 '6789' (bytes 6-9/10)
+  PASS  Rejects malformed Range bytes=0-abc with 416 (fixes prior 500 crash)
+  PASS  Rejects out-of-bounds Range bytes=50-60 with 416
+  PASS  Rejects unsupported multipart Range bytes=0-1,4-5 with 416
+
+Summary: 18 passed, 0 failed.
