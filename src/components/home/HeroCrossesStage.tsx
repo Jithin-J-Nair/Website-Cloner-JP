@@ -15,17 +15,8 @@ import { homeRenderDpr, stepMotionSpring } from "@/lib/home-motion";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
-/**
- * Verified Lusion Hero Accent Palette
- * Starts deterministically at index 0 (`#1a22e0` studio royal cobalt) and cycles on click.
- */
-export const HERO_ACCENT_PALETTE = [
-  "#1b24e6",
-  "#ADFF00",
-  "#f6000e",
-  "#7e09f5",
-  "#ffc000",
-] as const;
+/** Lusion's home hero uses a fixed royal-blue / off-white / near-black palette. */
+const HERO_ACCENT = "#1a22e0";
 
 // Linear input calibrated so post-ACESFilmic + OutputPass sRGB equals ~#13151d (matching reference dark slate!)
 const STUDIO_SCENE_BG_HEX = "#1f222d";
@@ -333,7 +324,6 @@ function StaticSculpturalFallback({ accentHex }: { accentHex: string }) {
 export function HeroCrossesStage() {
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const preloaderDone = useStudioStore((s) => s.preloaderDone);
-  const [colorIdx, setColorIdx] = useState(0);
   const [webglSupported, setWebglSupported] = useState(true);
   const [shaderStatus, setShaderStatus] = useState<"booting" | "ready" | "error">("booting");
   const [pointerHits, setPointerHits] = useState(0);
@@ -363,7 +353,7 @@ export function HeroCrossesStage() {
   });
   const pointerReportedRef = useRef(false);
 
-  const accentHex = HERO_ACCENT_PALETTE[colorIdx % HERO_ACCENT_PALETTE.length];
+  const accentHex = HERO_ACCENT;
 
   // Update blue physical materials cleanly when user clicks to cycle Lusion accent palette
   useEffect(() => {
@@ -499,7 +489,7 @@ export function HeroCrossesStage() {
     for (const spec of HERO_PIECES) {
       const baseHex =
         spec.kind === "blue"
-          ? HERO_ACCENT_PALETTE[0]
+          ? HERO_ACCENT
           : spec.kind === "black"
             ? NEAR_BLACK_HEX
             : OFF_WHITE_HEX;
@@ -918,7 +908,6 @@ export function HeroCrossesStage() {
 
   const handleStageClick = useCallback(() => {
     soundEngine.playClick();
-    setColorIdx((prev) => (prev + 1) % HERO_ACCENT_PALETTE.length);
     if (reducedMotionRef.current) return;
     impulseVelRef.current.forEach((imp, idx) => {
       const angle = idx * 1.9;
@@ -951,7 +940,6 @@ export function HeroCrossesStage() {
       role="button"
       tabIndex={0}
       aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to cycle studio palette"
-      data-color-index={colorIdx}
       data-accent-color={accentHex}
       data-webgl-status={webglSupported ? shaderStatus : "fallback"}
       data-pointer-interactions={pointerHits}
