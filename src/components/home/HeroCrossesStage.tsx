@@ -939,7 +939,7 @@ export function HeroCrossesStage() {
       ref={containerRef}
       role="button"
       tabIndex={0}
-      aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to cycle studio palette"
+      aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to give the forms a gentle impulse"
       data-accent-color={accentHex}
       data-webgl-status={webglSupported ? shaderStatus : "fallback"}
       data-pointer-interactions={pointerHits}
