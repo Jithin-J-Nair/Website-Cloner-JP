@@ -1,5 +1,7 @@
 # About: reference-led card reconstruction and scene correction
 
+> Historical implementation checkpoint, not accepted visual parity. After the user reported it still looked unchanged, a further [visual recheck and scene repair](about-visual-recheck-results.md) was performed. This archive retains the earlier evidence.
+
 2026-11-02 · base `30c864332de3b1340e92a39eed662ee636f65250` · branch `arena/95a11883-website-cloner-jp` · route `/about`.
 
 This implements the follow-up “Now clone” request against the available evidence. It is a working, editable update, **not an exact-clone completion claim**. Current live visual/motion access remains blocked. No merge or production deployment was authorized or performed.

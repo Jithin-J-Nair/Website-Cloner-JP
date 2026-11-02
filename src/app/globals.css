@@ -462,7 +462,7 @@ body {
 }
 @media (min-width: 1000px) and (min-height: 650px) and (prefers-reduced-motion: no-preference) {
   .about-playing-expertise:not([data-reduced="true"]) { height: 310svh; }
-  .about-playing-expertise:not([data-reduced="true"]) .about-expertise-stage { position: sticky; top: 0; height: 100svh; padding: 4.5vh 5vw 0; perspective: 1800px; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-expertise-stage { position: sticky; top: 0; height: 100svh; padding: clamp(104px, 11vh, 144px) 5vw 0; perspective: 1800px; }
   .about-playing-expertise:not([data-reduced="true"]) .about-playing-cards { display: block; position: absolute; inset: 0; margin: 0; transform-style: preserve-3d; }
   .about-playing-expertise:not([data-reduced="true"]) .about-card-slot { position: absolute; left: auto; top: 50%; width: 21%; }
   .about-playing-expertise:not([data-reduced="true"]) .about-card-slot:nth-child(1) { left: 5% !important; }

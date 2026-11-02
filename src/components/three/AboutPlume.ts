@@ -5,20 +5,24 @@ import * as THREE from "three";
  */
 const flow = `
 vec3 plume(vec4 seed) {
-  float h = (seed.z / 3.14159265 - .5) * 4.8;
+  // Densely sampled lobes connected by a narrow neck. The previous uniform
+  // cylindrical scatter read as a sparse ribbon rather than suspended matter.
+  float h = (seed.z / 3.14159265 - .5) * mix(3.9, 4.8, uCompact);
   float phase = h * 1.62 + uTime * .29;
-  float taper = .60 + .65 * pow(max(0., 1. - abs(h) / 3.5), .6);
-  float radius = pow(seed.x, .9) * taper;
+  float lobe = pow(abs(sin(h * 1.22)), .65);
+  float taper = (.45 + 1.15 * lobe) * (1. - .20 * smoothstep(1.2, 2.6, abs(h)));
+  float radius = pow(seed.x, 1.65) * taper;
   float orbit = seed.y + uTime * (.12 + .18 * (1. - seed.x));
-  vec3 p = vec3(sin(phase) * .66 + cos(orbit) * radius,
-                h + sin(orbit * 2. + h + uTime * .15) * .17,
-                cos(phase * .83) * .58 + sin(orbit) * radius);
-  p += sin(p.yzx * 2.3 + seed.w * 6.28 + uTime * .24) * .13;
-  // Sparse outlying seeds supply real foreground/background depth, not a screen overlay.
-  float fringe = smoothstep(.88, 1., seed.w);
+  vec3 p = vec3(sin(phase) * .48 + cos(orbit) * radius,
+                h + sin(orbit * 2. + h + uTime * .15) * .10,
+                cos(phase * .83) * .38 + sin(orbit) * radius);
+  p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .24) * .07;
+  // Only sparse outliers leave the coherent core. Their distribution is shared
+  // by both physical grains and depth-aware fine scatter.
+  float fringe = smoothstep(.93, 1., seed.w);
   p += vec3(cos(seed.y) * 2.6, sin(seed.y * 2.) * 1.4, sin(seed.y) * 1.6) * fringe;
   p *= mix(1.16, .90, uCompact);
-  p += vec3(-.35, mix(9.1, 7.2, uCompact), 0.);
+  p += vec3(-.35, mix(8.95, 7.2, uCompact), 0.);
   vec3 away = p - uPointer;
   float distanceToPointer = length(away);
   p += away / max(.01, distanceToPointer) * pow(max(0., 1. - distanceToPointer / 2.4), 2.) * uPointerStrength * .62;
@@ -58,8 +62,10 @@ export function createAboutPlume(count: number) {
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 ${flow}
 void main() {
-  // Reference grains read as fine silver/bokeh, not foreground golf balls.
-  vRadius = .019 * mix(.18, 2.0, pow(aSeed.w, 6.));
+  // A meaningful population of mid-sized metal grains supplies a surface;
+  // a near-zero radius on most instances previously left only fine dust visible.
+  float outlier = smoothstep(.93, 1., aSeed.w);
+  vRadius = .033 * mix(.35, 1.5, pow(aSeed.w, 3.)) * mix(1., .55, outlier);
   vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
   vDisc = position.xy;
   vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);
@@ -114,7 +120,7 @@ void main() {
   float defocus = abs(-eye.z - 7.5);
   vBlur = smoothstep(1.6, 5., defocus) * (.3 + .7 * pow(aSeed.w, 8.));
   float perspective = clamp(7.5 / max(1., -eye.z), .4, 2.);
-  gl_PointSize = clamp((1.55 + aSeed.x * 2.2 + vBlur * 18.) * perspective * uPixelRatio, 1., 32.);
+  gl_PointSize = clamp((1.9 + aSeed.x * 2.4 + vBlur * 18.) * perspective * uPixelRatio, 1., 32.);
   vFade = uOpacity * mix(.62, .25, vBlur);
   vSeed = aSeed.w;
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));

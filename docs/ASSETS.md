@@ -4,7 +4,7 @@ All third-party 3D assets shipped in this repository have verified open licenses
 
 ---
 
-## 1. Homepage Astronaut Spacesuit (`public/models/astronaut.glb`)
+## 1. Homepage / About Astronaut Spacesuit (`public/models/astronaut.glb`)
 
 | Field | Verified Value |
 | --- | --- |
@@ -24,6 +24,8 @@ All third-party 3D assets shipped in this repository have verified open licenses
 | **Skeleton / Rig** | `1` glTF `Skin` (`AstronautSkin`) with `15` hierarchical bones (`Hips`, `Spine`, `Chest`, `Neck`, `Head`, `ShoulderL/R`, `ElbowL/R`, `WristL/R`, `HipL/R`, `KneeL/R`) |
 | **Embedded Textures (Procedural)** | `suit_quilted_normal` (`2048×2048` WebP, `533.0 KB`, `NoColorSpace` linear tangent-space normal map — organic Beta-cloth compression folds & ripstop weave) + `suit_quilted_orm` (`2048×2048` WebP, `73.4 KB`, `NoColorSpace` linear `R=AO, G=Roughness, B=Metalness`). Downsampled to `1024×1024` on mobile quality tier (`< 820px`). |
 | **Rejected Candidate Models** | 1. `google/model-viewer` `Astronaut.glb` (`CC-BY 2.0`, Google Poly): rejected — stylized low-poly cartoon proportions lacking realistic cloth folds, harness straps, belly ports, or articulated gloves.<br>2. `google/model-viewer` `NeilArmstrong.glb` (Smithsonian Digitization): rejected — subject to separate Smithsonian `Usage Conditions Apply` terms (`si.edu/Termsofuse`) and bulky lunar A7L chest RCU unit does not match the streamlined two-port Gemini/EMU silhouette. |
+
+**About usage (2026-11-02):** `AboutLicensedExplorer.ts` reuses this same permitted GLB, with mounted/abortable loading and owned-resource cleanup. It does not load Lusion’s inspection-only suit or team assets. The existing original procedural explorer stays as the immediate/offline fallback. See [visual recheck](validation/about-visual-recheck-results.md).
 
 ---
 

@@ -13,7 +13,7 @@ export function expertiseCardPose(progress: number, index: number) {
   const spread = ease(.16, .64, p);
   return {
     xVw: spread === 1 ? 0 : (1.5 - i) * 23 * (1 - spread),
-    dropVh: 27 * (1 - ease(.08, .55, p)),
+    dropVh: 32 * (1 - ease(.08, .55, p)),
     z: spread === 1 || i === 0 ? 0 : -i * 3 * (1 - spread),
     roll: spread === 1 ? 0 : (i - 1.5) * 1.2 * (1 - spread),
     flip: 180 * (1 - ease(.32 + i * .035, .72 + i * .035, p)),

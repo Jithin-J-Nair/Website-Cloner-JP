@@ -1,0 +1,20 @@
+{
+  "checks": [
+    "upstream loss reflow updates card progress; restoration preserves downstream scroll, card pose and world clock"
+  ],
+  "before": {
+    "y": 18230,
+    "p": 0.5002,
+    "time": 0.638300000000745
+  },
+  "lost": {
+    "p": 0.5002,
+    "expected": 0.5001736111111111
+  },
+  "restored": {
+    "y": 18230,
+    "p": 0.5002,
+    "time": 0.638300000000745,
+    "canvases": 1
+  }
+}

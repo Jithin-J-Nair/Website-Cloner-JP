@@ -6,6 +6,7 @@ import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
+import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
 import { createAboutTerrainMaterial, terrainHeightAt } from "@/components/three/AboutTerrain";
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
@@ -16,7 +17,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 declare global {
   interface Window {
     __enableAboutProbe?: boolean;
-    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number };
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number };
   }
 }
 
@@ -242,15 +243,18 @@ function AboutWhoExperience({
           uniform float uOpacity;
           uniform float uCyanCore;
           void main() {
-            float xDist = abs(vUv.x - 0.475) * 2.0;
-            float beam = exp(-pow(xDist * 11.5, 2.0));
+            float xDist = abs(vUv.x - 0.5) * 2.0;
+            // The shaft joins the suspended volume to the floor; it must not
+            // continue above the volume as a full-height laser stripe.
+            float shaftHeight = 1.0 - smoothstep(0.30, 0.40, vUv.y);
+            float beam = exp(-pow(xDist * 120.0, 2.0)) * shaftHeight;
             // Atmospheric misty silver sky gradient across upper valley ('about-02-we-are-reveal'!)
-            float skyMist = smoothstep(0.28, 0.98, vUv.y) * 0.055;
-            float wideHaze = exp(-pow(xDist * 2.6, 2.0)) * 0.07;
+            float skyMist = smoothstep(0.28, 0.98, vUv.y) * 0.035;
+            float wideHaze = exp(-pow(xDist * 2.6, 2.0)) * 0.035;
             float vertFade = smoothstep(0.0, 0.12, vUv.y);
             vec3 col = vec3(0.74, 0.78, 0.85) * (beam * 0.36 + wideHaze + skyMist);
             float vortexHotspot = exp(-pow((vUv.y - 0.46) * 6.5, 2.0)) * exp(-pow(xDist * 5.0, 2.0));
-            col += mix(vec3(0.78, 0.86, 0.94), vec3(0.08, 0.95, 1.0), uCyanCore) * vortexHotspot * 0.34;
+            col += mix(vec3(0.78, 0.86, 0.94), vec3(0.08, 0.95, 1.0), uCyanCore) * vortexHotspot * 0.18;
             gl_FragColor = vec4(col, uOpacity * vertFade);
           }
         `,
@@ -394,6 +398,9 @@ function AboutWhoExperience({
     // Feet, not the centre of a capsule, are anchored to the same basin function.
     explorerGroup.position.set(.85, terrainHeightAt(.85, -1.8) + .012, -1.8);
     scene.add(explorerGroup);
+    // Reuse the project's permitted NASA suit, never a captured Lusion model.
+    // The procedural suit and contact shadow remain a zero-network fallback.
+    const licensedExplorer = track(upgradeAboutExplorer(explorerGroup, () => ensureLoop()));
 
     // -------------------------------------------------------------------------
     // 5. One instanced draw: 48 suspended stones and 272 grounded grains.
@@ -413,18 +420,21 @@ function AboutWhoExperience({
     const rockSeeds = Array.from({ length: ROCK_COUNT }, (_, i) => {
       const floating = i < FLOATING_ROCK_COUNT;
       const ang = (i * 2.39996) % (Math.PI * 2);
-      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 16.0;
+      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
       const rx = Math.cos(ang) * rad;
       const rz = 3.5 + Math.sin(ang) * rad * 0.72;
+      const scale = floating ? 0.2 + ((i * 19) % 10) * .075 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
+      // Half-embed small clasts instead of lifting every size eight centimetres
+      // above the floor. Concentrate the same population on the visible basin.
       const ry = floating
         ? 1.5 + ((i * 43) % 100) / 100 * 13.5
-        : terrainHeightAt(rx, rz) + 0.08;
+        : terrainHeightAt(rx, rz) + scale * .24 * .58 * .55;
       return {
         x: rx,
         y: ry,
         z: rz,
         floating,
-        scale: floating ? 0.35 + ((i * 19) % 10) * 0.11 : 0.045 + Math.pow(((i * 17) % 100) / 100, 3) * .5,
+        scale,
         phase: i * 0.73,
       };
     });
@@ -662,8 +672,14 @@ function AboutWhoExperience({
 
       const explorerVis = landscapeVis * (1 - smoothstep(3.3, 4.3, u));
       explorerGroup.visible = explorerVis > 0.02;
-      explorerGroup.scale.setScalar(isMobile ? 1.0 : .95);
-      if (explorerGroup.visible) explorer.pose(elapsedSec, pointerNDC.x, pointerNDC.y, reducedMotion);
+      // Scale here, not just at mount: this authoritative render assignment
+      // otherwise silently overwrites the corrected historical-frame size.
+      // The feet remain fixed and the original camera path stays unchanged.
+      explorerGroup.scale.setScalar(isMobile ? 1.0 : 1.33);
+      if (explorerGroup.visible) {
+        explorer.pose(elapsedSec, pointerNDC.x, pointerNDC.y, reducedMotion);
+        licensedExplorer.pose(pointerNDC.x, pointerNDC.y, reducedMotion);
+      }
 
       rocksMesh.visible = explorerVis > 0.02;
       if (rocksMesh.visible) {
@@ -718,7 +734,7 @@ function AboutWhoExperience({
       // -----------------------------------------------------------------------
       // A. Monumental Double-Stroke 'LUSION' Wordmark ('about-01' & 'about-02', sweeps left across '1.85..3.1')
       if (heroWordmarkRef.current) {
-        const wordOut = 1 - smoothstep(isMobile ? 2.25 : .45, isMobile ? 3.15 : 1.1, u);
+        const wordOut = 1 - smoothstep(isMobile ? 2.05 : .45, isMobile ? 2.65 : 1.1, u);
         if (wordOut > 0.005) {
           const slideX = -smoothstep(1.75, 3.15, u) * 65;
           heroWordmarkRef.current.style.opacity = String(wordOut);
@@ -811,7 +827,7 @@ function AboutWhoExperience({
     };
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
-      state: sectionEl.dataset.sceneState, count, frameTimes: [...frameTimes],
+      state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x, count, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
       memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height });
     if (window.__enableAboutProbe) window.__aboutProbe = probe;
@@ -1288,7 +1304,7 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
+    <main id="about" data-scene-version="coherent-volume-ridged-basin-v1" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <div ref={darkUpperRef} className="bg-[#000000] text-white">
         {/* =====================================================================

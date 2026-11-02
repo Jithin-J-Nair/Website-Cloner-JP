@@ -1,0 +1,12 @@
+PASS original deterministic finite multiscale instancing, shared GPU field packet, all quality counts, disposal events, no restricted portrait fetch, recovery/cancel cleanup and uncapped frame telemetry. Browser shader compilation/interaction is tested separately.
+PASS terrain: 16,641 finite/deterministic height samples, bounds -1.703..11.104, ridge hierarchy, filtered world-space relief, independent uniforms and disposal. Browser compilation checked separately.
+PASS original explorer: 10631 triangles, 8 draws, 5 materials, finite geometry, planted bounds, deterministic reverse/reentry, fixed reduced pose, invalid-input guards, zero textures/network/RAF, idempotent cleanup.
+PASS NASA upgrade: relative/abortable permitted asset; planted normalized bounds; existing contact shadow; finite/reversible/reduced head pose; exactly-once shared resource disposal; cancellation before fetch and during parse; visible offline fallback; no independent clock/RAF. Browser validates the real GLB.
+PASS card poses: finite, bounded, continuous, monotonic, deterministic, reversible; aligned settled fronts; stagger; malformed scroll fallback. Not a reference-timing assertion.
+
+> lusion-studio-reconstruction@1.0.0 test:motion
+> node scripts/test-home-motion.mjs
+
+PASS: deferred GPU results are phase-correct and deduplicated; unavailable is null
+PASS: bounded focal response; nonblocking GPU query ring, phase tags, unavailable/disjoint/context-loss paths and idempotent disposal
+PASS: accelerating fall, 22.5s clock, springs, UHD/software budget, continuous blue approach, soft solar occlusion and pupil acceptance
