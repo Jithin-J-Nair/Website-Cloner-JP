@@ -16,7 +16,7 @@ import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
 /** Lusion's home hero uses a fixed royal-blue / off-white / near-black palette. */
-const HERO_ACCENT = "#1a22e0";
+const HERO_ACCENT = "#1a2ffb";
 
 // Linear input calibrated so post-ACESFilmic + OutputPass sRGB equals ~#13151d (matching reference dark slate!)
 const STUDIO_SCENE_BG_HEX = "#1f222d";
