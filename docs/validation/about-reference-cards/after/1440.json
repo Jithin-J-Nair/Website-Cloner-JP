@@ -1,0 +1,56 @@
+{
+  "width": 1440,
+  "height": 900,
+  "errors": [],
+  "checks": [
+    "native wheel forward/reverse; full and intermediate pose reentry",
+    "keyboard reveals readable fronts; selected service; bounded hover resets",
+    "breakpoint crossing during intermediate flip",
+    "reduced-motion fronts without extra pin; no horizontal overflow; no extra GL context",
+    "real menu navigation, old world release, clean About remount"
+  ],
+  "shots": [
+    "1440-opening.jpg",
+    "1440-terrain.jpg",
+    "1440-cards-2-p0.jpg",
+    "1440-cards-3-p0.2.jpg",
+    "1440-cards-4-p0.4.jpg",
+    "1440-cards-5-p0.6.jpg",
+    "1440-cards-6-p0.88.jpg",
+    "1440-cards-7-p1.jpg",
+    "1440-cards-8-p0.6.jpg",
+    "1440-cards-9-p0.2.jpg",
+    "1440-cards-10-p0.jpg",
+    "1440-reduced.jpg"
+  ],
+  "fronts": [
+    {
+      "x": 71.96399688720703,
+      "y": 238.3163604736328,
+      "width": 302.4074401855469,
+      "height": 423.3673095703125,
+      "overflow": false
+    },
+    {
+      "x": 403.00396728515625,
+      "y": 238.44427490234375,
+      "width": 302.75830078125,
+      "height": 423.9757080078125,
+      "overflow": false
+    },
+    {
+      "x": 734.3914184570312,
+      "y": 238.3163604736328,
+      "width": 302.40740966796875,
+      "height": 423.3673095703125,
+      "overflow": false
+    },
+    {
+      "x": 1065.6129150390625,
+      "y": 238.3163604736328,
+      "width": 302.407470703125,
+      "height": 423.3673095703125,
+      "overflow": false
+    }
+  ]
+}

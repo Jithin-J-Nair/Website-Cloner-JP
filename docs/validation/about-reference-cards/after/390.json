@@ -1,0 +1,21 @@
+{
+  "width": 390,
+  "height": 844,
+  "errors": [],
+  "checks": [
+    "touch selects without hover tilt",
+    "all four complete service cards; no desktop pin on tablet/phone",
+    "reduced-motion fronts without extra pin; no horizontal overflow; no extra GL context",
+    "real menu navigation, old world release, clean About remount"
+  ],
+  "shots": [
+    "390-opening.jpg",
+    "390-terrain.jpg",
+    "390-reading-heading.jpg",
+    "390-reading-card-0.jpg",
+    "390-reading-card-1.jpg",
+    "390-reading-card-2.jpg",
+    "390-reading-card-3.jpg",
+    "390-reduced.jpg"
+  ]
+}

@@ -8,7 +8,10 @@ const smoothstep = (a: number, b: number, x: number) => THREE.MathUtils.smoothst
  * placement share this function so their surfaces cannot drift apart. */
 export function terrainHeightAt(x: number, z: number): number {
   const valleyDist = Math.hypot(x * 0.92, (z - 3.5) * 0.52);
-  const rimRise = smoothstep(5.2, 23.0, valleyDist) * 9.6;
+  // The historical wide composition has a lower left shoulder and a taller
+  // right escarpment, not a symmetric ring of alpine peaks. Keep the floor
+  // unchanged so the shared explorer/rock/contour anchors remain grounded.
+  const rimRise = smoothstep(5.2, 23.0, valleyDist) * lerp(4.8, 9.6, smoothstep(-4, 8, x));
 
   // Jagged multi-octave mountain ridges stronger on left & right flanks ('about-02', 'about-04')
   const n1 = Math.sin(x * 0.21 + z * 0.14) * Math.cos(z * 0.19 - x * 0.11);

@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://lusion.co/about",
+    "width": 1440,
+    "height": 900,
+    "status": "NOT VERIFIED",
+    "frames": [],
+    "failedRequests": [
+      {
+        "url": "https://lusion.co/about",
+        "error": "net::ERR_CONNECTION_CLOSED"
+      }
+    ],
+    "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about\nCall log:\n  - navigating to \"https://lusion.co/about\", waiting until \"domcontentloaded\"\n"
+  },
+  {
+    "url": "https://lusion.co/about",
+    "width": 390,
+    "height": 844,
+    "status": "NOT VERIFIED",
+    "frames": [],
+    "failedRequests": [
+      {
+        "url": "https://lusion.co/about",
+        "error": "net::ERR_CONNECTION_CLOSED"
+      }
+    ],
+    "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about\nCall log:\n  - navigating to \"https://lusion.co/about\", waiting until \"domcontentloaded\"\n"
+  }
+]

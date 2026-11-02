@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { AboutExpertiseField } from "@/components/pages/AboutExpertiseField";
-import { AboutExpertiseDiagram } from "@/components/pages/AboutExpertiseDiagram";
+import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
@@ -176,7 +175,7 @@ function AboutWhoExperience({
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
-    glRenderer.setClearColor(0x000000, 1);
+    glRenderer.setClearColor(0x080a0e, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.05;
@@ -393,7 +392,7 @@ function AboutWhoExperience({
     const explorer = track(createAboutExplorer());
     const explorerGroup = explorer.group;
     // Feet, not the centre of a capsule, are anchored to the same basin function.
-    explorerGroup.position.set(-.85, terrainHeightAt(-.85, -1.8) + .012, -1.8);
+    explorerGroup.position.set(.85, terrainHeightAt(.85, -1.8) + .012, -1.8);
     scene.add(explorerGroup);
 
     // -------------------------------------------------------------------------
@@ -797,7 +796,19 @@ function AboutWhoExperience({
       ensureLoop();
     };
     const onResize = () => { if (!contextLost) { resize(); ensureLoop(); } };
-    const onLost = (event: Event) => { event.preventDefault(); contextRecoveryRef.current = { u: lastU, time: sceneTime }; contextLost = true; if (rafId) cancelAnimationFrame(rafId); rafId = 0; fallback("lost"); };
+    const onLost = (event: Event) => {
+      event.preventDefault();
+      // The renderer sleeps below this world. Its last submitted camera pose
+      // is not the reader's position in awards/cards/footer when loss occurs.
+      // Snapshot native document progress before the fallback collapses flow.
+      const unit = window.innerWidth < 820 ? window.innerHeight : window.innerWidth;
+      const scrollU = Math.max(0, -sectionEl.getBoundingClientRect().top / Math.max(1, unit));
+      contextRecoveryRef.current = { u: scrollU, time: sceneTime };
+      contextLost = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+      fallback("lost");
+    };
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
       state: sectionEl.dataset.sceneState, count, frameTimes: [...frameTimes],
@@ -940,25 +951,25 @@ function AboutWhoExperience({
           <span className="lusion-plus-cross" />
         </div>
 
-        {/* Layer 1: Monumental Double-Sketch `LUSION` Hero Wordmark (`about-01` & `about-02`) */}
+        {/* Layer 1: Monumental Solid `LUSION` Hero Wordmark (`about-01` & `about-02`) */}
         <div
           ref={heroWordmarkRef}
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-4 z-20 will-change-transform"
         >
           <svg
-            viewBox="0 0 1400 295"
+            viewBox="0 0 1400 365"
             fill="none"
             aria-hidden="true"
             className="block h-auto w-full select-none"
           >
             <text
               x="6"
-              y="256"
+              y="335"
               textLength="1388"
               lengthAdjust="spacingAndGlyphs"
               fill="#ffffff"
               fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-              fontSize="306"
+              fontSize="385"
               fontWeight="400"
             >
               LUSION
@@ -984,8 +995,8 @@ function AboutWhoExperience({
           style={{ opacity: 0, visibility: "hidden" }}
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
         >
-          <div id="about-who-title-left" className="min-[820px]:col-span-7">
-            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[3.4vw]">
+          <div id="about-who-title-left" className="min-[820px]:col-span-6">
+            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[4vw]">
               {[LUSION_ABOUT.who.leftLines[0], "LUSION", ...LUSION_ABOUT.who.leftLines.slice(1)].map((line, idx) => (
                 <span key={idx} className="block">
                   {line}
@@ -993,12 +1004,12 @@ function AboutWhoExperience({
               ))}
             </h2>
           </div>
-          <div className="flex items-end min-[820px]:col-span-5">
+          <div className="flex items-end min-[820px]:col-span-6">
             <p
               id="about-who-title-right"
-              className="font-sans text-right italic text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[2.3vw]"
+              className="w-full whitespace-pre-line font-sans text-right italic text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[3.8vw]"
             >
-              {LUSION_ABOUT.who.rightHeadline}
+              {LUSION_ABOUT.who.rightHeadline.replace(" DIGITAL", "\nDIGITAL")}
             </p>
           </div>
         </div>
@@ -1182,7 +1193,6 @@ export function AboutPageView() {
   const capabilityBandRef = useRef<HTMLElement>(null);
   const lastSurfaceRef = useRef<"ice" | "void" | "cobalt" | null>(null);
   const [activeMemberIdx, setActiveMemberIdx] = useState(0);
-  const [activeCapabilityIdx, setActiveCapabilityIdx] = useState(0);
 
   const team = LUSION_ABOUT.who.team;
 
@@ -1240,28 +1250,22 @@ export function AboutPageView() {
 
   useEffect(() => {
     const award = document.getElementById("about-award");
-    const expertise = capabilityBandRef.current;
     const word = award?.querySelector<HTMLElement>("[data-awards-word]");
-    const planes = Array.from(expertise?.querySelectorAll<SVGGElement>("[data-expertise-plane]") ?? []);
-    let raf = 0, dirty = true, disposed = false, awardTop = 0, expertiseTop = 0;
+    let raf = 0, dirty = true, disposed = false, awardTop = 0;
     const measure = (el: HTMLElement | null) => el ? el.getBoundingClientRect().top + window.scrollY : 0;
     const render = () => {
       raf = 0;
       if (document.hidden) return;
-      if (dirty) { awardTop = measure(award); expertiseTop = measure(expertise); dirty = false; }
+      if (dirty) { awardTop = measure(award); dirty = false; }
       const vh = Math.max(1, window.innerHeight), y = window.scrollY;
       const awardsP = reducedMotion ? .5 : clamp01((y - awardTop + vh) / (vh * 2));
       if (word) word.style.transform = `translate3d(${lerp(3, -3, awardsP)}%,0,0)`;
-      const p = reducedMotion ? 1 : clamp01((y - expertiseTop + vh) / (vh * 1.2));
-      planes.forEach((plane, i) => {
-        const assembled = smoothstep(.12 + i * .06, .7 + i * .06, p);
-        plane.style.transform = `translate3d(0,${(1 - assembled) * (i % 2 ? -14 : 14)}px,0)`;
-      });
+
     };
     const schedule = () => { if (!disposed && !raf && !document.hidden) raf = requestAnimationFrame(render); };
     const reflow = () => { dirty = true; schedule(); };
     const ro = new ResizeObserver(reflow);
-    if (award) ro.observe(award); if (expertise) ro.observe(expertise);
+    if (award) ro.observe(award);
     document.fonts.ready.then(reflow); schedule();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", reflow, { passive: true });
@@ -1447,114 +1451,7 @@ export function AboutPageView() {
       {/* =====================================================================
           4. AREA OF EXPERTISE (`#about-capability` — Full-Bleed Electric Cobalt `#1a2ffb`)
          ===================================================================== */}
-      <section
-        id="about-capability"
-        ref={capabilityBandRef}
-        className="relative overflow-hidden bg-[#1a2ffb] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
-      >
-        <AboutExpertiseField />
-        <div className="grid grid-cols-6 gap-6 min-[813px]:grid-cols-12">
-          <div className="col-span-6 min-[813px]:col-span-7">
-            <h2 className="font-sans text-[11vw] leading-[0.95] font-normal tracking-[-0.025em] text-white uppercase min-[813px]:text-[7.5vw]">
-              {LUSION_ABOUT.capability.titleLines.map((line, idx) => (
-                <span key={idx} className="block">
-                  {line}
-                </span>
-              ))}
-            </h2>
-            <p className="mt-5 max-w-md font-sans text-xs leading-relaxed tracking-[0.05em] text-white/85 uppercase md:text-[13px]">
-              {LUSION_ABOUT.capability.subtitle}
-            </p>
-          </div>
-
-          {/* 4 Bordered Glyph Badges (`S / C / T / P`) matching `10d-about-capability` */}
-          <div className="col-span-6 flex items-end gap-3 min-[813px]:col-span-5 min-[813px]:justify-end">
-            {LUSION_ABOUT.capability.cards.map((card, idx) => {
-              const selected = activeCapabilityIdx === idx;
-              return (
-                <button
-                  key={card.title}
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playClick();
-                    setActiveCapabilityIdx(idx);
-                  }}
-                  aria-label={`Focus ${card.title}`}
-                  aria-pressed={selected}
-                  aria-controls={`expertise-${idx}`}
-                  className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border font-sans text-xl font-medium transition-[background-color,color,border-color,transform] duration-200 active:scale-95 ${
-                    selected
-                      ? "border-white bg-white text-[#1a2ffb]"
-                      : "border-white/55 bg-white/8 text-white hover:border-white"
-                  }`}
-                >
-                  {card.displayInitial}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Four transparent editorial columns; diagrams carry the technical act. */}
-        <div className="about-expertise-grid mt-16 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
-          {LUSION_ABOUT.capability.cards.map((card, idx) => {
-            const active = activeCapabilityIdx === idx;
-            return (
-              <div
-                key={card.title}
-                id={`expertise-${idx}`}
-                tabIndex={0}
-                role="button"
-                aria-label={`${card.title} expertise`}
-                aria-pressed={active}
-                onPointerMove={(event) => {
-                  if (reducedMotion || event.pointerType === "touch" || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-                  const rect = event.currentTarget.getBoundingClientRect();
-                  const x = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
-                  const y = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
-                  event.currentTarget.style.transform = `perspective(900px) rotateX(${-y * 2}deg) rotateY(${x * 2}deg)`;
-                }}
-                onPointerLeave={(event) => { event.currentTarget.style.transform = ""; }}
-                onPointerCancel={(event) => { event.currentTarget.style.transform = ""; }}
-                onBlur={(event) => { event.currentTarget.style.transform = ""; }}
-                onClick={() => {
-                  soundEngine.playClick();
-                  setActiveCapabilityIdx(idx);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    soundEngine.playClick();
-                    setActiveCapabilityIdx(idx);
-                  }
-                }}
-                className={`about-expertise-column group flex cursor-pointer flex-col border-t pt-6 transition-[transform,border-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-white ${
-                  active ? "border-white text-white" : "border-white/35 text-white"
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <h3 className="font-sans text-3xl font-normal tracking-[-0.02em] text-white">
-                    {card.title}
-                  </h3>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/40 font-sans text-sm font-medium text-white">
-                    {card.displayInitial}
-                  </span>
-                </div>
-
-                <div className="my-6 w-full" data-expertise-drawing>
-                  <AboutExpertiseDiagram index={idx} />
-                </div>
-
-                <ul className="mt-auto space-y-2 pt-4 text-[14px] leading-relaxed text-white/95">
-                  {card.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <AboutExpertiseCards sectionRef={capabilityBandRef} reducedMotion={reducedMotion} />
 
       {/* =====================================================================
           5, 6 & 7. END CTA, STUDIO FOOTER & SCROLL PORTAL (`Our Projects` -> `/projects`)

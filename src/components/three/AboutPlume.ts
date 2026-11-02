@@ -58,7 +58,8 @@ export function createAboutPlume(count: number) {
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 ${flow}
 void main() {
-  vRadius = .035 * mix(.18, 2.0, pow(aSeed.w, 6.));
+  // Reference grains read as fine silver/bokeh, not foreground golf balls.
+  vRadius = .019 * mix(.18, 2.0, pow(aSeed.w, 6.));
   vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
   vDisc = position.xy;
   vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);

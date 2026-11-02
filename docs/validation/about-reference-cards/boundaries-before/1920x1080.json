@@ -1,0 +1,27 @@
+{
+  "width": 1920,
+  "height": 1080,
+  "errors": [],
+  "fronts": [
+    {
+      "width": 403,
+      "height": 564,
+      "overflow": false
+    },
+    {
+      "width": 403,
+      "height": 564,
+      "overflow": false
+    },
+    {
+      "width": 403,
+      "height": 564,
+      "overflow": false
+    },
+    {
+      "width": 403,
+      "height": 564,
+      "overflow": false
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "url": "https://lusion.co/about",
+  "verified": false,
+  "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about\nCall log:\n  - navigating to \"https://lusion.co/about\", waiting until \"domcontentloaded\"\n"
+}

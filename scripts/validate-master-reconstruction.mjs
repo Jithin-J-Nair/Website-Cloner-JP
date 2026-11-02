@@ -32,13 +32,15 @@ try {
       const unit = width < 820 ? height : width;
       for (const u of [0, .6, 1.6, 3.8, 5.35, 7.2]) { await seek(unit * u); await shot(`about-u${u}`); }
       for (const id of ['about-award', 'about-capability']) { await seek(await topOf(id)); await shot(id); }
-      assert.equal(await page.locator('.about-expertise-column').count(), 4);
-      assert.equal(await page.locator('.about-expertise-diagram').count(), 4);
+      assert.equal(await page.locator('.about-card-slot').count(), 4);
+      assert.equal(await page.locator('.about-card-front').count(), 4);
+      assert.equal(await page.locator('.about-card-back-art').count(), 4);
+      assert.equal(await page.locator('#about-capability canvas').count(), 0, 'service card system must not add a GPU context');
       assert.equal((await page.locator('#about-capability li').allTextContents()).length, 20);
       assert.equal((await page.locator('[data-awards-word]').textContent()).trim(), 'AWARDS');
       const labelFits = await page.locator('#end-bottom-text-container').evaluate(el => el.scrollWidth <= el.clientWidth + 1 && el.scrollHeight <= el.clientHeight + 1);
       assert.equal(labelFits, true, 'complete CTA action label must not wrap or clip');
-      report.checks.push('four technical columns, all 20 services, outlined recognition act');
+      report.checks.push('four service fronts and backs, all 20 services, no extra GL context, outlined recognition act');
       if (width !== 390) {
         await seek(0);
         for (const delta of [1400, 2200, -1800, 2600]) await page.mouse.wheel(0, delta);
