@@ -1,0 +1,93 @@
+{
+  "width": 390,
+  "height": 844,
+  "samples": [
+    {
+      "u": 0,
+      "wallMs": 5005.800000000047,
+      "submittedFrames": 95,
+      "renderSubmissionsPerSecond": 18.97798553677716,
+      "medianRafIntervalMs": 53,
+      "p95RafIntervalMs": 60.300000000046566,
+      "buffer": [
+        390,
+        844
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 3600,
+      "memory": {
+        "geometries": 2,
+        "textures": 0
+      },
+      "webglError": 0
+    },
+    {
+      "u": 1.6,
+      "wallMs": 5004,
+      "submittedFrames": 42,
+      "renderSubmissionsPerSecond": 8.393285371702637,
+      "medianRafIntervalMs": 142,
+      "p95RafIntervalMs": 167.69999999995343,
+      "buffer": [
+        390,
+        844
+      ],
+      "count": 1800,
+      "draws": 13,
+      "triangles": 62745,
+      "memory": {
+        "geometries": 13,
+        "textures": 2
+      },
+      "webglError": 0
+    },
+    {
+      "u": 5.35,
+      "wallMs": 5006.300000000047,
+      "submittedFrames": 45,
+      "renderSubmissionsPerSecond": 8.988674270419189,
+      "medianRafIntervalMs": 136.60000000009313,
+      "p95RafIntervalMs": 170.89999999990687,
+      "buffer": [
+        390,
+        844
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 36992,
+      "memory": {
+        "geometries": 14,
+        "textures": 2
+      },
+      "webglError": 0
+    },
+    {
+      "u": 7.2,
+      "wallMs": 5007.699999999953,
+      "submittedFrames": 121,
+      "renderSubmissionsPerSecond": 24.16278930447134,
+      "medianRafIntervalMs": 36.200000000186265,
+      "p95RafIntervalMs": 68.4000000001397,
+      "buffer": [
+        390,
+        844
+      ],
+      "count": 1800,
+      "draws": 3,
+      "triangles": 0,
+      "memory": {
+        "geometries": 16,
+        "textures": 2
+      },
+      "webglError": 0
+    }
+  ],
+  "errors": [],
+  "physicalGpuTiming": "NOT MEASURED",
+  "device": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "timerQuerySupported": true,
+    "policy": "existing cinematic pixel budget; original About software/low/mobile tier=1800; high=4800"
+  }
+}

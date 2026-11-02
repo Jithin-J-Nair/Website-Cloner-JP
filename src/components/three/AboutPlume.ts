@@ -7,8 +7,8 @@ const flow = `
 vec3 plume(vec4 seed) {
   float h = (seed.z / 3.14159265 - .5) * 4.8;
   float phase = h * 1.62 + uTime * .29;
-  float taper = .34 + .66 * pow(max(0., 1. - abs(h) / 3.5), .6);
-  float radius = pow(seed.x, 1.8) * taper;
+  float taper = .60 + .65 * pow(max(0., 1. - abs(h) / 3.5), .6);
+  float radius = pow(seed.x, .9) * taper;
   float orbit = seed.y + uTime * (.12 + .18 * (1. - seed.x));
   vec3 p = vec3(sin(phase) * .66 + cos(orbit) * radius,
                 h + sin(orbit * 2. + h + uTime * .15) * .17,
@@ -17,8 +17,8 @@ vec3 plume(vec4 seed) {
   // Sparse outlying seeds supply real foreground/background depth, not a screen overlay.
   float fringe = smoothstep(.88, 1., seed.w);
   p += vec3(cos(seed.y) * 2.6, sin(seed.y * 2.) * 1.4, sin(seed.y) * 1.6) * fringe;
-  p *= mix(1.16, .72, uCompact);
-  p += vec3(-.35, mix(9.1, 6., uCompact), 0.);
+  p *= mix(1.16, .90, uCompact);
+  p += vec3(-.35, mix(9.1, 7.2, uCompact), 0.);
   vec3 away = p - uPointer;
   float distanceToPointer = length(away);
   p += away / max(.01, distanceToPointer) * pow(max(0., 1. - distanceToPointer / 2.4), 2.) * uPointerStrength * .62;
@@ -58,7 +58,7 @@ export function createAboutPlume(count: number) {
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 ${flow}
 void main() {
-  vRadius = .025 * mix(.16, 1.8, pow(aSeed.w, 6.));
+  vRadius = .035 * mix(.18, 2.0, pow(aSeed.w, 6.));
   vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
   vDisc = position.xy;
   vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);
@@ -82,10 +82,10 @@ void main() {
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
-  vec3 color = vec3(.035, .045, .05) + vec3(.46, .5, .52) * diffuse + specular * .9 + fresnel * .16;
+  vec3 color = vec3(.07, .075, .08) + vec3(.65, .69, .72) * diffuse + specular * 1.2 + fresnel * .16;
   color = mix(color, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   color *= mix(1., .48, smoothstep(8., 22., vDepth));
-  gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed));
+  gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed) * (1. - smoothstep(.82, 1., r2)));
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`,
@@ -101,17 +101,19 @@ void main() {
   dustGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(dustCount * 3), 3));
   dustGeometry.setAttribute("aSeed", new THREE.BufferAttribute(dustSeeds, 4));
   const dustMaterial = new THREE.ShaderMaterial({
-    uniforms, transparent: true, depthWrite: false,
+    uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: `${declarations}
 varying float vFade, vBlur, vSeed, vCore;
 ${flow}
 void main() {
   vec3 p = plume(aSeed);
+  // Sparse seeded foreground grains are actual nearer 3D points, not an overlay.
+  p.z += smoothstep(.965, 1., aSeed.w) * mix(3.6, 1.4, uCompact);
   vec4 eye = modelViewMatrix * vec4(p, 1.);
   float defocus = abs(-eye.z - 7.5);
   vBlur = smoothstep(1.6, 5., defocus) * (.3 + .7 * pow(aSeed.w, 8.));
   float perspective = clamp(7.5 / max(1., -eye.z), .4, 2.);
-  gl_PointSize = clamp((1.25 + aSeed.x * 1.2 + vBlur * 7.) * perspective * uPixelRatio, 1., 12.);
+  gl_PointSize = clamp((1.55 + aSeed.x * 2.2 + vBlur * 18.) * perspective * uPixelRatio, 1., 32.);
   vFade = uOpacity * mix(.62, .25, vBlur);
   vSeed = aSeed.w;
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));

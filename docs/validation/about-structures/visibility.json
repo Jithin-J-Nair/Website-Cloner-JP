@@ -1,0 +1,42 @@
+{
+  "result": "PASS",
+  "viewport": [
+    1440,
+    900
+  ],
+  "paused": {
+    "frames": 2,
+    "pending": false,
+    "draws": 4,
+    "reduced": false,
+    "lost": false,
+    "pointer": [
+      0,
+      0
+    ],
+    "rotation": [
+      0.15,
+      0.29526481182795694,
+      0
+    ],
+    "vertices": 5432
+  },
+  "resumed": {
+    "frames": 3,
+    "pending": true,
+    "draws": 4,
+    "reduced": false,
+    "lost": false,
+    "pointer": [
+      0,
+      0
+    ],
+    "rotation": [
+      0.15,
+      0.29693147849462365,
+      0
+    ],
+    "vertices": 5432
+  },
+  "scope": "Injected hidden event tests listener/scheduler, not OS background certification"
+}

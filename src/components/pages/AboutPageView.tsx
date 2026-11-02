@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { AboutExpertiseField } from "@/components/pages/AboutExpertiseField";
 import { AboutExpertiseDiagram } from "@/components/pages/AboutExpertiseDiagram";
 import { LUSION_ABOUT } from "@/data/reference";
 import { createAboutPlume } from "@/components/three/AboutPlume";
@@ -245,8 +246,8 @@ function AboutWhoExperience({
             float xDist = abs(vUv.x - 0.475) * 2.0;
             float beam = exp(-pow(xDist * 11.5, 2.0));
             // Atmospheric misty silver sky gradient across upper valley ('about-02-we-are-reveal'!)
-            float skyMist = smoothstep(0.28, 0.98, vUv.y) * 0.19;
-            float wideHaze = exp(-pow(xDist * 2.6, 2.0)) * 0.14;
+            float skyMist = smoothstep(0.28, 0.98, vUv.y) * 0.055;
+            float wideHaze = exp(-pow(xDist * 2.6, 2.0)) * 0.07;
             float vertFade = smoothstep(0.0, 0.12, vUv.y);
             vec3 col = vec3(0.74, 0.78, 0.85) * (beam * 0.36 + wideHaze + skyMist);
             float vortexHotspot = exp(-pow((vUv.y - 0.46) * 6.5, 2.0)) * exp(-pow(xDist * 5.0, 2.0));
@@ -612,14 +613,14 @@ function AboutWhoExperience({
       // Historical stills place the grounded figure near the lower middle,
       // with both the floor and suspended plume visible. Return to the existing
       // narrative/portrait distance rather than perturbing those later beats.
-      const wideZ = lerp(isMobile ? 26 : 28, isMobile ? 21.5 : 18.2, tContourPhase);
+      const wideZ = lerp(isMobile ? 22 : 20, isMobile ? 21.5 : 18.2, tContourPhase);
       const camZ = lerp(isMobile ? 8.6 : 6.9, wideZ, tPullback);
-      const camY = lerp(8.15, lerp(4.35, 6.6, tContourPhase), tPullback);
+      const camY = lerp(8.15, lerp(4.6, 6.6, tContourPhase), tPullback);
       const camX = Math.sin(tContourPhase * 1.2) * 0.6;
       // Raise the sightline during the editorial beat to leave black negative
       // space above the basin; return to the portrait framing in team mode.
       const editorialLookY = lerp(7.6, .85, tTeamPhase);
-      const lookY = lerp(8.15, lerp(.6, editorialLookY, tContourPhase), tPullback);
+      const lookY = lerp(8.15, lerp(3.4, editorialLookY, tContourPhase), tPullback);
 
       camera.fov = isMobile ? 54 : 45;
       camera.position.set(camX, camY, camZ);
@@ -641,7 +642,7 @@ function AboutWhoExperience({
         stormMat.uniforms.uMobile.value = isMobile ? 1.0 : 0.0;
         stormMat.uniforms.uPointer.value.copy(pointerWorld);
         stormMat.uniforms.uPointerStrength.value = pointerActive;
-        stormMat.uniforms.uCyanBoost.value = isMobile ? 0.94 : lerp(0.0, 0.55, tPullback);
+        stormMat.uniforms.uCyanBoost.value = isMobile ? .16 : lerp(0.0, .08, tPullback);
         stormMat.uniforms.uOpacity.value = stormVis;
       }
 
@@ -650,7 +651,7 @@ function AboutWhoExperience({
       const darkHudFade = 1 - smoothstep(3.45, 4.55, u);
       godRayPlane.visible = landscapeVis * stormVis > 0.01;
       godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
-      godRayMat.uniforms.uCyanCore.value = isMobile ? 0.85 : 0.32;
+      godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : .08;
 
       // Keep a faint real rock surface beneath the narrative/contours, as in the historical still.
       // Team mode returns to black to preserve portrait contrast.
@@ -662,7 +663,7 @@ function AboutWhoExperience({
 
       const explorerVis = landscapeVis * (1 - smoothstep(3.3, 4.3, u));
       explorerGroup.visible = explorerVis > 0.02;
-      explorerGroup.scale.setScalar(isMobile ? 1 : .85);
+      explorerGroup.scale.setScalar(isMobile ? 1.0 : .95);
       if (explorerGroup.visible) explorer.pose(elapsedSec, pointerNDC.x, pointerNDC.y, reducedMotion);
 
       rocksMesh.visible = explorerVis > 0.02;
@@ -1451,6 +1452,7 @@ export function AboutPageView() {
         ref={capabilityBandRef}
         className="relative overflow-hidden bg-[#1a2ffb] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
       >
+        <AboutExpertiseField />
         <div className="grid grid-cols-6 gap-6 min-[813px]:grid-cols-12">
           <div className="col-span-6 min-[813px]:col-span-7">
             <h2 className="font-sans text-[11vw] leading-[0.95] font-normal tracking-[-0.025em] text-white uppercase min-[813px]:text-[7.5vw]">

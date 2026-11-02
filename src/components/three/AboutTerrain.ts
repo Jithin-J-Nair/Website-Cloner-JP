@@ -30,8 +30,26 @@ export function terrainHeightAt(x: number, z: number): number {
 /** Original rock microrelief, evaluated on the existing 3D basin. No sampled
  * reference image or additional render target; detail fades below a pixel. */
 export function createAboutTerrainMaterial() {
-  return new THREE.ShaderMaterial({
-    uniforms: { uValleyBrightness: { value: 1 }, uOpacity: { value: 0 } },
+  // Bake a periodic original noise tile once, rather than hashing sixteen
+  // lattice corners per terrain fragment per frame. Mips filter subpixel relief.
+  const size = 256, pixels = new Uint8Array(size * size);
+  const hash = (x: number, y: number) => {
+    let n = Math.imul(x & 63, 374761393) ^ Math.imul(y & 63, 668265263);
+    n = Math.imul(n ^ (n >>> 13), 1274126177);
+    return ((n ^ (n >>> 16)) >>> 0) / 4294967295;
+  };
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const px = x / 4, py = y / 4, ix = Math.floor(px), iy = Math.floor(py);
+    const fx = px - ix, fy = py - iy, u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+    pixels[y * size + x] = Math.round(255 * lerp(lerp(hash(ix, iy), hash(ix + 1, iy), u), lerp(hash(ix, iy + 1), hash(ix + 1, iy + 1), u), v));
+  }
+  const rockNoise = new THREE.DataTexture(pixels, size, size, THREE.RedFormat);
+  rockNoise.wrapS = rockNoise.wrapT = THREE.RepeatWrapping;
+  rockNoise.magFilter = THREE.LinearFilter;
+  rockNoise.minFilter = THREE.LinearMipmapLinearFilter;
+  rockNoise.generateMipmaps = true; rockNoise.needsUpdate = true;
+  const material = new THREE.ShaderMaterial({
+    uniforms: { uValleyBrightness: { value: 1 }, uOpacity: { value: 0 }, uRockNoise: { value: rockNoise } },
     transparent: true,
     // Fading ground must not invisibly occlude the contour stage.
     depthWrite: false,
@@ -46,17 +64,8 @@ export function createAboutTerrainMaterial() {
     fragmentShader: `
       uniform float uValleyBrightness, uOpacity;
       varying vec3 vWorldPos, vNormalW;
-      float hash(vec2 p) {
-        vec3 q = fract(vec3(p.xyx) * .1031);
-        q += dot(q, q.yzx + 33.33);
-        return fract((q.x + q.y) * q.z);
-      }
-      float noise(vec2 p) {
-        vec2 cell = floor(p), f = fract(p);
-        vec2 u = f * f * (3. - 2. * f);
-        return mix(mix(hash(cell), hash(cell + vec2(1., 0.)), u.x),
-                   mix(hash(cell + vec2(0., 1.)), hash(cell + 1.), u.x), u.y);
-      }
+      uniform sampler2D uRockNoise;
+      float noise(vec2 p) { return texture2D(uRockNoise, p / 64.).r; }
       void main() {
         // Sample in world space so the relief stays attached on reverse scroll.
         vec2 p = vWorldPos.xz;
@@ -98,4 +107,7 @@ export function createAboutTerrainMaterial() {
         #include <colorspace_fragment>
       }`,
   });
+  let disposed = false;
+  material.addEventListener("dispose", () => { if (!disposed) { disposed = true; rockNoise.dispose(); } });
+  return material;
 }

@@ -406,3 +406,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .about-expertise-column { transform: none !important; }
 }
+
+/* Keep technical registration marks and accessible HTML; replace only the flat drawing. */
+#about-capability[data-expertise-webgl="ready"] .about-expertise-diagram [data-expertise-plane] {
+  opacity: 0;
+}

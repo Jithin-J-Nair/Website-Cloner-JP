@@ -1,0 +1,47 @@
+[
+  {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "width": 1440,
+    "height": 900,
+    "submittedFrames": 168,
+    "wallMs": 5001,
+    "submissionsPerSecond": 33.593281343731256,
+    "medianRafMs": 33.30000000000018,
+    "p95RafMs": 33.400000000000546,
+    "draws": 4,
+    "vertices": 5432,
+    "ctaPending": false,
+    "glError": 0,
+    "physicalGpuTime": "NOT MEASURED"
+  },
+  {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "width": 768,
+    "height": 900,
+    "submittedFrames": 297,
+    "wallMs": 5000.800000000047,
+    "submissionsPerSecond": 59.39049752039618,
+    "medianRafMs": 16.699999999999818,
+    "p95RafMs": 16.800000000000182,
+    "draws": 2,
+    "vertices": 5432,
+    "ctaPending": false,
+    "glError": 0,
+    "physicalGpuTime": "NOT MEASURED"
+  },
+  {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "width": 390,
+    "height": 844,
+    "submittedFrames": 300,
+    "wallMs": 5000.799999999814,
+    "submissionsPerSecond": 59.99040153575651,
+    "medianRafMs": 16.699999999999818,
+    "p95RafMs": 16.700000000000728,
+    "draws": 1,
+    "vertices": 5432,
+    "ctaPending": false,
+    "glError": 0,
+    "physicalGpuTime": "NOT MEASURED"
+  }
+]
