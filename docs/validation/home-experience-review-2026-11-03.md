@@ -10,7 +10,7 @@
 - Added desktop and touch-mobile Chromium checks, ribbon reverse assertions, hero hover/magnetic-return assertions, and timeline tests.
 
 ## Skill
-The Glassmorphism skill is installed from `compozy/compozy` with `npx -y skills add compozy/compozy --skill glassmorphism --agent claude-code --copy --yes`, and copied into `.claude/skills/glassmorphism/` with its CSS asset, material lab and reference guides. The skill is for glass UI surfaces and accessibility; it explicitly excludes 3D shard rendering, so the 3D glass effect remains in the captured Three.js shard pipeline.
+The Glassmorphism skill is installed from `compozy/compozy` with `npx -y skills add https://github.com/compozy/compozy/tree/main/.agents/skills/glassmorphism --agent claude-code --copy --yes`, and copied into `.claude/skills/glassmorphism/` with its CSS asset, material lab and reference guides. The skill is for glass UI surfaces and accessibility; it explicitly excludes 3D shard rendering, so the 3D glass effect remains in the captured Three.js shard pipeline.
 
 ## Validation
 The first CI run failed at the skill-installer step because `compozy/compozy` contained no discoverable skill. The installer is now pointed at the skill's published source. The build and desktop/mobile browser checks have not yet run on the corrected commit; screenshot review is still required before visual acceptance.
