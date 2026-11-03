@@ -510,11 +510,33 @@ export function buildArchitecturalTrussTunnel(
       if ((vertex & bit) === 0) edgePairs.push([vertex, vertex | bit]);
     }
   }
-  const cubeFaces = [
-    [0, 2, 6, 4], [1, 5, 7, 3],
-    [0, 1, 5, 4], [2, 6, 7, 3],
-    [0, 1, 3, 2], [4, 6, 7, 5],
-  ];
+  // A tesseract has 24 unique square faces (the boundaries of its eight cubic cells).
+  // Fix every pair of 4D axes at ±1 and let the remaining two axes span each facet.
+  const glassFacets: Array<{ vertices: [number, number, number, number] }> = [];
+  const vertexIndex = (coordinates: number[]) =>
+    (coordinates[0] > 0 ? 1 : 0) |
+    (coordinates[1] > 0 ? 2 : 0) |
+    (coordinates[2] > 0 ? 4 : 0) |
+    (coordinates[3] > 0 ? 8 : 0);
+  for (let fixedA = 0; fixedA < 4; fixedA++) {
+    for (let fixedB = fixedA + 1; fixedB < 4; fixedB++) {
+      const varying = [0, 1, 2, 3].filter((axis) => axis !== fixedA && axis !== fixedB);
+      for (const signA of [-1, 1]) {
+        for (const signB of [-1, 1]) {
+          const corners: [number, number][] = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+          const vertices = corners.map(([a, b]) => {
+            const coordinates = [0, 0, 0, 0];
+            coordinates[fixedA] = signA;
+            coordinates[fixedB] = signB;
+            coordinates[varying[0]] = a;
+            coordinates[varying[1]] = b;
+            return vertexIndex(coordinates);
+          }) as [number, number, number, number];
+          glassFacets.push({ vertices });
+        }
+      }
+    }
+  }
   const edgeGeometry = track(new THREE.CylinderGeometry(0.014, 0.014, 1, 10, 1, false));
   const edgeMaterial = track(new THREE.MeshPhysicalMaterial({
     color: 0xc9eaff, emissive: 0x102c60, emissiveIntensity: 0.24,
@@ -528,17 +550,17 @@ export function buildArchitecturalTrussTunnel(
     clearcoat: 1, clearcoatRoughness: 0.006, transmission: 0.90, thickness: 0.34, ior: 1.52,
     transparent: true, opacity: 0.24, depthWrite: false, side: THREE.DoubleSide,
   }));
-  const paneIndices: number[] = [];
-  for (let face = 0; face < cubeFaces.length; face++) {
+  const facetIndices: number[] = [];
+  for (let face = 0; face < glassFacets.length; face++) {
     const base = face * 4;
-    paneIndices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+    facetIndices.push(base, base + 1, base + 2, base, base + 2, base + 3);
   }
   type TesseractLayer = {
     index: number;
     root: THREE.Group;
     edges: THREE.InstancedMesh;
     nodes: THREE.InstancedMesh;
-    panes: Array<{ mesh: THREE.Mesh; positions: Float32Array; shell: number }>;
+    panes: Array<{ mesh: THREE.Mesh; positions: Float32Array }>;
     points: THREE.Vector3[];
   };
   const tesseractLayerCount = isMobile ? 2 : 4;
@@ -573,18 +595,16 @@ export function buildArchitecturalTrussTunnel(
     root.add(nodes);
 
     const panes: TesseractLayer["panes"] = [];
-    for (let shell = 0; shell < 2; shell++) {
-      const geometry = track(new THREE.BufferGeometry());
-      const positions = new Float32Array(24 * 3);
-      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
-      geometry.setIndex(paneIndices);
-      const mesh = new THREE.Mesh(geometry, cellMaterial);
-      mesh.name = `TesseractGlassCell-${layerIndex + 1}-${shell + 1}`;
-      mesh.frustumCulled = false;
-      mesh.renderOrder = 2;
-      root.add(mesh);
-      panes.push({ mesh, positions, shell });
-    }
+    const geometry = track(new THREE.BufferGeometry());
+    const positions = new Float32Array(glassFacets.length * 4 * 3);
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    geometry.setIndex(facetIndices);
+    const mesh = new THREE.Mesh(geometry, cellMaterial);
+    mesh.name = `TesseractGlassFacets-${layerIndex + 1}`;
+    mesh.frustumCulled = false;
+    mesh.renderOrder = 2;
+    root.add(mesh);
+    panes.push({ mesh, positions });
     tesseractLayers.push({
       index: layerIndex, root, edges, nodes, panes,
       points: Array.from({ length: 16 }, () => new THREE.Vector3()),
@@ -653,10 +673,9 @@ export function buildArchitecturalTrussTunnel(
 
       for (const pane of layer.panes) {
         let cursor = 0;
-        const base = pane.shell * 8;
-        for (const face of cubeFaces) {
-          for (const vertex of face) {
-            const point = layer.points[base + vertex];
+        for (const facet of glassFacets) {
+          for (const vertex of facet.vertices) {
+            const point = layer.points[vertex];
             const offset = cursor * 3;
             pane.positions[offset] = point.x;
             pane.positions[offset + 1] = point.y;
