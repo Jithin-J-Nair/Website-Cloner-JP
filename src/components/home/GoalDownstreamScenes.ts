@@ -617,7 +617,7 @@ export function buildArchitecturalTrussTunnel(
         let z = (i & 4) ? 1 : -1;
         let w = (i & 8) ? 1 : -1;
         let t = x * ca - w * sa; w = x * sa + w * ca; x = t;
-        t = y * cb - w * sb; w = y * cb + w * cb; y = t;
+        t = y * cb - w * sb; w = y * sb + w * cb; y = t;
         t = z * cc - w * sc; w = z * sc + w * cc; z = t;
         t = x * cd - y * sd; y = x * sd + y * cd; x = t;
         const perspective = 3.8 / Math.max(2.25, 3.8 - w * 0.72);
