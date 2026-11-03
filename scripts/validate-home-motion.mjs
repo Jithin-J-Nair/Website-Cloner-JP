@@ -200,6 +200,8 @@ try {
    }));
  };
  const vortexY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.58));
+ await seek(vortexY);
+ await page.waitForFunction(()=>window.__goalAstronautTelemetry?.sceneState?.trussLoaded===true,null,{timeout:30000});
  const vortexState = await seekScenePhase('vortex',vortexY,'tunnelProgress',0.58);
  assert.equal(vortexState.trussLoaded,true,'vortex truss geometry is present');
  assert.equal(vortexState.shardsLoaded,true,'captured shard geometry is loaded for downstream break');

@@ -1920,7 +1920,9 @@ export function GoalTunnelSection() {
         state.waitProgress = tWait;
         mainAstro?.root.matrixWorld.toArray(state.astronautMatrix);
         camera.matrixWorld.toArray(state.cameraMatrix);
-        state.trussLoaded = trussSystem.group.children.length > 2;
+        state.trussLoaded = trussSystem.group.children.some(
+          (child) => child.name === "CapturedInnerLattice" || child.name === "CapturedOuterLattice"
+        );
         state.shardsLoaded = shardsMesh !== null;
         state.portalFlash = portalFlash;
         state.flashVisible = trussSystem.group.visible && portalFlash > 0.001;
