@@ -25,7 +25,8 @@ jobs:
 
       - name: Install the requested glassmorphism skill for Claude Code
         run: |
-          npx -y skills add pedronauck/skills/skills/mine --skill glassmorphism --agent claude-code --copy
+          rm -rf .claude/skills/glassmorphism
+          npx -y skills add compozy/compozy --skill glassmorphism --agent claude-code --copy --yes
           test -s .claude/skills/glassmorphism/SKILL.md
 
       - name: Install dependencies
