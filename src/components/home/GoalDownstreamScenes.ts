@@ -515,18 +515,18 @@ export function buildArchitecturalTrussTunnel(
     [0, 1, 5, 4], [2, 6, 7, 3],
     [0, 1, 3, 2], [4, 6, 7, 5],
   ];
-  const edgeGeometry = track(new THREE.CylinderGeometry(0.010, 0.010, 1, 8, 1, false));
+  const edgeGeometry = track(new THREE.CylinderGeometry(0.014, 0.014, 1, 10, 1, false));
   const edgeMaterial = track(new THREE.MeshPhysicalMaterial({
-    color: 0xb8dcff, emissive: 0x0b245b, emissiveIntensity: 0.32,
-    envMap: environment, envMapIntensity: 1.9, metalness: 0.04, roughness: 0.045,
-    clearcoat: 1, clearcoatRoughness: 0.014, transmission: 0.38, thickness: 0.16, ior: 1.46,
-    transparent: true, opacity: 0.82, depthWrite: false, side: THREE.DoubleSide,
+    color: 0xc9eaff, emissive: 0x102c60, emissiveIntensity: 0.24,
+    envMap: environment, envMapIntensity: 2.6, metalness: 0.025, roughness: 0.018,
+    clearcoat: 1, clearcoatRoughness: 0.008, transmission: 0.62, thickness: 0.22, ior: 1.52,
+    transparent: true, opacity: 0.94, depthWrite: false, side: THREE.DoubleSide,
   }));
   const cellMaterial = track(new THREE.MeshPhysicalMaterial({
-    color: 0xc9e4ff, emissive: 0x081c42, emissiveIntensity: 0.12,
-    envMap: environment, envMapIntensity: 2.0, metalness: 0, roughness: 0.022,
-    clearcoat: 1, clearcoatRoughness: 0.012, transmission: 0.94, thickness: 0.24, ior: 1.47,
-    transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide,
+    color: 0xd8efff, emissive: 0x102b55, emissiveIntensity: 0.08,
+    envMap: environment, envMapIntensity: 2.9, metalness: 0.015, roughness: 0.012,
+    clearcoat: 1, clearcoatRoughness: 0.006, transmission: 0.90, thickness: 0.34, ior: 1.52,
+    transparent: true, opacity: 0.24, depthWrite: false, side: THREE.DoubleSide,
   }));
   const paneIndices: number[] = [];
   for (let face = 0; face < cubeFaces.length; face++) {
@@ -543,7 +543,7 @@ export function buildArchitecturalTrussTunnel(
   };
   const tesseractLayerCount = isMobile ? 2 : 4;
   const tesseractLayers: TesseractLayer[] = [];
-  const nodeGeometry = track(new THREE.SphereGeometry(0.026, 8, 6));
+  const nodeGeometry = track(new THREE.SphereGeometry(0.034, 12, 8));
   const up = new THREE.Vector3(0, 1, 0);
   const direction = new THREE.Vector3();
   const center = new THREE.Vector3();
@@ -594,12 +594,12 @@ export function buildArchitecturalTrussTunnel(
   const updateTesseract = (progress: number, intensity: number, reduced: boolean) => {
     const reveal = THREE.MathUtils.clamp(intensity, 0, 1);
     tesseractGroup.visible = reveal > 0.008;
-    edgeMaterial.opacity = 0.56 + reveal * 0.38;
-    edgeMaterial.emissiveIntensity = 0.20 + reveal * 0.86;
-    edgeMaterial.envMapIntensity = 1.45 + reveal * 1.05;
-    cellMaterial.opacity = 0.035 + reveal * 0.16;
-    cellMaterial.emissiveIntensity = 0.05 + reveal * 0.22;
-    cellMaterial.envMapIntensity = 1.55 + reveal * 0.8;
+    edgeMaterial.opacity = 0.68 + reveal * 0.30;
+    edgeMaterial.emissiveIntensity = 0.12 + reveal * 0.62;
+    edgeMaterial.envMapIntensity = 2.0 + reveal * 1.0;
+    cellMaterial.opacity = 0.10 + reveal * 0.22;
+    cellMaterial.emissiveIntensity = 0.035 + reveal * 0.14;
+    cellMaterial.envMapIntensity = 2.2 + reveal * 1.0;
     const violet = THREE.MathUtils.smoothstep(progress, 0.63, 0.80);
     edgeMaterial.color.setHSL(0.575 + violet * 0.20, 0.68, 0.78);
     cellMaterial.color.setHSL(0.59 + violet * 0.15, 0.52, 0.84);
