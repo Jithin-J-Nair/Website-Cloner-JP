@@ -674,7 +674,7 @@ export function GoalTunnelSection() {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
         depthBuffer: true,
-        stencilBuffer: false,
+        stencilBuffer: true,
       }
     ));
     glassRefractionTarget.texture.colorSpace = THREE.LinearSRGBColorSpace;
