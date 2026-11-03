@@ -44,6 +44,12 @@ A standalone SVG layout mock was reviewed in Chromium at 2560×1600 to tune the 
 - **Hallmark / UI Skills:** documented the exact evidence boundary and kept acceptance blocked pending a fresh browser visual pass.
 - **Open Design / design-md-chrome:** used the current repository/component conventions and the recorded reference frames; no extension, package or external asset pipeline was introduced.
 
+## Latest visual-review findings and next acceptance gates
+
+The first actual production Chromium capture exposed a mobile-specific failure: the desktop curved text path rotated individual glyphs into a vertical stack and obscured the mobile manifesto. The branch now uses a separate shallow mobile path, a smaller font (230 SVG units versus 390 on desktop), a lower stage height/position, and a near-level transform. CI verifies the selected path and rendered font scale at 1440×900 and 390×844. The first mobile visual capture after this correction is still required before accepting the adaptation.
+
+The same desktop capture shows that the crater shoulders remain too tall and angular versus the broad, lower crater walls in the supplied recording, and the particle volume is too compact. The current follow-up pass lowers and widens the terrain shoulders, moderates the high-frequency escarpment relief, widens the GPU plume envelope and increases the medium-grain radius without increasing particle count. The production browser job now captures the cold opening and a later basin state in addition to the wordmark peak, so these changes can be reviewed against the 00:00 and 00:05 recording frames. The new screenshots are evidence for review, not automatic source-parity acceptance.
+
 ## Remaining gaps visible in the same recording
 
 This first change does not close the wider About acceptance:

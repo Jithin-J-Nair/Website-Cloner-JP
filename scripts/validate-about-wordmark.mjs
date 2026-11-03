@@ -58,6 +58,10 @@ try {
         };
       }, width === 390);
 
+      await seek(0);
+      await page.screenshot({ path: `${out}/${width}-opening.png`, fullPage: false, timeout: 120000 });
+      await seek(width === 390 ? 2.8 : 1.6);
+      await page.screenshot({ path: `${out}/${width}-basin.png`, fullPage: false, timeout: 120000 });
       await seek(peak);
       const atPeak = await inspect();
       assert.ok(atPeak.opacity > 0.99, 'wordmark must reach full opacity at the valley beat');

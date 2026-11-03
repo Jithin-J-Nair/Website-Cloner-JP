@@ -19,9 +19,9 @@ vec3 plume(vec4 seed) {
   p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .24) * .07;
   // Only sparse outliers leave the coherent core. Their distribution is shared
   // by both physical grains and depth-aware fine scatter.
-  float fringe = smoothstep(.93, 1., seed.w);
-  p += vec3(cos(seed.y) * 2.6, sin(seed.y * 2.) * 1.4, sin(seed.y) * 1.6) * fringe;
-  p.xz *= mix(1.16, 1.35, uCompact);
+  float fringe = smoothstep(.90, 1., seed.w);
+  p += vec3(cos(seed.y) * 3.25, sin(seed.y * 2.) * 1.55, sin(seed.y) * 2.0) * fringe;
+  p.xz *= mix(1.58, 1.86, uCompact);
   p.y *= mix(1.16, .90, uCompact);
   p += vec3(-.35, 8.4, 0.);
   vec3 away = p - uPointer;
@@ -66,7 +66,7 @@ void main() {
   // A meaningful population of mid-sized metal grains supplies a surface;
   // a near-zero radius on most instances previously left only fine dust visible.
   float outlier = smoothstep(.93, 1., aSeed.w);
-  vRadius = .044 * mix(.4, 1.8, pow(aSeed.w, 3.)) * mix(1., .55, outlier);
+  vRadius = .052 * mix(.48, 1.85, pow(aSeed.w, 2.8)) * mix(1., .58, outlier);
   vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
   vDisc = position.xy;
   vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);
