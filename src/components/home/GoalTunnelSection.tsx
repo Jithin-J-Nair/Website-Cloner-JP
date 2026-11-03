@@ -106,6 +106,9 @@ declare global {
         glazingLayers: number;
         glassOpacity: number;
         crackProgress: number;
+        glassRefractionReady: boolean;
+        tesseractLayers: number;
+        tesseractIntensity: number;
         ringVisible: boolean;
       };
       playback: {
@@ -176,6 +179,7 @@ export function GoalTunnelSection() {
   const stageOverlayRef = useRef<HTMLDivElement | null>(null);
   const backdropGlowRef = useRef<HTMLDivElement | null>(null);
   const monitorBezelRef = useRef<HTMLDivElement | null>(null);
+  const monitorCracksRef = useRef<HTMLDivElement | null>(null);
   const tunnelTitleWrapRef = useRef<HTMLDivElement | null>(null);
   const titleLineRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
@@ -195,6 +199,7 @@ export function GoalTunnelSection() {
     const overlayEl = stageOverlayRef.current;
     const backdropEl = backdropGlowRef.current;
     const monitorBezelEl = monitorBezelRef.current;
+    const monitorCracksEl = monitorCracksRef.current;
     const titleWrapEl = tunnelTitleWrapRef.current;
     const hostEl = canvasHostRef.current;
 
@@ -206,6 +211,7 @@ export function GoalTunnelSection() {
       !overlayEl ||
       !backdropEl ||
       !monitorBezelEl ||
+      !monitorCracksEl ||
       !titleWrapEl ||
       !hostEl
     ) {
@@ -413,7 +419,10 @@ export function GoalTunnelSection() {
     scene.add(glazing.group);
     glazing.group.visible = false;
 
-    // Authentic Lusion pre-calculated 3D glass shards & animation (`Frame 16`).
+    // Live scene color buffer: animated fragments refract the current tunnel and astronaut.
+    let glassRefractionTarget: THREE.WebGLRenderTarget | null = null;
+
+    // Captured rigid-body shard transforms are interpolated continuously at each scroll sample.
     let shardsMesh: THREE.Mesh | null = null;
     let numShards = 0;
     let framesPerShard = 0;
@@ -464,8 +473,12 @@ export function GoalTunnelSection() {
             uniforms: { 
               uOpacity: { value: 0 },
               uEnvironment: { value: corridorEnvironment.texture },
-              uFrameData: { value: null }, 
-              uOrientData: { value: null } 
+              uSceneColor: { value: glassRefractionTarget?.texture ?? null },
+              uRefractionSize: { value: new THREE.Vector2(1, 1) },
+              uRefractionStrength: { value: 1.0 },
+              uDispersion: { value: 0.0018 },
+              uFrameData: { value: null },
+              uOrientData: { value: null },
             },
             vertexShader: [
               "attribute float aPiece;",
@@ -475,6 +488,7 @@ export function GoalTunnelSection() {
               "varying vec3 vPosV;",
               "varying vec3 vWorldPos;",
               "varying vec3 vNormalW;",
+              "varying vec4 vClipPosition;",
               "vec3 applyQuat(vec3 v, vec4 q) {",
               "  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);",
               "}",
@@ -492,6 +506,7 @@ export function GoalTunnelSection() {
               "  vNormalV = normalize(normalMatrix * applyQuat(normal, q));",
               "  vNormalW = normalize((vec4(vNormalV, 0.0) * viewMatrix).xyz);",
               "  gl_Position = projectionMatrix * mv;",
+              "  vClipPosition = gl_Position;",
               "}",
             ].join("\n"),
             fragmentShader: [
@@ -499,18 +514,38 @@ export function GoalTunnelSection() {
               "varying vec3 vPosV;",
               "varying vec3 vWorldPos;",
               "varying vec3 vNormalW;",
+              "varying vec4 vClipPosition;",
               "uniform float uOpacity;",
+              "uniform float uRefractionStrength;",
+              "uniform float uDispersion;",
               "uniform samplerCube uEnvironment;",
+              "uniform sampler2D uSceneColor;",
+              "uniform vec2 uRefractionSize;",
               "void main() {",
               "  vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);",
+              "  vec3 Nv = normalize(vNormalV) * (gl_FrontFacing ? 1.0 : -1.0);",
               "  vec3 V = normalize(cameraPosition - vWorldPos);",
-              "  float fres = 0.04 + 0.96 * pow(1.0 - abs(dot(N, V)), 5.0);",
-              "  vec3 reflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
-              "  vec3 transmission = textureCube(uEnvironment, refract(-V, N, 1.0 / 1.46)).rgb;",
-              "  float spec = pow(max(dot(normalize(vNormalV), normalize(vec3(-0.45, 0.72, 0.55))), 0.0), 28.0);",
-              "  vec3 col = mix(transmission * vec3(0.42, 0.58, 0.94), reflection, 0.24 + fres * 0.70);",
-              "  col += vec3(0.15, 0.38, 0.65) * spec;",
-              "  float alpha = clamp(0.12 + fres * 0.56 + spec * 0.12, 0.0, 0.82) * uOpacity;",
+              "  float facing = max(abs(dot(N, V)), 0.0);",
+              "  float fres = 0.04 + 0.96 * pow(1.0 - facing, 5.0);",
+              "  vec2 screenUv = vClipPosition.xy / max(0.0001, vClipPosition.w) * 0.5 + 0.5;",
+              "  float pixelScale = min(1.5, 720.0 / max(1.0, min(uRefractionSize.x, uRefractionSize.y)));",
+              "  vec2 bend = Nv.xy * (0.0015 + (1.0 - facing) * 0.0030) * uRefractionStrength * pixelScale;",
+              "  vec2 chroma = vec2(uDispersion, uDispersion * 0.62) * (0.35 + fres);",
+              "  vec2 uvR = clamp(screenUv + bend + chroma, vec2(0.001), vec2(0.999));",
+              "  vec2 uvG = clamp(screenUv + bend, vec2(0.001), vec2(0.999));",
+              "  vec2 uvB = clamp(screenUv + bend - chroma, vec2(0.001), vec2(0.999));",
+              "  vec3 transmitted = vec3(texture2D(uSceneColor, uvR).r, texture2D(uSceneColor, uvG).g, texture2D(uSceneColor, uvB).b);",
+              "  vec3 envReflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
+              "  vec2 reflectedUv = clamp(screenUv + reflect(-V, N).xy * 0.028, vec2(0.001), vec2(0.999));",
+              "  vec3 screenReflection = texture2D(uSceneColor, reflectedUv).rgb;",
+              "  vec3 reflection = mix(envReflection, screenReflection, 0.26);",
+              "  float edge = pow(1.0 - facing, 3.0);",
+              "  float spec = pow(max(dot(reflect(-normalize(vec3(-0.45, 0.72, 0.55)), N), V), 0.0), 74.0);",
+              "  vec3 glassTint = mix(vec3(0.91, 0.97, 1.0), vec3(0.78, 0.90, 1.0), edge * 0.72);",
+              "  vec3 col = mix(transmitted * glassTint, reflection, 0.08 + fres * 0.82);",
+              "  col += vec3(0.78, 0.91, 1.0) * edge * 0.22;",
+              "  col += vec3(1.0, 0.98, 0.94) * spec * 1.15;",
+              "  float alpha = clamp(0.045 + fres * 0.70 + edge * 0.16 + spec * 0.08, 0.055, 0.94) * uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
             ].join("\n"),
@@ -628,6 +663,21 @@ export function GoalTunnelSection() {
     let composer: EffectComposer | null = null;
     let bloomPass: UnrealBloomPass | null = null;
     let lensPass: ShaderPass | null = null;
+
+    const glassRefractionScale = isMobileInit ? 0.58 : isSoftwareRenderer ? 0.68 : 0.92;
+    glassRefractionTarget = track(new THREE.WebGLRenderTarget(
+      Math.max(2, Math.floor(initW * initDpr * glassRefractionScale)),
+      Math.max(2, Math.floor(initH * initDpr * glassRefractionScale)),
+      {
+        format: THREE.RGBAFormat,
+        type: glRenderer.capabilities.isWebGL2 && !isSoftwareRenderer ? THREE.HalfFloatType : THREE.UnsignedByteType,
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        depthBuffer: true,
+        stencilBuffer: false,
+      }
+    ));
+    glassRefractionTarget.texture.colorSpace = THREE.LinearSRGBColorSpace;
 
     if (!isMobileInit && !isSoftwareRenderer) {
       const bufW = Math.max(2, Math.floor(initW * initDpr));
@@ -768,7 +818,8 @@ export function GoalTunnelSection() {
         astronautMatrix: new Array<number>(16).fill(0),
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
-        corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, crackProgress: 0, ringVisible: false,
+        corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, crackProgress: 0,
+        glassRefractionReady: false, tesseractLayers: 0, tesseractIntensity: 0, ringVisible: false,
       },
       playback: { state: "armed", progress: 0, virtualScroll: 0, activation: 0, end: 0, runs: 0 },
       scrollForEmergence: (u: number) => {
@@ -935,6 +986,10 @@ export function GoalTunnelSection() {
         composer.setSize(W, H);
         bloomPass.setSize(W, H);
       }
+      glassRefractionTarget?.setSize(
+        Math.max(2, Math.floor(W * dpr * glassRefractionScale)),
+        Math.max(2, Math.floor(H * dpr * glassRefractionScale))
+      );
 
       if (window.__goalAstronautTelemetry) {
         window.__goalAstronautTelemetry.renderWidth = Math.floor(W * dpr);
@@ -1270,9 +1325,23 @@ export function GoalTunnelSection() {
         monitorBezelEl.style.display = "none";
       }
 
-      const crackProgress = smoothstep(0.10, 0.25, tShatter);
-      monitorBezelEl.style.setProperty("--goal-crack-opacity", String(crackProgress * (1 - smoothstep(0.42, 0.60, tShatter))));
+      const crackProgress = smoothstep(0.065, 0.145, tShatter);
+      const crackOpacity = crackProgress * (1 - smoothstep(0.16, 0.235, tShatter));
+      monitorBezelEl.style.setProperty("--goal-crack-opacity", String(crackOpacity));
       monitorBezelEl.style.setProperty("--goal-crack-dash", String(1 - crackProgress));
+
+      if (tOutPull > 0.02 && tShatter < 0.30 && tWait <= 0.001) {
+        monitorCracksEl.style.display = "block";
+        monitorCracksEl.style.width = `${m.imgOutWidth}px`;
+        monitorCracksEl.style.height = `${m.imgOutHeight}px`;
+        monitorCracksEl.style.transform = monitorBezelEl.style.transform;
+        monitorCracksEl.style.opacity = String(crackOpacity);
+        monitorCracksEl.style.setProperty("--goal-crack-dash", String(1 - crackProgress));
+        monitorCracksEl.dataset.crackProgress = String(crackProgress);
+      } else {
+        monitorCracksEl.style.display = "none";
+        monitorCracksEl.style.opacity = "0";
+      }
 
       // -----------------------------------------------------------------------
       // C. "STEP INTO A NEW WORLD / AND LET YOUR / IMAGINATION RUN WILD" (`Frames 06–08`)
@@ -1380,6 +1449,9 @@ export function GoalTunnelSection() {
       // used to cut a still-bright transition flash off halfway through its fade.
       trussSystem.group.visible = blackVis > 0.005 || portalFlash > 0.001;
       trussSystem.flashVeilMat.uniforms.uFlash.value = portalFlash;
+      const tesseractIntensity =
+        smoothstep(0.50, 0.63, tTunnel) * (1 - smoothstep(0.79, 0.84, tTunnel)) * blackVis;
+      trussSystem.updateTesseract(tTunnel, tesseractIntensity, reducedMotion);
 
       if (trussSystem.group.visible) {
         const uPhase = clamp01((tTunnel - 0.10) / 0.68);
@@ -1450,15 +1522,17 @@ export function GoalTunnelSection() {
 
       // 3. Authentic Plate-Glass Shatter Burst (`Frame 16`)
       if (shardsMesh) {
-        const shardVis = smoothstep(0.30, 0.34, tShatter) * (1 - smoothstep(0.78, 0.92, tShatter)) * (tWait > 0.001 ? 0 : 1);
+        const shardVis = smoothstep(0.185, 0.215, tShatter) * (1 - smoothstep(0.47, 0.575, tShatter)) * (tWait > 0.001 ? 0 : 1);
         shardsMesh.visible = shardVis > 0.005;
         if (shardsMesh.visible) {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
+          mat.uniforms.uRefractionStrength.value = 0.78 + shardVis * 0.42;
+          mat.uniforms.uDispersion.value = 0.0012 + shardVis * 0.0012;
 
-          // One-beat break: the captured frame sequence reaches full separation quickly,
-          // then the transparent fragments clear the monitor rather than lingering.
-          const burst = acceleratedFall(clamp01((tShatter-0.32)/0.42));
+          // Compress the captured rigid-body trajectory into a fast impact beat,
+          // retaining continuous position interpolation and quaternion slerp.
+          const burst = acceleratedFall(clamp01((tShatter - 0.205) / 0.235));
           const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
           sampleFrame(clamp01(burst) * (framesPerShard - 1));
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
@@ -1779,8 +1853,41 @@ export function GoalTunnelSection() {
           solar.focalScale = optics.chromaticRingMat.uniforms.uFocalScale.value;
         }
       }
-      gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.25 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "tesseract");
+      gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.18 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "tesseract");
       glRenderer.info.reset();
+      let glassRefractionReady = false;
+      if (shardsMesh?.visible && glassRefractionTarget) {
+        const wasVisible = shardsMesh.visible;
+        const previousTarget = glRenderer.getRenderTarget();
+        const previousToneMapping = glRenderer.toneMapping;
+        const previousOutputColorSpace = glRenderer.outputColorSpace;
+        const previousAutoClear = glRenderer.autoClear;
+        const previousClearColor = glRenderer.getClearColor(new THREE.Color()).clone();
+        const previousClearAlpha = glRenderer.getClearAlpha();
+        try {
+          shardsMesh.visible = false;
+          glRenderer.setRenderTarget(glassRefractionTarget);
+          glRenderer.autoClear = true;
+          glRenderer.toneMapping = THREE.NoToneMapping;
+          glRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+          glRenderer.setClearColor(tOutPull > 0.02 && tShatter < 0.60 ? 0x0a104a : 0x000000, 1);
+          glRenderer.clear(true, true, true);
+          glRenderer.render(scene, camera);
+          glassRefractionReady = true;
+          const shardMaterial = shardsMesh.material as THREE.ShaderMaterial;
+          shardMaterial.uniforms.uSceneColor.value = glassRefractionTarget.texture;
+          shardMaterial.uniforms.uRefractionSize.value.set(glassRefractionTarget.width, glassRefractionTarget.height);
+        } catch {
+          glassRefractionReady = false;
+        } finally {
+          glRenderer.setRenderTarget(previousTarget);
+          glRenderer.toneMapping = previousToneMapping;
+          glRenderer.outputColorSpace = previousOutputColorSpace;
+          glRenderer.autoClear = previousAutoClear;
+          glRenderer.setClearColor(previousClearColor, previousClearAlpha);
+          shardsMesh.visible = wasVisible;
+        }
+      }
       if (composer) {
         composer.render(1 / 60);
       } else {
@@ -1814,6 +1921,9 @@ export function GoalTunnelSection() {
         state.glazingLayers = glazing.group.visible ? glazing.group.children.length : 0;
         state.glassOpacity = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uOpacity.value : 0;
         state.crackProgress = crackProgress;
+        state.glassRefractionReady = glassRefractionReady;
+        state.tesseractLayers = trussSystem.tesseractLayers;
+        state.tesseractIntensity = tesseractIntensity;
         state.ringVisible = optics.chromaticRingMesh.visible;
       }
       if (window.__goalPipelineProbe) {
@@ -2263,28 +2373,50 @@ export function GoalTunnelSection() {
               aria-hidden="true"
               className="absolute -top-[9px] left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-[#1b2234] sm:-top-[14px] sm:h-[6px] sm:w-[6px]"
             />
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 1000 600"
-              fill="none"
-              className="pointer-events-none h-full w-full"
-              style={{ opacity: "var(--goal-crack-opacity, 0)" }}
-            >
-              <path
-                d="M500 295 L180 42 M500 295 L830 58 M500 295 L965 280 M500 295 L845 555 M500 295 L490 590 M500 295 L145 545 M500 295 L35 265 M360 185 L435 120 L545 145 M635 205 L710 290 L615 395 M385 395 L295 315 L360 185"
-                stroke="rgba(235, 245, 255, 0.72)"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                pathLength="1"
-                strokeDasharray="1"
-                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
-              />
-            </svg>
+
           </div>
         </div>
 
         {/* Full-Viewport Single-World Three.js Canvas Host */}
         <div ref={canvasHostRef} className="absolute inset-0 z-[10] h-full w-full" />
+
+        {/* Foreground spiderweb fractures sit above WebGL and clear as the shard burst starts. */}
+        <div
+          ref={monitorCracksRef}
+          id="home-goal-monitor-cracks"
+          aria-hidden="true"
+          data-crack-overlay="true"
+          className="pointer-events-none absolute left-0 top-0 z-[11] will-change-transform"
+          style={{ display: "none", opacity: 0, transformOrigin: "50% 50%" }}
+        >
+          <svg viewBox="0 0 1000 600" preserveAspectRatio="none" fill="none"
+            className="absolute inset-[2.4%] h-[95.2%] w-[95.2%] overflow-visible">
+            <defs>
+              <filter id="goalGlassCrackGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3.2" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+            <g filter="url(#goalGlassCrackGlow)">
+              <path
+                d="M506 296 L432 244 L365 190 L290 164 L238 96 L170 58 M432 244 L396 182 L405 122 L368 62 M365 190 L286 207 L222 184 L150 207 L76 174 M506 296 L574 234 L646 190 L715 122 L805 92 L874 42 M574 234 L620 168 L604 104 L653 52 M646 190 L737 202 L795 176 L890 193 L966 162 M506 296 L654 298 L744 285 L825 309 L926 290 M506 296 L594 374 L676 446 L736 520 L824 565 M594 374 L565 450 L598 518 L570 578 M676 446 L770 428 L842 455 L932 436 M506 296 L477 390 L469 468 L485 542 L464 595 M477 390 L410 444 L378 510 L310 548 M506 296 L414 330 L332 364 L267 425 L182 470 M414 330 L351 290 L280 300 L209 272 L130 302 M506 296 L342 248 L258 250 L196 220"
+                stroke="#eff9ff" strokeOpacity="0.96" strokeWidth="2.5"
+                strokeLinecap="round" strokeLinejoin="round"
+                pathLength="1" strokeDasharray="1"
+                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
+              />
+              <path
+                d="M502 297 L476 281 L458 253 M503 297 L536 274 L554 247 M504 300 L531 326 L556 348 M500 300 L476 329 L459 354 M365 190 L354 147 L330 126 M646 190 L690 168 L722 140 M594 374 L628 398 L651 430 M414 330 L385 359 L374 395 M342 248 L319 218 L293 205 M715 122 L740 91 L779 76 M477 390 L448 420 L434 450 M770 428 L805 408 L838 411"
+                stroke="#b9e7ff" strokeOpacity="0.90" strokeWidth="1.45"
+                strokeLinecap="round" strokeLinejoin="round"
+                pathLength="1" strokeDasharray="1"
+                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
+              />
+              <circle cx="506" cy="296" r="20" stroke="#f7fcff" strokeOpacity="0.88" strokeWidth="1.3" />
+              <circle cx="506" cy="296" r="8" fill="#eaf7ff" fillOpacity="0.30" />
+            </g>
+          </svg>
+        </div>
 
         {/* White 3-Line Headline Over/Behind Astronaut (`Frames 06 -> 07 -> 08`) */}
         <div
