@@ -88,7 +88,7 @@ try {
  }
  const layout=await page.evaluate(()=>{
   const top=el=>{let y=0;for(let n=el;n;n=n.offsetParent)y+=n.offsetTop;return y};
-  return {reel:top(document.getElementById('home-reel-container')),featured:top(document.getElementById('home-featured'))};
+  return {intro:top(document.getElementById('home-reel')),reel:top(document.getElementById('home-reel-container')),featured:top(document.getElementById('home-featured'))};
  });
  const seek=async y=>{
   const target=Math.round(y);
@@ -98,16 +98,21 @@ try {
   // Wait for actual browser frames; keep all reverse-transform assertions unchanged.
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  };
-  // The reel ribbon draws in with the intro and retracts on reverse scroll.
+  // Sample against the reel-section intro playhead, not the later video container.
   const ribbonSelector = width < 813 ? '#home-reel-ribbon-path-mobile' : '#home-reel-ribbon-path';
+  const ribbonStart = layout.intro - height * 0.75;
+  const ribbonEnd = layout.intro - height * 0.20;
   const ribbonStates = [];
-  for (const y of [layout.reel-height*.94, layout.reel-height*.12]) {
+  for (const y of [ribbonStart, ribbonEnd]) {
     await seek(y);
     ribbonStates.push(await page.locator(ribbonSelector).evaluate(el=>el.style.strokeDashoffset));
   }
-  assert.notEqual(ribbonStates[0],ribbonStates[1],'the cobalt reel ribbon draws as the reel enters');
-  report.ribbon = ribbonStates;
-
+  assert.ok(Number(ribbonStates[0]) > 0.95 && Number(ribbonStates[1]) < 0.05,
+    `cobalt ribbon should draw from its intro entrance to completion (offsets=${ribbonStates.join(',')})`);
+  await seek(ribbonStart);
+  const reversedRibbon = await page.locator(ribbonSelector).evaluate(el=>el.style.strokeDashoffset);
+  assert.equal(reversedRibbon, ribbonStates[0], 'reverse scroll restores the undrawn ribbon state');
+  report.ribbon = { forward:ribbonStates, reversed:reversedRibbon };
  const reel=[];
  for(const y of [layout.reel-height*.94,layout.reel-height*.5,layout.reel-height*.12]){
   await seek(y);
