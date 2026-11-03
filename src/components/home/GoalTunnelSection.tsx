@@ -109,6 +109,8 @@ declare global {
         glassRefractionReady: boolean;
         tesseractLayers: number;
         tesseractFacets: number;
+        shardCount: number;
+        shardFrames: number;
         tesseractIntensity: number;
         ringVisible: boolean;
       };
@@ -874,8 +876,11 @@ export function GoalTunnelSection() {
       }) : null;
     if (gpuTimer) {
       track(gpuTimer);
-      window.__goalAstronautTelemetry.gpuTiming.enabled = true;
-      window.__goalAstronautTelemetry.gpuTiming.recent = Array.from({ length: 16 }, () => ({ id: 0, ms: 0, phase: "" }));
+      const gpuTiming = window.__goalAstronautTelemetry?.gpuTiming;
+      if (gpuTiming) {
+        gpuTiming.enabled = true;
+        gpuTiming.recent = Array.from({ length: 16 }, () => ({ id: 0, ms: 0, phase: "" }));
+      }
     }
 
     const docOffsetTop = (el: HTMLElement): number => {
