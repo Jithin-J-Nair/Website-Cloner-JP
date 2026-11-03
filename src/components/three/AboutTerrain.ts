@@ -11,7 +11,7 @@ export function terrainHeightAt(x: number, z: number): number {
   // Broad lunar shoulders: retain the asymmetry, but avoid the narrow, high
   // ridgelines that read as alpine peaks at the wide camera distance. The
   // center floor and all shared astronaut/rock/contour anchors remain stable.
-  const rimRise = smoothstep(6.4, 26.0, valleyDist) * lerp(3.45, 3.3, smoothstep(-4, 8, x));
+  const rimRise = smoothstep(6.4, 26.0, valleyDist) * lerp(4.25, 3.3, smoothstep(-4, 8, x));
 
   const flankMask = smoothstep(4.8, 15.8, Math.abs(x) + Math.max(0, -z) * 0.38);
 
@@ -34,7 +34,7 @@ export function terrainHeightAt(x: number, z: number): number {
   // downhill in actual mesh relief and shares the floor/stone/figure sampler.
   const ridge = (center: number, width: number) => Math.pow(Math.max(0, 1 - Math.pow((x - center) / width, 2)), 1.6);
   const nearRim = 1 - smoothstep(10, 24, z);
-  const left = ridge(-11 + Math.sin(z * .12) * 1.5, 6.2) * (2.2 + noise(z * .42, 2) * .9);
+  const left = ridge(-11 + Math.sin(z * .12) * 1.5, 6.2) * (2.95 + noise(z * .42, 2) * 1.15);
   const right = ridge(12 + Math.sin(z * .12 + 1) * 1.6, 7.6) * (1.25 + noise(z * .38, 7) * .45);
   const channels = Math.pow(1 - Math.abs(noise(wx * .22, wz * 1.5) * 2 - 1), 3);
   const erosion = (channels - .38) * .7 * flankMask;
