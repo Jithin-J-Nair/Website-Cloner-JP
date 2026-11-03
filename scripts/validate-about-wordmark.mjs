@@ -66,7 +66,7 @@ try {
       assert.equal(atPeak.activeText, width === 390 ? 'mobile' : 'desktop');
       assert.ok(atPeak.pathLength > 1000, 'the active sweep path must be a genuine long curve');
       assert.ok(width === 390 ? atPeak.fontSize <= 240 : atPeak.fontSize >= 380, 'responsive mark uses the correct glyph scale');
-      assert.ok(atPeak.stage.width <= innerWidth + 1 && atPeak.stage.height <= innerHeight, 'responsive sweep remains within the viewport stage');
+      assert.ok(atPeak.stage.width <= width + 1 && atPeak.stage.height <= height, 'responsive sweep remains within the viewport stage');
       const probeAtPeak = await page.evaluate(() => window.__aboutProbe?.());
       await page.screenshot({ path: `${out}/${width}-peak.png`, fullPage: false, timeout: 120000 });
 
