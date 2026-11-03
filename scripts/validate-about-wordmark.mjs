@@ -65,6 +65,21 @@ try {
       await seek(peak);
       const atPeak = await inspect();
       assert.ok(atPeak.opacity > 0.99, 'wordmark must reach full opacity at the valley beat');
+      if (width === 390) {
+        const handoff = await page.evaluate(() => {
+          const opening = document.querySelector('[data-about-opening-wordmark]');
+          const manifesto = document.querySelector('[data-about-manifesto]');
+          return {
+            openingVisibility: opening ? getComputedStyle(opening).visibility : 'missing',
+            manifestoVisibility: manifesto ? getComputedStyle(manifesto).visibility : 'missing',
+            manifestoOpacity: manifesto ? Number(getComputedStyle(manifesto).opacity) : 0,
+          };
+        });
+        assert.equal(handoff.openingVisibility, 'hidden', 'opening wordmark must clear before the mobile valley mark');
+        assert.equal(handoff.manifestoVisibility, 'visible', 'mobile manifesto must be visible at the wordmark peak');
+        assert.ok(handoff.manifestoOpacity > .95, 'mobile manifesto must have completed its entrance');
+        atPeak.mobileHandoff = handoff;
+      }
       assert.equal(atPeak.visibility, 'visible');
       assert.equal(atPeak.text, 'LUSION');
       assert.equal(atPeak.activeText, width === 390 ? 'mobile' : 'desktop');

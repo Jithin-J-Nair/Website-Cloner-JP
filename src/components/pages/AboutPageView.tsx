@@ -982,6 +982,7 @@ function AboutWhoExperience({
         {/* Layer 1: Monumental Solid `LUSION` Hero Wordmark (`about-01` & `about-02`) */}
         <div
           ref={heroWordmarkRef}
+          data-about-opening-wordmark
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-4 z-20 will-change-transform"
         >
           <svg
@@ -1071,6 +1072,7 @@ function AboutWhoExperience({
         {/* Layer 2: Horizontal `WE ARE A CREATIVE PRODUCTION STUDIO` Reveal (`u = 2.05 .. 4.35`) */}
         <div
           ref={manifestoOverlayRef}
+          data-about-manifesto
           style={{ opacity: 0, visibility: "hidden" }}
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 min-[820px]:bottom-[5.7vh] z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
         >
