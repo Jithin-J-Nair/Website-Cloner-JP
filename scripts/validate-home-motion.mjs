@@ -180,6 +180,7 @@ try {
      crackProgress:window.__goalAstronautTelemetry.sceneState.crackProgress,
      glassOpacity:window.__goalAstronautTelemetry.sceneState.glassOpacity,
      glassRefractionReady:window.__goalAstronautTelemetry.sceneState.glassRefractionReady,
+     shardDepthWrite:window.__goalAstronautTelemetry.sceneState.shardDepthWrite,
      tesseractLayers:window.__goalAstronautTelemetry.sceneState.tesseractLayers,
      tesseractFacets:window.__goalAstronautTelemetry.sceneState.tesseractFacets,
      shardCount:window.__goalAstronautTelemetry.sceneState.shardCount,
@@ -227,6 +228,7 @@ try {
  const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.36);
  assert.ok(shatterState.glassOpacity>0.72,'plate-glass fragments separate on the compressed impact beat');
  assert.equal(shatterState.glassRefractionReady,true,'moving glass samples the live scene behind each fragment');
+ assert.equal(shatterState.shardDepthWrite,true,'nearer glass facets depth-occlude more distant facets');
  assert.equal(shatterState.webglError,0);
  const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.90));
  const exitState = await seekScenePhase('post-shatter',exitY,'shatterProgress',0.90);

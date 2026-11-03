@@ -107,6 +107,7 @@ declare global {
         glassOpacity: number;
         crackProgress: number;
         glassRefractionReady: boolean;
+        shardDepthWrite: boolean;
         tesseractLayers: number;
         tesseractFacets: number;
         shardCount: number;
@@ -472,7 +473,8 @@ export function GoalTunnelSection() {
             defines: { USE_SHARDS: 1 },
             transparent: true,
             side: THREE.DoubleSide,
-            depthWrite: false,
+            // Let nearer shard facets occlude farther facets instead of accumulating as wireframe layers.
+            depthWrite: true,
             uniforms: { 
               uOpacity: { value: 0 },
               uEnvironment: { value: corridorEnvironment.texture },
@@ -834,7 +836,7 @@ export function GoalTunnelSection() {
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
         corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, crackProgress: 0,
-        glassRefractionReady: false, tesseractLayers: 0, tesseractFacets: 0,
+        glassRefractionReady: false, shardDepthWrite: false, tesseractLayers: 0, tesseractFacets: 0,
         shardCount: 0, shardFrames: 0, tesseractIntensity: 0, ringVisible: false,
       },
       playback: { state: "armed", progress: 0, virtualScroll: 0, activation: 0, end: 0, runs: 0 },
@@ -1942,6 +1944,7 @@ export function GoalTunnelSection() {
         state.glassOpacity = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uOpacity.value : 0;
         state.crackProgress = crackProgress;
         state.glassRefractionReady = glassRefractionReady;
+        state.shardDepthWrite = shardsMesh ? (shardsMesh.material as THREE.ShaderMaterial).depthWrite : false;
         state.tesseractLayers = trussSystem.tesseractLayers;
         state.tesseractFacets = trussSystem.tesseractFacets;
         state.shardCount = numShards;
