@@ -11,7 +11,7 @@ export function terrainHeightAt(x: number, z: number): number {
   // Broad lunar shoulders: retain the asymmetry, but avoid the narrow, high
   // ridgelines that read as alpine peaks at the wide camera distance. The
   // center floor and all shared astronaut/rock/contour anchors remain stable.
-  const rimRise = smoothstep(6.2, 25.0, valleyDist) * lerp(3.9, 6.8, smoothstep(-4, 8, x));
+  const rimRise = smoothstep(6.4, 26.0, valleyDist) * lerp(3.45, 4.55, smoothstep(-4, 8, x));
 
   const flankMask = smoothstep(4.8, 15.8, Math.abs(x) + Math.max(0, -z) * 0.38);
 
@@ -28,14 +28,14 @@ export function terrainHeightAt(x: number, z: number): number {
   const ridgeA = 1 - Math.abs(noise(wx * .14, wz * .14) * 2 - 1);
   const ridgeB = 1 - Math.abs(noise(wx * .34 + 31, wz * .31 - 11) * 2 - 1);
   const ridgeC = 1 - Math.abs(noise(wx * .72 - 7, wz * .72 + 41) * 2 - 1);
-  const escarpment = (Math.pow(ridgeA, 2) - .32) * 1.15 + (Math.pow(ridgeB, 3) - .2) * .42 + ridgeC * .34;
+  const escarpment = (Math.pow(ridgeA, 2) - .32) * .88 + (Math.pow(ridgeB, 3) - .2) * .28 + ridgeC * .22;
   const detail = (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (0.28 + flankMask);
   // Distinct narrow escarpments, not a single smooth bowl. Erosion runs
   // downhill in actual mesh relief and shares the floor/stone/figure sampler.
   const ridge = (center: number, width: number) => Math.pow(Math.max(0, 1 - Math.pow((x - center) / width, 2)), 1.6);
   const nearRim = 1 - smoothstep(10, 24, z);
-  const left = ridge(-11 + Math.sin(z * .12) * 1.5, 6.0) * (2.45 + noise(z * .42, 2) * 1.15);
-  const right = ridge(12 + Math.sin(z * .12 + 1) * 1.6, 6.5) * (2.9 + noise(z * .38, 7) * 1.35);
+  const left = ridge(-11 + Math.sin(z * .12) * 1.5, 6.2) * (2.2 + noise(z * .42, 2) * .9);
+  const right = ridge(12 + Math.sin(z * .12 + 1) * 1.6, 7.2) * (1.65 + noise(z * .38, 7) * .55);
   const channels = Math.pow(1 - Math.abs(noise(wx * .22, wz * 1.5) * 2 - 1), 3);
   const erosion = (channels - .38) * .7 * flankMask;
   const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .13 * flankMask;
