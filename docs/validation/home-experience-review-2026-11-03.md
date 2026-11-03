@@ -2,7 +2,7 @@
 
 ## Implemented in the homepage branch
 - Reframed the eleven 3D hollow connectors into a central desktop cluster with overlapping cobalt, white and black pieces; increased environmental intensity, lowered material roughness and restored a strong clearcoat reflection.
-- Reworked pointer displacement and spring restitution so the cluster responds to cursor movement and returns to its central rest formation without a second sluggish lerp. The renderer preserves a low-rate idle float rather than continuously submitting full-rate frames.
+- Reworked pointer displacement and spring restitution so the cluster responds to cursor movement and returns directly to its central rest formation through one critically damped spring (no secondary transform lerp). The renderer uses a low-rate idle float only while the preloader/visibility state allows it; otherwise the static pose sleeps.
 - Added a scroll-drawn ribbon path with a moving highlight/runner and reverse-scroll retraction, plus a smooth hero-to-reel stage handoff.
 - Extended the downstream astronaut sequence with a full vortex orbit: lateral/vertical spiral, body banking, faster inward shrink, tighter inverted tunnel twist, and pulsing pink vortex/bloom.
 - Accelerated monitor crack growth and astronaut exit choreography. Captured glass fragments separate quickly and clear rather than hanging over the monitor; the glass window is a short score-beat segment.

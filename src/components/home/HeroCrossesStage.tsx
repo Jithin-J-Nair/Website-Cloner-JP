@@ -732,8 +732,6 @@ export function HeroCrossesStage() {
 
       const isReduced = reducedMotionRef.current;
 
-      // Exponential smoothing equivalent to ~0.05 lerp at 60fps, strictly delta-time invariant
-      const alpha = 1 - Math.exp(-3.1 * dt);
       const decay = Math.exp(-2.6 * dt);
       const isPortrait = camera.aspect < PORTRAIT_STAGE_ASPECT;
 
@@ -805,15 +803,11 @@ export function HeroCrossesStage() {
         targetQuat.setFromEuler(targetEuler);
 
         if (!isReduced && (mesh.position.distanceToSquared(targetPos)>0.00000001 || mesh.quaternion.angleTo(targetQuat)>0.0001)) moving = true;
-        if (isReduced) {
-          // Paint the exact neutral pose before the reduced-motion renderer goes to sleep.
-          mesh.position.copy(targetPos);
-          mesh.quaternion.copy(targetQuat);
-        } else {
-          mesh.position.lerp(targetPos, alpha);
-          mesh.quaternion.slerp(targetQuat, alpha);
-        }
-        if (!moving && !ptr.active) { mesh.position.copy(targetPos); mesh.quaternion.copy(targetQuat); }
+        // The critically damped pointer spring already provides smooth, bounded motion.
+        // Do not add a second transform lerp: it delays the magnetic return after the
+        // cursor leaves and makes the connectors appear to drift away from their rest pose.
+        mesh.position.copy(targetPos);
+        mesh.quaternion.copy(targetQuat);
 
         imp.pos.multiplyScalar(decay);
         imp.rot.multiplyScalar(decay);
