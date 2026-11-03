@@ -448,7 +448,7 @@ export function HeroCrossesStage() {
         camera.lookAt(-0.04, -0.16, 0);
       } else {
         camera.fov = 32;
-        camera.zoom = 1.12;
+        camera.zoom = 1.0;
         camera.position.set(0.24, 0.04, 8.15);
         camera.lookAt(0.14, -0.02, 0);
       }

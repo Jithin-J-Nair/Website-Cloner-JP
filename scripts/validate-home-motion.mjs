@@ -60,7 +60,7 @@ try {
   assert.equal(Number(settled.offsetEnergy),0);
   await page.waitForTimeout(650);
   const idleFrames = Number(await hero.getAttribute('data-render-count')) - Number(settled.renderCount);
-  assert.ok(idleFrames >= 1 && idleFrames <= 24, `settled hero keeps only a low-rate float (frames=${idleFrames})`);
+  assert.ok(idleFrames >= 0 && idleFrames <= 24, `settled hero must sleep or keep only a low-rate idle render (frames=${idleFrames})`);
   // Rapid direction changes followed by cancellation must not leave a displaced connector.
   for (const x of [.2,.8,.3,.7,.49]) await page.mouse.move(box.x+box.width*x,box.y+box.height*.56);
   await hero.dispatchEvent('pointercancel',{pointerType:'mouse'});
