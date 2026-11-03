@@ -181,6 +181,9 @@ try {
      glassOpacity:window.__goalAstronautTelemetry.sceneState.glassOpacity,
      glassRefractionReady:window.__goalAstronautTelemetry.sceneState.glassRefractionReady,
      tesseractLayers:window.__goalAstronautTelemetry.sceneState.tesseractLayers,
+     tesseractFacets:window.__goalAstronautTelemetry.sceneState.tesseractFacets,
+     shardCount:window.__goalAstronautTelemetry.sceneState.shardCount,
+     shardFrames:window.__goalAstronautTelemetry.sceneState.shardFrames,
      tesseractIntensity:window.__goalAstronautTelemetry.sceneState.tesseractIntensity,
      trussLoaded:window.__goalAstronautTelemetry.sceneState.trussLoaded,
      shardsLoaded:window.__goalAstronautTelemetry.sceneState.shardsLoaded,
@@ -192,6 +195,9 @@ try {
  assert.equal(vortexState.trussLoaded,true,'vortex truss geometry is present');
  assert.equal(vortexState.shardsLoaded,true,'captured shard geometry is loaded for downstream break');
  assert.ok(vortexState.tesseractLayers >= 2,'glass tesseract depth layers are built for the active rendering tier');
+ assert.equal(vortexState.tesseractFacets,24,'each projected tesseract has all 24 square facets');
+ assert.equal(vortexState.shardCount,946,'the source fracture is the original 946-piece rigid-body glass field');
+ assert.ok(vortexState.shardFrames >= 100,'glass fragments use a dense pre-simulated motion sequence');
  assert.ok(vortexState.tesseractIntensity > 0.20,'4D glass vortex is energized during astronaut fall');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
