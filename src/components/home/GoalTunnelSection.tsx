@@ -535,7 +535,7 @@ export function GoalTunnelSection() {
               "  if (dot(refractedRay, refractedRay) < 0.0001) refractedRay = reflect(incident, Nv);",
               "  vec2 incidentSlope = incident.xy / max(0.12, abs(incident.z));",
               "  vec2 refractedSlope = refractedRay.xy / max(0.12, abs(refractedRay.z));",
-              "  vec2 bend = (refractedSlope - incidentSlope) * (0.006 + (1.0 - facing) * 0.008) * uRefractionStrength * pixelScale;",
+              "  vec2 bend = (refractedSlope - incidentSlope) * (0.010 + (1.0 - facing) * 0.014) * uRefractionStrength * pixelScale;",
               "  vec2 chroma = vec2(uDispersion, uDispersion * 0.62) * (0.35 + fres);",
               "  vec2 uvR = clamp(screenUv + bend + chroma, vec2(0.001), vec2(0.999));",
               "  vec2 uvG = clamp(screenUv + bend, vec2(0.001), vec2(0.999));",
@@ -546,14 +546,18 @@ export function GoalTunnelSection() {
               "  vec3 envReflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
               "  vec2 reflectedUv = clamp(screenUv + reflect(incident, Nv).xy * 0.020, vec2(0.001), vec2(0.999));",
               "  vec3 screenReflection = texture2D(uSceneColor, reflectedUv).rgb;",
-              "  vec3 reflection = mix(envReflection, screenReflection, 0.26);",
-              "  float edge = pow(1.0 - facing, 3.0);",
-              "  float spec = pow(max(dot(reflect(-normalize(vec3(-0.45, 0.72, 0.55)), N), V), 0.0), 74.0);",
-              "  vec3 glassTint = mix(vec3(0.91, 0.97, 1.0), vec3(0.78, 0.90, 1.0), edge * 0.72);",
-              "  vec3 col = mix(transmitted * glassTint, reflection, 0.08 + fres * 0.82);",
-              "  col += vec3(0.78, 0.91, 1.0) * edge * 0.22;",
-              "  col += vec3(1.0, 0.98, 0.94) * spec * 1.15;",
-              "  float alpha = clamp(0.045 + fres * 0.70 + edge * 0.16 + spec * 0.08, 0.055, 0.94) * uOpacity;",
+              "  vec3 reflection = mix(envReflection, screenReflection, 0.46);",
+              "  float edge = pow(1.0 - facing, 1.45);",
+              "  vec3 reflectedLight = reflect(-normalize(vec3(-0.45, 0.72, 0.55)), N);",
+              "  float spec = pow(max(dot(reflectedLight, V), 0.0), 82.0);",
+              "  float broadSpec = pow(max(dot(reflectedLight, V), 0.0), 24.0);",
+              "  vec3 glassTint = mix(vec3(0.94, 0.985, 1.0), vec3(0.74, 0.88, 1.0), edge * 0.78);",
+              "  float reflectance = clamp(0.14 + fres * 0.70 + edge * 0.16, 0.14, 0.96);",
+              "  vec3 col = mix(transmitted * glassTint, reflection, reflectance);",
+              "  col += vec3(0.72, 0.88, 1.0) * edge * 0.30;",
+              "  col += vec3(1.0, 0.99, 0.96) * spec * 1.35;",
+              "  col += vec3(0.48, 0.70, 1.0) * broadSpec * 0.32;",
+              "  float alpha = clamp(0.17 + fres * 0.58 + edge * 0.17 + spec * 0.09 + broadSpec * 0.06, 0.20, 0.98) * uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
             ].join("\n"),
@@ -1535,8 +1539,8 @@ export function GoalTunnelSection() {
         if (shardsMesh.visible) {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
-          mat.uniforms.uRefractionStrength.value = 0.78 + shardVis * 0.42;
-          mat.uniforms.uDispersion.value = 0.0012 + shardVis * 0.0012;
+          mat.uniforms.uRefractionStrength.value = 1.35 + shardVis * 0.65;
+          mat.uniforms.uDispersion.value = 0.0018 + shardVis * 0.0018;
 
           // Compress the captured rigid-body trajectory into a fast impact beat,
           // retaining continuous position interpolation and quaternion slerp.
