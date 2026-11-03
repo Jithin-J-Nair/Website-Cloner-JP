@@ -32,7 +32,7 @@ The visual direction extracted from the live site and supplied captures is restr
 
 - Delete the standalone monitor crack SVG and every related ref, opacity, dash and progress hook. The monitor bezel remains clean until the 946 captured glass shards separate.
 - Delete the white 4D tesseract mesh group and its four-layer geometry, materials, update loop and telemetry. Let the captured metal truss, its twist/pinch deformation and a restrained cyan-to-magenta spiral core define the vortex.
-- Remove scroll-velocity `skewY` from featured project cards. Preserve their entrance and image parallax.
+- Remove scroll-velocity `skewY` from featured project cards and the full-frame radial RGB lens pass at the tunnel handoff. Preserve the deliberate localized solar/visor optical rings, bloom, and glass-surface refraction.
 - Keep the captured 946-piece / 15-frame shard data and PCHIP interpolation. Widen the breakup envelope modestly, increase angle-dependent screen-space refraction, and strengthen live-scene reflections and grazing-angle highlights. This remains a screen-space optical approximation, not path tracing or a new rigid-body solver.
 - Increase the astronaut's early descent while preserving the shared cinematic playhead and its endpoint.
 - Increase pointer influence on the centered connector cluster. Keep idle drift only while hovered; when the pointer exits, the spring target becomes the exact rest pose.

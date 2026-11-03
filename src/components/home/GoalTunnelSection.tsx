@@ -5,7 +5,6 @@ import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { advanceCinematicProgress, acceleratedFall, blueFlightDistance, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
 import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
@@ -352,7 +351,7 @@ export function GoalTunnelSection() {
       ...earthSystem.materials,
       optics.spaceHaloMat,
       optics.visorFlareMat,
-      // The screen-space lens pass must obey the same physical tablet aperture.
+      // Open-space optical meshes obey the same physical tablet aperture.
       // Releasing the existing stencil later still permits the open-space effect.
       optics.chromaticRingMat,
     ];
@@ -687,7 +686,6 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     let composer: EffectComposer | null = null;
     let bloomPass: UnrealBloomPass | null = null;
-    let lensPass: ShaderPass | null = null;
 
     const glassRefractionScale = isMobileInit ? 0.58 : isSoftwareRenderer ? 0.68 : 0.92;
     glassRefractionTarget = track(new THREE.WebGLRenderTarget(
@@ -731,30 +729,6 @@ export function GoalTunnelSection() {
       bloomPass = new UnrealBloomPass(new THREE.Vector2(initW, initH), 0.16, 0.46, 1.48);
       composer.addPass(bloomPass);
 
-      // Single bounded spatial lens pass: no history buffer/ghosts on reverse, navigation or pause.
-      // Linear HDR input; OutputPass alone owns tone mapping and output color conversion.
-      lensPass = new ShaderPass({
-        uniforms: { tDiffuse: { value: null }, uAmount: { value: 0 } },
-        vertexShader: `varying vec2 vUv; void main() { vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-        fragmentShader: `
-          uniform sampler2D tDiffuse;
-          uniform float uAmount;
-          varying vec2 vUv;
-          void main() {
-            vec2 ray = vUv-0.5;
-            float edge = dot(ray,ray);
-            vec2 stepUv = ray*uAmount*edge;
-            vec3 col = texture2D(tDiffuse,vUv).rgb * 0.4;
-            col += texture2D(tDiffuse,clamp(vUv-stepUv,0.0,1.0)).rgb * 0.25;
-            col += texture2D(tDiffuse,clamp(vUv-stepUv*2.0,0.0,1.0)).rgb * 0.20;
-            col += texture2D(tDiffuse,clamp(vUv-stepUv*3.0,0.0,1.0)).rgb * 0.15;
-            // Restrained edge dispersion; the central subject remains sharp and achromatic.
-            col.r += (texture2D(tDiffuse,clamp(vUv+stepUv*0.5,0.0,1.0)).r-texture2D(tDiffuse,vUv).r)*0.25;
-            col.b += (texture2D(tDiffuse,clamp(vUv-stepUv*0.5,0.0,1.0)).b-texture2D(tDiffuse,vUv).b)*0.25;
-            gl_FragColor=vec4(max(col,0.0),texture2D(tDiffuse,vUv).a);
-          }`,
-      });
-      composer.addPass(lensPass);
       const outputPass = new OutputPass();
       composer.addPass(outputPass);
     }
@@ -1821,12 +1795,6 @@ export function GoalTunnelSection() {
         visorLed.mesh.visible = false;
       }
 
-      if (lensPass) {
-        const shaftVelocity = smoothstep(0.13,0.70,tTunnel)*(1-smoothstep(0.79,0.84,tTunnel));
-        const blueVelocity = smoothstep(0.815,0.97,tTunnel)*(1-smoothstep(0,0.12,tOutPull));
-        lensPass.uniforms.uAmount.value = inEmergencePhase || reducedMotion ? 0 : Math.max(shaftVelocity,blueVelocity)*0.012;
-        lensPass.enabled = lensPass.uniforms.uAmount.value > 0.00001;
-      }
       // Evaluate after the current bone/root matrices: no stale silhouette or one-frame flare lag.
       if (optics.chromaticRingMesh.visible) {
         sunKeyLight.getWorldPosition(_sunWorld);

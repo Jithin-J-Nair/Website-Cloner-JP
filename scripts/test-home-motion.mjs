@@ -70,6 +70,8 @@ try {
     'project cards do not shear or glitch with scroll velocity');
   assert.ok(!goalSource.includes('home-goal-monitor-cracks') && !goalSource.includes('crackProgress'),
     'the synthetic crack overlay is completely removed');
+  assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),
+    'the full-screen radial RGB glitch/dispersion pass is removed');
   assert.ok(!downstreamSource.includes('GlassTesseractVortex') && !downstreamSource.includes('TesseractGlass'),
     'the white tesseract object is completely removed from the tunnel scene');
   assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
