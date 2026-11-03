@@ -40,3 +40,28 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Start production preview
+        run: |
+          npm run start > /tmp/website-cloner-jp-next.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3000/about > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-next.log
+          exit 1
+
+      - name: Validate About wordmark in production browser
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+        run: node scripts/validate-about-wordmark.mjs
+
+      - name: Upload About wordmark render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: about-wordmark-render-evidence
+          path: temp/about-wordmark-validation/
+          if-no-files-found: ignore
