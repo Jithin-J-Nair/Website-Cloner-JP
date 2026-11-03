@@ -200,7 +200,7 @@ try {
  const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.52);
  assert.ok(shatterState.glassOpacity>0.9,'plate-glass fragments are visibly separating');
  assert.equal(shatterState.webglError,0);
- const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.86));
+ const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.90));
  const exitState = await seekScenePhase('post-shatter',exitY,'shatterProgress',0.86);
  assert.ok(exitState.glassOpacity<0.4,'glass fragments clear rather than lingering over the astronaut');
  report.downstream={vortex:vortexState,blueCorridor:blueState,cracks:crackState,shatter:shatterState,postShatter:exitState};
