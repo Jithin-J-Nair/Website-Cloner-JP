@@ -108,6 +108,7 @@ declare global {
         crackProgress: number;
         glassRefractionReady: boolean;
         tesseractLayers: number;
+        tesseractFacets: number;
         tesseractIntensity: number;
         ringVisible: boolean;
       };
@@ -831,7 +832,8 @@ export function GoalTunnelSection() {
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
         corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, crackProgress: 0,
-        glassRefractionReady: false, tesseractLayers: 0, tesseractIntensity: 0, ringVisible: false,
+        glassRefractionReady: false, tesseractLayers: 0, tesseractFacets: 0,
+        shardCount: 0, shardFrames: 0, tesseractIntensity: 0, ringVisible: false,
       },
       playback: { state: "armed", progress: 0, virtualScroll: 0, activation: 0, end: 0, runs: 0 },
       scrollForEmergence: (u: number) => {
@@ -1935,6 +1937,9 @@ export function GoalTunnelSection() {
         state.crackProgress = crackProgress;
         state.glassRefractionReady = glassRefractionReady;
         state.tesseractLayers = trussSystem.tesseractLayers;
+        state.tesseractFacets = trussSystem.tesseractFacets;
+        state.shardCount = numShards;
+        state.shardFrames = framesPerShard;
         state.tesseractIntensity = tesseractIntensity;
         state.ringVisible = optics.chromaticRingMesh.visible;
       }
