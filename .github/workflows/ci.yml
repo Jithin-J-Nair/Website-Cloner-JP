@@ -26,7 +26,7 @@ jobs:
       - name: Install the requested glassmorphism skill for Claude Code
         run: |
           rm -rf .claude/skills/glassmorphism
-          npx -y skills add compozy/compozy --skill glassmorphism --agent claude-code --copy --yes
+          npx -y skills add https://github.com/compozy/compozy/tree/main/.agents/skills/glassmorphism --agent claude-code --copy --yes
           test -s .claude/skills/glassmorphism/SKILL.md
 
       - name: Install dependencies
