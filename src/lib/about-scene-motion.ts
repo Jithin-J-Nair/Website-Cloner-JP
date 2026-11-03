@@ -23,10 +23,10 @@ export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
   const travel = ease(start, end, u);
   return {
     opacity: enter * exit,
-    xVw: mix(4, -7, travel),
-    yVh: mix(2, -1, travel),
-    rotation: mix(-4, 2, travel),
-    scale: mix(0.96, 1.045, travel),
+    xVw: mobile ? mix(0, -2, travel) : mix(4, -7, travel),
+    yVh: mobile ? mix(0, -0.8, travel) : mix(2, -1, travel),
+    rotation: mobile ? mix(-0.8, 0.6, travel) : mix(-4, 2, travel),
+    scale: mobile ? mix(1, 1.025, travel) : mix(0.96, 1.045, travel),
   };
 }
 

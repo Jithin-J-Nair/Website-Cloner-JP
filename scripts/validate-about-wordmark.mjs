@@ -40,24 +40,33 @@ try {
         }, unit * progress);
         await page.waitForTimeout(500);
       };
-      const inspect = () => mark.evaluate(element => {
-        const path = element.querySelector('path');
-        const textPath = element.querySelector('textPath');
+      const inspect = () => mark.evaluate((element, mobile) => {
+        const text = element.querySelector(mobile ? '[data-about-wordmark-mobile]' : '[data-about-wordmark-desktop]');
+        const textPath = text?.querySelector('textPath');
+        const pathId = textPath?.getAttribute('href')?.slice(1);
+        const path = pathId ? document.getElementById(pathId) : null;
+        const rect = element.getBoundingClientRect();
         return {
           opacity: Number(getComputedStyle(element).opacity),
           visibility: getComputedStyle(element).visibility,
           transform: element.style.transform,
           text: textPath?.textContent?.trim() ?? null,
+          fontSize: Number(text?.getAttribute('fontSize') ?? 0),
           pathLength: path?.getTotalLength() ?? 0,
+          stage: { width: rect.width, height: rect.height, top: rect.top },
+          activeText: text?.dataset.aboutWordmarkMobile !== undefined ? 'mobile' : 'desktop',
         };
-      });
+      }, width === 390);
 
       await seek(peak);
       const atPeak = await inspect();
       assert.ok(atPeak.opacity > 0.99, 'wordmark must reach full opacity at the valley beat');
       assert.equal(atPeak.visibility, 'visible');
       assert.equal(atPeak.text, 'LUSION');
-      assert.ok(atPeak.pathLength > 1000, 'the custom sweep path must be a genuine long curve');
+      assert.equal(atPeak.activeText, width === 390 ? 'mobile' : 'desktop');
+      assert.ok(atPeak.pathLength > 1000, 'the active sweep path must be a genuine long curve');
+      assert.ok(width === 390 ? atPeak.fontSize <= 240 : atPeak.fontSize >= 380, 'responsive mark uses the correct glyph scale');
+      assert.ok(atPeak.stage.width <= innerWidth + 1 && atPeak.stage.height <= innerHeight, 'responsive sweep remains within the viewport stage');
       const probeAtPeak = await page.evaluate(() => window.__aboutProbe?.());
       await page.screenshot({ path: `${out}/${width}-peak.png`, fullPage: false, timeout: 120000 });
 

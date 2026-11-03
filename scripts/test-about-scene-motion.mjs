@@ -33,7 +33,7 @@ try {
    assert.ok(Object.values(p).every(Number.isFinite));
    assert.ok(p.opacity>=0&&p.opacity<=1);
    assert.ok(p.scale>=.96&&p.scale<=1.045);
-   assert.ok(p.rotation>=-4&&p.rotation<=2);
+   assert.ok(mobile ? p.rotation>=-.8&&p.rotation<=.6 : p.rotation>=-4&&p.rotation<=2);
    if(samples.length){
     const q=samples.at(-1).pose;
     assert.ok(Math.abs(p.opacity-q.opacity)<.01,'continuous opacity');

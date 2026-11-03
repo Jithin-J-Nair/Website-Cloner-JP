@@ -1023,7 +1023,7 @@ function AboutWhoExperience({
           aria-hidden="true"
           data-about-wordmark-sweep
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[5vw] top-[65%] z-10 h-[42vh] overflow-visible will-change-transform"
+          className="pointer-events-none absolute inset-x-[5vw] top-[65%] z-10 h-[42vh] overflow-visible will-change-transform max-[819px]:inset-x-[10vw] max-[819px]:top-[43%] max-[819px]:h-[25vh]"
         >
           <svg
             viewBox="0 0 1900 620"
@@ -1034,9 +1034,14 @@ function AboutWhoExperience({
               <path
                 id="about-wordmark-sweep-path"
                 d="M 80 480 C 240 250 500 190 760 345 C 980 470 1230 520 1450 380 C 1640 250 1830 210 1980 300"
+              /><path
+                id="about-wordmark-sweep-path-mobile"
+                d="M 90 390 C 360 330 640 325 900 355 C 1180 390 1480 395 1810 340"
               />
             </defs>
             <text
+              data-about-wordmark-desktop
+              className="hidden min-[820px]:block"
               fill="#ffffff"
               fontFamily="LusionSansCalibrated, system-ui, sans-serif"
               fontSize="390"
@@ -1045,9 +1050,20 @@ function AboutWhoExperience({
               textLength="1720"
               lengthAdjust="spacingAndGlyphs"
             >
-              <textPath href="#about-wordmark-sweep-path" startOffset="0%">
-                LUSION
-              </textPath>
+              <textPath href="#about-wordmark-sweep-path" startOffset="0%">LUSION</textPath>
+            </text>
+            <text
+              data-about-wordmark-mobile
+              className="block min-[820px]:hidden"
+              fill="#ffffff"
+              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
+              fontSize="230"
+              fontWeight="450"
+              letterSpacing="-7"
+              textLength="1480"
+              lengthAdjust="spacingAndGlyphs"
+            >
+              <textPath href="#about-wordmark-sweep-path-mobile" startOffset="0%">LUSION</textPath>
             </text>
           </svg>
         </div>
