@@ -326,11 +326,11 @@ export function createGoalPlaybackPath(m: {
 }
 
 /**
- * Frame-major captured rigid-body debris transforms. Positions use a shape-preserving
- * cubic Hermite segment with finite-difference tangents (monotone-clamped per axis);
- * orientations retain quaternion slerp. This removes the visible velocity kinks from
- * linear keyframe interpolation without changing the captured solver's key poses.
- * Outputs and quaternion scratch are reused on every scroll sample.
+ * Frame-major captured rigid-body debris transforms. Positions use frame-global,
+ * shape-preserving PCHIP tangents shared by adjacent cubic-Hermite segments; each axis
+ * remains monotone between its captured keys, including at direction reversals.
+ * Orientations retain quaternion slerp. The authored rigid-body key poses never change.
+ * Tangents are precomputed once; output buffers and quaternion scratch are reused on scroll.
  */
 export function createGlassFrameSampler(
   positions: ArrayLike<number>,
@@ -344,12 +344,47 @@ export function createGlassFrameSampler(
   const q1 = new THREE.Quaternion();
   const sample = (frameIndex: number, piece: number, axis: number) =>
     positions[(frameIndex * pieceCount + piece) * 3 + axis] ?? 0;
+  const tangentIndex = (frameIndex: number, piece: number, axis: number) =>
+    (frameIndex * pieceCount + piece) * 3 + axis;
+  const tangents = new Float32Array(frameCount * pieceCount * 3);
 
-  const clampTangent = (tangent: number, delta: number) => {
-    if (Math.abs(delta) < 1e-8 || tangent * delta <= 0) return 0;
-    const limit = Math.abs(delta) * 3;
-    return Math.sign(delta) * Math.min(Math.abs(tangent), limit);
+  const endpointTangent = (firstDelta: number, nextDelta: number) => {
+    let tangent = (3 * firstDelta - nextDelta) * 0.5;
+    if (tangent * firstDelta <= 0) return 0;
+    if (firstDelta * nextDelta < 0 && Math.abs(tangent) > 3 * Math.abs(firstDelta)) {
+      tangent = 3 * firstDelta;
+    }
+    return tangent;
   };
+
+  // Uniformly spaced captured frames: the PCHIP interior derivative is the
+  // harmonic mean of adjacent secants, or zero at a plateau / direction change.
+  for (let piece = 0; piece < pieceCount; piece++) {
+    for (let axis = 0; axis < 3; axis++) {
+      if (frameCount < 2) continue;
+      const first = sample(0, piece, axis);
+      const second = sample(1, piece, axis);
+      const firstDelta = second - first;
+      if (frameCount === 2) {
+        tangents[tangentIndex(0, piece, axis)] = firstDelta;
+        tangents[tangentIndex(1, piece, axis)] = firstDelta;
+        continue;
+      }
+
+      const thirdDelta = sample(2, piece, axis) - second;
+      tangents[tangentIndex(0, piece, axis)] = endpointTangent(firstDelta, thirdDelta);
+      for (let frame = 1; frame < frameCount - 1; frame++) {
+        const previous = sample(frame, piece, axis) - sample(frame - 1, piece, axis);
+        const next = sample(frame + 1, piece, axis) - sample(frame, piece, axis);
+        tangents[tangentIndex(frame, piece, axis)] = previous * next <= 0
+          ? 0
+          : (2 * previous * next) / (previous + next);
+      }
+      const lastDelta = sample(frameCount - 1, piece, axis) - sample(frameCount - 2, piece, axis);
+      const beforeLastDelta = sample(frameCount - 2, piece, axis) - sample(frameCount - 3, piece, axis);
+      tangents[tangentIndex(frameCount - 1, piece, axis)] = endpointTangent(lastDelta, beforeLastDelta);
+    }
+  }
 
   return (frame: number) => {
     if (pieceCount <= 0 || frameCount <= 0) return;
@@ -370,19 +405,12 @@ export function createGlassFrameSampler(
       for (let axis = 0; axis < 3; axis++) {
         const p0 = sample(from, piece, axis);
         const p1 = sample(to, piece, axis);
-        const delta = p1 - p0;
-        if (from === to || Math.abs(delta) < 1e-8) {
+        if (from === to) {
           outputPositions[piece * 4 + axis] = p0;
           continue;
         }
-
-        const previous = from > 0 ? sample(from - 1, piece, axis) : p0;
-        const next = to < frameCount - 1 ? sample(to + 1, piece, axis) : p1;
-        const tangent0 = from === 0 ? delta : (p1 - previous) * 0.5;
-        const tangent1 = to >= frameCount - 1 ? delta : (next - p0) * 0.5;
-        const m0 = clampTangent(tangent0, delta);
-        const m1 = clampTangent(tangent1, delta);
-
+        const m0 = tangents[tangentIndex(from, piece, axis)];
+        const m1 = tangents[tangentIndex(to, piece, axis)];
         outputPositions[piece * 4 + axis] =
           h00 * p0 + h10 * m0 + h01 * p1 + h11 * m1;
       }

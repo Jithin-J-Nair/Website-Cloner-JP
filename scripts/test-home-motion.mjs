@@ -88,6 +88,35 @@ try {
   const velocityAt=(frame,epsilon)=>{sampleGlass(frame+epsilon);const right=sampledPosition[0];sampleGlass(frame-epsilon);const left=sampledPosition[0];return (right-left)/(2*epsilon);};
   for(const key of [1,2,3]) assert.ok(Math.abs(velocityAt(key,0.001)-velocityAt(key,0.0005))<0.06,"glass velocity remains locally continuous at a captured frame boundary");
   assert.ok(shardPrevious<=4.00001,"shape-preserving interpolation cannot overshoot the final authored transform");
+  for(const key of [1,2,3]) {
+    sampleGlass(key);
+    const atKey=sampledPosition[0];
+    sampleGlass(key-0.01);
+    const leftVelocity=(atKey-sampledPosition[0])/0.01;
+    sampleGlass(key+0.01);
+    const rightVelocity=(sampledPosition[0]-atKey)/0.01;
+    assert.ok(Math.abs(leftVelocity-rightVelocity)<0.025,
+      "PCHIP shares a continuous position tangent across adjacent captured-frame segments");
+  }
+
+  // A reversal / plateau must stay within each pair of authored keys without ringing.
+  const reversingPositions = new Float32Array([0,0,0, 1,0,0, 1.5,0,0, 1.2,0,0, 0.5,0,0]);
+  const reversingOutput = new Float32Array(4);
+  const reversingSampler = createGlassFrameSampler(reversingPositions,shardOrientations,1,5,reversingOutput,new Float32Array(4));
+  for(let segment=0;segment<4;segment++) {
+    const low=Math.min(reversingPositions[segment*3],reversingPositions[(segment+1)*3]);
+    const high=Math.max(reversingPositions[segment*3],reversingPositions[(segment+1)*3]);
+    for(let step=0;step<=100;step++) {
+      reversingSampler(segment+step/100);
+      assert.ok(reversingOutput[0]>=low-1e-6 && reversingOutput[0]<=high+1e-6,
+        "PCHIP cannot overshoot a reversing shard's authored segment bounds");
+    }
+  }
+  for(let i=0;i<=100;i++) {
+    reversingSampler(2+i/100);
+    assert.ok(reversingOutput[0]<=1.500001 && reversingOutput[0]>=1.199999,
+      "PCHIP remains shape-preserving through the reversal");
+  }
 
   let priorY = -Infinity;
   for(let i=0;i<=1000;i++) {
