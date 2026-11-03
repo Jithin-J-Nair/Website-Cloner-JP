@@ -25,9 +25,14 @@ jobs:
 
       - name: Install the requested glassmorphism skill for Claude Code
         run: |
-          rm -rf .claude/skills/glassmorphism
-          npx -y skills add https://github.com/compozy/compozy/tree/main/.agents/skills/glassmorphism --agent claude-code --copy --yes
-          test -s .claude/skills/glassmorphism/SKILL.md
+          repo_dir="$GITHUB_WORKSPACE"
+          install_dir="$(mktemp -d)"
+          trap 'rm -rf "$install_dir"' EXIT
+          cd "$install_dir"
+          npx -y skills add https://raw.githubusercontent.com/compozy/compozy/main/.agents/skills/glassmorphism/SKILL.md --agent claude-code --copy --yes
+          test -s "$install_dir/.claude/skills/glassmorphism/SKILL.md"
+          cp "$install_dir/.claude/skills/glassmorphism/SKILL.md" "$repo_dir/.claude/skills/glassmorphism/SKILL.md"
+          test -s "$repo_dir/.claude/skills/glassmorphism/assets/glass.css"
 
       - name: Install dependencies
         run: npm ci
