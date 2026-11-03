@@ -485,6 +485,7 @@ export function buildArchitecturalTrussTunnel(
   flashVeilMat: THREE.ShaderMaterial;
   baySpacing: number;
   tesseractLayers: number;
+  tesseractFacets: number;
   updateTesseract: (progress: number, intensity: number, reduced: boolean) => void;
 } {
   const group = new THREE.Group();
@@ -932,7 +933,7 @@ export function buildArchitecturalTrussTunnel(
       if (!disposed) console.warn("Goal truss asset unavailable", error);
     });
 
-  return { group, tunnelMaterial, vortexCoreMat, flashVeilMat, baySpacing, tesseractLayers: tesseractLayerCount, updateTesseract };
+  return { group, tunnelMaterial, vortexCoreMat, flashVeilMat, baySpacing, tesseractLayers: tesseractLayerCount, tesseractFacets: glassFacets.length, updateTesseract };
 }
 export function buildBlueArchCorridor(
   track: <T extends { dispose: () => void }>(item: T) => T,
