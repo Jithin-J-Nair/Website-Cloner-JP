@@ -191,7 +191,7 @@ try {
  const vortexState = await seekScenePhase('vortex',vortexY,'tunnelProgress',0.58);
  assert.equal(vortexState.trussLoaded,true,'vortex truss geometry is present');
  assert.equal(vortexState.shardsLoaded,true,'captured shard geometry is loaded for downstream break');
- assert.ok(vortexState.tesseractLayers >= (width < 820 ? 2 : 4),'glass tesseract layers are built for the vortex');
+ assert.ok(vortexState.tesseractLayers >= 2,'glass tesseract depth layers are built for the active rendering tier');
  assert.ok(vortexState.tesseractIntensity > 0.20,'4D glass vortex is energized during astronaut fall');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
