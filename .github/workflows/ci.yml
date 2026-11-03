@@ -34,6 +34,7 @@ jobs:
 
       - name: Deterministic journey audio tests
         run: node scripts/test-journey-audio.mjs
+
       - name: About scene-motion tests
         run: node scripts/test-about-scene-motion.mjs
 

@@ -32,9 +32,9 @@ Implemented in this pass:
 
 ## Verification status
 
-The change is recorded as **implemented, not visually accepted yet**. This runtime does not have the checkout's `node_modules` or a browser preview, and the container cannot resolve GitHub to clone/build the repository locally. The existing source-head CI success predates this change and is not evidence for this commit.
+The change is recorded as **implemented, not visually accepted yet**. This runtime does not have the full repository checkout, project dependencies or a running app preview, and the container cannot resolve GitHub to clone/build the repository locally. The previous source-head CI success predates this change and is not evidence for this commit.
 
-The existing pure About scene-motion test has been extended to sample the sweep at 1 ms intervals on desktop and mobile, checking finite/bounded values, continuity, full-opacity state, exit state, deterministic reverse/fast-seek behavior and malformed input fallback. The test source is committed but has **not been executed in this environment**. A fresh CI run and visual review at matched source/local valley states are required before calling this transition accepted.
+The extended pure About scene-motion test was run in an isolated temporary workspace with Node 22.16.0 and TypeScript 5.8.3; **the helper/test run passed** for camera framing and the new desktop/mobile sweep invariants. This is not a full-repository typecheck/build or browser rendering test. The same test is now added to the repository CI workflow. A fresh CI run and visual review at matched source/local valley states are still required before calling this transition accepted.
 
 ## Skills/guidance applied
 
