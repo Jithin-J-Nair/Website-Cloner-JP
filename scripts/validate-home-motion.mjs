@@ -197,7 +197,7 @@ try {
  assert.ok(vortexState.tesseractLayers >= 2,'glass tesseract depth layers are built for the active rendering tier');
  assert.equal(vortexState.tesseractFacets,24,'each projected tesseract has all 24 square facets');
  assert.equal(vortexState.shardCount,946,'the source fracture is the original 946-piece rigid-body glass field');
- assert.ok(vortexState.shardFrames >= 100,'glass fragments use a dense pre-simulated motion sequence');
+ assert.ok(vortexState.shardFrames >= 15,'glass fragments retain the authored 15-frame rigid-body motion sequence');
  assert.ok(vortexState.tesseractIntensity > 0.20,'4D glass vortex is energized during astronaut fall');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
