@@ -26,6 +26,8 @@ try {
   assert.equal(advanceCinematicProgress(.2,NaN),.2);
   assert.equal(advanceCinematicProgress(0,100),1);
   assert.equal(acceleratedFall(-1),0); assert.equal(acceleratedFall(2),1);
+  assert.ok(acceleratedFall(0.25)>0.14,'astronaut has a more decisive early descent');
+  assert.ok(acceleratedFall(0.5)>0.34,'astronaut reaches a faster mid-fall position');
   let lastVelocity = -Infinity;
   for(let i=1;i<1000;i++) {
     const t=i/1000, epsilon=1e-5;
@@ -59,6 +61,19 @@ try {
   assert.equal(cinematicRenderDpr(3840,2160,2,true,true),1);
   assert.ok(cinematicRenderDpr(1440,900,1,true,false)<1);
   assert.ok(blueFlightDistance(1,.5)>blueFlightDistance(1,0),'corridor keeps moving during glass approach');
+
+  const homePageSource = fs.readFileSync('src/components/home/HomePageView.tsx','utf8');
+  const goalSource = fs.readFileSync('src/components/home/GoalTunnelSection.tsx','utf8');
+  const downstreamSource = fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8');
+  const smoothSource = fs.readFileSync('src/components/foundation/SmoothScrollProvider.tsx','utf8');
+  assert.ok(!homePageSource.includes('skewY(') && !homePageSource.includes('targetSkew'),
+    'project cards do not shear or glitch with scroll velocity');
+  assert.ok(!goalSource.includes('home-goal-monitor-cracks') && !goalSource.includes('crackProgress'),
+    'the synthetic crack overlay is completely removed');
+  assert.ok(!downstreamSource.includes('GlassTesseractVortex') && !downstreamSource.includes('TesseractGlass'),
+    'the white tesseract object is completely removed from the tunnel scene');
+  assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
+    'Lenis uses the tuned smooth-wheel profile');
 
   const downstreamOutput = ts.transpileModule(fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
   const downstreamFile = path.join(dir,'downstream.mjs');

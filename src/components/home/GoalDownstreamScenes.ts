@@ -552,9 +552,6 @@ export function buildArchitecturalTrussTunnel(
   vortexCoreMat: THREE.ShaderMaterial;
   flashVeilMat: THREE.ShaderMaterial;
   baySpacing: number;
-  tesseractLayers: number;
-  tesseractFacets: number;
-  updateTesseract: (progress: number, intensity: number, reduced: boolean) => void;
 } {
   const group = new THREE.Group();
   // Source structure cells are 20 units wide; keep the existing 2.96-unit flight aperture.
@@ -564,199 +561,6 @@ export function buildArchitecturalTrussTunnel(
   const tunnelLength = 120 * sourceScale * repeats;
   let disposed = false;
   track({ dispose: () => { disposed = true; } });
-
-  // Four-dimensional hypercube projected into the captured tunnel: 16 vertices, 32 edges,
-  // nested cubic cells, and four independent 4D plane rotations instead of a flat spiral.
-  const tesseractGroup = new THREE.Group();
-  tesseractGroup.name = "GlassTesseractVortex";
-  tesseractGroup.visible = false;
-  group.add(tesseractGroup);
-
-  const edgePairs: Array<[number, number]> = [];
-  for (let vertex = 0; vertex < 16; vertex++) {
-    for (let axis = 0; axis < 4; axis++) {
-      const bit = 1 << axis;
-      if ((vertex & bit) === 0) edgePairs.push([vertex, vertex | bit]);
-    }
-  }
-  // A tesseract has 24 unique square faces (the boundaries of its eight cubic cells).
-  // Fix every pair of 4D axes at ±1 and let the remaining two axes span each facet.
-  const glassFacets: Array<{ vertices: [number, number, number, number] }> = [];
-  const vertexIndex = (coordinates: number[]) =>
-    (coordinates[0] > 0 ? 1 : 0) |
-    (coordinates[1] > 0 ? 2 : 0) |
-    (coordinates[2] > 0 ? 4 : 0) |
-    (coordinates[3] > 0 ? 8 : 0);
-  for (let fixedA = 0; fixedA < 4; fixedA++) {
-    for (let fixedB = fixedA + 1; fixedB < 4; fixedB++) {
-      const varying = [0, 1, 2, 3].filter((axis) => axis !== fixedA && axis !== fixedB);
-      for (const signA of [-1, 1]) {
-        for (const signB of [-1, 1]) {
-          const corners: [number, number][] = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
-          const vertices = corners.map(([a, b]) => {
-            const coordinates = [0, 0, 0, 0];
-            coordinates[fixedA] = signA;
-            coordinates[fixedB] = signB;
-            coordinates[varying[0]] = a;
-            coordinates[varying[1]] = b;
-            return vertexIndex(coordinates);
-          }) as [number, number, number, number];
-          glassFacets.push({ vertices });
-        }
-      }
-    }
-  }
-  const edgeGeometry = track(new THREE.CylinderGeometry(0.014, 0.014, 1, 10, 1, false));
-  const edgeMaterial = track(new THREE.MeshPhysicalMaterial({
-    color: 0xc9eaff, emissive: 0x102c60, emissiveIntensity: 0.24,
-    envMap: environment, envMapIntensity: 2.6, metalness: 0.025, roughness: 0.018,
-    clearcoat: 1, clearcoatRoughness: 0.008, transmission: 0.62, thickness: 0.22, ior: 1.52,
-    transparent: true, opacity: 0.94, depthWrite: false, side: THREE.DoubleSide,
-  }));
-  const cellMaterial = track(new THREE.MeshPhysicalMaterial({
-    color: 0xd8efff, emissive: 0x102b55, emissiveIntensity: 0.08,
-    envMap: environment, envMapIntensity: 2.9, metalness: 0.015, roughness: 0.012,
-    clearcoat: 1, clearcoatRoughness: 0.006, transmission: 0.90, thickness: 0.34, ior: 1.52,
-    transparent: true, opacity: 0.24, depthWrite: false, side: THREE.DoubleSide,
-  }));
-  const facetIndices: number[] = [];
-  for (let face = 0; face < glassFacets.length; face++) {
-    const base = face * 4;
-    facetIndices.push(base, base + 1, base + 2, base, base + 2, base + 3);
-  }
-  type TesseractLayer = {
-    index: number;
-    root: THREE.Group;
-    edges: THREE.InstancedMesh;
-    nodes: THREE.InstancedMesh;
-    panes: Array<{ mesh: THREE.Mesh; positions: Float32Array }>;
-    points: THREE.Vector3[];
-  };
-  const tesseractLayerCount = isMobile ? 2 : 4;
-  const tesseractLayers: TesseractLayer[] = [];
-  const nodeGeometry = track(new THREE.SphereGeometry(0.034, 12, 8));
-  const up = new THREE.Vector3(0, 1, 0);
-  const direction = new THREE.Vector3();
-  const center = new THREE.Vector3();
-  const scale = new THREE.Vector3();
-  const matrix = new THREE.Matrix4();
-  const rotation = new THREE.Quaternion();
-
-  for (let layerIndex = 0; layerIndex < tesseractLayerCount; layerIndex++) {
-    const root = new THREE.Group();
-    root.name = `GlassTesseractLayer-${layerIndex + 1}`;
-    root.position.z = -1.55 - layerIndex * 7.25;
-    root.scale.setScalar(0.82 + layerIndex * 0.12);
-    tesseractGroup.add(root);
-
-    const edges = new THREE.InstancedMesh(edgeGeometry, edgeMaterial, edgePairs.length);
-    edges.name = `TesseractGlassStruts-${layerIndex + 1}`;
-    edges.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    edges.frustumCulled = false;
-    edges.renderOrder = 4;
-    root.add(edges);
-
-    const nodes = new THREE.InstancedMesh(nodeGeometry, edgeMaterial, 16);
-    nodes.name = `TesseractOpticalNodes-${layerIndex + 1}`;
-    nodes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    nodes.frustumCulled = false;
-    nodes.renderOrder = 5;
-    root.add(nodes);
-
-    const panes: TesseractLayer["panes"] = [];
-    const geometry = track(new THREE.BufferGeometry());
-    const positions = new Float32Array(glassFacets.length * 4 * 3);
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
-    geometry.setIndex(facetIndices);
-    const mesh = new THREE.Mesh(geometry, cellMaterial);
-    mesh.name = `TesseractGlassFacets-${layerIndex + 1}`;
-    mesh.frustumCulled = false;
-    mesh.renderOrder = 2;
-    root.add(mesh);
-    panes.push({ mesh, positions });
-    tesseractLayers.push({
-      index: layerIndex, root, edges, nodes, panes,
-      points: Array.from({ length: 16 }, () => new THREE.Vector3()),
-    });
-  }
-
-  const updateTesseract = (progress: number, intensity: number, reduced: boolean) => {
-    const reveal = THREE.MathUtils.clamp(intensity, 0, 1);
-    tesseractGroup.visible = reveal > 0.008;
-    edgeMaterial.opacity = 0.68 + reveal * 0.30;
-    edgeMaterial.emissiveIntensity = 0.12 + reveal * 0.62;
-    edgeMaterial.envMapIntensity = 2.0 + reveal * 1.0;
-    cellMaterial.opacity = 0.10 + reveal * 0.22;
-    cellMaterial.emissiveIntensity = 0.035 + reveal * 0.14;
-    cellMaterial.envMapIntensity = 2.2 + reveal * 1.0;
-    const violet = THREE.MathUtils.smoothstep(progress, 0.63, 0.80);
-    edgeMaterial.color.setHSL(0.575 + violet * 0.20, 0.68, 0.78);
-    cellMaterial.color.setHSL(0.59 + violet * 0.15, 0.52, 0.84);
-
-    for (const layer of tesseractLayers) {
-      const phase = reduced ? 0 : progress * (3.8 + layer.index * 0.26) + layer.index * 0.92;
-      const a = phase * 0.78, b = -phase * 0.57, c = phase * 0.39, d = phase * 0.22;
-      const ca = Math.cos(a), sa = Math.sin(a);
-      const cb = Math.cos(b), sb = Math.sin(b);
-      const cc = Math.cos(c), sc = Math.sin(c);
-      const cd = Math.cos(d), sd = Math.sin(d);
-      for (let i = 0; i < 16; i++) {
-        let x = (i & 1) ? 1 : -1;
-        let y = (i & 2) ? 1 : -1;
-        let z = (i & 4) ? 1 : -1;
-        let w = (i & 8) ? 1 : -1;
-        let t = x * ca - w * sa; w = x * sa + w * ca; x = t;
-        t = y * cb - w * sb; w = y * sb + w * cb; y = t;
-        t = z * cc - w * sc; w = z * sc + w * cc; z = t;
-        t = x * cd - y * sd; y = x * sd + y * cd; x = t;
-        const perspective = 3.8 / Math.max(2.25, 3.8 - w * 0.72);
-        layer.points[i].set(x * perspective * 1.12, y * perspective * 1.12, z * perspective * 1.12);
-      }
-
-      layer.root.position.z = -1.55 - layer.index * 7.25 + (reduced ? 0 : Math.sin(phase + layer.index) * 0.18);
-      layer.root.scale.setScalar((0.82 + layer.index * 0.12) * (1 - reveal * 0.045));
-      layer.root.rotation.set(
-        reduced ? 0 : Math.sin(phase * 0.48) * 0.12,
-        reduced ? 0 : Math.cos(phase * 0.38) * 0.15,
-        reduced ? layer.index * 0.08 : phase * 0.19 + layer.index * 0.48
-      );
-
-      for (let e = 0; e < edgePairs.length; e++) {
-        const [fromIndex, toIndex] = edgePairs[e];
-        const from = layer.points[fromIndex], to = layer.points[toIndex];
-        direction.subVectors(to, from);
-        const length = Math.max(0.001, direction.length());
-        center.addVectors(from, to).multiplyScalar(0.5);
-        rotation.setFromUnitVectors(up, direction.multiplyScalar(1 / length));
-        scale.set(1, length, 1);
-        matrix.compose(center, rotation, scale);
-        layer.edges.setMatrixAt(e, matrix);
-      }
-      layer.edges.instanceMatrix.needsUpdate = true;
-
-      for (let node = 0; node < 16; node++) {
-        matrix.makeTranslation(layer.points[node].x, layer.points[node].y, layer.points[node].z);
-        layer.nodes.setMatrixAt(node, matrix);
-      }
-      layer.nodes.instanceMatrix.needsUpdate = true;
-
-      for (const pane of layer.panes) {
-        let cursor = 0;
-        for (const facet of glassFacets) {
-          for (const vertex of facet.vertices) {
-            const point = layer.points[vertex];
-            const offset = cursor * 3;
-            pane.positions[offset] = point.x;
-            pane.positions[offset + 1] = point.y;
-            pane.positions[offset + 2] = point.z;
-            cursor++;
-          }
-        }
-        (pane.mesh.geometry.getAttribute("position") as THREE.BufferAttribute).needsUpdate = true;
-        pane.mesh.geometry.computeVertexNormals();
-      }
-    }
-  };
 
   const tunnelMaterial = track(
     new THREE.ShaderMaterial({
@@ -906,11 +710,16 @@ export function buildArchitecturalTrussTunnel(
         "void main() {",
         "  vec2 p = vUv * 2.0 - 1.0;",
         "  float r = length(p);",
-        "  float core = exp(-r * 6.0) * 1.5 + exp(-r * 18.0) * 2.0;",
-        "  vec3 cE = vec3(0.28, 0.85, 1.0);",
-        "  vec3 cP = vec3(1.0, 0.4, 0.9);",
-        "  vec3 col = mix(cE, cP, uMode) * core;",
-        "  gl_FragColor = vec4(col * uIntensity, clamp(core * uIntensity, 0.0, 1.0));",
+        "  float theta = atan(p.y, p.x);",
+        "  float spiralWave = 0.5 + 0.5 * cos(theta * 3.0 - r * 18.0 - uMode * 5.2);",
+        "  float filaments = pow(spiralWave, 7.0) * exp(-r * 2.1);",
+        "  float sheath = exp(-pow((r - 0.54) / 0.13, 2.0));",
+        "  float core = exp(-r * 5.2) * 1.05 + exp(-r * 16.0) * 1.45;",
+        "  vec3 cE = vec3(0.22, 0.78, 1.0);",
+        "  vec3 cP = vec3(1.0, 0.30, 0.72);",
+        "  vec3 col = mix(cE, cP, clamp(uMode + spiralWave * 0.16, 0.0, 1.0));",
+        "  col *= core + filaments * 0.72 + sheath * 0.16;",
+        "  gl_FragColor = vec4(col * uIntensity, clamp((core + filaments * 0.35) * uIntensity, 0.0, 1.0));",
         "}"
       ].join("\n")
     })
@@ -1001,7 +810,7 @@ export function buildArchitecturalTrussTunnel(
       if (!disposed) console.warn("Goal truss asset unavailable", error);
     });
 
-  return { group, tunnelMaterial, vortexCoreMat, flashVeilMat, baySpacing, tesseractLayers: tesseractLayerCount, tesseractFacets: glassFacets.length, updateTesseract };
+  return { group, tunnelMaterial, vortexCoreMat, flashVeilMat, baySpacing };
 }
 export function buildBlueArchCorridor(
   track: <T extends { dispose: () => void }>(item: T) => T,

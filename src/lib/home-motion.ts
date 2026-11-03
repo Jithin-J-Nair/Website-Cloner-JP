@@ -9,10 +9,10 @@ export function homeRenderDpr(width: number, height: number, deviceDpr: number):
   return Math.min(Math.max(0.25, deviceDpr || 1), 2, Math.sqrt(UHD_PIXEL_BUDGET / Math.max(1, width * height)));
 }
 
-/** Normalized constant-acceleration travel: nonzero entry velocity, increasing fall speed. */
+/** Faster gravity-led fall: stronger entry descent, smooth acceleration, and an exact 0→1 endpoint. */
 export function acceleratedFall(progress: number): number {
   const t = clampMotion(progress);
-  return 0.28 * t + 0.72 * t * t;
+  return 0.48 * t + 0.34 * t * t + 0.18 * t * t * t;
 }
 
 export interface MotionSpring { value: number; velocity: number }

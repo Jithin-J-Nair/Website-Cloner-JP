@@ -760,13 +760,14 @@ export function HeroCrossesStage() {
           if (pointerRay.ray.intersectPlane(pointerPlane,pointerWorld)) {
             pointerDelta.copy(anchorPosition).sub(pointerWorld);
             const distance = pointerDelta.length();
-            const radius = 2.25 * spec.scale;
+            const radius = 3.0 * spec.scale;
             if (distance < radius) {
               if (distance < 0.001) pointerDelta.set(0.6,0.4,0);
-              pointerDelta.normalize().multiplyScalar(Math.pow(1-distance/radius,2)*1.02);
+              const influence = Math.pow(1-distance/radius,2);
+              pointerDelta.normalize().multiplyScalar(influence * 1.42);
               pushX = pointerDelta.x;
               pushY = pointerDelta.y;
-              pushZ = -0.20*Math.pow(1-distance/radius,2);
+              pushZ = -0.28 * influence;
               if (!pointerReportedRef.current) {
                 pointerReportedRef.current = true;
                 setPointerHits((c) => c+1);
@@ -776,9 +777,10 @@ export function HeroCrossesStage() {
         }
         const springs = pointerSprings[i];
         for (let axis = 0; axis < 6; axis++) {
-          const target = axis === 0 ? pushX : axis === 1 ? pushY : axis === 2 ? pushZ : axis === 3 ? -pushY*0.5 : axis === 4 ? pushX*0.55 : pushX*0.18;
+          const target = axis === 0 ? pushX : axis === 1 ? pushY : axis === 2 ? pushZ
+            : axis === 3 ? -pushY * 0.72 : axis === 4 ? pushX * 0.78 : pushX * 0.32;
           if (isReduced) { springs[axis].value = springs[axis].velocity = 0; }
-          else stepMotionSpring(springs[axis],target,dt,17.5);
+          else stepMotionSpring(springs[axis],target,dt,16);
           const springMoving = Math.abs(springs[axis].value-target)>0.0001 || Math.abs(springs[axis].velocity)>0.0001;
           transientMoving ||= springMoving;
           moving ||= springMoving;
@@ -786,12 +788,13 @@ export function HeroCrossesStage() {
 
         // Subtle phase-offset drift makes the anchored group feel suspended between pointer moves.
         const idlePhase = now * 0.00042 + spec.driftPhase;
-        const idleX = isReduced ? 0 : Math.sin(idlePhase) * spec.driftAmp[0];
-        const idleY = isReduced ? 0 : Math.cos(idlePhase * 0.91) * spec.driftAmp[1];
-        const idleZ = isReduced ? 0 : Math.sin(idlePhase * 0.72 + 1.1) * spec.driftAmp[2];
-        const idleRX = isReduced ? 0 : Math.sin(idlePhase * 0.68) * spec.rotAmp[0];
-        const idleRY = isReduced ? 0 : Math.cos(idlePhase * 0.76) * spec.rotAmp[1];
-        const idleRZ = isReduced ? 0 : Math.sin(idlePhase * 0.58 + 0.6) * spec.rotAmp[2];
+        const idleWeight = ptr.active && !isReduced ? 1 : 0;
+        const idleX = Math.sin(idlePhase) * spec.driftAmp[0] * idleWeight;
+        const idleY = Math.cos(idlePhase * 0.91) * spec.driftAmp[1] * idleWeight;
+        const idleZ = Math.sin(idlePhase * 0.72 + 1.1) * spec.driftAmp[2] * idleWeight;
+        const idleRX = Math.sin(idlePhase * 0.68) * spec.rotAmp[0] * idleWeight;
+        const idleRY = Math.cos(idlePhase * 0.76) * spec.rotAmp[1] * idleWeight;
+        const idleRZ = Math.sin(idlePhase * 0.58 + 0.6) * spec.rotAmp[2] * idleWeight;
         targetPos.set(
           anchor[0]+springs[0].value+imp.pos.x+idleX,
           anchor[1]+springs[1].value+imp.pos.y+idleY,
@@ -863,7 +866,7 @@ export function HeroCrossesStage() {
       }
 
       // True zero-loop accessibility under `prefers-reduced-motion: reduce` once static frame is painted
-      const idleEnabled = !isReduced && inView && preloaderDoneRef.current;
+      const idleEnabled = !isReduced && inView && preloaderDoneRef.current && ptr.active;
       if (isReduced || (!moving && !idleEnabled)) return;
 
       scheduleNext(elapsedFrameMs, idleEnabled && !transientMoving);

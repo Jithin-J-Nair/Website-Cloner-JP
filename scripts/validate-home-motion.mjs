@@ -46,18 +46,28 @@ try {
  await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container')?.dataset.motionState==='settled',null,{timeout:90000});
  const initial=await hero.evaluate(el=>({...el.dataset}));
  assert.equal(initial.clusterMode,'centered-magnetic','homepage hero uses the centered magnetic cluster');
+ if(!reduced) {
+   const scrollEngine=await page.evaluate(()=>({active:!!window.__lenis,duration:window.__lenis?.options?.duration,smoothWheel:window.__lenis?.options?.smoothWheel}));
+   assert.equal(scrollEngine.active,true,'Lenis owns smooth wheel scrolling');
+   assert.equal(scrollEngine.duration,0.92,'Lenis uses the tuned smooth-scroll duration');
+   assert.equal(scrollEngine.smoothWheel,true,'wheel input remains smooth');
+   report.smoothScroll=scrollEngine;
+ }
  await page.screenshot({path:out+'/hero-cluster.png',timeout:90000});
  if(!reduced && !touch){
   const box=await hero.boundingBox();
   // Hit an outer connector in the new overlapping cluster; verify displacement and magnetic return.
   await page.mouse.move(box.x+box.width*.84,box.y+box.height*.65);
-  await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)>.10,null,{timeout:30000});
+  await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)>.16,null,{timeout:30000});
   const hovered=await hero.evaluate(el=>({...el.dataset}));
+  assert.ok(Number(hovered.pointerInteractions)>Number(initial.pointerInteractions),
+    'hover must reach and physically displace at least one centered connector');
   await page.screenshot({path:out+'/hero-hover.png',timeout:90000});
   await page.mouse.move(2,2);
   await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container').dataset.motionState==='settled'&&Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)===0,null,{timeout:90000});
   const settled=await hero.evaluate(el=>({...el.dataset}));
   assert.equal(Number(settled.offsetEnergy),0);
+  assert.equal(settled.motionState,'settled','the hero springs back to its default pose after pointer leave');
   await page.waitForTimeout(650);
   const idleFrames = Number(await hero.getAttribute('data-render-count')) - Number(settled.renderCount);
   assert.ok(idleFrames >= 0 && idleFrames <= 24, `settled hero must sleep or keep only a low-rate idle render (frames=${idleFrames})`);
@@ -177,15 +187,13 @@ try {
      shatterProgress:window.__goalAstronautTelemetry.sceneState.shatterProgress,
      bakedFrame:window.__goalAstronautTelemetry.sceneState.bakedFrame,
      corridorTravel:window.__goalAstronautTelemetry.sceneState.corridorTravel,
-     crackProgress:window.__goalAstronautTelemetry.sceneState.crackProgress,
      glassOpacity:window.__goalAstronautTelemetry.sceneState.glassOpacity,
      glassRefractionReady:window.__goalAstronautTelemetry.sceneState.glassRefractionReady,
      shardDepthWrite:window.__goalAstronautTelemetry.sceneState.shardDepthWrite,
-     tesseractLayers:window.__goalAstronautTelemetry.sceneState.tesseractLayers,
-     tesseractFacets:window.__goalAstronautTelemetry.sceneState.tesseractFacets,
      shardCount:window.__goalAstronautTelemetry.sceneState.shardCount,
      shardFrames:window.__goalAstronautTelemetry.sceneState.shardFrames,
-     tesseractIntensity:window.__goalAstronautTelemetry.sceneState.tesseractIntensity,
+     vortexIntensity:window.__goalAstronautTelemetry.sceneState.vortexIntensity,
+     shardSpread:window.__goalAstronautTelemetry.sceneState.shardSpread,
      trussLoaded:window.__goalAstronautTelemetry.sceneState.trussLoaded,
      shardsLoaded:window.__goalAstronautTelemetry.sceneState.shardsLoaded,
      webglError:document.querySelector('#home-goal canvas').getContext('webgl2').getError(),
@@ -195,45 +203,33 @@ try {
  const vortexState = await seekScenePhase('vortex',vortexY,'tunnelProgress',0.58);
  assert.equal(vortexState.trussLoaded,true,'vortex truss geometry is present');
  assert.equal(vortexState.shardsLoaded,true,'captured shard geometry is loaded for downstream break');
- assert.ok(vortexState.tesseractLayers >= 2,'glass tesseract depth layers are built for the active rendering tier');
- assert.equal(vortexState.tesseractFacets,24,'each projected tesseract has all 24 square facets');
- assert.equal(vortexState.shardCount,946,'the source fracture is the original 946-piece rigid-body glass field');
+ assert.equal(vortexState.shardCount,946,'the captured fracture retains all 946 glass pieces');
  assert.ok(vortexState.shardFrames >= 15,'glass fragments retain the authored 15-frame rigid-body motion sequence');
- assert.ok(vortexState.tesseractIntensity > 0.20,'4D glass vortex is energized during astronaut fall');
+ assert.ok(vortexState.vortexIntensity > 0.18,'the exposed metal-truss vortex and spiral core are energized');
+ assert.equal(vortexState.shardSpread,1.14,'the captured breakup uses a wider art-directed shard envelope');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
  const vortexPeakY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.73));
  const vortexPeakState = await seekScenePhase('vortex-peak',vortexPeakY,'tunnelProgress',0.73);
- assert.ok(vortexPeakState.tesseractIntensity>0.90,'the glass tesseract reaches its full-strength lattice peak');
- assert.ok(vortexPeakState.tesseractLayers>=2 && vortexPeakState.tesseractFacets===24,'the full 24-facet lattice stays intact at peak');
+ assert.ok(vortexPeakState.vortexIntensity>0.82,'the spiral vortex core reaches its peak without a white overlay');
  assert.equal(vortexPeakState.webglError,0,'vortex peak has no WebGL error');
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
  const blueState = await seekScenePhase('blue-corridor',blueY,'tunnelProgress',0.90);
  assert.ok(blueState.corridorTravel>0,'astronaut transitions into the blue arch corridor');
  assert.equal(blueState.webglError,0);
- const crackY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.16));
- const crackState = await seekScenePhase('glass-cracks',crackY,'shatterProgress',0.16);
- assert.ok(crackState.crackProgress>0.85,'monitor crack growth is visible before the fragment burst');
- const crackOverlay = await page.locator('#home-goal-monitor-cracks').evaluate(el=>{
-   const path=el.querySelector('path');
-   return {display:getComputedStyle(el).display,opacity:Number(getComputedStyle(el).opacity),
-     z:Number(getComputedStyle(el).zIndex),canvasZ:Number(getComputedStyle(document.querySelector('#home-goal canvas').parentElement).zIndex),
-     dash:parseFloat(getComputedStyle(path).strokeDashoffset)};
- });
- assert.equal(crackOverlay.display,'block','foreground fracture overlay is rendered');
- assert.ok(crackOverlay.opacity>0.7,'radial fractures are visible before impact');
- assert.ok(crackOverlay.z>crackOverlay.canvasZ,'cracks are composited above WebGL');
- assert.ok(crackOverlay.dash<0.2,'fracture lines are almost fully drawn before impact');
- crackState.crackOverlay=crackOverlay;
+ const impactApproachY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.16));
+ const impactApproach = await seekScenePhase('glass-approach',impactApproachY,'shatterProgress',0.16);
+ assert.equal(await page.locator('#home-goal-monitor-cracks').count(),0,'no artificial glass crack layer exists before impact');
  const shatterY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.36));
  const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.36);
  assert.ok(shatterState.glassOpacity>0.72,'plate-glass fragments separate on the compressed impact beat');
  assert.equal(shatterState.glassRefractionReady,true,'moving glass samples the live scene behind each fragment');
  assert.equal(shatterState.shardDepthWrite,true,'nearer glass facets depth-occlude more distant facets');
+ assert.ok(shatterState.shardSpread>1.1,'captured fragment positions are spread beyond their rest envelope');
  assert.equal(shatterState.webglError,0);
  const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.90));
  const exitState = await seekScenePhase('post-shatter',exitY,'shatterProgress',0.90);
  assert.ok(exitState.glassOpacity<0.4,'glass fragments clear rather than lingering over the astronaut');
- report.downstream={vortex:vortexState,blueCorridor:blueState,cracks:crackState,shatter:shatterState,postShatter:exitState};
+ report.downstream={vortex:vortexState,blueCorridor:blueState,impactApproach,shatter:shatterState,postShatter:exitState};
  await seek(layout.reel-height*.12);
  await page.locator('#home-reel-video-watch-btn').click();
  await page.locator('#video-overlay[role="dialog"]').waitFor({state:'visible'});

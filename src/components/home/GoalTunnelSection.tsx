@@ -105,14 +105,12 @@ declare global {
         corridorTravel: number;
         glazingLayers: number;
         glassOpacity: number;
-        crackProgress: number;
         glassRefractionReady: boolean;
         shardDepthWrite: boolean;
-        tesseractLayers: number;
-        tesseractFacets: number;
+        shardSpread: number;
+        vortexIntensity: number;
         shardCount: number;
         shardFrames: number;
-        tesseractIntensity: number;
         ringVisible: boolean;
       };
       playback: {
@@ -183,7 +181,6 @@ export function GoalTunnelSection() {
   const stageOverlayRef = useRef<HTMLDivElement | null>(null);
   const backdropGlowRef = useRef<HTMLDivElement | null>(null);
   const monitorBezelRef = useRef<HTMLDivElement | null>(null);
-  const monitorCracksRef = useRef<HTMLDivElement | null>(null);
   const tunnelTitleWrapRef = useRef<HTMLDivElement | null>(null);
   const titleLineRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
@@ -203,7 +200,6 @@ export function GoalTunnelSection() {
     const overlayEl = stageOverlayRef.current;
     const backdropEl = backdropGlowRef.current;
     const monitorBezelEl = monitorBezelRef.current;
-    const monitorCracksEl = monitorCracksRef.current;
     const titleWrapEl = tunnelTitleWrapRef.current;
     const hostEl = canvasHostRef.current;
 
@@ -215,7 +211,6 @@ export function GoalTunnelSection() {
       !overlayEl ||
       !backdropEl ||
       !monitorBezelEl ||
-      !monitorCracksEl ||
       !titleWrapEl ||
       !hostEl
     ) {
@@ -467,6 +462,8 @@ export function GoalTunnelSection() {
 
         const animData = new Float32Array(bga.attributes.position);
         const animOrient = new Float32Array(bga.attributes.orient);
+        const shardCenter = restBounds.getCenter(new THREE.Vector3());
+        const shardSpread = 1.14;
         
         const mat = track(
           new THREE.ShaderMaterial({
@@ -534,34 +531,35 @@ export function GoalTunnelSection() {
               "  float fres = 0.04 + 0.96 * pow(1.0 - facing, 5.0);",
               "  vec2 screenUv = vClipPosition.xy / max(0.0001, vClipPosition.w) * 0.5 + 0.5;",
               "  float pixelScale = min(1.65, 900.0 / max(1.0, min(uRefractionSize.x, uRefractionSize.y)));",
+              "  float edge = pow(1.0 - facing, 1.45);",
+              "  float opticalPath = 0.86 + edge * 0.78;",
               "  vec3 incident = normalize(vPosV);",
               "  float eta = gl_FrontFacing ? (1.0 / 1.46) : 1.46;",
               "  vec3 refractedRay = refract(incident, Nv, eta);",
               "  if (dot(refractedRay, refractedRay) < 0.0001) refractedRay = reflect(incident, Nv);",
               "  vec2 incidentSlope = incident.xy / max(0.12, abs(incident.z));",
               "  vec2 refractedSlope = refractedRay.xy / max(0.12, abs(refractedRay.z));",
-              "  vec2 bend = (refractedSlope - incidentSlope) * (0.016 + (1.0 - facing) * 0.024) * uRefractionStrength * pixelScale;",
+              "  vec2 bend = (refractedSlope - incidentSlope) * (0.016 + (1.0 - facing) * 0.024) * opticalPath * uRefractionStrength * pixelScale;",
               "  vec2 chroma = vec2(uDispersion, uDispersion * 0.62) * (0.55 + fres * 0.90);",
               "  vec2 uvR = clamp(screenUv + bend + chroma, vec2(0.001), vec2(0.999));",
               "  vec2 uvG = clamp(screenUv + bend, vec2(0.001), vec2(0.999));",
               "  vec2 uvB = clamp(screenUv + bend - chroma, vec2(0.001), vec2(0.999));",
               "  vec3 transmitted = vec3(texture2D(uSceneColor, uvR).r, texture2D(uSceneColor, uvG).g, texture2D(uSceneColor, uvB).b);",
               "  vec3 envTransmission = textureCube(uEnvironment, refract(-V, N, 1.0 / 1.46)).rgb;",
-              "  transmitted = mix(transmitted, envTransmission, 0.14);",
+              "  transmitted = mix(transmitted, envTransmission, 0.10);",
               "  vec3 envReflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
               "  vec2 reflectedUv = clamp(screenUv + reflect(incident, Nv).xy * 0.028, vec2(0.001), vec2(0.999));",
               "  vec3 screenReflection = texture2D(uSceneColor, reflectedUv).rgb;",
-              "  vec3 reflection = mix(envReflection, screenReflection, 0.56);",
-              "  float edge = pow(1.0 - facing, 1.45);",
+              "  vec3 reflection = mix(envReflection, screenReflection, 0.72);",
               "  vec3 reflectedLight = reflect(-normalize(vec3(-0.45, 0.72, 0.55)), N);",
-              "  float spec = pow(max(dot(reflectedLight, V), 0.0), 82.0);",
-              "  float broadSpec = pow(max(dot(reflectedLight, V), 0.0), 24.0);",
-              "  vec3 glassTint = mix(vec3(0.94, 0.985, 1.0), vec3(0.74, 0.88, 1.0), edge * 0.78);",
-              "  float reflectance = clamp(0.10 + fres * 0.76 + edge * 0.18, 0.12, 0.98);",
+              "  float spec = pow(max(dot(reflectedLight, V), 0.0), 76.0);",
+              "  float broadSpec = pow(max(dot(reflectedLight, V), 0.0), 22.0);",
+              "  vec3 glassTint = mix(vec3(0.965, 0.99, 1.0), vec3(0.78, 0.90, 1.0), edge * 0.72);",
+              "  float reflectance = clamp(0.08 + fres * 0.82 + edge * 0.16, 0.10, 0.98);",
               "  vec3 col = mix(transmitted * glassTint, reflection, reflectance);",
-              "  col += vec3(0.72, 0.88, 1.0) * edge * 0.40;",
-              "  col += vec3(1.0, 0.99, 0.96) * spec * 1.55;",
-              "  col += vec3(0.48, 0.70, 1.0) * broadSpec * 0.40;",
+              "  col += vec3(0.76, 0.90, 1.0) * edge * 0.55;",
+              "  col += vec3(1.0, 0.995, 0.98) * spec * 2.0;",
+              "  col += vec3(0.48, 0.70, 1.0) * broadSpec * 0.48;",
               "  float alpha = clamp(0.22 + fres * 0.60 + edge * 0.22 + spec * 0.10 + broadSpec * 0.07, 0.26, 0.99) * uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
@@ -583,8 +581,18 @@ export function GoalTunnelSection() {
         mat.uniforms.uFrameData.value = texFrame;
         mat.uniforms.uOrientData.value = texOrient;
         
-        const sampleFrame = createGlassFrameSampler(animData, animOrient, numShards, framesPerShard, frameData, orientData);
-        shardsMesh.userData = { sampleFrame, texFrame, texOrient, framesPerShard, restBounds };
+        const sampleCapturedFrame = createGlassFrameSampler(animData, animOrient, numShards, framesPerShard, frameData, orientData);
+        const sampleFrame = (frame: number) => {
+          sampleCapturedFrame(frame);
+          // Widen the authored breakup envelope slightly while keeping every captured shard trajectory.
+          for (let piece = 0; piece < numShards; piece++) {
+            const offset = piece * 4;
+            frameData[offset] = shardCenter.x + (frameData[offset] - shardCenter.x) * shardSpread;
+            frameData[offset + 1] = shardCenter.y + (frameData[offset + 1] - shardCenter.y) * shardSpread;
+            frameData[offset + 2] = shardCenter.z + (frameData[offset + 2] - shardCenter.z) * shardSpread;
+          }
+        };
+        shardsMesh.userData = { sampleFrame, texFrame, texOrient, framesPerShard, restBounds, shardSpread };
         scene.add(shardsMesh);
 
       })
@@ -835,9 +843,9 @@ export function GoalTunnelSection() {
         astronautMatrix: new Array<number>(16).fill(0),
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
-        corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, crackProgress: 0,
-        glassRefractionReady: false, shardDepthWrite: false, tesseractLayers: 0, tesseractFacets: 0,
-        shardCount: 0, shardFrames: 0, tesseractIntensity: 0, ringVisible: false,
+        corridorTravel: 0, glazingLayers: 0, glassOpacity: 0,
+        glassRefractionReady: false, shardDepthWrite: false, shardSpread: 1.14,
+        shardCount: 0, shardFrames: 0, vortexIntensity: 0, ringVisible: false,
       },
       playback: { state: "armed", progress: 0, virtualScroll: 0, activation: 0, end: 0, runs: 0 },
       scrollForEmergence: (u: number) => {
@@ -1346,24 +1354,6 @@ export function GoalTunnelSection() {
         monitorBezelEl.style.display = "none";
       }
 
-      const crackProgress = smoothstep(0.065, 0.145, tShatter);
-      const crackOpacity = crackProgress * (1 - smoothstep(0.16, 0.235, tShatter));
-      monitorBezelEl.style.setProperty("--goal-crack-opacity", String(crackOpacity));
-      monitorBezelEl.style.setProperty("--goal-crack-dash", String(1 - crackProgress));
-
-      if (tOutPull > 0.02 && tShatter < 0.30 && tWait <= 0.001) {
-        monitorCracksEl.style.display = "block";
-        monitorCracksEl.style.width = `${m.imgOutWidth}px`;
-        monitorCracksEl.style.height = `${m.imgOutHeight}px`;
-        monitorCracksEl.style.transform = monitorBezelEl.style.transform;
-        monitorCracksEl.style.opacity = String(crackOpacity);
-        monitorCracksEl.style.setProperty("--goal-crack-dash", String(1 - crackProgress));
-        monitorCracksEl.dataset.crackProgress = String(crackProgress);
-      } else {
-        monitorCracksEl.style.display = "none";
-        monitorCracksEl.style.opacity = "0";
-      }
-
       // -----------------------------------------------------------------------
       // C. "STEP INTO A NEW WORLD / AND LET YOUR / IMAGINATION RUN WILD" (`Frames 06–08`)
       //    Retain the existing spread/scale playhead, but cap the inter-word spread.
@@ -1470,29 +1460,24 @@ export function GoalTunnelSection() {
       // used to cut a still-bright transition flash off halfway through its fade.
       trussSystem.group.visible = blackVis > 0.005 || portalFlash > 0.001;
       trussSystem.flashVeilMat.uniforms.uFlash.value = portalFlash;
-      const tesseractIntensity =
-        smoothstep(0.50, 0.63, tTunnel) * (1 - smoothstep(0.79, 0.84, tTunnel)) * blackVis;
-      trussSystem.updateTesseract(tTunnel, tesseractIntensity, reducedMotion);
-
       if (trussSystem.group.visible) {
         const uPhase = clamp01((tTunnel - 0.10) / 0.68);
         const twistAmt = reducedMotion
-          ? smoothstep(0.44, 0.77, tTunnel) * 0.18
-          : smoothstep(0.44, 0.61, tTunnel) * 0.13 + smoothstep(0.62, 0.78, tTunnel) * 0.22;
-        const vortexPinch = smoothstep(0.64, 0.77, tTunnel);
-        const vortexLatticeFade = 1 - 0.30 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
-        trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis * vortexLatticeFade;
+          ? smoothstep(0.42, 0.76, tTunnel) * 0.23
+          : smoothstep(0.40, 0.58, tTunnel) * 0.18 + smoothstep(0.60, 0.76, tTunnel) * 0.30;
+        const vortexPinch = smoothstep(0.61, 0.75, tTunnel);
+        const vortexStructureFade = 1 - 0.13 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
+        trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis * vortexStructureFade;
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
         trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
         trussSystem.tunnelMaterial.uniforms.uVortexPinch.value = vortexPinch;
         trussSystem.tunnelMaterial.uniforms.uTravelZ.value = acceleratedFall(tTunnel) * 44;
-        const pinkVortexGlow = smoothstep(0.66, 0.735, tTunnel);
-        const vortexPulse = 0.90 + 0.10 * Math.sin(tTunnel * Math.PI * 18);
-        trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.64, 0.70, tTunnel);
-        trussSystem.vortexCoreMat.uniforms.uIntensity.value =
-          pinkVortexGlow * blackVis * vortexPulse;
+        const pinkVortexGlow = smoothstep(0.49, 0.69, tTunnel);
+        const vortexPulse = 0.94 + 0.06 * Math.sin(tTunnel * Math.PI * 14);
+        trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.53, 0.68, tTunnel);
+        trussSystem.vortexCoreMat.uniforms.uIntensity.value = pinkVortexGlow * blackVis * vortexPulse;
         if (bloomPass) {
-          bloomPass.strength = lerp(0.16, 0.40, smoothstep(0.66, 0.75, tTunnel));
+          bloomPass.strength = lerp(0.14, 0.28, smoothstep(0.66, 0.75, tTunnel));
         }
       } else if (bloomPass) {
         bloomPass.strength = 0.16;
@@ -1658,7 +1643,7 @@ export function GoalTunnelSection() {
 
           // Flight-axis gravity adds increasing descent/depth through the shaft, then blends
           // into the authored blue-flight pose; never introduce another playhead.
-          const descent = acceleratedFall(clamp01((tTunnel - 0.08) / 0.72)) * (1 - inBlueDive);
+          const descent = acceleratedFall(clamp01((tTunnel - 0.06) / 0.64)) * (1 - inBlueDive);
           ay -= descent * 0.24;
           az -= descent * 1.05;
           const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
@@ -1875,7 +1860,7 @@ export function GoalTunnelSection() {
           solar.focalScale = optics.chromaticRingMat.uniforms.uFocalScale.value;
         }
       }
-      gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.18 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "tesseract");
+      gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.18 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "vortex");
       glRenderer.info.reset();
       let glassRefractionReady = false;
       if (shardsMesh?.visible && glassRefractionTarget) {
@@ -1942,14 +1927,12 @@ export function GoalTunnelSection() {
         state.corridorTravel = blueCorridor.group.visible ? blueCorridor.travelGroup.position.z : 0;
         state.glazingLayers = glazing.group.visible ? glazing.group.children.length : 0;
         state.glassOpacity = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uOpacity.value : 0;
-        state.crackProgress = crackProgress;
         state.glassRefractionReady = glassRefractionReady;
         state.shardDepthWrite = shardsMesh ? (shardsMesh.material as THREE.ShaderMaterial).depthWrite : false;
-        state.tesseractLayers = trussSystem.tesseractLayers;
-        state.tesseractFacets = trussSystem.tesseractFacets;
+        state.shardSpread = shardsMesh ? (shardsMesh.userData.shardSpread as number) : 1.14;
         state.shardCount = numShards;
         state.shardFrames = framesPerShard;
-        state.tesseractIntensity = tesseractIntensity;
+        state.vortexIntensity = trussSystem.vortexCoreMat.uniforms.uIntensity.value;
         state.ringVisible = optics.chromaticRingMesh.visible;
       }
       if (window.__goalPipelineProbe) {
@@ -2393,7 +2376,7 @@ export function GoalTunnelSection() {
             />
           </svg>
 
-          {/* Transparent Screen Opening Framed by Glossy Black Studio Display Bezel + Webcam Dot + Radial Glass Cracks */}
+          {/* Transparent screen opening framed by a glossy black bezel and a single webcam detail */}
           <div className="relative h-full w-full rounded-[14px] border-[14px] border-[#050609] bg-transparent shadow-[0_28px_80px_rgba(10,16,44,0.28)] sm:rounded-[20px] sm:border-[22px]">
             <span
               aria-hidden="true"
@@ -2405,56 +2388,6 @@ export function GoalTunnelSection() {
 
         {/* Full-Viewport Single-World Three.js Canvas Host */}
         <div ref={canvasHostRef} className="absolute inset-0 z-[10] h-full w-full" />
-
-        {/* Foreground spiderweb fractures sit above WebGL and clear as the shard burst starts. */}
-        <div
-          ref={monitorCracksRef}
-          id="home-goal-monitor-cracks"
-          aria-hidden="true"
-          data-crack-overlay="true"
-          className="pointer-events-none absolute left-0 top-0 z-[11] will-change-transform"
-          style={{ display: "none", opacity: 0, transformOrigin: "50% 50%" }}
-        >
-          <svg viewBox="0 0 1000 600" preserveAspectRatio="none" fill="none"
-            className="absolute inset-[2.4%] h-[95.2%] w-[95.2%] overflow-visible">
-            <defs>
-              <filter id="goalGlassCrackGlow" x="-12%" y="-12%" width="124%" height="124%">
-                <feGaussianBlur stdDeviation="0.95" result="blur" />
-                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-              </filter>
-              <radialGradient id="goalGlassImpactGlow">
-                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.88" />
-                <stop offset="30%" stopColor="#d9f4ff" stopOpacity="0.36" />
-                <stop offset="100%" stopColor="#d9f4ff" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-            <g filter="url(#goalGlassCrackGlow)" strokeLinecap="round" strokeLinejoin="round">
-              {/* Primary tensile fractures: stepped, uneven rays rather than uniform laser spokes. */}
-              <path
-                d="M506 296 L491 282 L469 272 L453 251 L423 239 L408 216 L377 205 L355 183 L325 178 L305 153 L277 145 L260 118 L232 111 L213 86 L184 76 M506 296 L511 273 L501 253 L516 230 L508 206 L529 184 L524 158 L546 140 L550 113 M506 296 L527 281 L550 265 L577 263 L602 240 L631 240 L654 214 L686 204 L712 179 L743 174 L767 149 L800 145 L819 121 L854 113 M506 296 L539 298 L573 292 L602 307 L636 303 L670 320 L706 314 L738 335 L775 336 L808 352 L846 355 L882 382 L925 391 M506 296 L524 320 L541 344 L567 360 L573 387 L599 409 L606 440 L631 468 L637 499 L665 524 L678 559 M506 296 L500 330 L510 363 L494 395 L503 430 L489 463 L497 499 L484 533 L489 573 M506 296 L483 319 L460 344 L431 360 L413 389 L380 406 L354 435 L321 447 L294 477 L260 490 L232 522 L198 535 M506 296 L472 291 L439 303 L408 292 L376 306 L342 292 L311 311 L276 300 L244 321 L208 315 L176 339 L142 337 L105 360"
-                stroke="#e6f6ff" strokeOpacity="0.88" strokeWidth="1.65"
-                pathLength="1" strokeDasharray="1"
-                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
-              />
-              {/* Concentric ring fractures, broken into faceted arcs like stressed laminated glass. */}
-              <path
-                d="M474 270 L460 257 L456 239 L465 222 L482 216 L499 225 L518 221 L536 236 L547 252 L541 270 L549 288 L535 306 L517 314 L499 307 L480 313 L461 299 L449 283 Z M444 252 L426 235 L421 212 L431 190 L452 174 L476 167 L500 174 L525 169 L550 181 L570 200 L580 224 L574 248 L588 271 L577 296 L558 316 L538 331 L513 339 L488 333 L465 340 L442 325 L422 310 L414 286 L421 265 M397 253 L377 231 L370 201 L386 174 L412 151 L442 143 L473 148 M526 146 L559 153 L590 174 L610 205 L615 238 M610 272 L601 306 L577 337 L549 357 L518 365 M475 367 L443 358 L414 337 L391 311 L382 282"
-                stroke="#effaff" strokeOpacity="0.72" strokeWidth="1.25"
-                pathLength="1" strokeDasharray="1"
-                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
-              />
-              {/* Secondary branching micro-fissures that break away from the main stress paths. */}
-              <path
-                d="M469 272 L445 268 L430 253 L411 250 M453 251 L447 230 L429 218 M423 239 L400 246 L382 236 M377 205 L365 181 L348 171 M355 183 L332 191 L314 181 M305 153 L289 174 L270 177 M260 118 L237 130 L219 119 M511 273 L528 254 L548 249 M516 230 L541 218 L555 198 M529 184 L552 188 L568 177 M546 140 L570 132 L585 114 M577 263 L593 281 L613 281 M602 307 L621 292 L640 298 M670 320 L688 300 L707 296 M738 335 L761 318 L782 322 M775 336 L792 358 L814 361 M541 344 L526 367 L530 387 M567 360 L593 349 L611 358 M599 409 L581 430 L587 448 M631 468 L611 483 L609 507 M637 499 L658 491 L678 502 M500 330 L479 345 L468 365 M494 395 L515 412 L512 435 M489 463 L465 480 L459 503 M484 533 L503 547 L500 567 M431 360 L420 341 L402 335 M380 406 L357 386 L337 389 M321 447 L301 429 L280 436 M260 490 L238 474 L219 478 M232 522 L211 506 L190 510 M472 291 L453 277 L434 281 M342 292 L325 270 L303 266 M276 300 L256 283 L236 286 M176 339 L158 320 L139 324"
-                stroke="#c9ecff" strokeOpacity="0.78" strokeWidth="0.9"
-                pathLength="1" strokeDasharray="1"
-                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
-              />
-              <circle cx="506" cy="296" r="3.3" fill="url(#goalGlassImpactGlow)" />
-              <circle cx="506" cy="296" r="2.1" fill="#ffffff" fillOpacity="0.76" />
-            </g>
-          </svg>
-        </div>
 
         {/* White 3-Line Headline Over/Behind Astronaut (`Frames 06 -> 07 -> 08`) */}
         <div

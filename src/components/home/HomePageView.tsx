@@ -142,9 +142,6 @@ export function HomePageView() {
     let rafId = 0;
     let layoutDirty = true;
     let disposed = false;
-    let previousY = window.scrollY;
-    let previousTime = performance.now();
-    let skew = 0;
     let introTop = 0, reelTop = 0, featuredTop = 0, heroHeight = 1;
     let desktopRibbonLength = 0, mobileRibbonLength = 0;
     const cards = Array.from(featuredSectionRef.current?.querySelectorAll<HTMLElement>(".project-item") ?? []).map((el) => ({
@@ -160,7 +157,7 @@ export function HomePageView() {
       for (let node: HTMLElement | null = el; node; node = node.offsetParent as HTMLElement | null) top += node.offsetTop;
       return top;
     };
-    const sample = (now: number) => {
+    const sample = () => {
       rafId = 0;
       if (document.hidden) return;
       const vh = Math.max(1,window.innerHeight);
@@ -180,13 +177,6 @@ export function HomePageView() {
         }
         layoutDirty = false;
       }
-      const dt = Math.min(0.1,Math.max(1/240,(now-previousTime)/1000));
-      const velocity = (y-previousY)/Math.max(dt,1/240);
-      previousY = y;
-      previousTime = now;
-      const targetSkew = reducedMotion ? 0 : Math.max(-1.6,Math.min(1.6,-velocity*0.0007));
-      skew += (targetSkew-skew)*(1-Math.exp(-14*dt));
-      if (Math.abs(skew)<0.005 && targetSkew===0) skew = 0;
       // Hand the invitation to the next act; do not touch the journey's own clock.
       const heroProgress = reducedMotion ? 0 : Math.max(0, Math.min(1, y / heroHeight));
       if (heroCueRef.current) heroCueRef.current.style.opacity = (1 - motionEase((heroProgress - .06) / .54)).toFixed(4);
@@ -239,11 +229,9 @@ export function HomePageView() {
         if (top>vh+180 || top+card.height < -180) continue;
         const entrance = reducedMotion ? 1 : motionEase((vh*1.02-top)/(vh*0.45));
         const parallax = reducedMotion ? 0 : Math.max(-1,Math.min(1,(top+card.height*0.5-vh*0.5)/vh))*card.imageTravel;
-        if (card.stage) card.stage.style.transform = `translate3d(0,${((1-entrance)*44).toFixed(2)}px,0) scale(${(0.97+entrance*0.03).toFixed(5)}) skewY(${skew.toFixed(4)}deg)`;
+        if (card.stage) card.stage.style.transform = `translate3d(0,${((1-entrance)*44).toFixed(2)}px,0) scale(${(0.97+entrance*0.03).toFixed(5)})`;
         if (card.image) card.image.style.transform = reducedMotion ? "none" : `translate3d(0,${parallax.toFixed(2)}px,0) scale(1.08)`;
       }
-      // The small inertial shear settles to zero, then there is no idle scroll loop.
-      if (skew!==0) rafId = window.requestAnimationFrame(sample);
     };
     const schedule = () => { if (!disposed && !rafId && !document.hidden) rafId = window.requestAnimationFrame(sample); };
     const resize = () => { layoutDirty = true; schedule(); };
@@ -252,7 +240,6 @@ export function HomePageView() {
     window.addEventListener("scroll",schedule,{passive:true});
     window.addEventListener("resize",resize,{passive:true});
     const visibility = () => {
-      previousY = window.scrollY; previousTime = performance.now(); skew = 0;
       layoutDirty = true; schedule();
     };
     document.addEventListener("visibilitychange",visibility);
