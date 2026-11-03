@@ -51,7 +51,7 @@ try {
           visibility: getComputedStyle(element).visibility,
           transform: element.style.transform,
           text: textPath?.textContent?.trim() ?? null,
-          fontSize: Number(text?.getAttribute('fontSize') ?? 0),
+          fontSize: text ? Number.parseFloat(getComputedStyle(text).fontSize) : 0,
           pathLength: path?.getTotalLength() ?? 0,
           stage: { width: rect.width, height: rect.height, top: rect.top },
           activeText: text?.dataset.aboutWordmarkMobile !== undefined ? 'mobile' : 'desktop',
