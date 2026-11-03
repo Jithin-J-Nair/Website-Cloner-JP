@@ -27,6 +27,20 @@ try{
    }
    if(!baseline){
     assert.deepEqual(report.restrictedRequests,[]);assert.deepEqual(report.errors,[]);assert.deepEqual(report.consoleErrors,[]);
+    // Verify that the curved valley wordmark is actually wired to the same
+    // scroll playhead, disappears at its authored exit, and re-enters on reverse.
+    const sweep=page.locator('[data-about-wordmark-sweep]');assert.equal(await sweep.count(),1);
+    const peak=width===390?2.15:1.25,end=width===390?3.35:2.35;
+    await seek(unit*peak);
+    const atPeak=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility,transform:el.style.transform,text:el.querySelector('textPath')?.textContent?.trim()}));
+    assert.ok(atPeak.opacity>.99);assert.equal(atPeak.visibility,'visible');assert.equal(atPeak.text,'LUSION');
+    await seek(unit*end);
+    const atExit=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility}));
+    assert.ok(atExit.opacity<.005);assert.equal(atExit.visibility,'hidden');
+    await seek(unit*peak);
+    const onReverse=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility}));
+    assert.ok(onReverse.opacity>.99);assert.equal(onReverse.visibility,'visible');
+    report.wordmarkSweep={peak,end,atPeak,atExit,onReverse,reversible:true};
     // Scene must sleep when it is entirely outside the viewport.
     await page.waitForTimeout(250);const sleeping=await page.evaluate(()=>window.__aboutProbe());await page.waitForTimeout(450);assert.equal((await page.evaluate(()=>window.__aboutProbe())).frames,sleeping.frames);
     await seek(unit*7.2);const beforeName=await page.locator('#about-who-team-name').textContent().catch(()=>null);

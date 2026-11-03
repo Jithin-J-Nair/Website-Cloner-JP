@@ -1021,6 +1021,7 @@ function AboutWhoExperience({
         <div
           ref={sweepWordmarkRef}
           aria-hidden="true"
+          data-about-wordmark-sweep
           style={{ opacity: 0, visibility: "hidden" }}
           className="pointer-events-none absolute inset-x-[5vw] top-[65%] z-10 h-[42vh] overflow-visible will-change-transform"
         >
