@@ -2414,28 +2414,40 @@ export function GoalTunnelSection() {
           <svg viewBox="0 0 1000 600" preserveAspectRatio="none" fill="none"
             className="absolute inset-[2.4%] h-[95.2%] w-[95.2%] overflow-visible">
             <defs>
-              <filter id="goalGlassCrackGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3.2" result="blur" />
+              <filter id="goalGlassCrackGlow" x="-12%" y="-12%" width="124%" height="124%">
+                <feGaussianBlur stdDeviation="0.95" result="blur" />
                 <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
+              <radialGradient id="goalGlassImpactGlow">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.88" />
+                <stop offset="30%" stopColor="#d9f4ff" stopOpacity="0.36" />
+                <stop offset="100%" stopColor="#d9f4ff" stopOpacity="0" />
+              </radialGradient>
             </defs>
-            <g filter="url(#goalGlassCrackGlow)">
+            <g filter="url(#goalGlassCrackGlow)" strokeLinecap="round" strokeLinejoin="round">
+              {/* Primary tensile fractures: stepped, uneven rays rather than uniform laser spokes. */}
               <path
-                d="M506 296 L432 244 L365 190 L290 164 L238 96 L170 58 M432 244 L396 182 L405 122 L368 62 M365 190 L286 207 L222 184 L150 207 L76 174 M506 296 L574 234 L646 190 L715 122 L805 92 L874 42 M574 234 L620 168 L604 104 L653 52 M646 190 L737 202 L795 176 L890 193 L966 162 M506 296 L654 298 L744 285 L825 309 L926 290 M506 296 L594 374 L676 446 L736 520 L824 565 M594 374 L565 450 L598 518 L570 578 M676 446 L770 428 L842 455 L932 436 M506 296 L477 390 L469 468 L485 542 L464 595 M477 390 L410 444 L378 510 L310 548 M506 296 L414 330 L332 364 L267 425 L182 470 M414 330 L351 290 L280 300 L209 272 L130 302 M506 296 L342 248 L258 250 L196 220"
-                stroke="#eff9ff" strokeOpacity="0.96" strokeWidth="2.5"
-                strokeLinecap="round" strokeLinejoin="round"
+                d="M506 296 L491 282 L469 272 L453 251 L423 239 L408 216 L377 205 L355 183 L325 178 L305 153 L277 145 L260 118 L232 111 L213 86 L184 76 M506 296 L511 273 L501 253 L516 230 L508 206 L529 184 L524 158 L546 140 L550 113 M506 296 L527 281 L550 265 L577 263 L602 240 L631 240 L654 214 L686 204 L712 179 L743 174 L767 149 L800 145 L819 121 L854 113 M506 296 L539 298 L573 292 L602 307 L636 303 L670 320 L706 314 L738 335 L775 336 L808 352 L846 355 L882 382 L925 391 M506 296 L524 320 L541 344 L567 360 L573 387 L599 409 L606 440 L631 468 L637 499 L665 524 L678 559 M506 296 L500 330 L510 363 L494 395 L503 430 L489 463 L497 499 L484 533 L489 573 M506 296 L483 319 L460 344 L431 360 L413 389 L380 406 L354 435 L321 447 L294 477 L260 490 L232 522 L198 535 M506 296 L472 291 L439 303 L408 292 L376 306 L342 292 L311 311 L276 300 L244 321 L208 315 L176 339 L142 337 L105 360"
+                stroke="#e6f6ff" strokeOpacity="0.88" strokeWidth="1.65"
                 pathLength="1" strokeDasharray="1"
                 style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
               />
+              {/* Concentric ring fractures, broken into faceted arcs like stressed laminated glass. */}
               <path
-                d="M502 297 L476 281 L458 253 M503 297 L536 274 L554 247 M504 300 L531 326 L556 348 M500 300 L476 329 L459 354 M365 190 L354 147 L330 126 M646 190 L690 168 L722 140 M594 374 L628 398 L651 430 M414 330 L385 359 L374 395 M342 248 L319 218 L293 205 M715 122 L740 91 L779 76 M477 390 L448 420 L434 450 M770 428 L805 408 L838 411"
-                stroke="#b9e7ff" strokeOpacity="0.90" strokeWidth="1.45"
-                strokeLinecap="round" strokeLinejoin="round"
+                d="M474 270 L460 257 L456 239 L465 222 L482 216 L499 225 L518 221 L536 236 L547 252 L541 270 L549 288 L535 306 L517 314 L499 307 L480 313 L461 299 L449 283 Z M444 252 L426 235 L421 212 L431 190 L452 174 L476 167 L500 174 L525 169 L550 181 L570 200 L580 224 L574 248 L588 271 L577 296 L558 316 L538 331 L513 339 L488 333 L465 340 L442 325 L422 310 L414 286 L421 265 M397 253 L377 231 L370 201 L386 174 L412 151 L442 143 L473 148 M526 146 L559 153 L590 174 L610 205 L615 238 M610 272 L601 306 L577 337 L549 357 L518 365 M475 367 L443 358 L414 337 L391 311 L382 282"
+                stroke="#effaff" strokeOpacity="0.72" strokeWidth="1.25"
                 pathLength="1" strokeDasharray="1"
                 style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
               />
-              <circle cx="506" cy="296" r="20" stroke="#f7fcff" strokeOpacity="0.88" strokeWidth="1.3" />
-              <circle cx="506" cy="296" r="8" fill="#eaf7ff" fillOpacity="0.30" />
+              {/* Secondary branching micro-fissures that break away from the main stress paths. */}
+              <path
+                d="M469 272 L445 268 L430 253 L411 250 M453 251 L447 230 L429 218 M423 239 L400 246 L382 236 M377 205 L365 181 L348 171 M355 183 L332 191 L314 181 M305 153 L289 174 L270 177 M260 118 L237 130 L219 119 M511 273 L528 254 L548 249 M516 230 L541 218 L555 198 M529 184 L552 188 L568 177 M546 140 L570 132 L585 114 M577 263 L593 281 L613 281 M602 307 L621 292 L640 298 M670 320 L688 300 L707 296 M738 335 L761 318 L782 322 M775 336 L792 358 L814 361 M541 344 L526 367 L530 387 M567 360 L593 349 L611 358 M599 409 L581 430 L587 448 M631 468 L611 483 L609 507 M637 499 L658 491 L678 502 M500 330 L479 345 L468 365 M494 395 L515 412 L512 435 M489 463 L465 480 L459 503 M484 533 L503 547 L500 567 M431 360 L420 341 L402 335 M380 406 L357 386 L337 389 M321 447 L301 429 L280 436 M260 490 L238 474 L219 478 M232 522 L211 506 L190 510 M472 291 L453 277 L434 281 M342 292 L325 270 L303 266 M276 300 L256 283 L236 286 M176 339 L158 320 L139 324"
+                stroke="#c9ecff" strokeOpacity="0.78" strokeWidth="0.9"
+                pathLength="1" strokeDasharray="1"
+                style={{ strokeDashoffset: "var(--goal-crack-dash, 1)" }}
+              />
+              <circle cx="506" cy="296" r="3.3" fill="url(#goalGlassImpactGlow)" />
+              <circle cx="506" cy="296" r="2.1" fill="#ffffff" fillOpacity="0.76" />
             </g>
           </svg>
         </div>

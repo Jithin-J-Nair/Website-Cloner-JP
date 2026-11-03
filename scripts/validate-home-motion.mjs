@@ -200,6 +200,11 @@ try {
  assert.ok(vortexState.shardFrames >= 15,'glass fragments retain the authored 15-frame rigid-body motion sequence');
  assert.ok(vortexState.tesseractIntensity > 0.20,'4D glass vortex is energized during astronaut fall');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
+ const vortexPeakY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.73));
+ const vortexPeakState = await seekScenePhase('vortex-peak',vortexPeakY,'tunnelProgress',0.73);
+ assert.ok(vortexPeakState.tesseractIntensity>0.90,'the glass tesseract reaches its full-strength lattice peak');
+ assert.ok(vortexPeakState.tesseractLayers>=2 && vortexPeakState.tesseractFacets===24,'the full 24-facet lattice stays intact at peak');
+ assert.equal(vortexPeakState.webglError,0,'vortex peak has no WebGL error');
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
  const blueState = await seekScenePhase('blue-corridor',blueY,'tunnelProgress',0.90);
  assert.ok(blueState.corridorTravel>0,'astronaut transitions into the blue arch corridor');
