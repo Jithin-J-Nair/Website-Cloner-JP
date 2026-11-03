@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
-import { aboutScenePose } from "@/lib/about-scene-motion";
+import { aboutScenePose, aboutWordmarkSweepPose } from "@/lib/about-scene-motion";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
@@ -118,6 +118,7 @@ function AboutWhoExperience({
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
   const heroWordmarkRef = useRef<HTMLDivElement | null>(null);
+  const sweepWordmarkRef = useRef<HTMLDivElement | null>(null);
   const scrollPromptRef = useRef<HTMLDivElement | null>(null);
   const manifestoOverlayRef = useRef<HTMLDivElement | null>(null);
   const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
@@ -751,6 +752,16 @@ function AboutWhoExperience({
         scrollPromptRef.current.style.opacity = String(promptVis);
       }
 
+      // A2. Short curved logotype sweep across the first grounded valley beat.
+      // This uses the same native-scroll playhead and existing DOM transform path.
+      if (sweepWordmarkRef.current) {
+        const sweep = aboutWordmarkSweepPose(u, isMobile);
+        sweepWordmarkRef.current.style.opacity = String(sweep.opacity);
+        sweepWordmarkRef.current.style.visibility = sweep.opacity > 0.005 ? "visible" : "hidden";
+        sweepWordmarkRef.current.style.transform =
+          `translate3d(${sweep.xVw}vw,${sweep.yVh}vh,0) rotate(${sweep.rotation}deg) scale(${sweep.scale})`;
+      }
+
       // B. 'WE ARE A CREATIVE PRODUCTION STUDIO' Manifesto Band ('u = 2.05 .. 4.35')
       if (manifestoOverlayRef.current) {
         const manIn = smoothstep(isMobile ? 2.05 : 1.1, isMobile ? 2.65 : 1.6, u);
@@ -1004,6 +1015,40 @@ function AboutWhoExperience({
               {LUSION_ABOUT.who.scrollPrompt}
             </span>
           </div>
+        </div>
+
+        {/* Layer 1.5: source-observed curved logotype beat, rebuilt as original SVG text-on-path. */}
+        <div
+          ref={sweepWordmarkRef}
+          aria-hidden="true"
+          style={{ opacity: 0, visibility: "hidden" }}
+          className="pointer-events-none absolute inset-x-[-9vw] top-[27%] z-10 h-[62vh] overflow-visible will-change-transform"
+        >
+          <svg
+            viewBox="0 0 1900 620"
+            preserveAspectRatio="none"
+            className="h-full w-full overflow-visible"
+          >
+            <defs>
+              <path
+                id="about-wordmark-sweep-path"
+                d="M-80 520 C 215 45 520 25 760 275 C 1000 525 1265 650 1515 315 C 1665 115 1815 30 1990 150"
+              />
+            </defs>
+            <text
+              fill="#ffffff"
+              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
+              fontSize="390"
+              fontWeight="450"
+              letterSpacing="-12"
+              textLength="1980"
+              lengthAdjust="spacingAndGlyphs"
+            >
+              <textPath href="#about-wordmark-sweep-path" startOffset="0%">
+                LUSION
+              </textPath>
+            </text>
+          </svg>
         </div>
 
         {/* Layer 2: Horizontal `WE ARE A CREATIVE PRODUCTION STUDIO` Reveal (`u = 2.05 .. 4.35`) */}
