@@ -34,7 +34,7 @@ Implemented in this pass:
 
 The change is recorded as **implemented, not visually accepted yet**. This runtime does not have the full repository checkout, project dependencies or a running app preview, and the container cannot resolve GitHub to clone/build the repository locally. The previous source-head CI success predates this change and is not evidence for this commit.
 
-The extended pure About scene-motion test was run in an isolated temporary workspace with Node 22.16.0 and TypeScript 5.8.3; **the helper/test run passed** for camera framing and the new desktop/mobile sweep invariants. This is not a full-repository typecheck/build or browser rendering test. The same test is now added to the repository CI workflow. A fresh CI run and visual review at matched source/local valley states are still required before calling this transition accepted.
+The extended pure About scene-motion test was run in an isolated temporary workspace with Node 22.16.0 and TypeScript 5.8.3; **the helper/test run passed** for camera framing and the new desktop/mobile sweep invariants. A fresh GitHub Actions run on PR #15 / commit `84946343ee2d806df3c3528d71c14e7f050bad1b` then completed **SUCCESS** (run [41593874120](https://github.com/Jithin-J-Nair/Website-Cloner-JP/actions/runs/41593874120)): dependency installation, lint, TypeScript, journey-audio tests, About scene-motion tests and production build all passed. This is a full CI code-quality pass, not a browser-rendered visual comparison. Matched-state visual review remains required before calling this transition accepted.
 
 ## Skills/guidance applied
 
