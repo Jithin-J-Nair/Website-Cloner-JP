@@ -11,7 +11,7 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -24,7 +24,9 @@ jobs:
           cache: npm
 
       - name: Install the requested glassmorphism skill for Claude Code
-        run: npx -y skills add compozy/compozy --skill glassmorphism --agent claude-code --copy
+        run: |
+          npx -y skills add compozy/compozy/.agents/skills/glassmorphism --agent claude-code --copy
+          test -s .claude/skills/glassmorphism/SKILL.md
 
       - name: Install dependencies
         run: npm ci
