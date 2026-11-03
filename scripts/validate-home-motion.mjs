@@ -179,6 +179,9 @@ try {
      corridorTravel:window.__goalAstronautTelemetry.sceneState.corridorTravel,
      crackProgress:window.__goalAstronautTelemetry.sceneState.crackProgress,
      glassOpacity:window.__goalAstronautTelemetry.sceneState.glassOpacity,
+     glassRefractionReady:window.__goalAstronautTelemetry.sceneState.glassRefractionReady,
+     tesseractLayers:window.__goalAstronautTelemetry.sceneState.tesseractLayers,
+     tesseractIntensity:window.__goalAstronautTelemetry.sceneState.tesseractIntensity,
      trussLoaded:window.__goalAstronautTelemetry.sceneState.trussLoaded,
      shardsLoaded:window.__goalAstronautTelemetry.sceneState.shardsLoaded,
      webglError:document.querySelector('#home-goal canvas').getContext('webgl2').getError(),
@@ -188,17 +191,31 @@ try {
  const vortexState = await seekScenePhase('vortex',vortexY,'tunnelProgress',0.58);
  assert.equal(vortexState.trussLoaded,true,'vortex truss geometry is present');
  assert.equal(vortexState.shardsLoaded,true,'captured shard geometry is loaded for downstream break');
+ assert.ok(vortexState.tesseractLayers >= (width < 820 ? 2 : 4),'glass tesseract layers are built for the vortex');
+ assert.ok(vortexState.tesseractIntensity > 0.20,'4D glass vortex is energized during astronaut fall');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
  const blueState = await seekScenePhase('blue-corridor',blueY,'tunnelProgress',0.90);
  assert.ok(blueState.corridorTravel>0,'astronaut transitions into the blue arch corridor');
  assert.equal(blueState.webglError,0);
- const crackY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.22));
- const crackState = await seekScenePhase('glass-cracks',crackY,'shatterProgress',0.22);
+ const crackY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.16));
+ const crackState = await seekScenePhase('glass-cracks',crackY,'shatterProgress',0.16);
  assert.ok(crackState.crackProgress>0.85,'monitor crack growth is visible before the fragment burst');
- const shatterY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.52));
- const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.52);
- assert.ok(shatterState.glassOpacity>0.9,'plate-glass fragments are visibly separating');
+ const crackOverlay = await page.locator('#home-goal-monitor-cracks').evaluate(el=>{
+   const path=el.querySelector('path');
+   return {display:getComputedStyle(el).display,opacity:Number(getComputedStyle(el).opacity),
+     z:Number(getComputedStyle(el).zIndex),canvasZ:Number(getComputedStyle(document.querySelector('#home-goal canvas').parentElement).zIndex),
+     dash:parseFloat(getComputedStyle(path).strokeDashoffset)};
+ });
+ assert.equal(crackOverlay.display,'block','foreground fracture overlay is rendered');
+ assert.ok(crackOverlay.opacity>0.7,'radial fractures are visible before impact');
+ assert.ok(crackOverlay.z>crackOverlay.canvasZ,'cracks are composited above WebGL');
+ assert.ok(crackOverlay.dash<0.2,'fracture lines are almost fully drawn before impact');
+ crackState.crackOverlay=crackOverlay;
+ const shatterY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.36));
+ const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.36);
+ assert.ok(shatterState.glassOpacity>0.72,'plate-glass fragments separate on the compressed impact beat');
+ assert.equal(shatterState.glassRefractionReady,true,'moving glass samples the live scene behind each fragment');
  assert.equal(shatterState.webglError,0);
  const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.90));
  const exitState = await seekScenePhase('post-shatter',exitY,'shatterProgress',0.90);
