@@ -1022,7 +1022,7 @@ function AboutWhoExperience({
           ref={sweepWordmarkRef}
           aria-hidden="true"
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[-9vw] top-[27%] z-10 h-[62vh] overflow-visible will-change-transform"
+          className="pointer-events-none absolute inset-x-[5vw] top-[65%] z-10 h-[42vh] overflow-visible will-change-transform"
         >
           <svg
             viewBox="0 0 1900 620"
@@ -1032,7 +1032,7 @@ function AboutWhoExperience({
             <defs>
               <path
                 id="about-wordmark-sweep-path"
-                d="M-80 520 C 215 45 520 25 760 275 C 1000 525 1265 650 1515 315 C 1665 115 1815 30 1990 150"
+                d="M 80 480 C 240 250 500 190 760 345 C 980 470 1230 520 1450 380 C 1640 250 1830 210 1980 300"
               />
             </defs>
             <text
@@ -1041,7 +1041,7 @@ function AboutWhoExperience({
               fontSize="390"
               fontWeight="450"
               letterSpacing="-12"
-              textLength="1980"
+              textLength="1720"
               lengthAdjust="spacingAndGlyphs"
             >
               <textPath href="#about-wordmark-sweep-path" startOffset="0%">
