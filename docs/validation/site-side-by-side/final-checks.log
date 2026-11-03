@@ -1,0 +1,61 @@
+1440: hero
+1440: reel-intro
+1440: reel-stage
+1440: featured
+1440: tablet
+1440: title
+1440: dark
+1440: pink
+1440: blue
+1440: shards
+1440: contact
+1440: footer
+1440: reversed-hero
+1440: route-projects
+1440: route-contact
+768: hero
+768: reel-intro
+768: reel-stage
+768: featured
+768: tablet
+768: title
+768: dark
+768: pink
+768: blue
+768: shards
+768: contact
+768: footer
+768: reversed-hero
+768: route-projects
+768: route-contact
+390: hero
+390: reel-intro
+390: reel-stage
+390: featured
+390: tablet
+390: title
+390: dark
+390: pink
+390: blue
+390: shards
+390: contact
+390: footer
+390: reversed-hero
+390: route-projects
+390: route-contact
+PASS home motion 1440 { hero: 'settled', reel: true, featured: true, solarGL: 0, errors: [] }
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: all intermediate stages visibly play
+    at file:///home/user/Website-Cloner-JP/scripts/validate-goal-sequence.mjs:124:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.22.3

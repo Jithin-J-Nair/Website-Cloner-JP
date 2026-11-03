@@ -1,0 +1,36 @@
+PASS card poses: finite, bounded, continuous, monotonic, deterministic, reversible; aligned settled fronts; stagger; malformed scroll fallback. Not a reference-timing assertion.
+PASS original deterministic finite multiscale instancing, shared GPU field packet, all quality counts, disposal events, no restricted portrait fetch, recovery/cancel cleanup and uncapped frame telemetry. Browser shader compilation/interaction is tested separately.
+PASS terrain: 16,641 finite/deterministic height samples, bounds -2.036..14.622, ridge hierarchy, filtered world-space relief, independent uniforms and disposal. Browser compilation checked separately.
+PASS original explorer: 10631 triangles, 8 draws, 5 materials, finite geometry, planted bounds, deterministic reverse/reentry, fixed reduced pose, invalid-input guards, zero textures/network/RAF, idempotent cleanup.
+
+> lusion-studio-reconstruction@1.0.0 test:motion
+> node scripts/test-home-motion.mjs
+
+PASS: deferred GPU results are phase-correct and deduplicated; unavailable is null
+PASS: bounded focal response; nonblocking GPU query ring, phase tags, unavailable/disjoint/context-loss paths and idempotent disposal
+PASS: accelerating fall, 22.5s clock, springs, UHD/software budget, continuous blue approach, soft solar occlusion and pupil acceptance
+
+> lusion-studio-reconstruction@1.0.0 test:assets
+> node scripts/test-asset-route.mjs
+
+=== ASSET ROUTE SECURITY & RFC 7233 SUITE (port 3199) ===
+  PASS  Blocks URL-encoded traversal (%2e%2e)
+  PASS  Blocks encoded backslash (%5c)
+  PASS  Blocks null-byte injection (%00)
+  PASS  Blocks hidden dotfile (.env)
+  PASS  Blocks symlink escape out of asset root even for allowlisted path
+  PASS  Blocks commercial font in /assets/fonts/
+  PASS  Blocks case-variant /assets/FONTS/
+  PASS  Blocks commercial .woff2 in non-/fonts subfolder
+  PASS  Serves approved SIL OFL font (/assets/fonts/IBMPlexMono-Regular.woff2)
+  PASS  Blocks non-allowlisted .json file (403)
+  PASS  Synthesizes approved fallback SVG with strict sandbox CSP + nosniff
+  PASS  Returns 404 for absent non-synthesized .mp4 stream
+  PASS  HEAD returns 200 with exact Content-Length=10 and 0 body bytes
+  PASS  RFC 7233 explicit Range bytes=2-5 -> 206 '2345' (bytes 2-5/10)
+  PASS  RFC 7233 suffix Range bytes=-4 -> 206 '6789' (bytes 6-9/10)
+  PASS  Rejects malformed Range bytes=0-abc with 416 (fixes prior 500 crash)
+  PASS  Rejects out-of-bounds Range bytes=50-60 with 416
+  PASS  Rejects unsupported multipart Range bytes=0-1,4-5 with 416
+
+Summary: 18 passed, 0 failed.

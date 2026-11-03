@@ -384,3 +384,94 @@ body {
 .spotlight-card:focus-visible .spotlight-border {
   opacity: 1;
 }
+
+/* About's recognition is a typographic act, not another UI-card section. */
+.about-awards-monument {
+  position: relative;
+  margin-inline: calc(var(--base-padding-x) * -1);
+  margin-bottom: clamp(2rem, 5vw, 6rem);
+  overflow: hidden;
+  line-height: .9;
+  letter-spacing: -.055em;
+  font-size: 23vw;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(255 255 255 / .5);
+  user-select: none;
+}
+.about-awards-monument span { display: block; width: max-content; }
+.about-expertise-diagram { contain: layout; }
+@media (hover: hover) and (pointer: fine) {
+  .about-expertise-column:hover { border-color: white; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-expertise-column { transform: none !important; }
+}
+
+/* Keep technical registration marks and accessible HTML; replace only the flat drawing. */
+#about-capability[data-expertise-webgl="ready"] .about-expertise-diagram [data-expertise-plane] {
+  opacity: 0;
+}
+
+/* About: observed playing-card composition, not an unrelated diagram gallery.
+   CSS 3D keeps service text selectable and needs no second WebGL renderer. */
+.about-playing-expertise {
+  --about-expertise-blue: #3833e8;
+  position: relative;
+  color: #fafafa;
+  background: var(--about-expertise-blue);
+}
+.about-expertise-stage { position: relative; isolation: isolate; overflow: hidden; padding: 76px 5vw 80px; }
+.about-expertise-heading { position: relative; z-index: 2; }
+.about-expertise-heading h2 { font-size: 12vw; line-height: 1.02; font-weight: 400; letter-spacing: -.045em; }
+.about-expertise-heading h2 span { display: block; }
+.about-expertise-heading h2 span + span { margin-left: 20vw; }
+.about-expertise-caption { margin-top: 24px; max-width: 320px; }
+.about-expertise-caption p { font-size: 11px; line-height: 1.3; text-transform: uppercase; }
+.about-expertise-controls { display: flex; gap: 8px; margin-top: 14px; }
+.about-expertise-controls button { display: grid; place-items: center; width: 30px; height: 34px; border: 1px solid #ffffff70; border-radius: 4px; cursor: pointer; }
+.about-expertise-controls button:hover, .about-expertise-controls button:focus-visible { color: var(--about-expertise-blue); background: #fafafa; }
+.about-expertise-controls .about-card-glyph { width: 10px; height: 12px; }
+.about-expertise-flourish { position: absolute; z-index: -1; right: -20%; top: 0; width: 150%; height: 100%; opacity: .8; pointer-events: none; }
+.about-playing-cards { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 60px; }
+.about-card-slot { position: relative; left: auto !important; width: 100%; min-width: 0; aspect-ratio: 240 / 336; transform-style: preserve-3d; }
+.about-service-card { width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 200ms cubic-bezier(.23,1,.32,1); cursor: pointer; outline-offset: 7px; }
+.about-service-card:focus-visible { outline: 2px solid white; border-radius: 12px; }
+.about-card-flip { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
+.about-card-face { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.about-card-front { display: flex; flex-direction: column; padding: 10.5%; color: #131313; background: #fafafa; transform: translateZ(.1px); }
+.about-card-corner { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: clamp(20px, 5.6vw, 28px); line-height: 1.1; text-transform: uppercase; letter-spacing: -.04em; }
+.about-card-corner h3 { font: inherit; }
+.about-card-glyph { flex: none; display: block; width: .85em; height: 1em; }
+.about-card-front ul { margin-top: auto; margin-bottom: auto; }
+.about-card-front li { padding-block: 10px; border-bottom: 2px dotted #e8e8e8; font-size: clamp(13px, 3.5vw, 16px); line-height: 1.15; letter-spacing: -.025em; }
+.about-card-front li:last-child { border-bottom-color: transparent; }
+.about-card-corner-inverted { transform: rotate(180deg); }
+.about-card-back { background: var(--about-expertise-blue); transform: rotateY(180deg); }
+.about-card-back-art { width: 100%; height: 100%; }
+@media (min-width: 560px) {
+  .about-playing-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3vw; }
+  .about-card-corner { font-size: clamp(19px, 3vw, 28px); }
+  .about-card-front li { font-size: clamp(13px, 1.65vw, 16px); padding-block: 1.5vw; }
+}
+@media (min-width: 1000px) {
+  .about-playing-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2vw; }
+  .about-card-corner { font-size: 1.75vw; }
+  .about-card-front li { font-size: 1.08vw; padding-block: 1.05vw; }
+  .about-expertise-caption { position: absolute; top: 1vw; right: 0; width: 20vw; max-width: none; margin: 0; }
+  .about-expertise-caption p { font-size: clamp(10px, .8vw, 14px); }
+}
+@media (min-width: 1000px) and (min-height: 650px) and (prefers-reduced-motion: no-preference) {
+  .about-playing-expertise:not([data-reduced="true"]) { height: 310svh; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-expertise-stage { position: sticky; top: 0; height: 100svh; padding: clamp(104px, 11vh, 144px) 5vw 0; perspective: 1800px; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-playing-cards { display: block; position: absolute; inset: 0; margin: 0; transform-style: preserve-3d; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-card-slot { position: absolute; left: auto; top: 50%; width: 21%; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-card-slot:nth-child(1) { left: 5% !important; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-card-slot:nth-child(2) { left: 28% !important; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-card-slot:nth-child(3) { left: 51% !important; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-card-slot:nth-child(4) { left: 74% !important; }
+  .about-playing-expertise:not([data-reduced="true"]) .about-card-slot { transform: translate3d(0,-50%,0); }
+  .about-playing-expertise:not([data-reduced="true"]) .about-expertise-flourish { right: -10%; width: 120%; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-service-card { transition: none; transform: none !important; }
+}

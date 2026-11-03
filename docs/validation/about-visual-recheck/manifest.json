@@ -1,0 +1,15 @@
+{
+  "baseCommit": "cdacab5e05375f892053d73067ffe197ea20d1e8",
+  "branch": "arena/95a11883-website-cloner-jp",
+  "buildId": "lnBDMp4z59B65rRH3yl-D",
+  "sourceHashes": {
+    "src/components/pages/AboutPageView.tsx": "c3297a66be40c099eec7dc77562d3effe87e317d1f42677cef04f88eb1530aec",
+    "src/components/three/AboutPlume.ts": "cd18cf09e0df2f017c4af08cdc5209eb7c9a507e8a8d6811dc49663d3a68f115",
+    "src/components/three/AboutTerrain.ts": "f48e08684953a6027bb6063d83d526cd8d13caa53e249324740262e2c9c1272a",
+    "src/components/three/AboutLicensedExplorer.ts": "5b3f0a9d49268d1b86375f5de9b67c172b4094e36fdab742b8fdc80422e55888",
+    "src/app/globals.css": "99d1c79fe7ec8305064165db452f79707ffb3e4ce2c8b66c12dee4d8bc8e9c11",
+    "src/lib/about-expertise-motion.ts": "452fe0fdb2e9baf53a0841889a7f1d4aae6c91409f2494f4c38bcb25fb40c058",
+    "public/models/astronaut.glb": "e87baf5bb7a646a814b155fc3eb86a3e1dbcc0366cf0d63206062d691aca08ec"
+  },
+  "evidenceLimits": "Actual local browser renders; historical official half only, different viewport/time; not pixel/motion parity, physical GPU, 60Hz or audio certification."
+}

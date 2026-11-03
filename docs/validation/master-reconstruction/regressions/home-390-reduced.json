@@ -1,0 +1,221 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "reduced": true,
+  "touch": true,
+  "errors": [],
+  "failedAssets": [],
+  "states": [],
+  "viewportMetrics": {
+    "width": 390,
+    "height": 844,
+    "visualWidth": 390,
+    "visualHeight": 844
+  },
+  "hero": {
+    "initial": {
+      "colorIndex": "0",
+      "accentColor": "#1b24e6",
+      "webglStatus": "ready",
+      "pointerInteractions": "0",
+      "motionState": "settled",
+      "activeRaf": "false",
+      "renderPixels": "360x669",
+      "offsetEnergy": "0.00000",
+      "renderCount": "4",
+      "frameCpuMs": "16.70",
+      "drawCalls": "23"
+    }
+  },
+  "touchNoHover": true,
+  "touchNativeScroll": true,
+  "reel": [
+    {
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "radius": "20px"
+    },
+    {
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "radius": "20px"
+    },
+    {
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "radius": "20px"
+    }
+  ],
+  "reelReverse": true,
+  "reelBackground": {
+    "paused": true,
+    "readyState": 4
+  },
+  "featured": [
+    {
+      "heading": "matrix(1, 0, 0, 1, 0, 0)",
+      "cards": [
+        {
+          "stage": "translate3d(0px, 0px, 0px) scale(1) skewY(0deg)",
+          "image": "none"
+        },
+        {
+          "stage": "none",
+          "image": "none"
+        }
+      ]
+    },
+    {
+      "heading": "matrix(1, 0, 0, 1, 0, 0)",
+      "cards": [
+        {
+          "stage": "translate3d(0px, 0px, 0px) scale(1) skewY(0deg)",
+          "image": "none"
+        },
+        {
+          "stage": "translate3d(0px, 0px, 0px) scale(1) skewY(0deg)",
+          "image": "none"
+        }
+      ]
+    },
+    {
+      "heading": "matrix(1, 0, 0, 1, 0, 0)",
+      "cards": [
+        {
+          "stage": "translate3d(0px, 0px, 0px) scale(1) skewY(0deg)",
+          "image": "none"
+        },
+        {
+          "stage": "translate3d(0px, 0px, 0px) scale(1) skewY(0deg)",
+          "image": "none"
+        }
+      ]
+    }
+  ],
+  "featuredReverse": true,
+  "solar": {
+    "telemetry": {
+      "glbLoaded": true,
+      "glbError": null,
+      "qualityTier": "mobile",
+      "renderWidth": 390,
+      "renderHeight": 844,
+      "pixelRatio": 1,
+      "textureMaxDim": 1024,
+      "drawCalls": 6,
+      "triangles": 13241,
+      "lastFrameMs": 1.1,
+      "renderCount": 2,
+      "resources": {
+        "geometries": 14,
+        "textures": 15,
+        "programs": 10
+      },
+      "gpuTiming": {
+        "enabled": false,
+        "lastMs": null,
+        "phase": "",
+        "samples": 0,
+        "disjoints": 0
+      },
+      "solar": {
+        "x": -2.388494984560684,
+        "y": 1.2984331785275545,
+        "facing": 0.5495309134042629,
+        "visibility": 0.19198112819002514,
+        "occlusion": 1,
+        "focalScale": 0.9050944361221235
+      },
+      "emergenceProgress": 0.8,
+      "portalStencilActive": false,
+      "fallbackVisible": false,
+      "sceneState": {
+        "tunnelProgress": 0,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 0,
+        "astronautMatrix": [
+          0.18096115917876132,
+          0.021792271893596563,
+          -0.9157094532582702,
+          0,
+          0.010516178221400874,
+          0.9332979693523219,
+          0.024289039310233438,
+          0,
+          0.9159083556210526,
+          -0.015021462003210355,
+          0.18064298163779124,
+          0,
+          0.01885472284681409,
+          -0.5353320638327634,
+          0.7395142974854989,
+          1
+        ],
+        "cameraMatrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0.9999292913612221,
+          -0.011891689444486668,
+          0,
+          0,
+          0.011891689444486668,
+          0.9999292913612221,
+          0,
+          0,
+          0,
+          3.30330973790103,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "crackProgress": 0,
+        "ringVisible": true
+      },
+      "playback": {
+        "state": "completed",
+        "progress": 0,
+        "virtualScroll": 9978,
+        "activation": 7984.7696,
+        "end": 38143.8,
+        "runs": 0
+      }
+    },
+    "canvasSize": [
+      390,
+      844
+    ],
+    "drawingBuffer": [
+      390,
+      844
+    ],
+    "webglError": 0
+  },
+  "offscreenVideosPaused": true,
+  "solarCameraResponse": {
+    "first": {
+      "x": -2.388494984560684,
+      "y": 1.2984331785275545,
+      "facing": 0.5495309134042629,
+      "visibility": 0.19198112819002514,
+      "occlusion": 1,
+      "focalScale": 0.9050944361221235
+    },
+    "other": {
+      "x": -2.7754548842058457,
+      "y": 1.4054290880795421,
+      "facing": 0.5118940304520425,
+      "visibility": 0.1223778057330063,
+      "occlusion": 1,
+      "focalScale": 0.9184675207444599
+    }
+  },
+  "modalChecked": true
+}

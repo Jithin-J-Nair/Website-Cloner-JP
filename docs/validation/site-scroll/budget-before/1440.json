@@ -1,0 +1,93 @@
+{
+  "width": 1440,
+  "height": 900,
+  "samples": [
+    {
+      "u": 0,
+      "wallMs": 5006,
+      "submittedFrames": 23,
+      "renderSubmissionsPerSecond": 4.594486616060727,
+      "medianRafIntervalMs": 202.39999999996508,
+      "p95RafIntervalMs": 392.70000000001164,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 144000,
+      "memory": {
+        "geometries": 2,
+        "textures": 0
+      },
+      "webglError": 0
+    },
+    {
+      "u": 1.6,
+      "wallMs": 5007,
+      "submittedFrames": 23,
+      "renderSubmissionsPerSecond": 4.593569003395246,
+      "medianRafIntervalMs": 199.79999999998836,
+      "p95RafIntervalMs": 387.9000000000233,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 13,
+      "triangles": 203145,
+      "memory": {
+        "geometries": 13,
+        "textures": 1
+      },
+      "webglError": 0
+    },
+    {
+      "u": 5.35,
+      "wallMs": 5003.600000000035,
+      "submittedFrames": 17,
+      "renderSubmissionsPerSecond": 3.3975537612918463,
+      "medianRafIntervalMs": 362.1000000000349,
+      "p95RafIntervalMs": 764.5,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 36992,
+      "memory": {
+        "geometries": 14,
+        "textures": 1
+      },
+      "webglError": 0
+    },
+    {
+      "u": 7.2,
+      "wallMs": 5005.800000000047,
+      "submittedFrames": 29,
+      "renderSubmissionsPerSecond": 5.793279795437239,
+      "medianRafIntervalMs": 152.19999999995343,
+      "p95RafIntervalMs": 383.1000000000349,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 0,
+      "memory": {
+        "geometries": 15,
+        "textures": 1
+      },
+      "webglError": 0
+    }
+  ],
+  "errors": [],
+  "physicalGpuTiming": "NOT MEASURED",
+  "device": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "timerQuerySupported": true,
+    "policy": "existing cinematic pixel budget; original About software/low/mobile tier=1800; high=4800"
+  }
+}

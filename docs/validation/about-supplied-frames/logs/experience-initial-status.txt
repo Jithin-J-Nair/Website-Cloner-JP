@@ -1,0 +1,1 @@
+Initial extended run interrupted for the resource-budget rebuild; not counted as a pass.

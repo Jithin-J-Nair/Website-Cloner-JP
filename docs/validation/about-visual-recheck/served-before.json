@@ -1,0 +1,11 @@
+{
+  "errors": [],
+  "url": "http://127.0.0.1:3001/about",
+  "version": {
+    "title": "Lusion - About Us",
+    "cards": 4,
+    "canvas": 1,
+    "loading": []
+  },
+  "source": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about\nCall log:\n  - navigating to \"https://lusion.co/about\", waiting until \"domcontentloaded\"\n"
+}

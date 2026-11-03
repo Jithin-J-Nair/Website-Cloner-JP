@@ -1,0 +1,7 @@
+
+> lusion-studio-reconstruction@1.0.0 test:motion
+> node scripts/test-home-motion.mjs
+
+PASS: deferred GPU results are phase-correct and deduplicated; unavailable is null
+PASS: bounded focal response; nonblocking GPU query ring, phase tags, unavailable/disjoint/context-loss paths and idempotent disposal
+PASS: accelerating fall, 22.5s clock, springs, UHD/software budget, continuous blue approach, soft solar occlusion and pupil acceptance

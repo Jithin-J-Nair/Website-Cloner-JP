@@ -32,6 +32,9 @@ const STUDIO_SCENE_BG_HEX = "#1f222d";
 const STUDIO_CONTAINER_BG_HEX = "#13151d";
 const NEAR_BLACK_HEX = "#040407";
 const OFF_WHITE_HEX = "#e6e7ef";
+// Use stage aspect, not viewport width: tablet stages are too narrow for the
+// edge-framed desktop anchors. Share this boundary across camera/init/resize/tick.
+const PORTRAIT_STAGE_ASPECT = 1.45;
 
 type PieceKind = "blue" | "black" | "white";
 
@@ -51,22 +54,19 @@ interface HeroPieceSpec {
 }
 
 /**
- * 11 Art-Directed Large Sculptural Cross Pieces
- *
- * Calibrated directly against the verified `1440x900` & `390x844` Lusion hero captures:
- *   - 1 sharp focal royal-blue hero connector (`isHero: true`) right in the focal plane
- *   - Large foreground & edge-cropped near-black (`#07070a`), off-white (`#e8e8f0`), and
- *     royal-blue (`#1a22e0`) connectors cropped boldly by the top, left, and bottom edges
- *   - Deliberate dark `#12141a` negative space on top-left and far-right of frame
+ * Original connector arrangement informed by reference/side-by-side/01.
+ * Desktop pieces frame an open centre instead of forming a central product pile.
+ * These are authored rest poses, not recovered source physics or camera values.
+ * Mobile retains its separate portrait anchors; pointer springs, colour cycling,
+ * rendering ownership and disposal remain unchanged.
  */
 const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
-  // 0. SHARP IN-FOCUS BLUE HERO CONNECTOR (center-left focal plane)
   {
     id: "hero-blue-center",
     kind: "blue",
     isHero: true,
     scale: 1.03,
-    anchorDesktop: [-0.58, 0.14, 0.35],
+    anchorDesktop: [3.35, -0.65, 0.35],
     anchorMobile: [0.06, -0.02, 0.45],
     euler: [0.34, 0.46, 0.52],
     driftPhase: 0.0,
@@ -75,12 +75,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.36,
     clearcoatRoughness: 0.028,
   },
-  // 1. FOREGROUND-LEFT GLOSSY OFF-WHITE CONNECTOR (angled ~35deg left of blue hero)
   {
     id: "fg-white-left",
     kind: "white",
     scale: 1.06,
-    anchorDesktop: [-1.96, 0.1, 0.98],
+    anchorDesktop: [-5.15, 2.7, 0.98],
     anchorMobile: [-0.96, -0.34, 0.95],
     euler: [0.44, 0.56, -0.62],
     driftPhase: 1.15,
@@ -89,12 +88,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.33,
     clearcoatRoughness: 0.022,
   },
-  // 2. FOREGROUND-RIGHT PIANO-BLACK CONNECTOR (dramatic X-tilt, crisp strip & saddle reflections)
   {
     id: "fg-black-right",
     kind: "black",
     scale: 1.08,
-    anchorDesktop: [0.88, -0.02, 1.06],
+    anchorDesktop: [-2.45, -2.1, 1.06],
     anchorMobile: [0.92, -0.42, 1.08],
     euler: [0.3, -0.46, 0.72],
     driftPhase: 2.3,
@@ -103,12 +101,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.38,
     clearcoatRoughness: 0.02,
   },
-  // 3. BOTTOM-FOREGROUND PIANO-BLACK CONNECTOR (cropped boldly by bottom frame edge)
   {
     id: "fg-black-bottom",
     kind: "black",
     scale: 1.1,
-    anchorDesktop: [-0.84, -1.62, 1.48],
+    anchorDesktop: [-1.5, -3.05, 1.48],
     anchorMobile: [-0.82, -2.02, 1.38],
     euler: [-0.36, 0.32, 0.24],
     driftPhase: 3.4,
@@ -117,12 +114,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.38,
     clearcoatRoughness: 0.02,
   },
-  // 4. TOP-CENTER OFF-WHITE CONNECTOR (cropped cleanly by top frame edge)
   {
     id: "top-white-center",
     kind: "white",
     scale: 1.04,
-    anchorDesktop: [0.22, 1.98, 0.24],
+    anchorDesktop: [0.22, 4.3, 0.24],
     anchorMobile: [0.58, 2.06, 0.42],
     euler: [0.64, -0.35, 0.58],
     driftPhase: 4.1,
@@ -131,12 +127,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.36,
     clearcoatRoughness: 0.032,
   },
-  // 5. UPPER-RIGHT OFF-WHITE CONNECTOR (frames deliberate dark right negative space)
   {
     id: "upper-white-right",
     kind: "white",
     scale: 1.05,
-    anchorDesktop: [2.04, 0.98, -0.16],
+    anchorDesktop: [6.3, 3.4, -0.16],
     anchorMobile: [1.18, 0.9, -0.12],
     euler: [-0.38, -0.52, 0.68],
     driftPhase: 5.05,
@@ -145,12 +140,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.35,
     clearcoatRoughness: 0.03,
   },
-  // 6. TOP-LEFT ROYAL-BLUE CONNECTOR (cropped at top edge; clean dark negative space left of it)
   {
     id: "top-blue-left",
     kind: "blue",
     scale: 1.06,
-    anchorDesktop: [-1.46, 1.88, -0.58],
+    anchorDesktop: [-4.15, 0.85, 0.7],
     anchorMobile: [-0.76, 2.16, -0.55],
     euler: [0.18, 0.28, 0.08],
     driftPhase: 0.75,
@@ -159,12 +153,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.36,
     clearcoatRoughness: 0.032,
   },
-  // 7. BOTTOM-RIGHT ROYAL-BLUE CONNECTOR (cropped boldly by bottom frame edge)
   {
     id: "bottom-blue-right",
     kind: "blue",
     scale: 1.06,
-    anchorDesktop: [1.04, -1.66, -0.14],
+    anchorDesktop: [1.15, -2.0, 0.35],
     anchorMobile: [0.34, -1.78, 0.52],
     euler: [-0.46, 0.38, -0.54],
     driftPhase: 1.9,
@@ -173,12 +166,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.35,
     clearcoatRoughness: 0.03,
   },
-  // 8. BOTTOM-LEFT OFF-WHITE CONNECTOR (cropped by BOTH left and bottom borders)
   {
     id: "bottom-white-left-crop",
     kind: "white",
     scale: 1.08,
-    anchorDesktop: [-3.12, -1.52, 0.56],
+    anchorDesktop: [-5.8, -3.2, 0.56],
     anchorMobile: [-0.18, -2.62, -0.25],
     euler: [0.32, 0.44, -0.35],
     driftPhase: 2.85,
@@ -187,12 +179,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.35,
     clearcoatRoughness: 0.03,
   },
-  // 9. MID-LEFT BACKGROUND OFF-WHITE CONNECTOR (cropped along left border)
   {
     id: "bg-white-left",
     kind: "white",
     scale: 1.02,
-    anchorDesktop: [-3.18, -0.24, -0.76],
+    anchorDesktop: [-6.2, -0.24, -0.76],
     anchorMobile: [-1.12, -1.28, -0.62],
     euler: [-0.52, 0.62, 0.42],
     driftPhase: 3.95,
@@ -201,12 +192,11 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.37,
     clearcoatRoughness: 0.034,
   },
-  // 10. MID-RIGHT DEEP PIANO-BLACK CONNECTOR (recedes into clean dark right negative space)
   {
     id: "bg-black-right",
     kind: "black",
     scale: 1.04,
-    anchorDesktop: [2.44, -0.76, -0.92],
+    anchorDesktop: [-4.5, -2.1, -0.92],
     anchorMobile: [0.42, 0.72, -0.92],
     euler: [0.48, -0.58, 0.36],
     driftPhase: 5.65,
@@ -452,7 +442,7 @@ export function HeroCrossesStage() {
     const updateCameraFraming = (w: number, h: number) => {
       const aspect = w / Math.max(1, h);
       camera.aspect = aspect;
-      if (aspect < 0.85) {
+      if (aspect < PORTRAIT_STAGE_ASPECT) {
         camera.fov = 33;
         camera.position.set(0.06, -0.08, 8.2);
         camera.lookAt(-0.04, -0.16, 0);
@@ -486,7 +476,7 @@ export function HeroCrossesStage() {
     const isMobileInit = initialW < 680;
     const crossGeometry = createHollowCrossGeometry(isMobileInit ? 48 : 64);
 
-    // Studio MeshPhysicalMaterial instances (roughness ~0.35, clearcoat 1, clearcoatRoughness ~0.03)
+    // Satin plastic: broad highlights rather than the previous sharp, blown-out strips.
     const disposableMaterials: THREE.MeshPhysicalMaterial[] = [];
     const blueMats: THREE.MeshPhysicalMaterial[] = [];
 
@@ -506,21 +496,21 @@ export function HeroCrossesStage() {
 
       const mat = new THREE.MeshPhysicalMaterial({
         color: new THREE.Color(baseHex),
-        roughness: spec.roughness,
+        roughness: Math.max(0.46, spec.roughness),
         metalness: 0.0,
-        clearcoat: 1.0,
-        clearcoatRoughness: spec.clearcoatRoughness,
-        envMapIntensity: spec.kind === "black" ? 1.32 : spec.kind === "blue" ? 1.05 : 0.85,
+        clearcoat: 0.25,
+        clearcoatRoughness: Math.max(0.22, spec.clearcoatRoughness),
+        envMapIntensity: spec.kind === "black" ? 0.65 : spec.kind === "blue" ? 0.8 : 0.7,
         ior: 1.52,
       });
       disposableMaterials.push(mat);
       if (spec.kind === "blue") blueMats.push(mat);
 
       const mesh = new THREE.Mesh(crossGeometry, mat);
-      const anchor = initAspect < 0.85 ? spec.anchorMobile : spec.anchorDesktop;
+      const anchor = initAspect < PORTRAIT_STAGE_ASPECT ? spec.anchorMobile : spec.anchorDesktop;
       mesh.position.set(anchor[0], anchor[1], anchor[2]);
       mesh.rotation.set(spec.euler[0], spec.euler[1], spec.euler[2]);
-      mesh.scale.setScalar(initAspect < 0.85 ? spec.scale * 0.72 : spec.scale);
+      mesh.scale.setScalar(initAspect < PORTRAIT_STAGE_ASPECT ? spec.scale * 0.72 : spec.scale);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       scene.add(mesh);
@@ -646,7 +636,7 @@ export function HeroCrossesStage() {
       if (bokehUniforms.nearClip) bokehUniforms.nearClip.value = camera.near;
       if (bokehUniforms.farClip) bokehUniforms.farClip.value = camera.far;
 
-      const isPortrait = w / Math.max(1, h) < 0.85;
+      const isPortrait = w / Math.max(1, h) < PORTRAIT_STAGE_ASPECT;
       meshes.forEach((m, idx) => {
         const spec = HERO_PIECES[idx];
         const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
@@ -738,7 +728,7 @@ export function HeroCrossesStage() {
       // Exponential smoothing equivalent to ~0.05 lerp at 60fps, strictly delta-time invariant
       const alpha = 1 - Math.exp(-3.1 * dt);
       const decay = Math.exp(-2.6 * dt);
-      const isPortrait = camera.aspect < 0.85;
+      const isPortrait = camera.aspect < PORTRAIT_STAGE_ASPECT;
 
       let moving = false;
       const ptr = pointerNdcRef.current;

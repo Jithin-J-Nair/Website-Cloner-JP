@@ -1,0 +1,23 @@
+{
+  "width": 768,
+  "motion": "no-preference",
+  "errors": [],
+  "steps": [
+    {
+      "name": "direct-contact",
+      "url": "http://127.0.0.1:3000/#footer-section",
+      "y": 46027,
+      "footerTop": -0.421875,
+      "runs": 0
+    },
+    {
+      "name": "menu-contact",
+      "y": 11348,
+      "sectionTop": 879.1875
+    },
+    {
+      "name": "logo-navigation-top",
+      "passed": true
+    }
+  ]
+}

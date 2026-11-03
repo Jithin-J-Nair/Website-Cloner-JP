@@ -1,0 +1,7760 @@
+{
+  "width": 1440,
+  "errors": [],
+  "physicalAudibility": "NOT VERIFIED",
+  "samples": [
+    {
+      "at": 10833.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.004011879573330205,
+        "peak": 0.014649448916316032,
+        "contextState": "running",
+        "audioTime": 1.7937414965986394,
+        "gains": [
+          0.6499999761581421,
+          0.5950616002082825,
+          0.6499999761581421,
+          0.4437037706375122,
+          0,
+          0.05802466720342636,
+          0.03481482341885567,
+          0.04197533428668976
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.031835555555567975,
+        "virtualScroll": 8592.149367543705,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 10970,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008964652362263062,
+        "peak": 0.019759800285100937,
+        "contextState": "running",
+        "audioTime": 1.9301587301587302,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.03915111111110697,
+        "virtualScroll": 8670.787270036846,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 11120.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0073137819890973415,
+        "peak": 0.015268983319401741,
+        "contextState": "running",
+        "audioTime": 2.0810884353741494,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.042133333333333335,
+        "virtualScroll": 8706.898731146639,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 11270,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.006726372421357795,
+        "peak": 0.017431262880563736,
+        "contextState": "running",
+        "audioTime": 2.2320181405895694,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.042133333333333335,
+        "virtualScroll": 8706.898731146639,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 11420,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0047621277894158804,
+        "peak": 0.011313024908304214,
+        "contextState": "running",
+        "audioTime": 2.380045351473923,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.042133333333333335,
+        "virtualScroll": 8706.898731146639,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 11570,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.005720095123779955,
+        "peak": 0.014611035585403442,
+        "contextState": "running",
+        "audioTime": 2.5309750566893423,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.06243999999999586,
+        "virtualScroll": 9010.518355371569,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 11720,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0026682007016335402,
+        "peak": 0.00666132103651762,
+        "contextState": "running",
+        "audioTime": 2.681904761904762,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.06243999999999586,
+        "virtualScroll": 9010.518355371569,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 11869.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0052971498563028855,
+        "peak": 0.011679278686642647,
+        "contextState": "running",
+        "audioTime": 2.8328344671201813,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.06243999999999586,
+        "virtualScroll": 9010.518355371569,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 12020.200000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.000656623880527252,
+        "peak": 0.0022964575327932835,
+        "contextState": "running",
+        "audioTime": 2.980861678004535,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.06243999999999586,
+        "virtualScroll": 9010.518355371569,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 12169.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.006621260789240032,
+        "peak": 0.011501218192279339,
+        "contextState": "running",
+        "audioTime": 3.1317913832199546,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.08976444444445272,
+        "virtualScroll": 9556.515903975152,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 12320.200000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0019405569636360613,
+        "peak": 0.004794219043105841,
+        "contextState": "running",
+        "audioTime": 3.282721088435374,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.08976444444445272,
+        "virtualScroll": 9556.515903975152,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 12470.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.006943140996191034,
+        "peak": 0.013304486870765686,
+        "contextState": "running",
+        "audioTime": 3.430748299319728,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.08976444444445272,
+        "virtualScroll": 9556.515903975152,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 12620,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.004136755431458779,
+        "peak": 0.009150782600045204,
+        "contextState": "running",
+        "audioTime": 3.5816780045351475,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.11176000000000413,
+        "virtualScroll": 10086.038173719498,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 12770.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008285984634821348,
+        "peak": 0.017107559368014336,
+        "contextState": "running",
+        "audioTime": 3.732607709750567,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.11593333333333333,
+        "virtualScroll": 10193.668771682278,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 12920.399999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.005867520717600181,
+        "peak": 0.015533924102783203,
+        "contextState": "running",
+        "audioTime": 3.8806349206349204,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.11593333333333333,
+        "virtualScroll": 10193.668771682278,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 13069.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.010686678993506935,
+        "peak": 0.027867775410413742,
+        "contextState": "running",
+        "audioTime": 4.03156462585034,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.11593333333333333,
+        "virtualScroll": 10193.668771682278,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 13220.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.007883933611419123,
+        "peak": 0.018609503284096718,
+        "contextState": "running",
+        "audioTime": 4.18249433106576,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.11593333333333333,
+        "virtualScroll": 10193.668771682278,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 13369.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.012939674591232037,
+        "peak": 0.03743371367454529,
+        "contextState": "running",
+        "audioTime": 4.330521541950113,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.14416000000000415,
+        "virtualScroll": 10965.431724539898,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 13520,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01076336608035857,
+        "peak": 0.024085581302642822,
+        "contextState": "running",
+        "audioTime": 4.481451247165533,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.14416000000000415,
+        "virtualScroll": 10965.431724539898,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 13669.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01349430944535747,
+        "peak": 0.03311247378587723,
+        "contextState": "running",
+        "audioTime": 4.632380952380952,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.15503555555556797,
+        "virtualScroll": 11277.167390801545,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 13819.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01302017399525427,
+        "peak": 0.028820494189858437,
+        "contextState": "running",
+        "audioTime": 4.780408163265306,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.15503555555556797,
+        "virtualScroll": 11277.167390801545,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 13970,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01383226507874713,
+        "peak": 0.038776811212301254,
+        "contextState": "running",
+        "audioTime": 4.931337868480726,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.15503555555556797,
+        "virtualScroll": 11277.167390801545,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 14120.399999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.014138753990719542,
+        "peak": 0.032379914075136185,
+        "contextState": "running",
+        "audioTime": 5.082267573696146,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.15503555555556797,
+        "virtualScroll": 11277.167390801545,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 14270,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "solar",
+        "gains": [
+          0.62,
+          0,
+          0.1,
+          0.06,
+          0
+        ],
+        "cutoff": 3800,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": true,
+          "tunnel": 0,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.014866632327973778,
+        "peak": 0.03753398358821869,
+        "contextState": "running",
+        "audioTime": 5.230294784580499,
+        "gains": [
+          0.6499999761581421,
+          0.699999988079071,
+          0.6499999761581421,
+          0.6200000047683716,
+          0,
+          0.10000000149011612,
+          0.05999999865889549,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.15503555555556797,
+        "virtualScroll": 11277.167390801545,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 14420.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.044058766891680826,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01989370471425224,
+        "peak": 0.04342800751328468,
+        "contextState": "running",
+        "audioTime": 5.381224489795918,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.18750222222223464,
+        "virtualScroll": 12577.983218575539,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 14569.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.044058766891680826,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.015604063664216754,
+        "peak": 0.08092933893203735,
+        "contextState": "running",
+        "audioTime": 5.532154195011338,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.18750222222223464,
+        "virtualScroll": 12577.983218575539,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 14720,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.044058766891680826,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.029497450835979544,
+        "peak": 0.06073782965540886,
+        "contextState": "running",
+        "audioTime": 5.680181405895691,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.18750222222223464,
+        "virtualScroll": 12577.983218575539,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 14869.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.044058766891680826,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0063626146841609,
+        "peak": 0.014392398297786713,
+        "contextState": "running",
+        "audioTime": 5.831111111111111,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.18750222222223464,
+        "virtualScroll": 12577.983218575539,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 16127.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.11295815030529147,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.006215204873351676,
+        "peak": 0.025952398777008057,
+        "contextState": "running",
+        "audioTime": 7.090793650793651,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.21952444444445687,
+        "virtualScroll": 14387.281027016954,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 16219.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2200216864357257,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.05065972216971759,
+        "peak": 0.10623571276664734,
+        "contextState": "running",
+        "audioTime": 7.1807709750566895,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.26953777777778193,
+        "virtualScroll": 17198.769485802157,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 16370,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2200216864357257,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0076833129360798615,
+        "peak": 0.02089483104646206,
+        "contextState": "running",
+        "audioTime": 7.3317006802721085,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.26953777777778193,
+        "virtualScroll": 17198.769485802157,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 16519.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": true,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2200216864357257,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": true
+        }
+      },
+      "signal": {
+        "rms": 0.016953137648771217,
+        "peak": 0.04663771390914917,
+        "contextState": "running",
+        "audioTime": 7.4826303854875285,
+        "gains": [
+          0.6499999761581421,
+          0,
+          0,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "paused",
+        "progress": 0.26953777777778193,
+        "virtualScroll": 17198.769485802157,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 16669.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": true,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2200216864357257,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": true
+        }
+      },
+      "signal": {
+        "rms": 0,
+        "peak": 0,
+        "contextState": "running",
+        "audioTime": 7.630657596371882,
+        "gains": [
+          0.6499999761581421,
+          0,
+          0,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "paused",
+        "progress": 0.26953777777778193,
+        "virtualScroll": 17198.769485802157,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 16819.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2200216864357257,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.015096486386219389,
+        "peak": 0.042521439492702484,
+        "contextState": "running",
+        "audioTime": 7.781587301587302,
+        "gains": [
+          0.6499999761581421,
+          0.4274377226829529,
+          0.356198251247406,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.26953777777778193,
+        "virtualScroll": 17198.769485802157,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 16970,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2200216864357257,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.010033315492968323,
+        "peak": 0.02545848861336708,
+        "contextState": "running",
+        "audioTime": 7.932517006802721,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.26953777777778193,
+        "virtualScroll": 17198.769485802157,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 17120,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2542914569583531,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.07846843239001546,
+        "peak": 0.1492699831724167,
+        "contextState": "running",
+        "audioTime": 8.080544217687075,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.28453777777778194,
+        "virtualScroll": 18098.693659726352,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 17269.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.2542914569583531,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.014315911481623643,
+        "peak": 0.0326315276324749,
+        "contextState": "running",
+        "audioTime": 8.231473922902495,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.28453777777778194,
+        "virtualScroll": 18098.693659726352,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 17420,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.282479956029258,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.05973414435915374,
+        "peak": 0.1399717628955841,
+        "contextState": "running",
+        "audioTime": 8.382403628117913,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.29664000000001656,
+        "virtualScroll": 18838.923645328316,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 17570,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.282479956029258,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.016233655567429586,
+        "peak": 0.042614974081516266,
+        "contextState": "running",
+        "audioTime": 8.530430839002268,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.29664000000001656,
+        "virtualScroll": 18838.923645328316,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 17720.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.3142831529526768,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.05593305606494026,
+        "peak": 0.15266689658164978,
+        "contextState": "running",
+        "audioTime": 8.681360544217688,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.31012444444445686,
+        "virtualScroll": 19674.075596537292,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 17870,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.3142831529526768,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01865115271740311,
+        "peak": 0.04402828589081764,
+        "contextState": "running",
+        "audioTime": 8.832290249433106,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.31012444444445686,
+        "virtualScroll": 19674.075596537292,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 18020,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.34468835757049515,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.03650252114615152,
+        "peak": 0.1330685168504715,
+        "contextState": "running",
+        "audioTime": 8.98031746031746,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.32292000000000826,
+        "virtualScroll": 20472.516269801203,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 18169.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.34468835757049515,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.02268774154436675,
+        "peak": 0.051930151879787445,
+        "contextState": "running",
+        "audioTime": 9.13124716553288,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.32292000000000826,
+        "virtualScroll": 20472.516269801203,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 18320,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.37533710228891287,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.007805440969993982,
+        "peak": 0.027293242514133453,
+        "contextState": "running",
+        "audioTime": 9.2821768707483,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.33579111111112353,
+        "virtualScroll": 21277.35230610685,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 18470,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.37533710228891287,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.02688468262176569,
+        "peak": 0.05726102367043495,
+        "contextState": "running",
+        "audioTime": 9.430204081632652,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.33579111111112353,
+        "virtualScroll": 21277.35230610685,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 18620.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.4049887120677676,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.005915422007392042,
+        "peak": 0.013092422857880592,
+        "contextState": "running",
+        "audioTime": 9.581133786848072,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.3482800000000124,
+        "virtualScroll": 22056.003578899577,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 18769.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.4049887120677676,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.030260460049897336,
+        "peak": 0.06863614171743393,
+        "contextState": "running",
+        "audioTime": 9.732063492063492,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.3482800000000124,
+        "virtualScroll": 22056.003578899577,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 18920,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.4049887120677676,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0061324094893616425,
+        "peak": 0.014927608892321587,
+        "contextState": "running",
+        "audioTime": 9.880090702947847,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.3482800000000124,
+        "virtualScroll": 22056.003578899577,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 19069.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.4049887120677676,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.03794463930511633,
+        "peak": 0.08717729151248932,
+        "contextState": "running",
+        "audioTime": 10.031020408163265,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.3482800000000124,
+        "virtualScroll": 22056.003578899577,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 19220.200000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.47018886927738934,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.006749649096852425,
+        "peak": 0.01720099337399006,
+        "contextState": "running",
+        "audioTime": 10.181950113378685,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.37618222222222636,
+        "virtualScroll": 23768.159707224244,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 19809.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5332741812540979,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01048072077333011,
+        "peak": 0.02409224584698677,
+        "contextState": "running",
+        "audioTime": 10.771156462585035,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4043777777777778,
+        "virtualScroll": 25424.77999973261,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 19820,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5340639549609311,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.009656323031833365,
+        "peak": 0.02409224584698677,
+        "contextState": "running",
+        "audioTime": 10.782766439909297,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4047422222222305,
+        "virtualScroll": 25445.51945727405,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 19969.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5401160449707566,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.04865082232739197,
+        "peak": 0.10301332175731659,
+        "contextState": "running",
+        "audioTime": 10.930793650793651,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4075466666666791,
+        "virtualScroll": 25604.447340932067,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 20120.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5401160449707566,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008962886350087301,
+        "peak": 0.02402607910335064,
+        "contextState": "running",
+        "audioTime": 11.08172335600907,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4075466666666791,
+        "virtualScroll": 25604.447340932067,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 20269.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5401160449707566,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.05722820801911525,
+        "peak": 0.11777687072753906,
+        "contextState": "running",
+        "audioTime": 11.23265306122449,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4075466666666791,
+        "virtualScroll": 25604.447340932067,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 20419.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5401160449707566,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.009252121693940624,
+        "peak": 0.023874323815107346,
+        "contextState": "running",
+        "audioTime": 11.380680272108844,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4075466666666791,
+        "virtualScroll": 25604.447340932067,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 20570,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5963426701060485,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.06070375260952464,
+        "peak": 0.13585379719734192,
+        "contextState": "running",
+        "audioTime": 11.531609977324264,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4348266666666708,
+        "virtualScroll": 27080.958516984832,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 20720,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5963426701060485,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.010623203224357843,
+        "peak": 0.028622755780816078,
+        "contextState": "running",
+        "audioTime": 11.682539682539682,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4348266666666708,
+        "virtualScroll": 27080.958516984832,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 20869.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.5963426701060485,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.07230647560009502,
+        "peak": 0.15254445374011993,
+        "contextState": "running",
+        "audioTime": 11.830566893424036,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.4348266666666708,
+        "virtualScroll": 27080.958516984832,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 21020.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.6359207137792073,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01314588874463986,
+        "peak": 0.033102672547101974,
+        "contextState": "running",
+        "audioTime": 11.981496598639456,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.45593777777778194,
+        "virtualScroll": 28120.277943841986,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 21169.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.6359207137792073,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.06062431855620644,
+        "peak": 0.1303485631942749,
+        "contextState": "running",
+        "audioTime": 12.132426303854876,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.45593777777778194,
+        "virtualScroll": 28120.277943841986,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 21319.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.6359207137792073,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.015689885937893996,
+        "peak": 0.0340375080704689,
+        "contextState": "running",
+        "audioTime": 12.280453514739229,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.45593777777778194,
+        "virtualScroll": 28120.277943841986,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 21469.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.6359207137792073,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.05043456452055793,
+        "peak": 0.14506693184375763,
+        "contextState": "running",
+        "audioTime": 12.431383219954649,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.45593777777778194,
+        "virtualScroll": 28120.277943841986,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 21620,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.6773177496556598,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.018194815924125588,
+        "peak": 0.03849039971828461,
+        "contextState": "running",
+        "audioTime": 12.582312925170068,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.48067111111111527,
+        "virtualScroll": 29207.364105957626,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 21769.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.6773177496556598,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.033768972217501865,
+        "peak": 0.1301896572113037,
+        "contextState": "running",
+        "audioTime": 12.730340136054421,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.48067111111111527,
+        "virtualScroll": 29207.364105957626,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 21920,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.6773177496556598,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.021470283792630548,
+        "peak": 0.050178952515125275,
+        "contextState": "running",
+        "audioTime": 12.881269841269841,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.48067111111111527,
+        "virtualScroll": 29207.364105957626,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 22069.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7099128855987212,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.007115208626395464,
+        "peak": 0.027359437197446823,
+        "contextState": "running",
+        "audioTime": 13.032199546485261,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.501484444444461,
+        "virtualScroll": 30063.31237582242,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 22220,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7099128855987212,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.027728306764644915,
+        "peak": 0.05931400507688522,
+        "contextState": "running",
+        "audioTime": 13.180226757369615,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.501484444444461,
+        "virtualScroll": 30063.31237582242,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 22370,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7099128855987212,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0009270530570089382,
+        "peak": 0.00308776181191206,
+        "contextState": "running",
+        "audioTime": 13.331156462585033,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.501484444444461,
+        "virtualScroll": 30063.31237582242,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 22520,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7099128855987212,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.028592847253298498,
+        "peak": 0.056048646569252014,
+        "contextState": "running",
+        "audioTime": 13.482086167800453,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.501484444444461,
+        "virtualScroll": 30063.31237582242,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 22669.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7497944419179364,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0018256407217341383,
+        "peak": 0.005372060928493738,
+        "contextState": "running",
+        "audioTime": 13.630113378684808,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5285555555555556,
+        "virtualScroll": 31110.60204476501,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 22820.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7497944419179364,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.03377028002632267,
+        "peak": 0.06869903206825256,
+        "contextState": "running",
+        "audioTime": 13.781043083900228,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5285555555555556,
+        "virtualScroll": 31110.60204476501,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 22969.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7497944419179364,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.00289928650731594,
+        "peak": 0.009573150426149368,
+        "contextState": "running",
+        "audioTime": 13.931972789115646,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5285555555555556,
+        "virtualScroll": 31110.60204476501,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 23120,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7801487465142314,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.038522708285767204,
+        "peak": 0.08153293281793594,
+        "contextState": "running",
+        "audioTime": 14.08,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5507155555555597,
+        "virtualScroll": 31907.706083463716,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 23270,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7801487465142314,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.004450173860144869,
+        "peak": 0.014311883598566055,
+        "contextState": "running",
+        "audioTime": 14.23092970521542,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5507155555555597,
+        "virtualScroll": 31907.706083463716,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 23420.200000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7801487465142314,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.05245120112154739,
+        "peak": 0.10660149157047272,
+        "contextState": "running",
+        "audioTime": 14.381859410430838,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5507155555555597,
+        "virtualScroll": 31907.706083463716,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 23571.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "tesseract",
+        "gains": [
+          0.22,
+          0.64,
+          0.54,
+          0.08,
+          0
+        ],
+        "cutoff": 3200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.7801487465142314,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.0064080298080497495,
+        "peak": 0.0196632519364357,
+        "contextState": "running",
+        "audioTime": 14.532789115646258,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.2199999988079071,
+          0.6399999856948853,
+          0.5400000214576721,
+          0.07999999821186066,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5507155555555597,
+        "virtualScroll": 31907.706083463716,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 23720.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "white-transition",
+        "gains": [
+          0.2015633325170979,
+          0.5846899975512937,
+          0.5547493339863218,
+          0.19430733839399308,
+          0
+        ],
+        "cutoff": 4379.946718905735,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.8069387842656899,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.047187699182990754,
+        "peak": 0.1083751693367958,
+        "contextState": "running",
+        "audioTime": 14.680816326530612,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.20000000298023224,
+          0.5799999833106995,
+          0.550000011920929,
+          0.1899999976158142,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5717777777777778,
+        "virtualScroll": 32611.212474817017,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 23869.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "white-transition",
+        "gains": [
+          0.2015633325170979,
+          0.5846899975512937,
+          0.5547493339863218,
+          0.19430733839399308,
+          0
+        ],
+        "cutoff": 4379.946718905735,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.8069387842656899,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008023271542548973,
+        "peak": 0.02096261829137802,
+        "contextState": "running",
+        "audioTime": 14.831746031746032,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.20000000298023224,
+          0.5799999833106995,
+          0.550000011920929,
+          0.1899999976158142,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5717777777777778,
+        "virtualScroll": 32611.212474817017,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 24019.899999999907,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "white-transition",
+        "gains": [
+          0.2015633325170979,
+          0.5846899975512937,
+          0.5547493339863218,
+          0.19430733839399308,
+          0
+        ],
+        "cutoff": 4379.946718905735,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.8069387842656899,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.050596310115093045,
+        "peak": 0.09522560238838196,
+        "contextState": "running",
+        "audioTime": 14.98267573696145,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.20000000298023224,
+          0.5799999833106995,
+          0.550000011920929,
+          0.1899999976158142,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.5717777777777778,
+        "virtualScroll": 32611.212474817017,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 25127.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.880270830873469,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.007613555413671374,
+        "peak": 0.01995169371366501,
+        "contextState": "running",
+        "audioTime": 16.091428571428573,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.1951749473810196,
+          0.5664905905723572,
+          0.553859293460846,
+          0.21894939243793488,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6407333333333334,
+        "virtualScroll": 34536.9120187373,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 25220.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.8805725308314601,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.061207745770783466,
+        "peak": 0.13820478320121765,
+        "contextState": "running",
+        "audioTime": 16.18140589569161,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.12003786116838455,
+          0.3401140570640564,
+          0.6199663877487183,
+          0.6997567415237427,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6410533333333417,
+        "virtualScroll": 34544.83465963414,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 25369.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.8805725308314601,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.02259286854063638,
+        "peak": 0.051742129027843475,
+        "contextState": "running",
+        "audioTime": 16.33233560090703,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6410533333333417,
+        "virtualScroll": 34544.83465963414,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 25520,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.8805725308314601,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.03521756081829976,
+        "peak": 0.15540072321891785,
+        "contextState": "running",
+        "audioTime": 16.480362811791384,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6410533333333417,
+        "virtualScroll": 34544.83465963414,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 25669.600000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9014891442321994,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.022543900817773427,
+        "peak": 0.05768279358744621,
+        "contextState": "running",
+        "audioTime": 16.631292517006802,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.66397333333335,
+        "virtualScroll": 35094.104927537555,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 25820.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9014891442321994,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.013928827699100305,
+        "peak": 0.09435246139764786,
+        "contextState": "running",
+        "audioTime": 16.782222222222224,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.66397333333335,
+        "virtualScroll": 35094.104927537555,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 25969.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9014891442321994,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.027471564091844484,
+        "peak": 0.05499681830406189,
+        "contextState": "running",
+        "audioTime": 16.930249433106574,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.66397333333335,
+        "virtualScroll": 35094.104927537555,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 26120,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9014891442321994,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.002628875777261273,
+        "peak": 0.007300671190023422,
+        "contextState": "running",
+        "audioTime": 17.081179138321996,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.66397333333335,
+        "virtualScroll": 35094.104927537555,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 26269.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.028866905204252353,
+        "peak": 0.06625489890575409,
+        "contextState": "running",
+        "audioTime": 17.232108843537414,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 26420.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.002944435115158465,
+        "peak": 0.009723922237753868,
+        "contextState": "running",
+        "audioTime": 17.38013605442177,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 26569.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.035299798242849935,
+        "peak": 0.07820645719766617,
+        "contextState": "running",
+        "audioTime": 17.531065759637187,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 26720,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.003945472544002888,
+        "peak": 0.014372488483786583,
+        "contextState": "running",
+        "audioTime": 17.68199546485261,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 26869.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.038180262582005325,
+        "peak": 0.07995207607746124,
+        "contextState": "running",
+        "audioTime": 17.830022675736963,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 27020,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.005765460462392061,
+        "peak": 0.01854005828499794,
+        "contextState": "running",
+        "audioTime": 17.98095238095238,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 27169.700000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.04737486038643176,
+        "peak": 0.0920676589012146,
+        "contextState": "running",
+        "audioTime": 18.1318820861678,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 27320,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008233836196330934,
+        "peak": 0.024275947362184525,
+        "contextState": "running",
+        "audioTime": 18.28281179138322,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 27470,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "blue",
+        "gains": [
+          0.12,
+          0.34,
+          0.62,
+          0.7,
+          0
+        ],
+        "cutoff": 9600,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 0.9231758361106991,
+          "drop": 0,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.04747073631825383,
+        "peak": 0.10911978781223297,
+        "contextState": "running",
+        "audioTime": 18.430839002267575,
+        "gains": [
+          0.6499999761581421,
+          0.7799999713897705,
+          0.6499999761581421,
+          0.11999999731779099,
+          0.3400000035762787,
+          0.6200000047683716,
+          0.699999988079071,
+          0
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.6894222222222223,
+        "virtualScroll": 35663.59745626696,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 28935,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.27621639889970184,
+          0.1837836011002982,
+          0.3596393351671636,
+          0.41360326868388,
+          0.11716229917477636
+        ],
+        "cutoff": 6350.698902886203,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.1806050247612206,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.004968123755885408,
+        "peak": 0.015409469604492188,
+        "contextState": "running",
+        "audioTime": 19.902403628117913,
+        "gains": [
+          0.6499999761581421,
+          0.7716189622879028,
+          0.6499999761581421,
+          0.14059951901435852,
+          0.31940001249313354,
+          0.5865258574485779,
+          0.6626638770103455,
+          0.015449724160134792
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.8098933333333376,
+        "virtualScroll": 37821.25810967454,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 28969.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.27969687854169845,
+          0.18030312145830155,
+          0.3538385357638359,
+          0.4072223893402195,
+          0.11977265890627384
+        ],
+        "cutoff": 6278.304926332672,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.18364496237026368,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.051003269373966265,
+        "peak": 0.13417255878448486,
+        "contextState": "running",
+        "audioTime": 19.931428571428572,
+        "gains": [
+          0.6499999761581421,
+          0.7536140084266663,
+          0.6499999761581421,
+          0.19219940900802612,
+          0.26780012249946594,
+          0.513655960559845,
+          0.5691390633583069,
+          0.054149676114320755
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.8104311111111195,
+        "virtualScroll": 37828.584359312335,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 29120.200000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.2917464952525959,
+          0.16825350474740416,
+          0.33375584124567353,
+          0.3851314253702409,
+          0.1288098714394469
+        ],
+        "cutoff": 6027.6728987460065,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.1944206020873516,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.014606634257196363,
+        "peak": 0.035781458020210266,
+        "contextState": "running",
+        "audioTime": 20.08235827664399,
+        "gains": [
+          0.6499999761581421,
+          0.7084389328956604,
+          0.6499999761581421,
+          0.28999999165534973,
+          0.17000000178813934,
+          0.33000001311302185,
+          0.38999998569488525,
+          0.12999999523162842
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.8123333333333335,
+        "virtualScroll": 37854.55365103052,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 29269.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.2917464952525959,
+          0.16825350474740416,
+          0.33375584124567353,
+          0.3851314253702409,
+          0.1288098714394469
+        ],
+        "cutoff": 6027.6728987460065,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.1944206020873516,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.019268552819928224,
+        "peak": 0.0533454529941082,
+        "contextState": "running",
+        "audioTime": 20.230385487528345,
+        "gains": [
+          0.6499999761581421,
+          0.7084389328956604,
+          0.6499999761581421,
+          0.28999999165534973,
+          0.17000000178813934,
+          0.33000001311302185,
+          0.38999998569488525,
+          0.12999999523162842
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.8123333333333335,
+        "virtualScroll": 37854.55365103052,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 29420.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.2917464952525959,
+          0.16825350474740416,
+          0.33375584124567353,
+          0.3851314253702409,
+          0.1288098714394469
+        ],
+        "cutoff": 6027.6728987460065,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.1944206020873516,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.01380549680630583,
+        "peak": 0.04179944097995758,
+        "contextState": "running",
+        "audioTime": 20.381315192743763,
+        "gains": [
+          0.6499999761581421,
+          0.7084389328956604,
+          0.6499999761581421,
+          0.28999999165534973,
+          0.17000000178813934,
+          0.33000001311302185,
+          0.38999998569488525,
+          0.12999999523162842
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.8123333333333335,
+        "virtualScroll": 37854.55365103052,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 29570,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.2917464952525959,
+          0.16825350474740416,
+          0.33375584124567353,
+          0.3851314253702409,
+          0.1288098714394469
+        ],
+        "cutoff": 6027.6728987460065,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.1944206020873516,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.010716860802549489,
+        "peak": 0.04469490796327591,
+        "contextState": "running",
+        "audioTime": 20.532244897959185,
+        "gains": [
+          0.6499999761581421,
+          0.7084389328956604,
+          0.6499999761581421,
+          0.28999999165534973,
+          0.17000000178813934,
+          0.33000001311302185,
+          0.38999998569488525,
+          0.12999999523162842
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.8123333333333335,
+        "virtualScroll": 37854.55365103052,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 29720.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "glass",
+        "gains": [
+          0.2917464952525959,
+          0.16825350474740416,
+          0.33375584124567353,
+          0.3851314253702409,
+          0.1288098714394469
+        ],
+        "cutoff": 6027.6728987460065,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 0,
+        "fractureEvents": 0,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 0.1944206020873516,
+          "wait": 0,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.016223076058908083,
+        "peak": 0.03951970487833023,
+        "contextState": "running",
+        "audioTime": 20.68027210884354,
+        "gains": [
+          0.6499999761581421,
+          0.7084389328956604,
+          0.6499999761581421,
+          0.28999999165534973,
+          0.17000000178813934,
+          0.33000001311302185,
+          0.38999998569488525,
+          0.12999999523162842
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.8123333333333335,
+        "virtualScroll": 37854.55365103052,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 32704.100000000093,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.23289726278427783,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.020851848466212707,
+        "peak": 0.07341700792312622,
+        "contextState": "running",
+        "audioTime": 23.672743764172335,
+        "gains": [
+          0.6499999761581421,
+          0.6722806692123413,
+          0.6499999761581421,
+          0.34968456625938416,
+          0.08714058250188828,
+          0.20199967920780182,
+          0.23685400187969208,
+          0.2443627566099167,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.9734888888888891,
+        "virtualScroll": 40315.82669053451,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 32734.200000000186,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.021893960890423864,
+        "peak": 0.07341700792312622,
+        "contextState": "running",
+        "audioTime": 23.701768707482994,
+        "gains": [
+          0.6499999761581421,
+          0.6529284119606018,
+          0.6499999761581421,
+          0.3238902986049652,
+          0.05488496273756027,
+          0.15684083104133606,
+          0.1787935495376587,
+          0.40561696887016296,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 32869.89999999991,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008155644782932169,
+        "peak": 0.024710748344659805,
+        "contextState": "running",
+        "audioTime": 23.83238095238095,
+        "gains": [
+          0.6499999761581421,
+          0.6200000047683716,
+          0.6499999761581421,
+          0.2800000011920929,
+          0,
+          0.07999999821186066,
+          0.07999999821186066,
+          0.6800000071525574,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 33020.10000000009,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008108709824226632,
+        "peak": 0.02617906592786312,
+        "contextState": "running",
+        "audioTime": 23.980408163265306,
+        "gains": [
+          0.6499999761581421,
+          0.6200000047683716,
+          0.6499999761581421,
+          0.2800000011920929,
+          0,
+          0.07999999821186066,
+          0.07999999821186066,
+          0.6800000071525574,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 33169.60000000009,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.008131560287146605,
+        "peak": 0.02085748314857483,
+        "contextState": "running",
+        "audioTime": 24.131337868480724,
+        "gains": [
+          0.6499999761581421,
+          0.6200000047683716,
+          0.6499999761581421,
+          0.2800000011920929,
+          0,
+          0.07999999821186066,
+          0.07999999821186066,
+          0.6800000071525574,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 33319.89999999991,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.009615500906903118,
+        "peak": 0.02624783292412758,
+        "contextState": "running",
+        "audioTime": 24.282267573696146,
+        "gains": [
+          0.6499999761581421,
+          0.6200000047683716,
+          0.6499999761581421,
+          0.2800000011920929,
+          0,
+          0.07999999821186066,
+          0.07999999821186066,
+          0.6800000071525574,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 33469.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.010844832624657113,
+        "peak": 0.027696263045072556,
+        "contextState": "running",
+        "audioTime": 24.4302947845805,
+        "gains": [
+          0.6499999761581421,
+          0.6200000047683716,
+          0.6499999761581421,
+          0.2800000011920929,
+          0,
+          0.07999999821186066,
+          0.07999999821186066,
+          0.6800000071525574,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 33619.89999999991,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.011643732624207825,
+        "peak": 0.0325375571846962,
+        "contextState": "running",
+        "audioTime": 24.58122448979592,
+        "gains": [
+          0.6499999761581421,
+          0.6200000047683716,
+          0.6499999761581421,
+          0.2800000011920929,
+          0,
+          0.07999999821186066,
+          0.07999999821186066,
+          0.6800000071525574,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    },
+    {
+      "at": 33769.799999999814,
+      "audio": {
+        "status": "on",
+        "enabled": true,
+        "error": null,
+        "stage": "contact",
+        "gains": [
+          0.28,
+          0,
+          0.08000000000000002,
+          0.08000000000000002,
+          0.6799999999999999
+        ],
+        "cutoff": 4200,
+        "held": false,
+        "hidden": false,
+        "paused": false,
+        "contextState": "running",
+        "contextCreations": 1,
+        "loops": 5,
+        "voices": 1,
+        "fractureEvents": 1,
+        "input": {
+          "active": true,
+          "title": false,
+          "emergence": false,
+          "tunnel": 1,
+          "drop": 1,
+          "wait": 0.28216565430382184,
+          "fractureVisible": false,
+          "paused": false
+        }
+      },
+      "signal": {
+        "rms": 0.013123400297130303,
+        "peak": 0.031830862164497375,
+        "contextState": "running",
+        "audioTime": 24.732154195011336,
+        "gains": [
+          0.6499999761581421,
+          0.6200000047683716,
+          0.6499999761581421,
+          0.2800000011920929,
+          0,
+          0.07999999821186066,
+          0.07999999821186066,
+          0.6800000071525574,
+          0.699999988079071
+        ],
+        "sourceType": "DynamicsCompressorNode",
+        "destination": "AudioDestinationNode",
+        "channelCount": 2,
+        "maxChannelCount": 2
+      },
+      "playback": {
+        "state": "playing",
+        "progress": 0.978013333333346,
+        "virtualScroll": 40425.79374040613,
+        "activation": 8431.56,
+        "end": 40733.44,
+        "runs": 1
+      }
+    }
+  ],
+  "enabled": {
+    "engine": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "home",
+      "gains": [
+        0.2,
+        0,
+        0,
+        0,
+        0.1
+      ],
+      "cutoff": 2300,
+      "held": false,
+      "hidden": false,
+      "paused": false,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 0,
+      "input": {
+        "active": false,
+        "title": false,
+        "emergence": false,
+        "tunnel": 0,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": false
+      },
+      "events": [
+        {
+          "at": 0.4905215419501134,
+          "type": "sources-started",
+          "stage": "home"
+        }
+      ]
+    },
+    "sink": {
+      "rms": 0.0038920891729144627,
+      "peak": 0.010080250911414623,
+      "contextState": "running",
+      "audioTime": 1.0303854875283447,
+      "gains": [
+        0.6499999761581421,
+        0.44999998807907104,
+        0.6499999761581421,
+        0.20000000298023224,
+        0,
+        0,
+        0,
+        0.10000000149011612
+      ],
+      "sourceType": "DynamicsCompressorNode",
+      "destination": "AudioDestinationNode",
+      "channelCount": 2,
+      "maxChannelCount": 2
+    },
+    "gesture": true,
+    "edges": [
+      [
+        "BiquadFilterNode",
+        "BiquadFilterNode"
+      ],
+      [
+        "BiquadFilterNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "DynamicsCompressorNode"
+      ],
+      [
+        "DynamicsCompressorNode",
+        "AudioDestinationNode"
+      ],
+      [
+        "AudioBufferSourceNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "BiquadFilterNode"
+      ],
+      [
+        "AudioBufferSourceNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "BiquadFilterNode"
+      ],
+      [
+        "AudioBufferSourceNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "BiquadFilterNode"
+      ],
+      [
+        "AudioBufferSourceNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "BiquadFilterNode"
+      ],
+      [
+        "AudioBufferSourceNode",
+        "GainNode"
+      ],
+      [
+        "GainNode",
+        "BiquadFilterNode"
+      ]
+    ]
+  },
+  "keyboardPause": {
+    "audio": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "tesseract",
+      "gains": [
+        0.22,
+        0.64,
+        0.54,
+        0.08,
+        0
+      ],
+      "cutoff": 3200,
+      "held": false,
+      "hidden": false,
+      "paused": true,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 0,
+      "input": {
+        "active": true,
+        "title": false,
+        "emergence": false,
+        "tunnel": 0.2200216864357257,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": true
+      },
+      "events": [
+        {
+          "at": 0.4905215419501134,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 1.7414965986394557,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 5.262222222222222,
+          "type": "stage",
+          "stage": "tesseract"
+        }
+      ]
+    },
+    "signal": {
+      "rms": 0,
+      "peak": 0,
+      "contextState": "running",
+      "audioTime": 7.691609977324263,
+      "gains": [
+        0.6499999761581421,
+        0,
+        0,
+        0.2199999988079071,
+        0.6399999856948853,
+        0.5400000214576721,
+        0.07999999821186066,
+        0
+      ],
+      "sourceType": "DynamicsCompressorNode",
+      "destination": "AudioDestinationNode",
+      "channelCount": 2,
+      "maxChannelCount": 2
+    }
+  },
+  "keyboardResumed": true,
+  "muted": {
+    "engine": {
+      "status": "off",
+      "enabled": false,
+      "error": null,
+      "stage": "contact",
+      "gains": [
+        0.28,
+        0,
+        0.08000000000000002,
+        0.08000000000000002,
+        0.6799999999999999
+      ],
+      "cutoff": 4200,
+      "held": false,
+      "hidden": false,
+      "paused": false,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 1,
+      "input": {
+        "active": true,
+        "title": false,
+        "emergence": false,
+        "tunnel": 1,
+        "drop": 1,
+        "wait": 0.4198028673835125,
+        "fractureVisible": false,
+        "paused": false
+      },
+      "events": [
+        {
+          "at": 0.4905215419501134,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 1.7414965986394557,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 5.262222222222222,
+          "type": "stage",
+          "stage": "tesseract"
+        },
+        {
+          "at": 14.532789115646258,
+          "type": "stage",
+          "stage": "white-transition"
+        },
+        {
+          "at": 16.091428571428573,
+          "type": "stage",
+          "stage": "blue"
+        },
+        {
+          "at": 19.89079365079365,
+          "type": "stage",
+          "stage": "glass"
+        },
+        {
+          "at": 23.571156462585034,
+          "type": "stage",
+          "stage": "fracture"
+        },
+        {
+          "at": 23.571156462585034,
+          "type": "fracture",
+          "stage": "fracture"
+        },
+        {
+          "at": 23.661133786848072,
+          "type": "stage",
+          "stage": "contact"
+        }
+      ]
+    },
+    "signal": {
+      "rms": 0,
+      "peak": 0,
+      "contextState": "running",
+      "audioTime": 25.721904761904764,
+      "gains": [
+        0,
+        0.6200000047683716,
+        0.6499999761581421,
+        0.2800000011920929,
+        0,
+        0.07999999821186066,
+        0.07999999821186066,
+        0.6800000071525574,
+        0.699999988079071
+      ],
+      "sourceType": "DynamicsCompressorNode",
+      "destination": "AudioDestinationNode",
+      "channelCount": 2,
+      "maxChannelCount": 2
+    }
+  },
+  "suspendedContextResumed": true,
+  "about": {
+    "engine": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "home",
+      "gains": [
+        0.2,
+        0,
+        0,
+        0,
+        0.1
+      ],
+      "cutoff": 2300,
+      "held": false,
+      "hidden": false,
+      "paused": false,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 1,
+      "input": {
+        "active": false,
+        "title": false,
+        "emergence": false,
+        "tunnel": 0,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": false
+      },
+      "events": [
+        {
+          "at": 0.4905215419501134,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 1.7414965986394557,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 5.262222222222222,
+          "type": "stage",
+          "stage": "tesseract"
+        },
+        {
+          "at": 14.532789115646258,
+          "type": "stage",
+          "stage": "white-transition"
+        },
+        {
+          "at": 16.091428571428573,
+          "type": "stage",
+          "stage": "blue"
+        },
+        {
+          "at": 19.89079365079365,
+          "type": "stage",
+          "stage": "glass"
+        },
+        {
+          "at": 23.571156462585034,
+          "type": "stage",
+          "stage": "fracture"
+        },
+        {
+          "at": 23.571156462585034,
+          "type": "fracture",
+          "stage": "fracture"
+        },
+        {
+          "at": 23.661133786848072,
+          "type": "stage",
+          "stage": "contact"
+        },
+        {
+          "at": 31.761995464852607,
+          "type": "stage",
+          "stage": "home"
+        }
+      ]
+    },
+    "signal": {
+      "rms": 0.0008999242413716083,
+      "peak": 0.00232347147539258,
+      "contextState": "running",
+      "audioTime": 32.522448979591836,
+      "gains": [
+        0.6499999761581421,
+        0.44999998807907104,
+        0.4615013897418976,
+        0.20000000298023224,
+        0,
+        0,
+        0,
+        0.10000000149011612,
+        0.699999988079071,
+        0
+      ],
+      "sourceType": "DynamicsCompressorNode",
+      "destination": "AudioDestinationNode",
+      "channelCount": 2,
+      "maxChannelCount": 2
+    }
+  },
+  "reelSharedMute": true,
+  "graphicsFailure": {
+    "audio": {
+      "status": "on",
+      "enabled": true,
+      "error": null,
+      "stage": "home",
+      "gains": [
+        0.2,
+        0,
+        0,
+        0,
+        0.1
+      ],
+      "cutoff": 2300,
+      "held": false,
+      "hidden": false,
+      "paused": false,
+      "contextState": "running",
+      "contextCreations": 1,
+      "loops": 5,
+      "voices": 0,
+      "fractureEvents": 1,
+      "input": {
+        "active": false,
+        "title": false,
+        "emergence": false,
+        "tunnel": 0,
+        "drop": 0,
+        "wait": 0,
+        "fractureVisible": false,
+        "paused": false
+      },
+      "events": [
+        {
+          "at": 0.4905215419501134,
+          "type": "sources-started",
+          "stage": "home"
+        },
+        {
+          "at": 1.7414965986394557,
+          "type": "stage",
+          "stage": "solar"
+        },
+        {
+          "at": 5.262222222222222,
+          "type": "stage",
+          "stage": "tesseract"
+        },
+        {
+          "at": 14.532789115646258,
+          "type": "stage",
+          "stage": "white-transition"
+        },
+        {
+          "at": 16.091428571428573,
+          "type": "stage",
+          "stage": "blue"
+        },
+        {
+          "at": 19.89079365079365,
+          "type": "stage",
+          "stage": "glass"
+        },
+        {
+          "at": 23.571156462585034,
+          "type": "stage",
+          "stage": "fracture"
+        },
+        {
+          "at": 23.571156462585034,
+          "type": "fracture",
+          "stage": "fracture"
+        },
+        {
+          "at": 23.661133786848072,
+          "type": "stage",
+          "stage": "contact"
+        },
+        {
+          "at": 31.761995464852607,
+          "type": "stage",
+          "stage": "home"
+        },
+        {
+          "at": 35.51201814058957,
+          "type": "stage",
+          "stage": "contact"
+        },
+        {
+          "at": 36.67011337868481,
+          "type": "stage",
+          "stage": "home"
+        }
+      ]
+    },
+    "signal": {
+      "rms": 0.002810626877223643,
+      "peak": 0.0068255034275352955,
+      "contextState": "running",
+      "audioTime": 46.90140589569161,
+      "gains": [
+        0.6499999761581421,
+        0.44999998807907104,
+        0.4615013897418976,
+        0.20000000298023224,
+        0,
+        0,
+        0,
+        0.10000000149011612,
+        0.699999988079071,
+        0,
+        0
+      ],
+      "sourceType": "DynamicsCompressorNode",
+      "destination": "AudioDestinationNode",
+      "channelCount": 2,
+      "maxChannelCount": 2
+    }
+  },
+  "final": {
+    "status": "on",
+    "enabled": true,
+    "error": null,
+    "stage": "home",
+    "gains": [
+      0.2,
+      0,
+      0,
+      0,
+      0.1
+    ],
+    "cutoff": 2300,
+    "held": false,
+    "hidden": false,
+    "paused": false,
+    "contextState": "running",
+    "contextCreations": 1,
+    "loops": 5,
+    "voices": 0,
+    "fractureEvents": 1,
+    "input": {
+      "active": false,
+      "title": false,
+      "emergence": false,
+      "tunnel": 0,
+      "drop": 0,
+      "wait": 0,
+      "fractureVisible": false,
+      "paused": false
+    },
+    "events": [
+      {
+        "at": 0.4905215419501134,
+        "type": "sources-started",
+        "stage": "home"
+      },
+      {
+        "at": 1.7414965986394557,
+        "type": "stage",
+        "stage": "solar"
+      },
+      {
+        "at": 5.262222222222222,
+        "type": "stage",
+        "stage": "tesseract"
+      },
+      {
+        "at": 14.532789115646258,
+        "type": "stage",
+        "stage": "white-transition"
+      },
+      {
+        "at": 16.091428571428573,
+        "type": "stage",
+        "stage": "blue"
+      },
+      {
+        "at": 19.89079365079365,
+        "type": "stage",
+        "stage": "glass"
+      },
+      {
+        "at": 23.571156462585034,
+        "type": "stage",
+        "stage": "fracture"
+      },
+      {
+        "at": 23.571156462585034,
+        "type": "fracture",
+        "stage": "fracture"
+      },
+      {
+        "at": 23.661133786848072,
+        "type": "stage",
+        "stage": "contact"
+      },
+      {
+        "at": 31.761995464852607,
+        "type": "stage",
+        "stage": "home"
+      },
+      {
+        "at": 35.51201814058957,
+        "type": "stage",
+        "stage": "contact"
+      },
+      {
+        "at": 36.67011337868481,
+        "type": "stage",
+        "stage": "home"
+      }
+    ]
+  }
+}

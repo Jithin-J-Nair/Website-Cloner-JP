@@ -1,0 +1,9 @@
+
+> lusion-studio-reconstruction@1.0.0 lint
+> eslint
+
+
+/home/user/Website-Cloner-JP/src/components/pages/LusionProjectDetailView.tsx
+  85:3  warning  'highlight' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (0 errors, 1 warning)

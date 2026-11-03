@@ -1,0 +1,81 @@
+1440: hero
+1440: reel-intro
+1440: reel-stage
+1440: featured
+1440: tablet
+1440: title
+1440: dark
+1440: pink
+1440: blue
+1440: shards
+1440: contact
+1440: footer
+1440: reversed-hero
+1440: route-projects
+1440: route-contact
+768: hero
+768: reel-intro
+768: reel-stage
+768: featured
+768: tablet
+768: title
+768: dark
+768: pink
+768: blue
+768: shards
+768: contact
+768: footer
+768: reversed-hero
+768: route-projects
+768: route-contact
+390: hero
+390: reel-intro
+390: reel-stage
+390: featured
+390: tablet
+390: title
+390: dark
+390: pink
+390: blue
+390: shards
+390: contact
+390: footer
+390: reversed-hero
+390: route-projects
+390: route-contact
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+browserType.launch: Target page, context or browser has been closed
+Browser logs:
+
+<launching> /tmp/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --ash-no-nudges --disable-domain-reliability --disable-print-preview --disk-cache-size=33554432 --no-default-browser-check --no-pings --single-process --font-render-hinting=none --disable-features=AudioServiceOutOfProcess,IsolateOrigins,site-per-process --enable-features=SharedArrayBuffer --ignore-gpu-blocklist --in-process-gpu --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --allow-running-insecure-content --disable-setuid-sandbox --disable-site-isolation-trials --disable-web-security --headless='shell' --no-sandbox --no-zygote --use-gl=angle --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --user-data-dir=/tmp/playwright_chromiumdev_profile-sdQiuQ --remote-debugging-pipe --no-startup-window
+<launched> pid=238028
+Call log:
+  - <launching> /tmp/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --ash-no-nudges --disable-domain-reliability --disable-print-preview --disk-cache-size=33554432 --no-default-browser-check --no-pings --single-process --font-render-hinting=none --disable-features=AudioServiceOutOfProcess,IsolateOrigins,site-per-process --enable-features=SharedArrayBuffer --ignore-gpu-blocklist --in-process-gpu --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --allow-running-insecure-content --disable-setuid-sandbox --disable-site-isolation-trials --disable-web-security --headless='shell' --no-sandbox --no-zygote --use-gl=angle --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --user-data-dir=/tmp/playwright_chromiumdev_profile-sdQiuQ --remote-debugging-pipe --no-startup-window
+  - <launched> pid=238028
+  - [pid=238028] <gracefully close start>
+  - [pid=238028] <kill>
+  - [pid=238028] <will force kill>
+  - [pid=238028] <process did exit: exitCode=null, signal=SIGSEGV>
+  - [pid=238028] starting temporary directories cleanup
+  - [pid=238028] finished temporary directories cleanup
+  - [pid=238028] <gracefully close end>
+
+    at launchBrowser (/home/user/Website-Cloner-JP/scripts/validate-home-motion.mjs:37:38)
+    at /home/user/Website-Cloner-JP/scripts/validate-home-motion.mjs:42:23 {
+  log: [
+    "  - <launching> /tmp/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --ash-no-nudges --disable-domain-reliability --disable-print-preview --disk-cache-size=33554432 --no-default-browser-check --no-pings --single-process --font-render-hinting=none --disable-features=AudioServiceOutOfProcess,IsolateOrigins,site-per-process --enable-features=SharedArrayBuffer --ignore-gpu-blocklist --in-process-gpu --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --allow-running-insecure-content --disable-setuid-sandbox --disable-site-isolation-trials --disable-web-security --headless='shell' --no-sandbox --no-zygote --use-gl=angle --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --user-data-dir=/tmp/playwright_chromiumdev_profile-sdQiuQ --remote-debugging-pipe --no-startup-window",
+    '  - <launched> pid=238028',
+    '  - [pid=238028] <gracefully close start>',
+    '  - [pid=238028] <kill>',
+    '  - [pid=238028] <will force kill>',
+    '  - [pid=238028] <process did exit: exitCode=null, signal=SIGSEGV>',
+    '  - [pid=238028] starting temporary directories cleanup',
+    '  - [pid=238028] finished temporary directories cleanup',
+    '  - [pid=238028] <gracefully close end>'
+  ]
+}
+
+Node.js v22.22.3

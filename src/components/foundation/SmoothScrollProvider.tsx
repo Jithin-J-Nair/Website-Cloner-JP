@@ -37,8 +37,13 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
         STAGE_TELEMETRY.scrollProgress = window.scrollY / maxScroll;
         STAGE_TELEMETRY.scrollVelocity = 0;
       };
+      onNativeScroll();
       window.addEventListener("scroll", onNativeScroll, { passive: true });
-      return () => window.removeEventListener("scroll", onNativeScroll);
+      window.addEventListener("resize", onNativeScroll, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", onNativeScroll);
+        window.removeEventListener("resize", onNativeScroll);
+      };
     }
 
     const lenis = new Lenis({
@@ -101,16 +106,28 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     } else {
       lenis.start();
     }
-  }, [menuOpen, reelOpen]);
+  }, [menuOpen, reelOpen, reducedMotion]);
 
   // Reset scroll position and lift transition curtain cleanly upon route commit
   useEffect(() => {
-    if (lenisRef.current) {
-      lenisRef.current.scrollTo(0, { immediate: true });
-    } else {
-      window.scrollTo(0, 0);
+    // Preserve explicit fragment intent (including /contact -> /#footer-section).
+    // An unconditional zero reset raced the browser's anchor jump and left the
+    // fixed scene at the footer coordinate while the native document was at zero.
+    let fragmentTarget: HTMLElement | null = null;
+    try {
+      fragmentTarget = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+    } catch {
+      // A malformed fragment is not a valid destination; ordinary routes reset.
     }
-    STAGE_TELEMETRY.scrollProgress = 0;
+    const targetY = fragmentTarget ? fragmentTarget.getBoundingClientRect().top + window.scrollY : 0;
+    if (lenisRef.current) {
+      lenisRef.current.resize();
+      lenisRef.current.scrollTo(targetY, { immediate: true });
+    } else {
+      window.scrollTo(0, targetY);
+    }
+    STAGE_TELEMETRY.scrollY = window.scrollY;
+    STAGE_TELEMETRY.scrollProgress = window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     STAGE_TELEMETRY.scrollVelocity = 0;
 
     const timer = window.setTimeout(() => {

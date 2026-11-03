@@ -1,0 +1,93 @@
+{
+  "width": 1440,
+  "height": 900,
+  "samples": [
+    {
+      "u": 0,
+      "wallMs": 5004.800000000047,
+      "submittedFrames": 79,
+      "renderSubmissionsPerSecond": 15.784846547314432,
+      "medianRafIntervalMs": 62.0999999998603,
+      "p95RafIntervalMs": 72.19999999995343,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 3600,
+      "memory": {
+        "geometries": 2,
+        "textures": 0
+      },
+      "webglError": 0
+    },
+    {
+      "u": 1.6,
+      "wallMs": 5010.5,
+      "submittedFrames": 32,
+      "renderSubmissionsPerSecond": 6.386588164853807,
+      "medianRafIntervalMs": 81,
+      "p95RafIntervalMs": 289.5,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 13,
+      "triangles": 62745,
+      "memory": {
+        "geometries": 13,
+        "textures": 1
+      },
+      "webglError": 0
+    },
+    {
+      "u": 5.35,
+      "wallMs": 5007,
+      "submittedFrames": 23,
+      "renderSubmissionsPerSecond": 4.593569003395246,
+      "medianRafIntervalMs": 236.5,
+      "p95RafIntervalMs": 274.5999999998603,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 36992,
+      "memory": {
+        "geometries": 14,
+        "textures": 1
+      },
+      "webglError": 0
+    },
+    {
+      "u": 7.2,
+      "wallMs": 5004.899999999907,
+      "submittedFrames": 47,
+      "renderSubmissionsPerSecond": 9.390797018921631,
+      "medianRafIntervalMs": 76.69999999995343,
+      "p95RafIntervalMs": 149,
+      "buffer": [
+        960,
+        600
+      ],
+      "count": 1800,
+      "draws": 2,
+      "triangles": 0,
+      "memory": {
+        "geometries": 15,
+        "textures": 1
+      },
+      "webglError": 0
+    }
+  ],
+  "errors": [],
+  "physicalGpuTiming": "NOT MEASURED",
+  "device": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "timerQuerySupported": true,
+    "policy": "existing cinematic pixel budget; original About software/low/mobile tier=1800; high=4800"
+  }
+}

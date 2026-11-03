@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "branch": "arena/95a11883-website-cloner-jp",
+  "baseline": "0812b2b65754379fcd55fb2660c7cab983b2f48f",
+  "runtimeSourceCommit": "13e26991b37f613808f0a36b0322d898ed769486",
+  "finalHarnessCommit": "e31611faf08f9229ff87ec486ebcbea586c67d7d",
+  "productionBuildId": "Gy8XUSaFS3nynOd1mUKW0",
+  "fileSha256": {
+    "src/components/pages/AboutPageView.tsx": "4f0c05f12230a7f03f74cf62b25f69af7bae800dce434a9ef4d8cc1a68791b2e",
+    "src/components/three/AboutPlume.ts": "623acba15cdc95c27f2aac865dc3f79ffc6fa5e24db92e888bf5e625dea03f8b",
+    "src/components/foundation/StudioHud.tsx": "3bf37d8f196a1f9b2b599fcca414efd1bb31027d68bc84d109cc4223710ee4b9",
+    "scripts/lib/browser-runtime.mjs": "889aa2d97b746360aba6cfe59cabbf2a322f1e20ffb3a8898d43d6c76fc7d943",
+    "scripts/validate-about-experience.mjs": "6cecd4d1f2c4adfbcf9527670e4e0ad68da74500f268453f3aa2fd4df8635e83",
+    "scripts/diagnose-audio-output.mjs": "d7f21ef378eac7e744fe5d4a0f73e8f34f022d1a6e82b4e98db84582b462354b",
+    "scripts/capture-about-budget.mjs": "ec8944805a68fb54fbb1dcf6bf08157e5413ef52809f0bd1ef89be52d69a805d",
+    "scripts/measure-about-gpu-draws.mjs": "6bdfb411bf6ac0ad1419a459ad9b606ac5293f7771a12509332c05840f021dc4",
+    "scripts/validate-about-portals.mjs": "10bb8f60823d17f0caf74ffeef673e78c194562cf823d6c59233a4f7ff691a2f"
+  },
+  "physicalSpeakerListening": "NOT VERIFIED",
+  "physicalGpuCertification": "NOT VERIFIED",
+  "note": "Final harness changes are test-only; application source has not changed since runtimeSourceCommit."
+}

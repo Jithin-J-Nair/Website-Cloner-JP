@@ -1,0 +1,1 @@
+PASS wide/threshold/short-screen card layout and downstream reflow/context restoration; no clipped service text or added GL context.

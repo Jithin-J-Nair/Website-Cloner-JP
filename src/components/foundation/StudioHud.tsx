@@ -479,7 +479,7 @@ export function StudioHud() {
               </div>
             )}
 
-            {/* Circular Waveform Sound Toggle (`#header-right-sound-btn`, desktop `> 812px`) */}
+            {/* Sound opt-in must be reachable on touch/mobile too. */}
             <button
               id="header-right-sound-btn"
               type="button"
@@ -490,7 +490,7 @@ export function StudioHud() {
               aria-pressed={audioEnabled}
               aria-label={audioStatus === "suspended" ? "Resume studio sound" : audioEnabled ? "Mute studio sound" : "Enable studio sound"}
               title={audioStatus === "suspended" ? "Resume sound" : audioEnabled ? "Mute sound" : "Enable sound"}
-              className={`relative flex h-[3.2em] w-[3.2em] cursor-pointer items-center justify-center overflow-hidden rounded-full text-[0.875em] transition-colors duration-300 max-[812px]:hidden ${
+              className={`relative flex h-[3.2em] w-[3.2em] cursor-pointer items-center justify-center overflow-hidden rounded-full text-[0.875em] transition-colors duration-300 ${
                 navMenuOpen || audioEnabled || isDarkSurface
                   ? "bg-white text-black shadow-xs hover:bg-[#eaecf6]"
                   : "bg-[#e4e6ef] text-black hover:bg-white"

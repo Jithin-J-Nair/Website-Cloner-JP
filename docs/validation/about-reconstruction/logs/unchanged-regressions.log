@@ -1,0 +1,8 @@
+baseline home 1440 exit=0
+after home 1440 exit=0
+after goal 1440 exit=1
+baseline home 390 exit=0
+after home 390 exit=0
+after goal 390 exit=1
+after goal reduced 1440 exit=0
+after goal reduced 390 exit=0

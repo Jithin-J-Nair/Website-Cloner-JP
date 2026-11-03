@@ -1,0 +1,22 @@
+{
+  "width": 390,
+  "routes": [
+    {
+      "from": "/",
+      "label": "About Us",
+      "target": "/about"
+    },
+    {
+      "from": "/about",
+      "label": "Our Projects",
+      "target": "/projects"
+    },
+    {
+      "from": "/projects",
+      "label": "About Us",
+      "target": "/"
+    }
+  ],
+  "errors": [],
+  "aboutReleased": true
+}

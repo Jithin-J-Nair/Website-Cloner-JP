@@ -144,7 +144,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
       <div
         ref={cardStageRef}
         onPointerMove={handlePointerMove}
-        style={{ backgroundColor: project.colorBg, transform: reducedMotion ? "none" : "translate3d(0,var(--project-reveal-y,0px),0) scale(var(--project-reveal-scale,1)) skewY(var(--project-skew,0deg))" }}
+        style={{ backgroundColor: project.colorBg, transform: "none" }}
         className="project-item-main relative w-full overflow-hidden rounded-[15px] pt-[65%] shadow-[0_14px_34px_rgba(10,14,28,0.06)] transition-shadow duration-500 will-change-transform group-hover:shadow-[0_24px_54px_rgba(26,47,251,0.14)]"
       >
         <div
@@ -165,7 +165,7 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
               loading={index < 4 ? "eager" : "lazy"}
               decoding="async"
               onError={() => setImgFailed(true)}
-              style={{ transform: reducedMotion ? "none" : "translate3d(0,var(--project-image-y,0px),0) scale(1.08)" }}
+              style={{ transform: reducedMotion ? "none" : "scale(1.08)" }}
               className="project-item-image h-full w-full rounded-[15px] object-cover"
             />
           ) : (

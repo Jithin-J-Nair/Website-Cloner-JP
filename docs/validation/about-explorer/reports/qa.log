@@ -1,0 +1,73 @@
+
+> lusion-studio-reconstruction@1.0.0 qa
+> node scripts/qa-verify.mjs
+
+=== LUSION RECONSTRUCTION QA VERIFICATION ===
+
+[1/5] Auditing Lusion Design System Contrast Pairs...
+  PASS Off-White Canvas (#f0f1fa) vs Primary Ink (#000000): 18.67:1 (min 7:1)
+  PASS Pure White Footer (#ffffff) vs Primary Ink (#000000): 21.00:1 (min 7:1)
+  PASS Header Pill Dark-White (#e4e6ef) vs Primary Ink (#000000): 16.86:1 (min 7:1)
+  PASS Pure Black Stage (#000000) vs Pure White (#ffffff): 21.00:1 (min 7:1)
+  PASS Scroll Portal Slate (#121416) vs Signal Lime (#c1ff00): 15.45:1 (min 7:1)
+  PASS Lusion Electric Cobalt (#1a2ffb) vs Pure White (#ffffff): 7.39:1 (min 4.5:1)
+  PASS Header Talk Slate (#2b2e3a) vs Pure White (#ffffff): 13.51:1 (min 7:1)
+
+[2/5] Auditing Font Option 2 Licensing & Active Source Modules...
+  PASS Verified 6 active local font files — 0 excluded commercial font binaries.
+  PASS Audited 82 active source files — zero unapproved portfolio references.
+
+[3/5] Auditing Shared Lusion Chrome Landmarks & Page Sections...
+  PASS Header shell (#header)
+  PASS Lusion vector wordmark (#header-logo)
+  PASS Menu toggle (#header-right-menu-btn)
+  PASS Floating menu (#header-menu)
+  PASS Labs card with Lucy (#header-menu-labs-lucy-svg)
+  PASS Scroll indicator (#scroll-indicator)
+  PASS Home hero stage (#home-hero-visual-container)
+  PASS Home showreel section (#home-reel)
+  PASS Home featured grid (#home-featured)
+  PASS Home goal tunnel (#home-goal)
+  PASS End section CTA (#end-section)
+  PASS Footer section (#footer-section)
+  PASS Scroll portal (#scroll-nav-section)
+  PASS Verified Bristol address (9 Marsh Street)
+  PASS Verified Bristol postcode (BS1 4AA)
+  PASS Verified Lusion email (hello@lusion.co)
+  PASS Verified Lusion copyright (©2026 LUSION Creative Studio)
+  PASS /about landmark (#about-who)
+  PASS /about landmark (#about-clients)
+  PASS /about landmark (#about-award)
+  PASS /about landmark (#about-capability)
+
+[4/5] Auditing All 22 Canonical Routes + 2 Negative 404 Routes on http://127.0.0.1:3000...
+  PASS /                                    HTTP 200 | Title:EXACT | H1:true
+  PASS /about                               HTTP 200 | Title:EXACT | H1:true
+  PASS /projects                            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/oryzo_ai                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/atlas_motion               HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/devin_ai                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/of_the_oak                 HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/everswap                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/porsche_dream_machine      HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/synthetic_human            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/ddd_2024                   HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/spaace                     HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/choo_choo_world            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/zero_tech                  HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/spatial_fusion             HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/worldcoin                  HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/lusion_labs                HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/my_little_story_book       HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/soda_experience            HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/infinite_passerella        HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/the_turn_of_the_screw      HTTP 200 | Title:EXACT | H1:true
+  PASS /projects/maxmara_bearings_gifts     HTTP 200 | Title:EXACT | H1:true
+  PASS /non-existent-optical-coordinate     HTTP 404 (expected 404)
+  PASS /projects/non-existent-case-study    HTTP 404 (expected 404)
+
+[5/5] Auditing Clean-Production Asset Route Delivery & Security...
+  PASS Clean card asset HTTP 200 (CSP sandbox=true) & commercial font HTTP 403
+  PASS Captured Lusion scene + project media assets: 50/50 delivered with non-empty bodies
+
+ALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).

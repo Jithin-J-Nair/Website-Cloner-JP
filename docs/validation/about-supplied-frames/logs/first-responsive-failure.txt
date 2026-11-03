@@ -1,0 +1,1 @@
+First responsive run: FAIL, unchanged 450ms post-seek assertion: at 390px the old wordmark was still visible when the manifesto was requested at u=2.8. Desktop and tablet completed. Retained report predates the resource-budget correction. This is not a source-parity or FPS test.

@@ -1,0 +1,50 @@
+{
+  "a": {
+    "frames": 1,
+    "u": 0,
+    "time": 0,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": false,
+    "state": "ready",
+    "count": 900,
+    "frameTimes": [
+      18.600000000558794
+    ],
+    "draws": 2,
+    "triangles": 1800,
+    "memory": {
+      "geometries": 2,
+      "textures": 0
+    },
+    "width": 390,
+    "height": 844
+  },
+  "b": {
+    "frames": 1,
+    "u": 0,
+    "time": 0,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": false,
+    "state": "ready",
+    "count": 900,
+    "frameTimes": [
+      18.600000000558794
+    ],
+    "draws": 2,
+    "triangles": 1800,
+    "memory": {
+      "geometries": 2,
+      "textures": 0
+    },
+    "width": 390,
+    "height": 844
+  }
+}

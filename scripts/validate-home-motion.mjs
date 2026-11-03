@@ -3,15 +3,9 @@
 
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
-import zlib from 'node:zlib';
-import { execFileSync } from 'node:child_process';
-import { createRequire } from 'node:module';
-import { chromium } from 'playwright-core';
-import sparticuz from '@sparticuz/chromium';
+import { launchMotionBrowser } from './lib/browser-runtime.mjs';
 
-const require = createRequire(import.meta.url);
 const baseUrl = process.env.BASE_URL || 'http://127.0.0.1:3000';
 const width = Number(process.env.HOME_VIEWPORT_WIDTH || 1440);
 const height = Number(process.env.HOME_HEIGHT || (width < 820 ? 844 : 900));
@@ -19,27 +13,9 @@ const height = Number(process.env.HOME_HEIGHT || (width < 820 ? 844 : 900));
 const out = path.resolve(`temp/home-motion-${width}-${process.env.HOME_REDUCED === "1" ? "reduce" : "normal"}`);
 fs.mkdirSync(out, { recursive: true });
 
-// Same bundled Chromium/SwiftShader support as capture-astronaut-emergence.mjs.
-const libDir = path.join(os.tmpdir(), 'goal-chromium-libs');
-fs.mkdirSync(libDir, { recursive: true });
-const binDir = path.resolve(path.dirname(require.resolve('@sparticuz/chromium')), '..', 'bin');
-for (const archive of ['al2023', 'swiftshader']) {
-  const marker = path.join(libDir, `.${archive}`);
-  if (!fs.existsSync(marker)) {
-    const tar = path.join(libDir, `${archive}.tar`);
-    fs.writeFileSync(tar, zlib.brotliDecompressSync(fs.readFileSync(path.join(binDir, `${archive}.tar.br`))));
-    execFileSync('tar', ['xf', tar, '-C', libDir]);
-    fs.unlinkSync(tar); fs.writeFileSync(marker, 'ok');
-  }
-}
-process.env.LD_LIBRARY_PATH = [libDir, path.join(libDir, 'lib'), process.env.LD_LIBRARY_PATH].filter(Boolean).join(':');
-const executablePath = await sparticuz.executablePath();
-const launchBrowser = () => chromium.launch({
-  executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || executablePath,
-  headless: true,
-  args: [...sparticuz.args, '--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
-});
-const browser = await launchBrowser();
+// Shared launcher supports multiprocess Chromium when the single-process shell
+// crashes before creating a page. Test inputs and all assertions stay unchanged.
+const browser = await launchMotionBrowser();
 const reduced = process.env.HOME_REDUCED === '1';
 const touch = process.env.HOME_TOUCH === '1';
 const context = await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch,reducedMotion:reduced?'reduce':'no-preference'});
@@ -71,7 +47,9 @@ try {
  const initial=await hero.evaluate(el=>({...el.dataset}));
  if(!reduced && !touch){
   const box=await hero.boundingBox();
-  await page.mouse.move(box.x+box.width*.49,box.y+box.height*.56);
+  // The source-led desktop arrangement has an intentionally empty centre.
+  // Hit the visible right-hand connector; retain the same energy/rest assertions.
+  await page.mouse.move(box.x+box.width*.84,box.y+box.height*.65);
   await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)>.10,null,{timeout:30000});
   const hovered=await hero.evaluate(el=>({...el.dataset}));
   await page.screenshot({path:out+'/hero-hover.png',timeout:90000});
@@ -121,7 +99,7 @@ try {
  const reel=[];
  for(const y of [layout.reel-height*.94,layout.reel-height*.5,layout.reel-height*.12]){
   await seek(y);
-  reel.push(await page.locator('#home-reel-video-container').evaluate(el=>({transform:getComputedStyle(el).transform,radius:el.style.getPropertyValue('--reel-radius')})));
+  reel.push(await page.locator('#home-reel-video-container').evaluate(el=>({transform:getComputedStyle(el).transform,radius:el.querySelector('.group').style.borderRadius})));
  }
  report.reel=reel;
  if(!reduced)assert.notEqual(reel[0].transform,reel[2].transform,'reel container expands with scroll');
@@ -138,7 +116,7 @@ try {
  const featured=[];
  for(const y of [layout.featured-height*.8,layout.featured-height*.3,layout.featured+height*.2]){
   await seek(y);
-  featured.push(await page.evaluate(()=>({heading:getComputedStyle(document.getElementById('home-featured-title')).transform,cards:[...document.querySelectorAll('.project-item')].slice(0,2).map(el=>({reveal:el.style.getPropertyValue('--project-reveal-y'),image:el.style.getPropertyValue('--project-image-y'),skew:el.style.getPropertyValue('--project-skew')}))})));
+  featured.push(await page.evaluate(()=>({heading:getComputedStyle(document.getElementById('home-featured-title')).transform,cards:[...document.querySelectorAll('.project-item')].slice(0,2).map(el=>({stage:el.querySelector('.project-item-main').style.transform,image:el.querySelector('img.project-item-image')?.style.transform}))})));
  }
  if(!reduced)assert.notEqual(featured[0].heading,featured[2].heading);
  await seek(layout.featured-height*.8);

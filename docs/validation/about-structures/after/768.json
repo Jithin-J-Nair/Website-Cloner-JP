@@ -1,0 +1,38 @@
+{
+  "width": 768,
+  "height": 900,
+  "errors": [],
+  "shots": [
+    "768-u0.jpg",
+    "768-u0.7.jpg",
+    "768-u1.6.jpg",
+    "768-u3.8.jpg",
+    "768-u5.35.jpg",
+    "768-u7.2.jpg",
+    "768-expertise-row0.jpg",
+    "768-expertise-row2.jpg",
+    "768-expertise-reduced.jpg"
+  ],
+  "checks": [
+    "all cinematic milestones and reverse",
+    "one scissored renderer, bounded real 3D geometry, input/touch gate, menu sleep and genuine context loss/SVG fallback/restoration",
+    "offscreen suspension, resize, reduced still and real SPA context/scheduler release"
+  ],
+  "expertise": {
+    "frames": 112,
+    "pending": true,
+    "draws": 4,
+    "reduced": false,
+    "lost": false,
+    "pointer": [
+      0,
+      0
+    ],
+    "rotation": [
+      0.15,
+      0.7625752584800197,
+      0
+    ],
+    "vertices": 5432
+  }
+}

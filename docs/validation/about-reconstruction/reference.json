@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-29T14:01:01.359Z",
+  "results": [
+    {
+      "width": 1440,
+      "url": "https://lusion.co/about/",
+      "error": "Error: page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about/\nCall log:\n  - navigating to \"https://lusion.co/about/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "width": 1440,
+      "url": "https://lusion.co/",
+      "error": "Error: page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "width": 390,
+      "url": "https://lusion.co/about/",
+      "error": "Error: page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about/\nCall log:\n  - navigating to \"https://lusion.co/about/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "width": 390,
+      "url": "https://lusion.co/",
+      "error": "Error: page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"domcontentloaded\"\n"
+    }
+  ]
+}

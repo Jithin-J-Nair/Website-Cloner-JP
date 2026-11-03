@@ -1,0 +1,1 @@
+PASS bounded buffers/counts/draws and GL_NO_ERROR; frame cadence reported without interpreting CPU submission as GPU execution/FPS.

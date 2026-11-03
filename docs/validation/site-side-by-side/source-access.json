@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://lusion.co/",
+    "loaded": false,
+    "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"domcontentloaded\"\n"
+  },
+  {
+    "url": "https://lusion.co/about",
+    "loaded": false,
+    "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about\nCall log:\n  - navigating to \"https://lusion.co/about\", waiting until \"domcontentloaded\"\n"
+  }
+]
