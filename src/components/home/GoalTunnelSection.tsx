@@ -113,6 +113,8 @@ declare global {
         progress: number; virtualScroll: number; activation: number; end: number; runs: number;
       };
       scrollForEmergence: (u: number) => number;
+      scrollForTunnel: (u: number) => number;
+      scrollForShatter: (u: number) => number;
     };
   }
 }
@@ -773,6 +775,17 @@ export function GoalTunnelSection() {
         if (!metrics) measure();
         const m = metrics!;
         return m.emergenceStart + clamp01(u) * m.emergenceSpan;
+      },
+      scrollForTunnel: (u: number) => {
+        if (!metrics) measure();
+        const m = metrics!;
+        return m.tunnelStart + clamp01(u) * m.tunnelSpan;
+      },
+      scrollForShatter: (u: number) => {
+        if (!metrics) measure();
+        const m = metrics!;
+        const start = m.imgOutTop - m.viewportH * 0.55;
+        return start + clamp01(u) * Math.max(1, m.endTop - start);
       },
     };
 

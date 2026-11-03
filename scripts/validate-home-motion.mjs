@@ -163,6 +163,47 @@ try {
  report.solarCameraResponse={first:firstSolar,other:movedSolar};
  await seek(titleY);
  if(width===3840)assert.deepEqual([report.solar.telemetry.renderWidth,report.solar.telemetry.renderHeight],[3840,2160]);
+ // Inspect later cinematic phases too: tunnel vortex, blue-flight corridor,
+ // plate-glass crack growth, fragment separation and the clean post-shatter exit.
+ const seekScenePhase = async (label, y, field, expected) => {
+   await seek(y);
+   await page.waitForFunction(({field,expected}) => {
+     const state=window.__goalAstronautTelemetry?.sceneState;
+     return !!state && Math.abs(state[field]-expected)<0.025;
+   }, {field,expected}, {timeout:30000});
+   await page.screenshot({path:out+'/'+label+'.png',timeout:90000});
+   return await page.evaluate(()=>({
+     tunnelProgress:window.__goalAstronautTelemetry.sceneState.tunnelProgress,
+     shatterProgress:window.__goalAstronautTelemetry.sceneState.shatterProgress,
+     bakedFrame:window.__goalAstronautTelemetry.sceneState.bakedFrame,
+     corridorTravel:window.__goalAstronautTelemetry.sceneState.corridorTravel,
+     crackProgress:window.__goalAstronautTelemetry.sceneState.crackProgress,
+     glassOpacity:window.__goalAstronautTelemetry.sceneState.glassOpacity,
+     trussLoaded:window.__goalAstronautTelemetry.sceneState.trussLoaded,
+     shardsLoaded:window.__goalAstronautTelemetry.sceneState.shardsLoaded,
+     webglError:document.querySelector('#home-goal canvas').getContext('webgl2').getError(),
+   }));
+ };
+ const vortexY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.58));
+ const vortexState = await seekScenePhase('vortex',vortexY,'tunnelProgress',0.58);
+ assert.equal(vortexState.trussLoaded,true,'vortex truss geometry is present');
+ assert.equal(vortexState.shardsLoaded,true,'captured shard geometry is loaded for downstream break');
+ assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
+ const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
+ const blueState = await seekScenePhase('blue-corridor',blueY,'tunnelProgress',0.90);
+ assert.ok(blueState.corridorTravel>0,'astronaut transitions into the blue arch corridor');
+ assert.equal(blueState.webglError,0);
+ const crackY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.22));
+ const crackState = await seekScenePhase('glass-cracks',crackY,'shatterProgress',0.22);
+ assert.ok(crackState.crackProgress>0.85,'monitor crack growth is visible before the fragment burst');
+ const shatterY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.52));
+ const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.52);
+ assert.ok(shatterState.glassOpacity>0.9,'plate-glass fragments are visibly separating');
+ assert.equal(shatterState.webglError,0);
+ const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.86));
+ const exitState = await seekScenePhase('post-shatter',exitY,'shatterProgress',0.86);
+ assert.ok(exitState.glassOpacity<0.4,'glass fragments clear rather than lingering over the astronaut');
+ report.downstream={vortex:vortexState,blueCorridor:blueState,cracks:crackState,shatter:shatterState,postShatter:exitState};
  await seek(layout.reel-height*.12);
  await page.locator('#home-reel-video-watch-btn').click();
  await page.locator('#video-overlay[role="dialog"]').waitFor({state:'visible'});
