@@ -13,8 +13,8 @@ try {
   }).outputText);
   const { terrainHeightAt, createAboutTerrainMaterial } = await import(pathToFileURL(`${dir}/terrain.mjs`));
   let min = Infinity, max = -Infinity;
-  for (let z = -32; z <= 32; z += .5) {
-    for (let x = -32; x <= 32; x += .5) {
+  for (let z = -48; z <= 48; z += .5) {
+    for (let x = -48; x <= 48; x += .5) {
       const h = terrainHeightAt(x, z);
       assert.ok(Number.isFinite(h));
       assert.equal(h, terrainHeightAt(x, z), 'height must be deterministic across reverse/reentry');
@@ -37,7 +37,7 @@ try {
   b.addEventListener('dispose', () => disposed++);
   a.dispose(); b.dispose();
   assert.equal(disposed, 2);
-  console.log(`PASS terrain: 16,641 finite/deterministic height samples, bounds ${min.toFixed(3)}..${max.toFixed(3)}, ridge hierarchy, filtered world-space relief, independent uniforms and disposal. Browser compilation checked separately.`);
+  console.log(`PASS terrain: 37,249 finite/deterministic height samples, bounds ${min.toFixed(3)}..${max.toFixed(3)}, ridge hierarchy, filtered world-space relief, independent uniforms and disposal. Browser compilation checked separately.`);
 } finally {
   fs.rmSync(dir, { recursive: true, force: true });
 }

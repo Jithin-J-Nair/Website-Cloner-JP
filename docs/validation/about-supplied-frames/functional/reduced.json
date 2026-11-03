@@ -1,0 +1,66 @@
+{
+  "a": {
+    "frames": 2,
+    "u": 0,
+    "time": 0,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": false,
+    "state": "ready",
+    "explorer": "ready",
+    "explorerScale": 1,
+    "count": 900,
+    "frameTimes": [
+      19.5999999998603,
+      0.39999999990686774
+    ],
+    "draws": 2,
+    "triangles": 1800,
+    "memory": {
+      "geometries": 2,
+      "textures": 0
+    },
+    "width": 390,
+    "height": 844,
+    "camera": [
+      0,
+      8.15,
+      8.6
+    ]
+  },
+  "b": {
+    "frames": 2,
+    "u": 0,
+    "time": 0,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": false,
+    "state": "ready",
+    "explorer": "ready",
+    "explorerScale": 1,
+    "count": 900,
+    "frameTimes": [
+      19.5999999998603,
+      0.39999999990686774
+    ],
+    "draws": 2,
+    "triangles": 1800,
+    "memory": {
+      "geometries": 2,
+      "textures": 0
+    },
+    "width": 390,
+    "height": 844,
+    "camera": [
+      0,
+      8.15,
+      8.6
+    ]
+  }
+}

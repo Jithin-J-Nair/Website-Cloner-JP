@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
+import { aboutScenePose } from "@/lib/about-scene-motion";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
@@ -17,7 +18,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 declare global {
   interface Window {
     __enableAboutProbe?: boolean;
-    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number };
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
   }
 }
 
@@ -176,7 +177,7 @@ function AboutWhoExperience({
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
-    glRenderer.setClearColor(0x080a0e, 1);
+    glRenderer.setClearColor(0x0c0e11, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.05;
@@ -243,40 +244,50 @@ function AboutWhoExperience({
           uniform float uOpacity;
           uniform float uCyanCore;
           void main() {
-            float xDist = abs(vUv.x - 0.5) * 2.0;
-            // The shaft joins the suspended volume to the floor; it must not
-            // continue above the volume as a full-height laser stripe.
-            float shaftHeight = 1.0 - smoothstep(0.30, 0.40, vUv.y);
-            float beam = exp(-pow(xDist * 120.0, 2.0)) * shaftHeight;
-            // Atmospheric misty silver sky gradient across upper valley ('about-02-we-are-reveal'!)
-            float skyMist = smoothstep(0.28, 0.98, vUv.y) * 0.035;
-            float wideHaze = exp(-pow(xDist * 2.6, 2.0)) * 0.035;
-            float vertFade = smoothstep(0.0, 0.12, vUv.y);
-            vec3 col = vec3(0.74, 0.78, 0.85) * (beam * 0.36 + wideHaze + skyMist);
-            float vortexHotspot = exp(-pow((vUv.y - 0.46) * 6.5, 2.0)) * exp(-pow(xDist * 5.0, 2.0));
-            col += mix(vec3(0.78, 0.86, 0.94), vec3(0.08, 0.95, 1.0), uCyanCore) * vortexHotspot * 0.18;
+            // A finite overhead emitter and widening cone, not a laser joining
+            // the cloud to the ground. Its top naturally enters the wide shot.
+            float x = (vUv.x - .5) * 38.;
+            float y = vUv.y * 32. - 2.5;
+            float coneWidth = mix(1.45, .16, smoothstep(8., 22.3, y));
+            float beam = exp(-pow(x / coneWidth, 2.)) * smoothstep(6., 10., y)
+              * (1. - smoothstep(22.4, 23.5, y));
+            float emitter = exp(-pow(x / .25, 2.) - pow((y - 22.3) / .25, 2.));
+            float halo = exp(-pow(x / 1.1, 2.) - pow((y - 22.3) / 1.2, 2.));
+            float cloudHaze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
+            float wideHaze = exp(-pow(x / 9., 2.)) * .014;
+            float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(25., 29.5, y));
+            vec3 col = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore)
+              * (beam * .20 + emitter * 4. + halo * .32 + cloudHaze * .035 + wideHaze);
             gl_FragColor = vec4(col, uOpacity * vertFade);
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
           }
         `,
       })
     );
-    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 26.0)), godRayMat);
-    godRayPlane.position.set(0, 10.5, -2.5);
+    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 32.0)), godRayMat);
+    godRayPlane.position.set(-.35, 13.5, -2.5);
     godRayPlane.renderOrder = -1;
     scene.add(godRayPlane);
 
     // -------------------------------------------------------------------------
     // 2. Sculpted 3D Crater Basin & Mountain Ridge Terrain ('about-02', 'about-03', 'about-04')
     // -------------------------------------------------------------------------
-    const GRID = 136;
-    const SPAN = 64;
+    const GRID = software || tier === "low" ? 136 : window.innerWidth < 820 ? 224 : 320;
+    const SPAN = 96;
     const terrainGeo = track(new THREE.PlaneGeometry(SPAN, SPAN, GRID, GRID));
     terrainGeo.rotateX(-Math.PI * 0.5);
     const tPos = terrainGeo.attributes.position as THREE.BufferAttribute;
+    // Spend vertices near the subject, not on the dark fading perimeter.
+    // The software tier keeps its former triangle budget while the domain
+    // expands for the distant shot. Height/contact/contours still share one field.
+    const warp = (v: number) => {
+      const t = v / (SPAN * .5);
+      return t * 24 + Math.pow(t, 5) * 24;
+    };
     for (let i = 0; i < tPos.count; i++) {
-      const x = tPos.getX(i);
-      const z = tPos.getZ(i);
-      tPos.setY(i, terrainHeightAt(x, z));
+      const x = warp(tPos.getX(i)), z = warp(tPos.getZ(i));
+      tPos.setXYZ(i, x, terrainHeightAt(x, z), z);
     }
     terrainGeo.computeVertexNormals();
 
@@ -289,7 +300,7 @@ function AboutWhoExperience({
     // 3. 36 Glowing 3D Topographic Elevation Contour Lines ('about-03' & 'about-04')
     // -------------------------------------------------------------------------
     const contourSegments: number[] = [];
-    const C_GRID = 112;
+    const C_GRID = 168;
     const step = SPAN / C_GRID;
     // Marching-squares iso-contour extraction across the exact 3D 'terrainHeightAt' grid!
     const hGrid = new Float32Array((C_GRID + 1) * (C_GRID + 1));
@@ -396,7 +407,7 @@ function AboutWhoExperience({
     const explorer = track(createAboutExplorer());
     const explorerGroup = explorer.group;
     // Feet, not the centre of a capsule, are anchored to the same basin function.
-    explorerGroup.position.set(.85, terrainHeightAt(.85, -1.8) + .012, -1.8);
+    explorerGroup.position.set(-.35, terrainHeightAt(-.35, -1.8) + .012, -1.8);
     scene.add(explorerGroup);
     // Reuse the project's permitted NASA suit, never a captured Lusion model.
     // The procedural suit and contact shadow remain a zero-network fallback.
@@ -613,23 +624,13 @@ function AboutWhoExperience({
       }
 
       // -----------------------------------------------------------------------
-      // Continuous Camera Spline ('u = 0' close storm -> 'u = 1.6' valley wide -> 'u = 5.35..9.5' ridge scan)
+      // One scroll-owned pose: close volume → basin → distant basin → editorial.
+      // Positions are still-led original framing; live-source timing is unverified.
       // -----------------------------------------------------------------------
-      const tPullback = smoothstep(0.05, 1.45, u);
-      const tContourPhase = smoothstep(3.6, 5.0, u);
-      const tTeamPhase = smoothstep(6.2, 6.95, u);
-
-      // Historical stills place the grounded figure near the lower middle,
-      // with both the floor and suspended plume visible. Return to the existing
-      // narrative/portrait distance rather than perturbing those later beats.
-      const wideZ = lerp(isMobile ? 22 : 20, isMobile ? 21.5 : 18.2, tContourPhase);
-      const camZ = lerp(isMobile ? 8.6 : 6.9, wideZ, tPullback);
-      const camY = lerp(8.15, lerp(4.6, 6.6, tContourPhase), tPullback);
-      const camX = Math.sin(tContourPhase * 1.2) * 0.6;
-      // Raise the sightline during the editorial beat to leave black negative
-      // space above the basin; return to the portrait framing in team mode.
-      const editorialLookY = lerp(7.6, .85, tTeamPhase);
-      const lookY = lerp(8.15, lerp(3.4, editorialLookY, tContourPhase), tPullback);
+      const pose = aboutScenePose(u, isMobile);
+      const tPullback = pose.pullback;
+      const tTeamPhase = pose.team;
+      const { x: camX, y: camY, z: camZ, lookY } = pose;
 
       camera.fov = isMobile ? 54 : 45;
       camera.position.set(camX, camY, camZ);
@@ -651,7 +652,7 @@ function AboutWhoExperience({
         stormMat.uniforms.uMobile.value = isMobile ? 1.0 : 0.0;
         stormMat.uniforms.uPointer.value.copy(pointerWorld);
         stormMat.uniforms.uPointerStrength.value = pointerActive;
-        stormMat.uniforms.uCyanBoost.value = isMobile ? .16 : lerp(0.0, .08, tPullback);
+        stormMat.uniforms.uCyanBoost.value = isMobile ? .16 : 0;
         stormMat.uniforms.uOpacity.value = stormVis;
       }
 
@@ -660,7 +661,7 @@ function AboutWhoExperience({
       const darkHudFade = 1 - smoothstep(3.45, 4.55, u);
       godRayPlane.visible = landscapeVis * stormVis > 0.01;
       godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
-      godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : .08;
+      godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : 0;
 
       // Keep a faint real rock surface beneath the narrative/contours, as in the historical still.
       // Team mode returns to black to preserve portrait contrast.
@@ -674,7 +675,7 @@ function AboutWhoExperience({
       explorerGroup.visible = explorerVis > 0.02;
       // Scale here, not just at mount: this authoritative render assignment
       // otherwise silently overwrites the corrected historical-frame size.
-      // The feet remain fixed and the original camera path stays unchanged.
+      // The feet remain fixed throughout both basin camera distances.
       explorerGroup.scale.setScalar(isMobile ? 1.0 : 1.33);
       if (explorerGroup.visible) {
         explorer.pose(elapsedSec, pointerNDC.x, pointerNDC.y, reducedMotion);
@@ -829,7 +830,7 @@ function AboutWhoExperience({
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
       state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x, count, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
-      memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height });
+      memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height, camera: camera.position.toArray() });
     if (window.__enableAboutProbe) window.__aboutProbe = probe;
     glRenderer.domElement.addEventListener("webglcontextlost", onLost);
     glRenderer.domElement.addEventListener("webglcontextrestored", onRestored);
@@ -976,17 +977,17 @@ function AboutWhoExperience({
             viewBox="0 0 1400 365"
             fill="none"
             aria-hidden="true"
-            className="block h-auto w-full select-none"
+            className="block h-auto w-full translate-y-[2.7vh] select-none"
           >
             <text
-              x="6"
-              y="335"
-              textLength="1388"
+              x="-30"
+              y="350"
+              textLength="1454"
               lengthAdjust="spacingAndGlyphs"
               fill="#ffffff"
               fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-              fontSize="385"
-              fontWeight="400"
+              fontSize="390"
+              fontWeight="450"
             >
               LUSION
             </text>
@@ -994,11 +995,11 @@ function AboutWhoExperience({
 
           <div
             ref={scrollPromptRef}
-            className="mt-1 flex items-center justify-center min-[820px]:justify-end"
+            className="mt-1 flex translate-y-[1.35vh] items-center justify-center min-[820px]:justify-end"
           >
             <span
               id="about-who-title-main-scroll"
-              className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-white/95 md:text-xs"
+              className="font-sans text-[11px] font-medium uppercase tracking-[0.08em] text-white/95 min-[820px]:text-[1.65vw] min-[820px]:tracking-[-0.035em]"
             >
               {LUSION_ABOUT.who.scrollPrompt}
             </span>
@@ -1009,12 +1010,12 @@ function AboutWhoExperience({
         <div
           ref={manifestoOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 min-[820px]:bottom-[5.7vh] z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
         >
           <div id="about-who-title-left" className="min-[820px]:col-span-6">
-            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[4vw]">
+            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[3.85vw] min-[820px]:leading-[1.19]">
               {[LUSION_ABOUT.who.leftLines[0], "LUSION", ...LUSION_ABOUT.who.leftLines.slice(1)].map((line, idx) => (
-                <span key={idx} className="block">
+                <span key={idx} className={idx === LUSION_ABOUT.who.leftLines.length ? "block italic" : "block"}>
                   {line}
                 </span>
               ))}
@@ -1023,7 +1024,7 @@ function AboutWhoExperience({
           <div className="flex items-end min-[820px]:col-span-6">
             <p
               id="about-who-title-right"
-              className="w-full whitespace-pre-line font-sans text-right italic text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[3.8vw]"
+              className="w-full whitespace-pre-line font-sans text-right italic text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[3.85vw] min-[820px]:leading-[1.19]"
             >
               {LUSION_ABOUT.who.rightHeadline.replace(" DIGITAL", "\nDIGITAL")}
             </p>
@@ -1304,7 +1305,7 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="coherent-volume-ridged-basin-v1" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
+    <main id="about" data-scene-version="suspended-volume-dual-basin-v2" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <div ref={darkUpperRef} className="bg-[#000000] text-white">
         {/* =====================================================================

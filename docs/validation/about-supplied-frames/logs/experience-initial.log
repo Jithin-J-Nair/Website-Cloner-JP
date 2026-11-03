@@ -1,0 +1,86 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+browserContext.close: Target page, context or browser has been closed
+Browser logs:
+
+<launching> /tmp/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --ash-no-nudges --disable-domain-reliability --disable-print-preview --disk-cache-size=33554432 --no-default-browser-check --no-pings --font-render-hinting=none --disable-features=AudioServiceOutOfProcess,IsolateOrigins,site-per-process --enable-features=SharedArrayBuffer --ignore-gpu-blocklist --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --allow-running-insecure-content --disable-setuid-sandbox --disable-site-isolation-trials --disable-web-security --headless='shell' --no-sandbox --no-zygote --use-gl=angle --use-angle=swiftshader --enable-webgl --ignore-gpu-blocklist --user-data-dir=/tmp/playwright_chromiumdev_profile-wZMeRn --remote-debugging-pipe --no-startup-window
+<launched> pid=6431
+[pid=6431][err] [1103/040652.806280:WARNING:../sandbox/policy/linux/sandbox_linux.cc:405] InitializeSandbox() called with multiple threads in process gpu-process.
+[pid=6431][err] [1103/040652.848977:INFO:CONSOLE:3] "Uncaught SecurityError: Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.", source:  (3)
+[pid=6431][err] [1103/040759.675786:INFO:CONSOLE:1] "THREE.WebGLRenderer: Context Lost.", source: http://127.0.0.1:3000/_next/static/chunks/3i43ze0qijh9h.js (1)
+[pid=6431][err] [1103/040800.298463:INFO:CONSOLE:1] "THREE.WebGLRenderer: Context Restored.", source: http://127.0.0.1:3000/_next/static/chunks/3i43ze0qijh9h.js (1)
+[pid=6431][err] [1103/040800.309425:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.309852:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.310295:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.313375:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.313785:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.314227:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.321750:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.322906:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.324647:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.325108:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.326059:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.327423:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.328211:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.334488:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.335275:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.336948:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.338339:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.342101:INFO:CONSOLE:318] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (318)
+[pid=6431][err] [1103/040800.342807:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.343448:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.344762:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.349288:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.349829:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.350407:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.350921:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.351799:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.353271:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.357308:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.358250:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.358981:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.361585:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.363311:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.364396:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.368713:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.369680:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.370831:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.371489:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.372347:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.376394:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.377141:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.377695:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.378446:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.382855:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.383495:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.404976:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.405875:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.410372:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.420658:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.421331:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.421903:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.428408:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.429238:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.429837:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.430493:INFO:CONSOLE:318] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (318)
+[pid=6431][err] [1103/040800.431074:INFO:CONSOLE:318] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (318)
+[pid=6431][err] [1103/040800.431715:INFO:CONSOLE:318] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (318)
+[pid=6431][err] [1103/040800.432670:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.434074:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.448704:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.449546:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.450175:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.452047:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.452757:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: delete: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040800.453380:INFO:CONSOLE:1] "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context", source: http://127.0.0.1:3000/_next/static/chunks/2gwde3j_zxalq.js (1)
+[pid=6431][err] [1103/040807.297724:INFO:CONSOLE:1580] "Goal glass assets unavailable TypeError: Failed to fetch", source: http://127.0.0.1:3000/_next/static/chunks/0o75fd13n5k70.js (1580)
+[pid=6431][err] [1103/040836.378987:INFO:CONSOLE:3] "Uncaught SecurityError: Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.", source:  (3)
+[pid=6431][err] [1103/040837.162221:INFO:CONSOLE:1] "Uncaught ChunkLoadError: Failed to load chunk /_next/static/chunks/0_jb5d7r4voh_.js from module 64893", source: http://127.0.0.1:3000/_next/static/chunks/turbopack-3-ry682tkyiqk.js (1)
+[pid=6431] <gracefully close start>
+    at async file:///home/user/Website-Cloner-JP/scripts/validate-about-experience.mjs:80:83 {
+  log: []
+}
+
+Node.js v22.22.3

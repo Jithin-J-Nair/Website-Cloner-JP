@@ -20,10 +20,10 @@ try{
    // The dedicated launch proxy must open About, not the unchanged Home route.
    assert.ok(p.url().endsWith('/about'));
    await p.waitForFunction(()=>window.__aboutProbe?.().explorer==='ready',{},{timeout:30000});
-   report.revision=await p.locator('#about').getAttribute('data-scene-version');assert.equal(report.revision,'coherent-volume-ridged-basin-v1');
+   report.revision=await p.locator('#about').getAttribute('data-scene-version');assert.equal(report.revision,'suspended-volume-dual-basin-v2');
    await p.waitForTimeout(1000);assert.equal(await p.evaluate(()=>window.__aboutProbe().explorerScale),width<820?1:1.33,'render loop must not overwrite corrected figure scale');await capture('opening');
    const unit=width<820?height:width;
-   for(const [name,u]of [['pullback',.7],['terrain',width<820?2.8:1.6],['narrative',5.35],['team',7.2]]){await seek(unit*u);if(name==='terrain'&&width<820)assert.equal(await p.locator('#about-who-title-main-scroll').evaluate(e=>getComputedStyle(e.parentElement.parentElement).visibility),'hidden','old wordmark must clear the phone/tablet manifesto');await capture(name);}
+   for(const [name,u]of [['pullback',.7],['terrain',width<820?2.8:1.6],['wide-basin',3.55],['narrative',5.35],['team',7.2]]){await seek(unit*u);if(name==='terrain'&&width<820)assert.equal(await p.locator('#about-who-title-main-scroll').evaluate(e=>getComputedStyle(e.parentElement.parentElement).visibility),'hidden','old wordmark must clear the phone/tablet manifesto');await capture(name);}
    for(const id of ['about-clients','about-award','about-capability']){const target=p.locator('#'+id);await seek(await target.evaluate(e=>e.getBoundingClientRect().top+scrollY));await capture(id);}
    const section=p.locator('#about-capability');
    if(width>=1000){await seek(await section.evaluate(e=>e.getBoundingClientRect().top+scrollY));report.heading=await p.locator('.about-expertise-heading').boundingBox();assert.ok(report.heading.y>=100,'title clears fixed desktop header');await seek(await section.evaluate(e=>e.getBoundingClientRect().top+scrollY+(e.offsetHeight-innerHeight)*.9));}

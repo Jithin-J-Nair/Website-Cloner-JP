@@ -8,10 +8,10 @@ vec3 plume(vec4 seed) {
   // Densely sampled lobes connected by a narrow neck. The previous uniform
   // cylindrical scatter read as a sparse ribbon rather than suspended matter.
   float h = (seed.z / 3.14159265 - .5) * mix(3.9, 4.8, uCompact);
-  float phase = h * 1.62 + uTime * .29;
-  float lobe = pow(abs(sin(h * 1.22)), .65);
-  float taper = (.45 + 1.15 * lobe) * (1. - .20 * smoothstep(1.2, 2.6, abs(h)));
-  float radius = pow(seed.x, 1.65) * taper;
+  float phase = h * 1.62 + uTime * .13;
+  float lobe = exp(-pow((h + .6) * 1.2, 2.)) + exp(-pow((h - 1.3) * 1.6, 2.)) * .48;
+  float taper = (.32 + 1.55 * lobe) * (1. - .20 * smoothstep(1.2, 2.6, abs(h)));
+  float radius = pow(seed.x, .75) * taper;
   float orbit = seed.y + uTime * (.12 + .18 * (1. - seed.x));
   vec3 p = vec3(sin(phase) * .48 + cos(orbit) * radius,
                 h + sin(orbit * 2. + h + uTime * .15) * .10,
@@ -21,8 +21,9 @@ vec3 plume(vec4 seed) {
   // by both physical grains and depth-aware fine scatter.
   float fringe = smoothstep(.93, 1., seed.w);
   p += vec3(cos(seed.y) * 2.6, sin(seed.y * 2.) * 1.4, sin(seed.y) * 1.6) * fringe;
-  p *= mix(1.16, .90, uCompact);
-  p += vec3(-.35, mix(8.95, 7.2, uCompact), 0.);
+  p.xz *= mix(1.16, 1.35, uCompact);
+  p.y *= mix(1.16, .90, uCompact);
+  p += vec3(-.35, 8.4, 0.);
   vec3 away = p - uPointer;
   float distanceToPointer = length(away);
   p += away / max(.01, distanceToPointer) * pow(max(0., 1. - distanceToPointer / 2.4), 2.) * uPointerStrength * .62;
@@ -65,7 +66,7 @@ void main() {
   // A meaningful population of mid-sized metal grains supplies a surface;
   // a near-zero radius on most instances previously left only fine dust visible.
   float outlier = smoothstep(.93, 1., aSeed.w);
-  vRadius = .033 * mix(.35, 1.5, pow(aSeed.w, 3.)) * mix(1., .55, outlier);
+  vRadius = .044 * mix(.4, 1.8, pow(aSeed.w, 3.)) * mix(1., .55, outlier);
   vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
   vDisc = position.xy;
   vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);
@@ -73,7 +74,7 @@ void main() {
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
 }`,
-    fragmentShader: `uniform float uOpacity, uCyanBoost;
+    fragmentShader: `uniform float uOpacity, uCyanBoost, uCompact;
 uniform mat4 projectionMatrix;
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 void main() {
@@ -89,9 +90,9 @@ void main() {
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
-  vec3 color = vec3(.07, .075, .08) + vec3(.65, .69, .72) * diffuse + specular * 1.2 + fresnel * .16;
+  vec3 color = vec3(.035, .04, .043) + vec3(.25, .28, .29) * diffuse + specular * .7 + fresnel * .10;
   color = mix(color, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
-  color *= mix(1., .48, smoothstep(8., 22., vDepth));
+  color *= mix(.82, 1.35, uCompact) * mix(1., .65, smoothstep(8., 90., vDepth));
   gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed) * (1. - smoothstep(.82, 1., r2)));
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
@@ -108,7 +109,7 @@ void main() {
   dustGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(dustCount * 3), 3));
   dustGeometry.setAttribute("aSeed", new THREE.BufferAttribute(dustSeeds, 4));
   const dustMaterial = new THREE.ShaderMaterial({
-    uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms, transparent: true, depthWrite: false, blending: THREE.NormalBlending,
     vertexShader: `${declarations}
 varying float vFade, vBlur, vSeed, vCore;
 ${flow}
@@ -121,12 +122,12 @@ void main() {
   vBlur = smoothstep(1.6, 5., defocus) * (.3 + .7 * pow(aSeed.w, 8.));
   float perspective = clamp(7.5 / max(1., -eye.z), .4, 2.);
   gl_PointSize = clamp((1.9 + aSeed.x * 2.4 + vBlur * 18.) * perspective * uPixelRatio, 1., 32.);
-  vFade = uOpacity * mix(.62, .25, vBlur);
+  vFade = uOpacity * mix(.65, .23, vBlur);
   vSeed = aSeed.w;
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
 }`,
-    fragmentShader: `uniform float uCyanBoost;
+    fragmentShader: `uniform float uCyanBoost, uCompact;
 varying float vFade, vBlur, vSeed, vCore;
 void main() {
   vec2 p = (gl_PointCoord - .5) * 2.;
@@ -137,10 +138,10 @@ void main() {
   vec3 light = normalize(vec3(-.3, .8, .7));
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + vec3(0., 0., 1.)))), 20.);
-  vec3 silver = vec3(.055) + vec3(.6, .65, .67) * diffuse + specular * .9;
+  vec3 silver = vec3(.035) + vec3(.23, .27, .28) * diffuse + specular * .55;
   silver = mix(silver, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   float edge = 1. - smoothstep(mix(.62, .05, vBlur), 1., r2);
-  gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed), edge * vFade);
+  gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed) * mix(.85, 1.6, uCompact), edge * vFade);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`,

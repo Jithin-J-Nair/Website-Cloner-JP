@@ -28,10 +28,19 @@ export function terrainHeightAt(x: number, z: number): number {
   const ridgeA = 1 - Math.abs(noise(wx * .14, wz * .14) * 2 - 1);
   const ridgeB = 1 - Math.abs(noise(wx * .34 + 31, wz * .31 - 11) * 2 - 1);
   const ridgeC = 1 - Math.abs(noise(wx * .72 - 7, wz * .72 + 41) * 2 - 1);
-  const escarpment = (Math.pow(ridgeA, 2) - .32) * 2.0 + (Math.pow(ridgeB, 3) - .2) * .8 + ridgeC * .16;
+  const escarpment = (Math.pow(ridgeA, 2) - .32) * 2.0 + (Math.pow(ridgeB, 3) - .2) * .8 + ridgeC * .65;
   const detail = (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (0.28 + flankMask);
-  const micro = Math.sin(x * 1.45 + z * 1.32) * 0.11 * (0.35 + flankMask);
-  return rimRise + escarpment * flankMask + micro + detail - 1.7;
+  // Distinct narrow escarpments, not a single smooth bowl. Erosion runs
+  // downhill in actual mesh relief and shares the floor/stone/figure sampler.
+  const ridge = (center: number, width: number) => Math.pow(Math.max(0, 1 - Math.pow((x - center) / width, 2)), 1.6);
+  const nearRim = 1 - smoothstep(10, 24, z);
+  const left = ridge(-11 + Math.sin(z * .15) * 1.8, 4.3) * (3.6 + noise(z * .5, 2) * 1.8);
+  const right = ridge(12 + Math.sin(z * .14 + 1) * 2, 4.6) * (4.2 + noise(z * .45, 7) * 2.6);
+  const channels = Math.pow(1 - Math.abs(noise(wx * .22, wz * 1.5) * 2 - 1), 3);
+  const erosion = (channels - .38) * .7 * flankMask;
+  const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .13 * flankMask;
+  const edge = 1 - smoothstep(27, 43, Math.hypot(x, z * .8));
+  return (rimRise * .78 + (left + right) * nearRim + escarpment * flankMask + erosion + micro + detail) * edge - 1.7;
 }
 
 /** Original rock microrelief, evaluated on the existing 3D basin. No sampled
@@ -78,19 +87,22 @@ export function createAboutTerrainMaterial() {
         vec2 p = vWorldPos.xz;
         // Follow the basin's downhill direction on steep rock. Isotropic noise
         // previously looked like crumpled paper rather than an eroded surface.
-        vec2 basin = p - vec2(0., 3.5) + vec2(.0001);
-        vec2 channels = vec2(atan(basin.x, basin.y) * 4., length(basin) * .18);
-        vec2 surfaceUV = mix(p, channels, 1. - smoothstep(.45, .9, vNormalW.y));
+        // No atan seam: the former polar-UV derivative discontinuity made a
+        // high-contrast checker/moire patch across the right mountain face.
+        vec2 channels = vec2(p.y * 2.2 + sin(p.x * .48) * .45, p.x * .22);
+        vec2 surfaceUV = mix(p, channels, smoothstep(4.5, 10., abs(p.x)));
         float footprint = max(length(dFdx(surfaceUV)), length(dFdy(surfaceUV)));
-        float grain = 0., relief = 0., frequency = 8., amplitude = .045;
+        float grain = 0., relief = 0., frequency = 4., amplitude = .025;
         for (int i = 0; i < 4; i++) {
           float weight = 1. - smoothstep(.25, .85, footprint * frequency);
           float n = noise(surfaceUV * frequency + float(i) * 17.3) - .5;
           relief += n * amplitude * weight;
           grain += n * weight * amplitude;
-          frequency *= 2.7;
+          frequency *= 2.1;
           amplitude *= .42;
         }
+        // Fine regolith remains quiet; fractured relief belongs to the flanks.
+        relief *= smoothstep(4., 8., abs(p.x));
         // Screen-space surface gradient: no finite-difference resampling and no
         // additional normal texture. Work entirely in world space with the light.
         vec3 n = normalize(vNormalW);
@@ -105,19 +117,20 @@ export function createAboutTerrainMaterial() {
         float specular = pow(max(0., dot(n, normalize(lightDir + eye))), 24.);
         float slope = clamp(vNormalW.y, 0., 1.);
         float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 64.);
-        float crevice = clamp(.72 + grain * 4.5, .35, 1.);
-        vec3 rock = vec3(.008, .010, .012) + vec3(.034, .038, .042) * diffuse * crevice;
-        vec3 sand = vec3(.43, .46, .47) * (.48 + diffuse * .52) * crevice;
+        float fractures = noise(surfaceUV * 1.8) * .55 + noise(surfaceUV * 6.3) * .3 + noise(p * 16.) * .15;
+        float crevice = mix(.94, clamp(.15 + fractures * 1.45 + grain * 2., .24, 1.), smoothstep(4., 8., abs(p.x)));
+        vec3 rock = vec3(.003, .004, .005) + vec3(.034, .039, .042) * diffuse * crevice;
+        vec3 sand = vec3(.26, .30, .31) * (.48 + diffuse * .52) * crevice;
         // Pale regolith belongs to the low, shallow floor, not every slope
         // inside the light pool. This keeps the flanks dark and dimensional.
         float sandCoverage = pool * smoothstep(.55, .94, slope) * (1. - smoothstep(-.2, 2., vWorldPos.y));
         vec3 color = mix(rock, sand, sandCoverage * uValleyBrightness);
-        color += vec3(.11, .13, .14) * specular * (.25 + pool * .75);
+        color += vec3(.045, .055, .06) * specular * (.12 + pool * .88);
         // During the editorial passage retain only the low pool, not a grey
         // full-screen wall behind the type. Team mode is hidden by the owner.
         color *= mix(pow(pool, 2.) * .7, 1., uValleyBrightness);
-        float farFade = 1. - smoothstep(18., 32., length(p));
-        gl_FragColor = vec4(color * farFade, uOpacity);
+        float farFade = 1. - smoothstep(23., 45., length(p));
+        gl_FragColor = vec4(color, uOpacity * farFade);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
