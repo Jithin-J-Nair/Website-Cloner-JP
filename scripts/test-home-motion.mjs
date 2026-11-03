@@ -63,8 +63,32 @@ try {
   const downstreamOutput = ts.transpileModule(fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
   const downstreamFile = path.join(dir,'downstream.mjs');
   fs.writeFileSync(downstreamFile,downstreamOutput);
-  const {createGoalPlaybackPath} = await import(pathToFileURL(downstreamFile));
+  const {createGoalPlaybackPath,createGlassFrameSampler} = await import(pathToFileURL(downstreamFile));
   const playback = createGoalPlaybackPath({emergenceStart:1000,emergenceSpan:1000,tunnelStart:2000,tunnelSpan:4000,imgOutTop:8000,endTop:10000,endHeight:1000,viewportH:1000});
+  const shardPositions = new Float32Array([
+    0,0,0,  1,0,0,  1.5,0,0,  3,0,0,  4,0,0,
+  ]);
+  const shardOrientations = new Float32Array([
+    0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,0,1,
+  ]);
+  const sampledPosition = new Float32Array(4);
+  const sampledOrientation = new Float32Array(4);
+  const sampleGlass = createGlassFrameSampler(shardPositions,shardOrientations,1,5,sampledPosition,sampledOrientation);
+  for(let key=0;key<5;key++) {
+    sampleGlass(key);
+    assert.ok(Math.abs(sampledPosition[0]-shardPositions[key*3])<1e-6,"glass sampler preserves every captured position keyframe");
+    assert.deepEqual(Array.from(sampledOrientation),[0,0,0,1],"quaternion keyframes remain normalized");
+  }
+  let shardPrevious=-Infinity;
+  for(let i=0;i<=4000;i++) {
+    sampleGlass(i/1000);
+    assert.ok(sampledPosition[0]>=shardPrevious-1e-6,"shape-preserving shard interpolation must not reverse or overshoot a monotone axis");
+    shardPrevious=sampledPosition[0];
+  }
+  const velocityAt=(frame,epsilon)=>{sampleGlass(frame+epsilon);const right=sampledPosition[0];sampleGlass(frame-epsilon);const left=sampledPosition[0];return (right-left)/(2*epsilon);};
+  for(const key of [1,2,3]) assert.ok(Math.abs(velocityAt(key,0.001)-velocityAt(key,0.0005))<0.06,"glass velocity remains locally continuous at a captured frame boundary");
+  assert.ok(shardPrevious<=4.00001,"shape-preserving interpolation cannot overshoot the final authored transform");
+
   let priorY = -Infinity;
   for(let i=0;i<=1000;i++) {
     const y=playback(i/1000);

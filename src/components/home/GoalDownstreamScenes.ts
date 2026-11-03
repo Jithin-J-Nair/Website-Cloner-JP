@@ -325,7 +325,13 @@ export function createGoalPlaybackPath(m: {
   };
 }
 
-/** Frame-major captured debris transforms. Reuse outputs and quaternion scratch on every scroll sample. */
+/**
+ * Frame-major captured rigid-body debris transforms. Positions use a shape-preserving
+ * cubic Hermite segment with finite-difference tangents (monotone-clamped per axis);
+ * orientations retain quaternion slerp. This removes the visible velocity kinks from
+ * linear keyframe interpolation without changing the captured solver's key poses.
+ * Outputs and quaternion scratch are reused on every scroll sample.
+ */
 export function createGlassFrameSampler(
   positions: ArrayLike<number>,
   orientations: ArrayLike<number>,
@@ -336,20 +342,54 @@ export function createGlassFrameSampler(
 ): (frame: number) => void {
   const q0 = new THREE.Quaternion();
   const q1 = new THREE.Quaternion();
+  const sample = (frameIndex: number, piece: number, axis: number) =>
+    positions[(frameIndex * pieceCount + piece) * 3 + axis] ?? 0;
+
+  const clampTangent = (tangent: number, delta: number) => {
+    if (Math.abs(delta) < 1e-8 || tangent * delta <= 0) return 0;
+    const limit = Math.abs(delta) * 3;
+    return Math.sign(delta) * Math.min(Math.abs(tangent), limit);
+  };
+
   return (frame: number) => {
+    if (pieceCount <= 0 || frameCount <= 0) return;
     const f = THREE.MathUtils.clamp(frame, 0, frameCount - 1);
     const from = Math.floor(f);
     const to = Math.min(frameCount - 1, from + 1);
     const alpha = f - from;
+    const alpha2 = alpha * alpha;
+    const alpha3 = alpha2 * alpha;
+    const h00 = 2 * alpha3 - 3 * alpha2 + 1;
+    const h10 = alpha3 - 2 * alpha2 + alpha;
+    const h01 = -2 * alpha3 + 3 * alpha2;
+    const h11 = alpha3 - alpha2;
+
     for (let piece = 0; piece < pieceCount; piece++) {
       const a = from * pieceCount + piece;
       const b = to * pieceCount + piece;
-      for (let c = 0; c < 3; c++) {
-        outputPositions[piece * 4 + c] = THREE.MathUtils.lerp(positions[a * 3 + c], positions[b * 3 + c], alpha);
+      for (let axis = 0; axis < 3; axis++) {
+        const p0 = sample(from, piece, axis);
+        const p1 = sample(to, piece, axis);
+        const delta = p1 - p0;
+        if (from === to || Math.abs(delta) < 1e-8) {
+          outputPositions[piece * 4 + axis] = p0;
+          continue;
+        }
+
+        const previous = from > 0 ? sample(from - 1, piece, axis) : p0;
+        const next = to < frameCount - 1 ? sample(to + 1, piece, axis) : p1;
+        const tangent0 = from === 0 ? delta : (p1 - previous) * 0.5;
+        const tangent1 = to >= frameCount - 1 ? delta : (next - p0) * 0.5;
+        const m0 = clampTangent(tangent0, delta);
+        const m1 = clampTangent(tangent1, delta);
+
+        outputPositions[piece * 4 + axis] =
+          h00 * p0 + h10 * m0 + h01 * p1 + h11 * m1;
       }
+      outputPositions[piece * 4 + 3] = 1;
       q0.fromArray(orientations, a * 4).normalize();
       q1.fromArray(orientations, b * 4).normalize();
-      q0.slerp(q1, alpha).toArray(outputOrientations, piece * 4);
+      q0.slerp(q1, alpha).normalize().toArray(outputOrientations, piece * 4);
     }
   };
 }
