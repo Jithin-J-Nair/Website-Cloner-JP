@@ -1,7 +1,7 @@
 # Homepage experience pass — 2026-11-03
 
 ## Implemented in the homepage branch
-- Reframed the eleven 3D hollow connectors into a central desktop cluster with overlapping cobalt, white and black pieces; increased environmental intensity, lowered material roughness and restored a strong clearcoat reflection.
+- Reframed the eleven 3D hollow connectors into a tighter central desktop cluster (80% of the previous horizontal anchor spread and 78% of the vertical spread), keeping cobalt at the focal centre with overlapping white/black depth layers; increased environmental intensity, lowered material roughness and restored a strong clearcoat reflection.
 - Reworked pointer displacement and spring restitution so the cluster responds to cursor movement and returns directly to its central rest formation through one critically damped spring (no secondary transform lerp). The renderer uses a low-rate idle float only while the preloader/visibility state allows it; otherwise the static pose sleeps.
 - Added a scroll-drawn ribbon path with a moving highlight/runner and reverse-scroll retraction, plus a smooth hero-to-reel stage handoff.
 - Extended the downstream astronaut sequence with a full vortex orbit: lateral/vertical spiral, body banking, faster inward shrink, tighter inverted tunnel twist, and pulsing pink vortex/bloom.

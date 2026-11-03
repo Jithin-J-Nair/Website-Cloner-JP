@@ -59,13 +59,15 @@ interface HeroPieceSpec {
  * These are clean-room rest poses, not recovered source solver coordinates.
  * Every pointer impulse is resolved back to this cluster through critically-damped springs.
  */
+// Compact desktop envelope: keep the mass gathered around the blue focal piece,
+ // with white/black parts overlapping as a suspended pile rather than edge-to-edge scatter.
 const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
   {
     id: "hero-blue-center",
     kind: "blue",
     isHero: true,
     scale: 1.03,
-    anchorDesktop: [0.10, -0.10, 0.92],
+    anchorDesktop: [0.080, -0.078, 0.92],
     anchorMobile: [0.06, -0.02, 0.45],
     euler: [0.34, 0.46, 0.52],
     driftPhase: 0.0,
@@ -78,7 +80,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "fg-white-left",
     kind: "white",
     scale: 1.06,
-    anchorDesktop: [-1.85, 1.25, 0.98],
+    anchorDesktop: [-1.480, 0.975, 0.98],
     anchorMobile: [-0.96, -0.34, 0.95],
     euler: [0.44, 0.56, -0.62],
     driftPhase: 1.15,
@@ -91,7 +93,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "fg-black-right",
     kind: "black",
     scale: 1.08,
-    anchorDesktop: [1.72, 1.10, -0.35],
+    anchorDesktop: [1.376, 0.858, -0.35],
     anchorMobile: [0.92, -0.42, 1.08],
     euler: [0.3, -0.46, 0.72],
     driftPhase: 2.3,
@@ -104,7 +106,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "fg-black-bottom",
     kind: "black",
     scale: 1.1,
-    anchorDesktop: [0.50, -1.72, 1.52],
+    anchorDesktop: [0.400, -1.342, 1.52],
     anchorMobile: [-0.82, -2.02, 1.38],
     euler: [-0.36, 0.32, 0.24],
     driftPhase: 3.4,
@@ -117,7 +119,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "top-white-center",
     kind: "white",
     scale: 1.04,
-    anchorDesktop: [0.05, 2.15, -0.40],
+    anchorDesktop: [0.040, 1.677, -0.40],
     anchorMobile: [0.58, 2.06, 0.42],
     euler: [0.64, -0.35, 0.58],
     driftPhase: 4.1,
@@ -130,7 +132,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "upper-white-right",
     kind: "white",
     scale: 1.05,
-    anchorDesktop: [3.15, 0.32, -0.12],
+    anchorDesktop: [2.520, 0.250, -0.12],
     anchorMobile: [1.18, 0.9, -0.12],
     euler: [-0.38, -0.52, 0.68],
     driftPhase: 5.05,
@@ -143,7 +145,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "top-blue-left",
     kind: "blue",
     scale: 1.06,
-    anchorDesktop: [-2.42, 0.10, 0.72],
+    anchorDesktop: [-1.936, 0.078, 0.72],
     anchorMobile: [-0.76, 2.16, -0.55],
     euler: [0.18, 0.28, 0.08],
     driftPhase: 0.75,
@@ -156,7 +158,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "bottom-blue-right",
     kind: "blue",
     scale: 1.06,
-    anchorDesktop: [2.05, -1.48, 0.42],
+    anchorDesktop: [1.640, -1.154, 0.42],
     anchorMobile: [0.34, -1.78, 0.52],
     euler: [-0.46, 0.38, -0.54],
     driftPhase: 1.9,
@@ -169,7 +171,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "bottom-white-left-crop",
     kind: "white",
     scale: 1.08,
-    anchorDesktop: [-1.95, -1.75, 0.80],
+    anchorDesktop: [-1.560, -1.365, 0.80],
     anchorMobile: [-0.18, -2.62, -0.25],
     euler: [0.32, 0.44, -0.35],
     driftPhase: 2.85,
@@ -182,7 +184,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "bg-white-left",
     kind: "white",
     scale: 1.02,
-    anchorDesktop: [-3.35, -0.65, -0.75],
+    anchorDesktop: [-2.680, -0.507, -0.75],
     anchorMobile: [-1.12, -1.28, -0.62],
     euler: [-0.52, 0.62, 0.42],
     driftPhase: 3.95,
@@ -195,7 +197,7 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     id: "bg-black-right",
     kind: "black",
     scale: 1.04,
-    anchorDesktop: [3.15, -1.58, -0.92],
+    anchorDesktop: [2.520, -1.232, -0.92],
     anchorMobile: [0.42, 0.72, -0.92],
     euler: [0.48, -0.58, 0.36],
     driftPhase: 5.65,
@@ -967,6 +969,7 @@ export function HeroCrossesStage() {
       aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to cycle studio palette"
       data-color-index={colorIdx}
       data-cluster-mode="centered-magnetic"
+      data-cluster-envelope="desktop-80x78"
       data-accent-color={accentHex}
       data-webgl-status={webglSupported ? shaderStatus : "fallback"}
       data-pointer-interactions={pointerHits}
