@@ -59,7 +59,7 @@ try {
       assert.equal(atPeak.text, 'LUSION');
       assert.ok(atPeak.pathLength > 1000, 'the custom sweep path must be a genuine long curve');
       const probeAtPeak = await page.evaluate(() => window.__aboutProbe?.());
-      await page.screenshot({ path: `${out}/${width}-peak.png', fullPage: false, timeout: 120000 });
+      await page.screenshot({ path: `${out}/${width}-peak.png`, fullPage: false, timeout: 120000 });
 
       await seek(end);
       const atExit = await inspect();
