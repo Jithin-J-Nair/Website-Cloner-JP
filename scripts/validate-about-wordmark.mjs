@@ -9,7 +9,7 @@ fs.mkdirSync(out, { recursive: true });
 
 const browser = await launchMotionBrowser();
 try {
-  for (const [width, height] of [[1440, 900], [390, 844]]) {
+  for (const [width, height] of [[1536, 810], [1440, 900], [390, 844]]) {
     const context = await browser.newContext({
       viewport: { width, height },
       isMobile: width === 390,
