@@ -30,7 +30,7 @@ try{
     // Verify that the curved valley wordmark is actually wired to the same
     // scroll playhead, disappears at its authored exit, and re-enters on reverse.
     const sweep=page.locator('[data-about-wordmark-sweep]');assert.equal(await sweep.count(),1);
-    const peak=width===390?2.15:1.25,end=width===390?3.35:2.35;
+    const peak=width===390?2.45:1.25,end=width===390?3.45:2.35;
     await seek(unit*peak);
     const atPeak=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility,transform:el.style.transform,text:el.querySelector('textPath')?.textContent?.trim()}));
     assert.ok(atPeak.opacity>.99);assert.equal(atPeak.visibility,'visible');assert.equal(atPeak.text,'LUSION');

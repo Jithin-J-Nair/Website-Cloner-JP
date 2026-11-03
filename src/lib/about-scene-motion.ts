@@ -14,10 +14,10 @@ const ease = (a: number, b: number, u: number) => {
  */
 export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
   const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
-  const start = mobile ? 1.75 : 0.85;
-  const peak = mobile ? 2.15 : 1.25;
-  const holdEnd = mobile ? 2.75 : 1.85;
-  const end = mobile ? 3.35 : 2.35;
+  const start = mobile ? 1.95 : 0.85;
+  const peak = mobile ? 2.45 : 1.25;
+  const holdEnd = mobile ? 2.9 : 1.85;
+  const end = mobile ? 3.45 : 2.35;
   const enter = ease(start, peak, u);
   const exit = 1 - ease(holdEnd, end, u);
   const travel = ease(start, end, u);

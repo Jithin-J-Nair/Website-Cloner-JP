@@ -44,8 +44,8 @@ try {
   for(const {u,pose:p} of [...samples].reverse())assert.deepEqual(sweep(u,mobile),p,'sweep reverse/seek is stateless');
   assert.equal(sweep(-1,mobile).opacity,0);
   assert.equal(sweep(NaN,mobile).opacity,0);
-  assert.ok(sweep(mobile?2.15:1.25,mobile).opacity>.99,'sweep reaches full opacity');
-  assert.equal(sweep(mobile?3.35:2.35,mobile).opacity,0,'sweep exits');
+  assert.ok(sweep(mobile?2.45:1.25,mobile).opacity>.99,'sweep reaches full opacity');
+  assert.equal(sweep(mobile?3.45:2.35,mobile).opacity,0,'sweep exits');
  }
  console.log('PASS wordmark sweep: deterministic, bounded, continuous, reversible and scroll-seek safe. Authored timing is not represented as measured source timing.');
  console.log('PASS 22,502 camera samples: finite, deterministic, reversible, bounded per-step travel, C1 joins, distinct near/wide framing and retained editorial/team endpoints. Original timing, not recovered source curves.');

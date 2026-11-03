@@ -28,8 +28,8 @@ try {
       assert.ok(response?.ok(), 'About production route must respond successfully');
       await page.waitForFunction(() => window.__aboutProbe?.().explorer === 'ready', null, { timeout: 90000 });
       const unit = width === 390 ? height : width;
-      const peak = width === 390 ? 2.15 : 1.25;
-      const end = width === 390 ? 3.35 : 2.35;
+      const peak = width === 390 ? 2.45 : 1.25;
+      const end = width === 390 ? 3.45 : 2.35;
       const mark = page.locator('[data-about-wordmark-sweep]');
       assert.equal(await mark.count(), 1, 'one semantic-hidden curved wordmark layer must be mounted');
 

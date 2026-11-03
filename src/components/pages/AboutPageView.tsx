@@ -736,7 +736,7 @@ function AboutWhoExperience({
       // -----------------------------------------------------------------------
       // A. Monumental Double-Stroke 'LUSION' Wordmark ('about-01' & 'about-02', sweeps left across '1.85..3.1')
       if (heroWordmarkRef.current) {
-        const wordOut = 1 - smoothstep(isMobile ? 2.05 : .45, isMobile ? 2.65 : 1.1, u);
+        const wordOut = 1 - smoothstep(isMobile ? 1.65 : .45, isMobile ? 2.15 : 1.1, u);
         if (wordOut > 0.005) {
           const slideX = -smoothstep(1.75, 3.15, u) * 65;
           heroWordmarkRef.current.style.opacity = String(wordOut);
@@ -764,7 +764,7 @@ function AboutWhoExperience({
 
       // B. 'WE ARE A CREATIVE PRODUCTION STUDIO' Manifesto Band ('u = 2.05 .. 4.35')
       if (manifestoOverlayRef.current) {
-        const manIn = smoothstep(isMobile ? 2.05 : 1.1, isMobile ? 2.65 : 1.6, u);
+        const manIn = smoothstep(isMobile ? 1.95 : 1.1, isMobile ? 2.45 : 1.6, u);
         const manOut = 1 - smoothstep(3.65, 4.35, u);
         const manVis = manIn * manOut;
         manifestoOverlayRef.current.style.opacity = String(manVis);
