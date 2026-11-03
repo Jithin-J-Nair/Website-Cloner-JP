@@ -11,7 +11,7 @@ try {
   const file = path.join(dir,'motion.mjs');
   fs.writeFileSync(file,output);
   const {advanceCinematicProgress,acceleratedFall,stepMotionSpring,homeRenderDpr,cinematicRenderDpr,blueFlightDistance,UHD_PIXEL_BUDGET,GOAL_CINEMATIC_SECONDS,motionEase} = await import(pathToFileURL(file));
-  assert.ok(GOAL_CINEMATIC_SECONDS<26 && GOAL_CINEMATIC_SECONDS>22);
+  assert.equal(GOAL_CINEMATIC_SECONDS,20,'the guided journey spans exactly two complete score loops');
   for (const dt of [1/120,1/60,1/30,.25,.5,1,2]) {
     let progress=0,elapsed=0;
     while(elapsed<GOAL_CINEMATIC_SECONDS-1e-9) {
@@ -59,6 +59,20 @@ try {
   assert.equal(cinematicRenderDpr(3840,2160,2,true,true),1);
   assert.ok(cinematicRenderDpr(1440,900,1,true,false)<1);
   assert.ok(blueFlightDistance(1,.5)>blueFlightDistance(1,0),'corridor keeps moving during glass approach');
+
+  const downstreamOutput = ts.transpileModule(fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+  const downstreamFile = path.join(dir,'downstream.mjs');
+  fs.writeFileSync(downstreamFile,downstreamOutput);
+  const {createGoalPlaybackPath} = await import(pathToFileURL(downstreamFile));
+  const playback = createGoalPlaybackPath({emergenceStart:1000,emergenceSpan:1000,tunnelStart:2000,tunnelSpan:4000,imgOutTop:8000,endTop:10000,endHeight:1000,viewportH:1000});
+  let priorY = -Infinity;
+  for(let i=0;i<=1000;i++) {
+    const y=playback(i/1000);
+    assert.ok(y>=priorY-1e-6,'cinematic document path must remain monotone');
+    priorY=y;
+  }
+  const drop = 8000 - 550, span = 10000 - drop;
+  assert.ok(Math.abs((playback(.866)-playback(.83))/span-.42)<1e-6,'glass separation must occupy the compact one-beat segment');
   let previous=-1;
   for(let i=0;i<=200;i++) {
     const phase=i/100;

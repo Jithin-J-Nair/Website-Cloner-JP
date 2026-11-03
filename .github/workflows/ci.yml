@@ -23,6 +23,9 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Install the requested glassmorphism skill for Claude Code
+        run: npx -y skills add compozy/compozy --skill glassmorphism --agent claude-code --copy
+
       - name: Install dependencies
         run: npm ci
 
@@ -34,6 +37,9 @@ jobs:
 
       - name: Deterministic journey audio tests
         run: node scripts/test-journey-audio.mjs
+
+      - name: Homepage motion and score-timing tests
+        run: node scripts/test-home-motion.mjs
 
       - name: About scene-motion tests
         run: node scripts/test-about-scene-motion.mjs
@@ -52,6 +58,29 @@ jobs:
           done
           cat /tmp/website-cloner-jp-next.log
           exit 1
+
+      - name: Validate homepage cinematic at desktop
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          HOME_VIEWPORT_WIDTH: '1440'
+          HOME_HEIGHT: '900'
+        run: node scripts/validate-home-motion.mjs
+
+      - name: Validate homepage cinematic at touch mobile
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          HOME_VIEWPORT_WIDTH: '390'
+          HOME_HEIGHT: '844'
+          HOME_TOUCH: '1'
+        run: node scripts/validate-home-motion.mjs
+
+      - name: Upload homepage motion evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-motion-render-evidence
+          path: temp/home-motion-*/
+          if-no-files-found: ignore
 
       - name: Validate About wordmark in production browser
         env:

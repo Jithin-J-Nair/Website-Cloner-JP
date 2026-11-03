@@ -1225,13 +1225,13 @@ export function GoalTunnelSection() {
       const outBaseY =
         tShatter <= 0.001
           ? lerp(H * 0.5, H * 0.515, tOutPull)
-          : lerp(H * 0.515, -m.imgOutHeight * 0.85, smoothstep(0.85, 0.99, tShatter));
+          : lerp(H * 0.515, -m.imgOutHeight * 0.85, smoothstep(0.80, 0.94, tShatter));
 
       if (portalMaskActive) {
         backdropEl.style.opacity = "0";
       } else if (tOutPull > 0.02 && tWait <= 0.001) {
         // Deep indigo surroundings keep the break inside the same blue environment.
-        const blueWall = smoothstep(0.14, 0.55, tOutPull) * (1 - smoothstep(0.84, 0.96, tShatter));
+        const blueWall = smoothstep(0.14, 0.55, tOutPull) * (1 - smoothstep(0.78, 0.94, tShatter));
         const rCh = Math.round(10 * blueWall);
         const gCh = Math.round(16 * blueWall);
         const bCh = Math.round(74 * blueWall);
@@ -1243,13 +1243,13 @@ export function GoalTunnelSection() {
         backdropEl.style.background = "#000000";
       }
 
-      if (tOutPull > 0.02 && tShatter < 0.97 && tWait <= 0.001) {
+      if (tOutPull > 0.02 && tShatter < 0.94 && tWait <= 0.001) {
         const monScale = lerp(2.15, 1.0, smoothstep(0.0, 0.82, tOutPull));
         const monRot = lerp(-0.22, 0.0, smoothstep(0.0, 0.68, tOutPull));
         monitorBezelEl.style.display = "block";
         monitorBezelEl.style.width = `${m.imgOutWidth}px`;
         monitorBezelEl.style.height = `${m.imgOutHeight}px`;
-        monitorBezelEl.style.opacity = String(1 - smoothstep(0.86, 0.97, tShatter));
+        monitorBezelEl.style.opacity = String(1 - smoothstep(0.74, 0.91, tShatter));
         monitorBezelEl.style.transform = `translate3d(${outCenterX - m.imgOutWidth * 0.5}px, ${
           outBaseY - m.imgOutHeight * 0.5
         }px, 0) rotate(${monRot}rad) scale(${monScale})`;
@@ -1257,8 +1257,8 @@ export function GoalTunnelSection() {
         monitorBezelEl.style.display = "none";
       }
 
-      const crackProgress = smoothstep(0.12, 0.34, tShatter);
-      monitorBezelEl.style.setProperty("--goal-crack-opacity", String(crackProgress * (1 - smoothstep(0.52, 0.72, tShatter))));
+      const crackProgress = smoothstep(0.10, 0.25, tShatter);
+      monitorBezelEl.style.setProperty("--goal-crack-opacity", String(crackProgress * (1 - smoothstep(0.42, 0.60, tShatter))));
       monitorBezelEl.style.setProperty("--goal-crack-dash", String(1 - crackProgress));
 
       // -----------------------------------------------------------------------
@@ -1371,20 +1371,21 @@ export function GoalTunnelSection() {
       if (trussSystem.group.visible) {
         const uPhase = clamp01((tTunnel - 0.10) / 0.68);
         const twistAmt = reducedMotion
-          ? smoothstep(0.46, 0.78, tTunnel) * 0.14
-          : smoothstep(0.46, 0.62, tTunnel) * 0.092 + smoothstep(0.64, 0.79, tTunnel) * 0.145;
-        const vortexPinch = smoothstep(0.67, 0.76, tTunnel);
+          ? smoothstep(0.44, 0.77, tTunnel) * 0.18
+          : smoothstep(0.44, 0.61, tTunnel) * 0.13 + smoothstep(0.62, 0.78, tTunnel) * 0.22;
+        const vortexPinch = smoothstep(0.64, 0.77, tTunnel);
         trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis;
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
         trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
         trussSystem.tunnelMaterial.uniforms.uVortexPinch.value = vortexPinch;
         trussSystem.tunnelMaterial.uniforms.uTravelZ.value = acceleratedFall(tTunnel) * 44;
-        const pinkVortexGlow = smoothstep(0.69, 0.755, tTunnel);
-        trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.66, 0.71, tTunnel);
+        const pinkVortexGlow = smoothstep(0.66, 0.735, tTunnel);
+        const vortexPulse = 0.90 + 0.10 * Math.sin(tTunnel * Math.PI * 18);
+        trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.64, 0.70, tTunnel);
         trussSystem.vortexCoreMat.uniforms.uIntensity.value =
-          pinkVortexGlow * blackVis;
+          pinkVortexGlow * blackVis * vortexPulse;
         if (bloomPass) {
-          bloomPass.strength = lerp(0.16, 0.34, smoothstep(0.68, 0.76, tTunnel));
+          bloomPass.strength = lerp(0.16, 0.40, smoothstep(0.66, 0.75, tTunnel));
         }
       } else if (bloomPass) {
         bloomPass.strength = 0.16;
@@ -1436,13 +1437,15 @@ export function GoalTunnelSection() {
 
       // 3. Authentic Plate-Glass Shatter Burst (`Frame 16`)
       if (shardsMesh) {
-        const shardVis = smoothstep(0.30, 0.40, tShatter) * (1 - smoothstep(0.85, 0.97, tShatter)) * (tWait > 0.001 ? 0 : 1);
+        const shardVis = smoothstep(0.30, 0.34, tShatter) * (1 - smoothstep(0.78, 0.92, tShatter)) * (tWait > 0.001 ? 0 : 1);
         shardsMesh.visible = shardVis > 0.005;
         if (shardsMesh.visible) {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
-          
-          const burst = acceleratedFall(clamp01((tShatter-0.32)/0.52));
+
+          // One-beat break: the captured frame sequence reaches full separation quickly,
+          // then the transparent fragments clear the monitor rather than lingering.
+          const burst = acceleratedFall(clamp01((tShatter-0.32)/0.42));
           const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
           sampleFrame(clamp01(burst) * (framesPerShard - 1));
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
@@ -1529,7 +1532,7 @@ export function GoalTunnelSection() {
           const intoCurl = smoothstep(0.08, 0.16, tTunnel);
           const midInvert =
             smoothstep(0.24, 0.31, tTunnel) * (1 - smoothstep(0.34, 0.40, tTunnel));
-          const vortexShrink = smoothstep(0.66, 0.78, tTunnel) * (1 - inBlueDive);
+          const vortexShrink = smoothstep(0.64, 0.77, tTunnel) * (1 - inBlueDive);
 
           const trussPose = blendSuitPose(
             blendSuitPose(SUIT_POSE_TUMBLE_SPREAD, SUIT_POSE_TUMBLE_CURL, intoCurl),
@@ -1551,9 +1554,17 @@ export function GoalTunnelSection() {
           az -= descent * 1.05;
           const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
           const trussRz = intoCurl * (-1.15 - tTunnel * 3.1);
-          rx = lerp(kf.astroRot[0] - pyParallax * 0.045, lerp(0.18, 0.24, inBlueDive), entry);
-          ry = lerp(kf.astroRot[1] + pxParallax * 0.065, lerp(trussRy, Math.PI * 2 + 0.14, inBlueDive), entry);
-          rz = lerp(kf.astroRot[2], lerp(trussRz, -Math.PI * 2 - 0.28, inBlueDive), entry);
+          const vortexSpiral = smoothstep(0.42, 0.78, tTunnel) * (1 - inBlueDive);
+          const vortexAngle = ((tTunnel - 0.42) / 0.36) * Math.PI * 2.0;
+          const vortexRadius = lerp(0.92, 0.035, smoothstep(0.42, 0.78, tTunnel));
+          ax += Math.cos(vortexAngle) * vortexRadius * vortexSpiral;
+          ay += Math.sin(vortexAngle) * vortexRadius * 0.62 * vortexSpiral;
+          rx = lerp(kf.astroRot[0] - pyParallax * 0.045, lerp(0.18, 0.24, inBlueDive), entry)
+            + Math.sin(vortexAngle * 0.5) * 0.24 * vortexSpiral;
+          ry = lerp(kf.astroRot[1] + pxParallax * 0.065, lerp(trussRy, Math.PI * 2 + 0.14, inBlueDive), entry)
+            + vortexSpiral * 0.34;
+          rz = lerp(kf.astroRot[2], lerp(trussRz, -Math.PI * 2 - 0.28, inBlueDive), entry)
+            - vortexSpiral * Math.PI * 0.78;
           aScale = lerp(kf.astroScale, lerp(
             lerp(0.62, 0.58, intoCurl) * (1 - vortexShrink * 0.60),
             0.38,
@@ -1564,15 +1575,15 @@ export function GoalTunnelSection() {
           // `Frame 16` (`16-monitor-glass-shatter`) -> `Frame 17` (`17-astronaut-stickers-wait`):
           // Astronaut bursts forward through the Studio Display screen with BOTH ARMS RAISED
           // (`SUIT_POSE_SHATTER_BREAK`) and settles smoothly into visor salute (`SUIT_POSE_VISOR_SALUTE`)!
-          const burst = smoothstep(0.14, 0.62, tShatter);
-          const settleSalute = smoothstep(0.84, 1.0, tShatter);
+          const burst = smoothstep(0.12, 0.38, tShatter);
+          const settleSalute = smoothstep(0.70, 0.90, tShatter);
           jointPose = blendSuitPose(
             blendSuitPose(SUIT_POSE_CORRIDOR_FLY, SUIT_POSE_SHATTER_BREAK, burst),
             SUIT_POSE_VISOR_SALUTE,
             settleSalute
           );
           ax = lerp(0.04, pxParallax * 0.05, burst);
-          const gravityDrop = acceleratedFall(clamp01((tShatter-0.14)/0.70));
+          const gravityDrop = acceleratedFall(clamp01((tShatter-0.12)/0.58));
           ay = lerp(-0.02,m.isMobile ? -0.18 : -0.32,gravityDrop);
           az = lerp(-3.75, m.isMobile ? 0.68 : 1.72, burst);
           az = lerp(az, m.isMobile ? 1.24 : 2.66, settleSalute);
@@ -1635,7 +1646,7 @@ export function GoalTunnelSection() {
         const bakedFrame = tWait > 0
           ? lerp(139, 287, tWait)
           : tShatter > 0
-            ? lerp(89, 139, tShatter)
+            ? lerp(89, 139, smoothstep(0.0, 0.74, tShatter))
             : 89 * clamp01((sy - m.tunnelStart) / Math.max(1, shatterStart - m.tunnelStart));
         mainAstro.sampleBakedPose?.(bakedFrame, inEmergencePhase ? 0 : smoothstep(0, 0.08, tTunnel));
         if (window.__goalAstronautTelemetry) {
@@ -1652,7 +1663,7 @@ export function GoalTunnelSection() {
           const blue = smoothstep(0.80,0.86,tTunnel);
           if (blue > 0) {
             const flightFrame = lerp(0,36,smoothstep(0.815,1,tTunnel));
-            const frame = lerp(flightFrame,99,smoothstep(0,0.84,tShatter));
+            const frame = lerp(flightFrame,99,smoothstep(0,0.74,tShatter));
             mainAstro.sampleCapturedRoot("out",frame,_outPosition,_outOrientation);
             _rootOrientation.slerp(_outOrientation,blue);
             _rootPosition.lerp(_outPosition,blue);
@@ -1701,7 +1712,7 @@ export function GoalTunnelSection() {
           cl.root.visible = clonesActive;
           if (clonesActive) {
             cl.sampleBakedPose?.(bakedFrame, 1);
-            const spiralA = tTunnel * 8.5 + c * 1.57;
+            const spiralA = tTunnel * 18.0 + c * 2.094;
             cl.root.position.set(
               Math.cos(spiralA) * (1.05 + c * 0.24),
               Math.sin(spiralA) * (0.78 + c * 0.18),

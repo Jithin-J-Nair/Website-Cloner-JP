@@ -45,6 +45,8 @@ try {
  const hero=page.locator('#home-hero-visual-container');
  await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container')?.dataset.motionState==='settled',null,{timeout:90000});
  const initial=await hero.evaluate(el=>({...el.dataset}));
+ assert.equal(initial.clusterMode,'centered-magnetic','homepage hero uses the centered magnetic cluster');
+ await page.screenshot({path:out+'/hero-cluster.png',timeout:90000});
  if(!reduced && !touch){
   const box=await hero.boundingBox();
   // The source-led desktop arrangement has an intentionally empty centre.
@@ -58,7 +60,9 @@ try {
   const settled=await hero.evaluate(el=>({...el.dataset}));
   assert.equal(Number(settled.offsetEnergy),0);
   await page.waitForTimeout(650);
-  assert.equal(await hero.getAttribute('data-render-count'),settled.renderCount,'settled hero must not keep submitting 3D frames');
+  const idleFrames = Number(await hero.getAttribute('data-render-count')) - Number(settled.renderCount);
+  assert.ok(idleFrames >= 1 && idleFrames <= 24, `settled hero keeps only a low-rate float (frames=${idleFrames})`);
+  report.hero.idleFrames = idleFrames;
   // Rapid direction changes followed by cancellation must not leave a displaced connector.
   for (const x of [.2,.8,.3,.7,.49]) await page.mouse.move(box.x+box.width*x,box.y+box.height*.56);
   await hero.dispatchEvent('pointercancel',{pointerType:'mouse'});
@@ -88,6 +92,15 @@ try {
   const top=el=>{let y=0;for(let n=el;n;n=n.offsetParent)y+=n.offsetTop;return y};
   return {reel:top(document.getElementById('home-reel-container')),featured:top(document.getElementById('home-featured'))};
  });
+  // The reel ribbon draws in with the intro and retracts on reverse scroll.
+  const ribbonSelector = width < 813 ? '#home-reel-ribbon-path-mobile' : '#home-reel-ribbon-path';
+  const ribbonStates = [];
+  for (const y of [layout.reel-height*.94, layout.reel-height*.12]) {
+    await seek(y);
+    ribbonStates.push(await page.locator(ribbonSelector).evaluate(el=>el.style.strokeDashoffset));
+  }
+  assert.notEqual(ribbonStates[0],ribbonStates[1],'the cobalt reel ribbon draws as the reel enters');
+  report.ribbon = ribbonStates;
  const seek=async y=>{
   const target=Math.round(y);
   await page.evaluate(y=>window.__lusionInspector.scrollManager.scrollToPixel(y,true),target);

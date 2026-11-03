@@ -296,12 +296,13 @@ export function createGoalPlaybackPath(m: {
 }): (progress: number) => number {
   const drop = m.imgOutTop - m.viewportH * 0.55;
   const span = m.endTop - drop;
-  const times = [0, 0.16, 0.23, 0.47, 0.61, 0.78, 0.83, 0.89, 0.95, 1];
+  const times = [0, 0.16, 0.23, 0.47, 0.61, 0.78, 0.83, 0.866, 0.91, 0.95, 1];
   const positions = [
     m.emergenceStart + m.emergenceSpan * 0.308, m.tunnelStart,
     m.tunnelStart + m.tunnelSpan * 0.135, m.tunnelStart + m.tunnelSpan * 0.66,
     m.tunnelStart + m.tunnelSpan * 0.85, drop,
-    drop + span * 0.30, drop + span * 0.72, m.endTop, m.endTop + m.endHeight * 0.42,
+    drop + span * 0.30, drop + span * 0.72, drop + span * 0.94,
+    m.endTop, m.endTop + m.endHeight * 0.42,
   ];
   const slopes = times.slice(1).map((t, i) => (positions[i + 1] - positions[i]) / (t - times[i]));
   const tangents = positions.map((_, i) => {

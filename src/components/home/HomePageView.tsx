@@ -94,6 +94,7 @@ export function HomePageView() {
 
   const heroSectionRef = useRef<HTMLElement>(null);
   const heroHeadingRef = useRef<HTMLHeadingElement>(null);
+  const heroStageRef = useRef<HTMLDivElement>(null);
   const heroCueRef = useRef<HTMLDivElement>(null);
   const featuredSectionRef = useRef<HTMLElement>(null);
   const featuredTitleRef = useRef<HTMLHeadingElement>(null);
@@ -103,6 +104,10 @@ export function HomePageView() {
   const reelViewportRef = useRef<HTMLDivElement>(null);
   const reelThumbCardRef = useRef<HTMLDivElement>(null);
   const reelTitleLine1Ref = useRef<HTMLSpanElement>(null);
+  const reelRibbonDesktopPathRef = useRef<SVGPathElement>(null);
+  const reelRibbonMobilePathRef = useRef<SVGPathElement>(null);
+  const reelRibbonDesktopRunnerRef = useRef<SVGCircleElement>(null);
+  const reelRibbonMobileRunnerRef = useRef<SVGCircleElement>(null);
   const reelOverlayTitleRef = useRef<HTMLDivElement>(null);
   const reelWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const reelWords = React.useMemo(() => LUSION_HOME.reel.description.split(" "), []);
@@ -141,6 +146,7 @@ export function HomePageView() {
     let previousTime = performance.now();
     let skew = 0;
     let introTop = 0, reelTop = 0, featuredTop = 0, heroHeight = 1;
+    let desktopRibbonLength = 0, mobileRibbonLength = 0;
     const cards = Array.from(featuredSectionRef.current?.querySelectorAll<HTMLElement>(".project-item") ?? []).map((el) => ({
       el, stage: el.querySelector<HTMLElement>(".project-item-main"),
       image: el.querySelector<HTMLImageElement>("img.project-item-image"),
@@ -164,6 +170,8 @@ export function HomePageView() {
         introTop = naturalTop(reelSectionRef.current);
         reelTop = naturalTop(reelContainerRef.current);
         featuredTop = naturalTop(featuredSectionRef.current);
+        desktopRibbonLength = reelRibbonDesktopPathRef.current?.getTotalLength() ?? 0;
+        mobileRibbonLength = reelRibbonMobilePathRef.current?.getTotalLength() ?? 0;
         for (const card of cards) {
           card.top = naturalTop(card.el);
           card.height = card.el.offsetHeight;
@@ -183,7 +191,26 @@ export function HomePageView() {
       const heroProgress = reducedMotion ? 0 : Math.max(0, Math.min(1, y / heroHeight));
       if (heroCueRef.current) heroCueRef.current.style.opacity = (1 - motionEase((heroProgress - .06) / .54)).toFixed(4);
       if (heroHeadingRef.current) heroHeadingRef.current.style.transform = `translate3d(0,${(heroProgress * 24).toFixed(2)}px,0)`;
+      if (heroStageRef.current) {
+        const exit = reducedMotion ? 0 : motionEase((heroProgress - .02) / .98);
+        heroStageRef.current.style.transform = `translate3d(0,${(-exit * 28).toFixed(2)}px,0) scale(${(1 - exit * 0.045).toFixed(5)})`;
+        heroStageRef.current.style.opacity = (1 - exit * 0.68).toFixed(4);
+      }
       const intro = reducedMotion ? 1 : motionEase((vh*0.76-(introTop-y))/(vh*0.7));
+      const ribbonProgress = reducedMotion ? 1 : motionEase((intro - 0.04) / 0.88);
+      for (const path of [reelRibbonDesktopPathRef.current,reelRibbonMobilePathRef.current]) {
+        if (path) path.style.strokeDashoffset = (1 - ribbonProgress).toFixed(4);
+      }
+      const narrowRibbon = window.innerWidth <= 812;
+      const activeRibbon = narrowRibbon ? reelRibbonMobilePathRef.current : reelRibbonDesktopPathRef.current;
+      const activeRunner = narrowRibbon ? reelRibbonMobileRunnerRef.current : reelRibbonDesktopRunnerRef.current;
+      const activeLength = narrowRibbon ? mobileRibbonLength : desktopRibbonLength;
+      if (activeRibbon && activeRunner && activeLength > 0) {
+        const point = activeRibbon.getPointAtLength(activeLength * ribbonProgress);
+        activeRunner.setAttribute("cx", point.x.toFixed(2));
+        activeRunner.setAttribute("cy", point.y.toFixed(2));
+        activeRunner.style.opacity = !reducedMotion && ribbonProgress > 0.06 && ribbonProgress < 0.99 ? "1" : "0";
+      }
       // A translated word gives spacing motion without reflowing the editorial headline.
       for (const word of introWords) word.style.transform = `translate3d(${((1-intro)*0.34).toFixed(4)}em,0,0)`;
       for (let i = 0; i < reelWordRefs.current.length; i++) {
@@ -325,7 +352,10 @@ export function HomePageView() {
         </h1>
 
         {/* Dark Rounded 3D Hollow Cross Stage (`#home-hero-visual-container`) */}
-        <div className="col-span-6 mt-[calc(var(--base-padding-y)*0.55)] mb-[calc(var(--base-padding-y)*0.75)] min-h-0 min-[813px]:col-span-12 min-[813px]:mt-[calc(var(--base-padding-y)*0.6)] min-[813px]:mb-[calc(var(--base-padding-y)*0.55)]">
+        <div
+          ref={heroStageRef}
+          className="col-span-6 mt-[calc(var(--base-padding-y)*0.55)] mb-[calc(var(--base-padding-y)*0.75)] min-h-0 will-change-[transform,opacity] min-[813px]:col-span-12 min-[813px]:mt-[calc(var(--base-padding-y)*0.6)] min-[813px]:mb-[calc(var(--base-padding-y)*0.55)]"
+        >
           <HeroCrossesStage />
         </div>
 
@@ -362,29 +392,55 @@ export function HomePageView() {
         ref={reelSectionRef}
         className="section relative grid grid-cols-6 gap-x-[var(--grid-gap)] overflow-hidden px-[var(--base-padding-x)] pt-14 pb-20 text-[clamp(0.875rem,1vw,2rem)] min-[813px]:grid-cols-12 min-[813px]:pt-36 min-[813px]:pb-32"
       >
-        {/* Bold 3D Cobalt Ribbon Arc (`line_reel`) entering left edge behind `"Bold / Brought"` into `#home-reel-thumb` */}
+        {/* Scroll-drawn cobalt ribbon: layered like a rounded glossy tube, with a travelling highlight. */}
         <svg
           aria-hidden="true"
           viewBox="0 0 1440 900"
           fill="none"
-          className="pointer-events-none absolute top-0 left-0 z-0 h-[760px] w-full max-[812px]:hidden"
+          className="pointer-events-none absolute top-0 left-0 z-0 h-[760px] w-full overflow-visible max-[812px]:hidden"
         >
+          <defs>
+            <linearGradient id="homeReelRibbonGradient" x1="0%" y1="8%" x2="100%" y2="92%">
+              <stop offset="0%" stopColor="#2638ff" />
+              <stop offset="46%" stopColor="#162cf7" />
+              <stop offset="100%" stopColor="#7188ff" />
+            </linearGradient>
+            <radialGradient id="homeReelRibbonSpark">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+              <stop offset="38%" stopColor="#9eafff" stopOpacity="0.95" />
+              <stop offset="100%" stopColor="#4160ff" stopOpacity="0" />
+            </radialGradient>
+          </defs>
           <path
-            d="M -28 86 C 128 142, 238 308, 256 548"
+            d="M -28 86 C 128 142, 238 308, 256 548 C 270 650, 340 710, 430 666 C 520 622, 548 520, 624 424 C 704 324, 816 312, 900 378 C 1000 456, 1018 576, 1122 618 C 1230 662, 1358 602, 1468 520"
             stroke="#162cf7"
+            strokeOpacity="0.16"
+            strokeWidth="54"
+            strokeLinecap="round"
+          />
+          <path
+            id="home-reel-ribbon-path"
+            ref={reelRibbonDesktopPathRef}
+            pathLength={1}
+            d="M -28 86 C 128 142, 238 308, 256 548 C 270 650, 340 710, 430 666 C 520 622, 548 520, 624 424 C 704 324, 816 312, 900 378 C 1000 456, 1018 576, 1122 618 C 1230 662, 1358 602, 1468 520"
+            stroke="url(#homeReelRibbonGradient)"
             strokeWidth="26"
             strokeLinecap="round"
+            style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
           />
           <path
-            d="M -28 84 C 128 140, 238 306, 256 546"
-            stroke="#6a82ff"
-            strokeOpacity="0.42"
-            strokeWidth="7"
+            pathLength={1}
+            d="M -28 86 C 128 142, 238 308, 256 548 C 270 650, 340 710, 430 666 C 520 622, 548 520, 624 424 C 704 324, 816 312, 900 378 C 1000 456, 1018 576, 1122 618 C 1230 662, 1358 602, 1468 520"
+            stroke="#a9b6ff"
+            strokeOpacity="0.68"
+            strokeWidth="5"
             strokeLinecap="round"
+            style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
           />
+          <circle ref={reelRibbonDesktopRunnerRef} r="15" fill="url(#homeReelRibbonSpark)" opacity="0" />
         </svg>
 
-        {/* Mobile Upper-Left Cobalt Ribbon Arc matching `ref-02-reel-intro--390x844.png` */}
+        {/* Mobile adapts the same scroll-drawn tube to the narrow editorial rail. */}
         <svg
           aria-hidden="true"
           viewBox="0 0 390 420"
@@ -392,11 +448,23 @@ export function HomePageView() {
           className="pointer-events-none absolute top-8 left-0 z-0 w-full min-[813px]:hidden"
         >
           <path
-            d="M -18 56 C 48 78, 96 132, 118 205"
+            d="M -18 56 C 48 78, 96 132, 118 205 C 140 276, 188 326, 246 308 C 302 292, 330 240, 410 214"
+            stroke="#1a2ffb"
+            strokeOpacity="0.14"
+            strokeWidth="36"
+            strokeLinecap="round"
+          />
+          <path
+            id="home-reel-ribbon-path-mobile"
+            ref={reelRibbonMobilePathRef}
+            pathLength={1}
+            d="M -18 56 C 48 78, 96 132, 118 205 C 140 276, 188 326, 246 308 C 302 292, 330 240, 410 214"
             stroke="#1a2ffb"
             strokeWidth="18"
             strokeLinecap="round"
+            style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
           />
+          <circle ref={reelRibbonMobileRunnerRef} r="10" fill="#ffffff" opacity="0" />
         </svg>
 
         {/* Display Eyebrow Heading (`#home-reel-title`) */}

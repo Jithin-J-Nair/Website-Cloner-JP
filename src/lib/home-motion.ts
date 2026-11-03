@@ -1,5 +1,6 @@
 /** Shared, allocation-free motion math. Rendering and DOM ownership stay with their components. */
-export const GOAL_CINEMATIC_SECONDS = 22.5;
+// Two complete 10-second music loops at 96 BPM; one bar-aligned 20-second journey.
+export const GOAL_CINEMATIC_SECONDS = 20;
 export const UHD_PIXEL_BUDGET = 3840 * 2160;
 export const clampMotion = (value: number) => Math.max(0, Math.min(1, value));
 
