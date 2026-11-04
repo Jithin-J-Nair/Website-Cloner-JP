@@ -1266,7 +1266,7 @@ function ClientLogoTile({ name, src }: { name: string; src: string }) {
         loading="lazy"
         decoding="async"
         draggable={false}
-        className="about-client-logo-mark h-[180px] w-[180px] max-w-none shrink-0 object-contain opacity-75 transition-[opacity,transform] duration-500 ease-out group-hover:opacity-100 group-hover:scale-[1.04]"
+        className="about-client-logo-mark opacity-75"
       />
     </div>
   );
