@@ -8,6 +8,10 @@ assert.match(aboutView, /pointerDelta = p\.xy - uPointerNDC/, 'team hologram gra
 assert.match(aboutView, /portraitPoints\.rotation\.y = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form yaw response');
 assert.match(aboutView, /portraitPoints\.rotation\.x = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form pitch response');
 assert.match(aboutView, /reducedMotion \? 0 : 1/, 'team hologram pointer tilt respects reduced motion');
+assert.match(aboutView, /attribute vec3 aMorphFrom/, 'team points use a dedicated previous-position buffer');
+assert.match(aboutView, /mix\(aMorphFrom, position, clamp\(uMorph/, 'team portraits interpolate in the existing vertex shader');
+assert.match(aboutView, /portraitMorphStartRef\.current = -1/, 'a new member selection starts an interruptible morph');
+assert.match(aboutView, /elapsedSec - portraitMorphStartRef\.current\) \/ \.58/, 'the team morph is driven by the existing scene clock');
 fs.mkdirSync('temp',{recursive:true});
 const dir=fs.mkdtempSync(path.resolve('temp/about-camera-'));
 try {
