@@ -80,7 +80,7 @@ export const STATES = [
   { id: "11a-projects-archive-top", route: "/projects", seek: { mode: "top" } },
   { id: "11b-projects-archive-mid", route: "/projects", seek: { mode: "pageRatio", ratio: 0.42 } },
 
-  // --- All 19 Project Case-Study Detail Pages (`/projects/<slug>`) ---
+  // --- All 17 Current Project Case-Study Detail Pages (`/projects/<slug>`) ---
   ...PROJECT_SLUGS.map((slug, idx) => ({
     id: `12-${String(idx + 1).padStart(2, "0")}-project-${slug}`,
     route: `/projects/${slug}`,
