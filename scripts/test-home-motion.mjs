@@ -73,6 +73,8 @@ try {
     'the synthetic crack overlay is completely removed');
   assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),
     'the full-screen radial RGB glitch/dispersion pass is removed');
+  assert.ok(goalSource.includes('...(isMobileInit || isSoftwareRenderer') && goalSource.includes('#include <tonemapping_fragment>') && goalSource.includes('#include <colorspace_fragment>'),
+    'glass shader applies ACES and sRGB output transforms on direct-render mobile/software paths while leaving composer output to OutputPass');
   assert.ok(goalSource.includes('const float iorR = 1.516;') && goalSource.includes('const float iorG = 1.520;') && goalSource.includes('const float iorB = 1.526;'),
     'glass refraction uses wavelength-dependent Snell IOR rather than an arbitrary RGB offset');
   assert.ok(goalSource.includes('uniform mat4 uCameraWorldMatrix;') && goalSource.includes('mat3(uCameraWorldMatrix) * vNormalV'),
