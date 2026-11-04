@@ -45,7 +45,7 @@ try {
  const hero=page.locator('#home-hero-visual-container');
  await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container')?.dataset.motionState==='settled',null,{timeout:90000});
  const initial=await hero.evaluate(el=>({...el.dataset}));
- assert.equal(initial.clusterMode,'centered-magnetic','homepage hero uses the centered magnetic cluster');
+ assert.equal(initial.clusterMode,'free-body-cloud','homepage hero uses an unconstrained free-body connector cloud');
  if(!reduced) {
    const scrollEngine=await page.evaluate(()=>({active:!!window.__lenis,duration:window.__lenis?.options?.duration,smoothWheel:window.__lenis?.options?.smoothWheel}));
    assert.equal(scrollEngine.active,true,'Lenis owns smooth wheel scrolling');
