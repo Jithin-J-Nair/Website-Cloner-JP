@@ -889,7 +889,7 @@ export function GoalTunnelSection() {
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
         corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, glassThickness: 0,
-shardSpread: 1.20,
+         glassRefractionReady: false, shardDepthWrite: false, shardSpread: 1.20,
         shardSidewallsLoaded: false, shardSidewallTriangles: 0,
         shardCount: 0, shardFrames: 0, vortexIntensity: 0,
         vortexGlassVisible: false, vortexGlassLayers: 0, vortexGlassEdges: 0, ringVisible: false,
