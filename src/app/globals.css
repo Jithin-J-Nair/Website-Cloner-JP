@@ -492,7 +492,11 @@ body {
   width: 200%;
   transform: translate3d(0, 0, 0);
   animation: about-client-marquee var(--marquee-duration, 38s) linear infinite;
+  animation-play-state: paused;
   will-change: transform;
+}
+.about-client-marquee.is-in-view .about-client-marquee-track {
+  animation-play-state: running;
 }
 .about-client-marquee[data-direction="reverse"] .about-client-marquee-track {
   animation-direction: reverse;
