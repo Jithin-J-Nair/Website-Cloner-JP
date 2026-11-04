@@ -714,7 +714,7 @@ export function buildVortexHypercubeLattice(
     envMapIntensity: 2.45,
     vertexColors: true,
     transparent: true,
-    opacity: 0.52,
+     opacity: 0.54,
     depthWrite: false,
     side: THREE.DoubleSide,
   }));
@@ -779,7 +779,7 @@ export function buildVortexHypercubeLattice(
       const p = THREE.MathUtils.clamp(progress, 0, 1);
       const glow = THREE.MathUtils.clamp(intensity, 0, 1);
       group.visible = glow > 0.012 && p > 0.34 && p < 0.855;
-      material.opacity = 0.20 + glow * 0.47;
+      material.opacity = 0.22 + glow * 0.48;
       material.roughness = 0.045 + (1 - glow) * 0.028;
 
       const orbit = (p - 0.40) / 0.40;
@@ -805,7 +805,7 @@ export function buildVortexHypercubeLattice(
           const y = four[1] * perspective * radius;
           const z = zCenter + four[2] * perspective * radius * 0.86;
           projected[vertex].set(x, y, z);
-          scale.setScalar(0.030 * (1 - layerT * 0.16));
+          scale.setScalar(0.034 * (1 - layerT * 0.16));
           matrix.compose(projected[vertex], identity, scale);
           nodeMesh.setMatrixAt(layer * nodesPerLayer + vertex, matrix);
         }
