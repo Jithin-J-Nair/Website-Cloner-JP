@@ -3,6 +3,11 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import ts from 'typescript';
+const aboutView = fs.readFileSync('src/components/pages/AboutPageView.tsx', 'utf8');
+assert.match(aboutView, /pointerDelta = p\.xy - uPointerNDC/, 'team hologram grains respond locally to the cursor');
+assert.match(aboutView, /portraitPoints\.rotation\.y = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form yaw response');
+assert.match(aboutView, /portraitPoints\.rotation\.x = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form pitch response');
+assert.match(aboutView, /reducedMotion \? 0 : 1/, 'team hologram pointer tilt respects reduced motion');
 fs.mkdirSync('temp',{recursive:true});
 const dir=fs.mkdtempSync(path.resolve('temp/about-camera-'));
 try {
