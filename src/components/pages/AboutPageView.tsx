@@ -7,6 +7,7 @@ import { LUSION_ABOUT } from "@/data/reference";
 import { aboutScenePose, aboutWordmarkSweepPose } from "@/lib/about-scene-motion";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
+import { loadLusionBuf } from "@/lib/lusion-buf-loader";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
 import { createAboutTerrainMaterial, terrainHeightAt } from "@/components/three/AboutTerrain";
 import { cinematicRenderDpr } from "@/lib/home-motion";
@@ -131,22 +132,47 @@ function AboutWhoExperience({
   const portraitGeoRef = useRef<THREE.BufferGeometry | null>(null);
 
   const [sceneGeneration, setSceneGeneration] = useState(0);
+  const [portraitGeoVersion, setPortraitGeoVersion] = useState(0);
   const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
 
-  // Original generic sculptural study, NOT an authentic likeness of the named member.
-  // Never request restricted captured portrait buffers.
+  // Prefer the seven bundled point-cloud portraits. The deterministic procedural
+  // silhouette remains an immediate offline/error fallback for each selection.
   useEffect(() => {
     memberRef.current = activeMemberIdx;
     const geo = portraitGeoRef.current;
     if (!geo) return;
-    const position = geo.getAttribute("position") as THREE.BufferAttribute;
-    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx));
-    position.needsUpdate = true;
-    geo.computeBoundingSphere();
-  }, [activeMemberIdx]);
+    let cancelled = false;
+    const member = team[activeMemberIdx] ?? team[0];
+    void loadLusionBuf(member.modelPath).then(parsed => {
+      if (cancelled || portraitGeoRef.current !== geo) return;
+      const raw = parsed.attributes.position;
+      if (raw.length !== member.vertexCount * 3) {
+        throw new Error(`Portrait ${member.id} has ${raw.length / 3} vertices; expected ${member.vertexCount}`);
+      }
+      const positions = new Float32Array(raw.length);
+      for (let i = 0; i < member.vertexCount; i++) {
+        positions[i * 3] = raw[i * 3] * 1.42;
+        positions[i * 3 + 1] = raw[i * 3 + 1] * 1.52;
+        positions[i * 3 + 2] = raw[i * 3 + 2] * 1.35;
+      }
+      geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      geo.computeBoundingSphere();
+      const section = geo.userData.section as HTMLElement | undefined;
+      if (section) section.dataset.teamPortraitSource = "bundle";
+    }).catch(error => {
+      if (cancelled || portraitGeoRef.current !== geo) return;
+      const fallback = buildSculpturalPortraitPositions(activeMemberIdx, member.vertexCount);
+      geo.setAttribute("position", new THREE.BufferAttribute(fallback, 3));
+      geo.computeBoundingSphere();
+      const section = geo.userData.section as HTMLElement | undefined;
+      if (section) section.dataset.teamPortraitSource = "procedural-fallback";
+      console.warn("About team portrait asset unavailable; using the procedural fallback.", error);
+    });
+    return () => { cancelled = true; };
+  }, [activeMemberIdx, team, portraitGeoVersion]);
 
   useEffect(() => {
     const sectionEl = sectionRef.current;
@@ -470,6 +496,9 @@ function AboutWhoExperience({
       new THREE.BufferAttribute(buildSculpturalPortraitPositions(memberRef.current, 8192), 3)
     );
     portraitGeoRef.current = portraitGeo;
+    portraitGeo.userData.section = sectionEl;
+    sectionEl.dataset.teamPortraitSource = "procedural-fallback";
+    setPortraitGeoVersion(version => version + 1);
 
     const portraitMat = track(
       new THREE.ShaderMaterial({
