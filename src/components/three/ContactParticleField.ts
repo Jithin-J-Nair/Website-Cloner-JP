@@ -34,9 +34,12 @@ export function createContactParticleField(requestedCount = 960) {
         float apex = clamp(uTextBottom + .10, -uViewport.y * .12, uViewport.y * .15);
         // A broad, asymmetric field leaves room around the title and gives the
         // lower heap a readable footprint instead of a narrow vertical column.
-        float width = uViewport.x * mix(.32, .46, 1. - smoothstep(.6, 1., uViewport.x / uViewport.y));
+        float width = uViewport.x * mix(.36, .50, 1. - smoothstep(.6, 1., uViewport.x / uViewport.y));
         width *= mix(.90, 1.04, smoothstep(0., .7, uProgress));
-        vec3 p = vec3(aSeed.x * (width * pow(1. - h, 1.25) + .025), mix(floorY, apex, h), aSeed.z * .92);
+        // Keep the upper cloud volumetric instead of collapsing it into a
+        // centreline as particles approach the title.
+        float upperSpread = pow(1. - h, .88);
+        vec3 p = vec3(aSeed.x * (width * upperSpread + .025), mix(floorY, apex, h), aSeed.z * .92);
         float t = uTime * (1. - uReduced);
         // Bounded 3D curl gives the fragments a slow lateral and depth-wise
         // current; it is an analytic field, not a particle collision solver.
@@ -49,14 +52,16 @@ export function createContactParticleField(requestedCount = 960) {
 
         // A broad stream feeds the mound. It starts as a loose cloud, then
         // gathers toward the floor; depth varies per grain to avoid a flat ribbon.
-        float stream = step(aSeed.z, -.70);
+        float stream = step(aSeed.z, -.28);
         float cycle = fract(aSeed.y + t * .16 + uProgress * .22);
         float gather = smoothstep(.04, .94, cycle);
-        float fallWidth = width * mix(.38, .15, gather);
+        // The source is a loose sheet, not a laser-thin ribbon. It compresses
+        // gradually into a broad, turbulent mound only near the floor.
+        float fallWidth = width * mix(.82, .48, gather);
         float lateral = aSeed.x * fallWidth
-          + sin(cycle * 6.283 + aSeed.w * 9.) * width * .055;
-        float depthFlow = aSeed.z * 1.12
-          + cos(cycle * 6.283 + aSeed.x * 4.) * .24;
+          + sin(cycle * 6.283 + aSeed.w * 9.) * width * .085;
+        float depthFlow = aSeed.z * 1.18
+          + cos(cycle * 6.283 + aSeed.x * 4.) * .34;
         vec3 fall = vec3(
           lateral,
           mix(uViewport.y * .72, floorY, cycle),
