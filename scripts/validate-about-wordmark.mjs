@@ -41,6 +41,16 @@ try {
         }, unit * progress);
         await page.waitForTimeout(500);
       };
+      // Absolute document-Y navigation is separate from the normalized wordmark
+      // timeline helper above. Passing a document coordinate to seek() would
+      // multiply it by the viewport dimension and clamp at the page bottom.
+      const seekY = async y => {
+        await page.evaluate(top => {
+          window.__lenis?.scrollTo(top, { immediate: true });
+          window.scrollTo({ top, behavior: 'instant' });
+        }, y);
+        await page.waitForTimeout(500);
+      };
       const inspect = () => mark.evaluate((element, mobile) => {
         const text = element.querySelector(mobile ? '[data-about-wordmark-mobile]' : '[data-about-wordmark-desktop]');
         const textPath = text?.querySelector('textPath');
@@ -113,7 +123,7 @@ try {
       const cinematic = width >= 1000;
       const cardFrames = [];
       for (const p of cinematic ? [0, .34, .67, 1] : [1]) {
-        await seek(deck.top + deck.range * p);
+        await seekY(deck.top + deck.range * p);
         const state = await capability.evaluate(element => ({
           progress: Number(element.dataset.cardProgress),
           layout: element.dataset.cardLayout,
@@ -140,7 +150,7 @@ try {
       // Validate the lower CTA field: fixed GPU budget, pointer release, and touch safety.
       const ctaSection = page.locator('#end-section');
       const ctaTop = await ctaSection.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
-      await seek(ctaTop);
+      await seekY(ctaTop);
       await page.waitForFunction(() => window.__ctaProbe?.().frames > 0, null, { timeout: 30000 });
       const ctaBase = await page.evaluate(() => window.__ctaProbe());
       assert.ok(width === 390 ? ctaBase.count === 720 : ctaBase.count === 960 || ctaBase.count === 1600);
