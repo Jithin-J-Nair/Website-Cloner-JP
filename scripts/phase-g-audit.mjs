@@ -51,7 +51,7 @@ export const INTERMEDIATE_VIEWPORT = { name: "1024x768", width: 1024, height: 76
  *   - 4 About states (`/about`, hero 3D terrain -> team 8192-particle portrait -> clients & awards -> area of expertise)
  *   - 2 Projects archive states (`/projects`, top header + cards -> mid-archive scroll)
  *   - 17 Project detail routes (`/projects/<slug>`, every current case study!)
- * Total = 36 states x 2 primary viewports (`1440x900` + `390x844`) = 72 paired captures (+ 4 intermediate `1024x768` states = 76 total!)
+ * Total = 37 states x 2 primary viewports (`1440x900` + `390x844`) = 74 paired captures (+ 4 intermediate `1024x768` states = 78 total!)
  */
 export const STATES = [
   // --- Homepage (`/`) complete scroll + interactive sequence ---
