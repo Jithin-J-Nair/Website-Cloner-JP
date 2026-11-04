@@ -2001,7 +2001,7 @@ shardSpread: 1.20,
          state.glassThickness = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uGlassThickness.value : 0;
         state.glassRefractionReady = glassRefractionReady;
         state.shardDepthWrite = shardsMesh ? (shardsMesh.material as THREE.ShaderMaterial).depthWrite : false;
-: 1.20;
+         state.shardSpread = shardsMesh ? (shardsMesh.userData.shardSpread as number) : 1.20;
         state.shardCount = numShards;
         state.shardFrames = framesPerShard;
         state.vortexIntensity = trussSystem.vortexCoreMat.uniforms.uIntensity.value;
