@@ -10,9 +10,11 @@ const portraitFrame = aboutView.slice(aboutView.indexOf("// One damped whole-for
 assert.doesNotMatch(portraitFrame, /portraitPoints\.rotation\.set\(/, 'a later direct rotation write must not overwrite the damped target');
 assert.match(aboutView, /portraitPoints\.rotation\.x = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form pitch response');
 assert.match(aboutView, /reducedMotion \? 0 : 1/, 'team hologram pointer tilt respects reduced motion');
-assert.match(aboutView, /const px = u \* 1\.92/, 'abstract team portrait uses a broader horizontal silhouette');
-assert.match(aboutView, /const py = v \* 1\.40/, 'abstract team portrait is less vertically elongated');
-assert.match(aboutView, /const pz = z \* 1\.48/, 'abstract bust retains enough depth for dimensional shading');
+const portraitGeometry = fs.readFileSync('src/lib/about-portrait-geometry.ts', 'utf8');
+assert.match(aboutView, /from "@\/lib\/about-portrait-geometry"/, 'the team scene uses the independently testable clean-room portrait generator');
+assert.match(portraitGeometry, /const px = u \* facing \* 2\.25/, 'abstract portrait retains a broad side-profile silhouette');
+assert.match(portraitGeometry, /const py = v \* 1\.6/, 'abstract portrait maintains full head-to-shoulder height');
+assert.match(portraitGeometry, /const pz = \(depth \+ \(random\(\) - 0\.5\) \* 0\.012\) \* 1\.45/, 'abstract profile retains real depth for dimensional shading');
 assert.match(aboutView, /attribute vec3 aMorphFrom/, 'team points use a dedicated previous-position buffer');
 assert.match(aboutView, /mix\(aMorphFrom, position, clamp\(uMorph/, 'team portraits interpolate in the existing vertex shader');
 assert.match(aboutView, /portraitMorphStartRef\.current = -1/, 'a new member selection starts an interruptible morph');
