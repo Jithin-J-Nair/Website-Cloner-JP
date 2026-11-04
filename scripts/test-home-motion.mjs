@@ -95,6 +95,12 @@ try {
     'the refracted/reflected composite is not blended a second time over the source scene');
   assert.ok(goalSource.includes('1 - 0.54 * smoothstep(0.54, 0.70, tTunnel)') && downstreamSource.includes('vec3(0.94, 0.13, 0.62)') && downstreamSource.includes('primary*mix(3.5,2.6,pink)'),
     'the vortex peak gives the transparent glass lattice visual priority over the metallic truss');
+  assert.ok(downstreamSource.includes('float warm = smoothstep(0.24, 0.36, uPhase);') &&
+    downstreamSource.includes('float emerald = smoothstep(0.39, 0.55, uPhase);') &&
+    downstreamSource.includes('float pink = smoothstep(0.65, 0.80, uPhase);') &&
+    downstreamSource.includes('vec3(0.42, 1.0, 0.12)') &&
+    downstreamSource.includes('secondary = mix(secondary, vec3(0.18, 0.72, 1.0), pink)'),
+    'captured tunnel lighting follows the cyan/steel -> warm red -> emerald -> pink/blue reference sequence');
   assert.ok(downstreamSource.includes('const tubeRadius = 0.020') && downstreamSource.includes('scale.setScalar(0.043') && downstreamSource.includes('material.opacity = 0.34 + glow * 0.54') && downstreamSource.includes('envMapIntensity: 2.85'),
     'the 4D glass lattice has legible crystal edges and stronger environmental reflections');
   assert.ok(goalSource.includes('(tShatter - 0.205) / 0.145'),
