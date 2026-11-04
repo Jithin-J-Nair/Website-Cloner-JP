@@ -50,7 +50,7 @@ export const INTERMEDIATE_VIEWPORT = { name: "1024x768", width: 1024, height: 76
  *   - 11 Homepage states (`/`, top -> reel -> featured -> goal intro -> astronaut closeup -> mid shatter -> astronaut float -> end CTA -> footer portal -> menu -> modal)
  *   - 4 About states (`/about`, hero 3D terrain -> team 8192-particle portrait -> clients & awards -> area of expertise)
  *   - 2 Projects archive states (`/projects`, top header + cards -> mid-archive scroll)
- *   - 19 Project detail routes (`/projects/<slug>`, every single case study!)
+ *   - 17 Project detail routes (`/projects/<slug>`, every current case study!)
  * Total = 36 states x 2 primary viewports (`1440x900` + `390x844`) = 72 paired captures (+ 4 intermediate `1024x768` states = 76 total!)
  */
 export const STATES = [
