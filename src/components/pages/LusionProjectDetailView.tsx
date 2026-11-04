@@ -424,7 +424,7 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
         </div>
       </section>
 
-      {/* Verified `NEXT PROJECT` Chain Banner (`project.nextProject` across all 19 case studies) */}
+      {/* Verified `NEXT PROJECT` Chain Banner (`project.nextProject` across all 17 current case studies) */}
       <section
         id="project-next"
         style={{
