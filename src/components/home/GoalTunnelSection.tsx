@@ -595,7 +595,7 @@ export function GoalTunnelSection() {
               "  float alpha = clamp(0.095 + fres * 0.64 + edge * 0.15 + ggxSpec * 0.12, 0.10, 0.92) * uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
-            ].join(\"\\n\"),
+            ].join("\n"),
           })
         );
         
