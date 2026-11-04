@@ -417,7 +417,7 @@ const launchBrowser = () =>
   });
 
 if (MODE === "capture-reference") {
-  console.log(`=== Phase G Step 2 & 3: Capturing Fresh Live-Engine Reference across ALL 22 Routes (${serverHandle.baseUrl}) ===`);
+  console.log(`=== Phase G Step 2 & 3: Capturing Fresh Live-Engine Reference across ALL 20 Routes (${serverHandle.baseUrl}) ===`);
   const jsonlPath = path.join(PHASE_G_ROOT, "reference-metadata.jsonl");
   const existingMetaByKey = new Map();
   if (fs.existsSync(jsonlPath)) {
