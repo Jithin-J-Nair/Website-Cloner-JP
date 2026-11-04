@@ -104,31 +104,33 @@ export class HomeConnectorPhysics {
     while(this.accumulator>=this.stepSize && steps<6) {
       const h=this.stepSize;
       const time=timeSeconds+(steps*h);
-      this.interactionEnergy*=Math.exp(-0.9*h);
+      this.interactionEnergy*=Math.exp(-2.4*h);
       // Free flight, light gravity and a shared soft attractor. The restoring force
       // grows only after a body leaves the loose cluster; it never targets a slot.
       for(let i=0;i<this.meshes.length;i++) {
         const p=this.positions[i],v=this.linear[i],w=this.angular[i];
         const radius=p.length();
-        const returnK=radius>2.7 ? 0.48+Math.min(0.95,(radius-2.7)*0.16) : 0.055;
+        const outside=THREE.MathUtils.clamp((radius-1.9)/1.6,0,1);
+        const smoothOutside=outside*outside*(3-2*outside);
+        const returnK=0.055+smoothOutside*0.75;
         const phase=time*0.31+i*2.399963;
         v.x+=(-p.x*returnK+Math.sin(phase*1.17)*0.075)*h;
         v.y+=(-p.y*returnK-0.055+Math.cos(phase*0.83)*0.070)*h;
         v.z+=(-p.z*returnK+Math.sin(phase*0.69+0.8)*0.060)*h;
-        v.multiplyScalar(Math.exp(-0.34*h));
+        v.multiplyScalar(Math.exp(-0.55*h));
 
         if(pointerRay) {
           pointerRay.closestPointToPoint(p,this.temp);
           this.normal.subVectors(p,this.temp);
           const d=this.normal.length();
-          const reach=3.05*this.meshes[i].scale.x+0.35;
+          const reach=4.10*this.meshes[i].scale.x+0.50;
           if(d<reach) {
             if(d<0.015) this.normal.set(i%2===0?1:-1,((i%3)-1)*0.35,0.2).normalize();
             else this.normal.multiplyScalar(1/d);
             const influence=Math.pow(1-d/reach,2);
             // Hovering repels continuously; pointer travel adds a swipe impulse.
-            v.addScaledVector(this.normal,34*influence*h);
-            v.addScaledVector(pointerSweep,0.58*influence*h);
+            v.addScaledVector(this.normal,50*influence*h);
+            v.addScaledVector(pointerSweep,0.78*influence*h);
             w.y+=(pointerSweep.length()*0.035+0.04)*influence*h;
             this.interactionEnergy=Math.min(1,this.interactionEnergy+influence*h*3.2);
             this.touched[i]=true;
