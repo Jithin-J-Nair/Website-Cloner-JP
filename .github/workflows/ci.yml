@@ -64,6 +64,9 @@ jobs:
       - name: About recognition-ledger tests
         run: node scripts/test-about-recognition.mjs
 
+      - name: Projects archive and detail-route tests
+        run: node scripts/test-projects-archive.mjs
+
       - name: Build
         id: build
         run: npm run build
