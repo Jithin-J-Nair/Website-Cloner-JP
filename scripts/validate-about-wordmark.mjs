@@ -113,6 +113,81 @@ try {
       assert.ok(Math.abs((probeAtPeak?.u ?? peak) - (probeOnReverse?.u ?? peak)) < 0.02);
 
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'sweep must not create horizontal page overflow');
+
+      // Team hologram: select a different member and prove the pointer-driven portrait
+      // responds, then returns to centre when the pointer leaves the viewport.
+      const who = page.locator('#about-who');
+      const whoTop = await who.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
+      await seekY(whoTop + unit * 7.2);
+      await page.waitForFunction(() => {
+        const probe = window.__aboutProbe?.();
+        return probe && probe.u > 7 && document.querySelector('#about-who-team-name');
+      }, null, { timeout: 15000 });
+      const originalMember = (await page.locator('#about-who-team-name').textContent())?.trim();
+      await page.getByRole('button', { name: 'Select Ffion Morgan' }).click();
+      await page.waitForFunction(() => document.querySelector('#about-who-team-name')?.textContent?.trim() === 'Ffion Morgan', null, { timeout: 5000 });
+      assert.notEqual(originalMember, 'Ffion Morgan', 'team selector changes the active member');
+      let teamInteraction = { originalMember, selectedMember: 'Ffion Morgan' };
+      if (width !== 390) {
+        await page.mouse.move(width * .84, height * .46);
+        await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 0) > .015, null, { timeout: 5000 });
+        const yawAtPointer = await page.evaluate(() => window.__aboutProbe().teamYaw);
+        await page.evaluate(() => document.documentElement.dispatchEvent(new PointerEvent('pointerleave')));
+        await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 1) < .005, null, { timeout: 5000 });
+        teamInteraction = { ...teamInteraction, yawAtPointer, pointerReturnedToRest: true };
+      } else {
+        teamInteraction = { ...teamInteraction, touchMemberSwitch: true };
+      }
+      await page.screenshot({ path: `${out}/${width}-team.png`, fullPage: false, timeout: 120000 });
+
+      // Brand wall: every first-copy logo must load from the approved bundled SVG,
+      // and the marquee must animate (or present its static reduced-motion fallback).
+      const clients = page.locator('#about-clients');
+      const clientsTop = await clients.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
+      await seekY(clientsTop);
+      const logoState = await clients.evaluate(section => {
+        const firstSet = section.querySelector('.about-client-marquee-set:not([aria-hidden="true"])');
+        const images = firstSet ? [...firstSet.querySelectorAll('img')] : [];
+        const track = section.querySelector('.about-client-marquee-track');
+        return {
+          count: images.length,
+          altCount: images.filter(image => image.alt.trim().length > 0).length,
+          loaded: images.filter(image => image.complete && image.naturalWidth > 0).length,
+          animation: track ? getComputedStyle(track).animationName : 'missing',
+          rows: section.querySelectorAll('.about-client-marquee').length,
+        };
+      });
+      assert.equal(logoState.rows, 3, 'client brands retain three flowing rows');
+      assert.equal(logoState.count, 16, 'all three source rows retain their 16 logo placements');
+      assert.equal(logoState.altCount, 16, 'every brand mark has useful alternative text');
+      assert.equal(logoState.loaded, 16, 'all first-copy SVG logo assets load successfully');
+      assert.equal(logoState.animation, 'about-client-marquee');
+      if (width !== 390) {
+        await clients.locator('.about-client-marquee').first().hover();
+        assert.equal(await clients.locator('.about-client-marquee-track').first().evaluate(el => getComputedStyle(el).animationPlayState), 'paused', 'hover pauses the marquee without stopping other rows');
+        await page.mouse.move(width - 2, height - 2);
+      }
+      await page.screenshot({ path: `${out}/${width}-clients.png`, fullPage: false, timeout: 120000 });
+
+      // Recognition ledger: visit every reveal target in turn so the observer is
+      // tested through the complete award/article/talk record, not one viewport.
+      const awardTargets = page.locator('#about-award [data-award-reveal]');
+      const awardCount = await awardTargets.count();
+      assert.ok(awardCount >= 9, 'recognition exposes the summary, award groups, articles and talks');
+      const awardPositions = await awardTargets.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top + window.scrollY));
+      for (let index = 0; index < awardPositions.length; index++) {
+        await seekY(Math.max(0, awardPositions[index] - height * .58));
+        await page.waitForFunction(i => document.querySelectorAll('#about-award [data-award-reveal]')[i]?.classList.contains('is-in-view'), index, { timeout: 5000 });
+      }
+      const awardState = await page.evaluate(() => ({
+        visible: [...document.querySelectorAll('#about-award [data-award-reveal]')].filter(el => el.classList.contains('is-in-view')).length,
+        total: document.querySelectorAll('#about-award [data-award-reveal]').length,
+        headline: document.querySelector('#about-award .about-awards-monument')?.textContent?.trim(),
+      }));
+      assert.equal(awardState.visible, awardState.total, 'all recognition groups reveal as they enter the viewport');
+      assert.equal(awardState.headline, 'AWARDS');
+      await page.screenshot({ path: `${out}/${width}-recognition.png`, fullPage: false, timeout: 120000 });
+
       assert.deepEqual(errors, [], 'no uncaught browser errors');
       // Validate the expertise deck in the production document, not only its math helper.
       const capability = page.locator('#about-capability');
