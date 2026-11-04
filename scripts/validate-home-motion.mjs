@@ -72,7 +72,9 @@ try {
   assert.equal(settled.motionState,'settled','the hero springs back to its default pose after pointer leave');
   await page.waitForTimeout(650);
   const idleFrames = Number(await hero.getAttribute('data-render-count')) - Number(settled.renderCount);
-  assert.ok(idleFrames >= 0 && idleFrames <= 24, `settled hero must sleep or keep only a low-rate idle render (frames=${idleFrames})`);
+  assert.ok(idleFrames >= 2 && idleFrames <= 52, `autonomous connector motion must keep rendering after pointer release (frames=${idleFrames})`);
+  assert.equal(settled.physicsActive,'true','the connector pile remains physically animated at rest');
+  assert.equal(Number(settled.clusterPieces),23,'the home stage renders the full layered connector cluster');
   // Rapid direction changes followed by cancellation must not leave a displaced connector.
   for (const x of [.2,.8,.3,.7,.49]) await page.mouse.move(box.x+box.width*x,box.y+box.height*.56);
   await hero.dispatchEvent('pointercancel',{pointerType:'mouse'});
