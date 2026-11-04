@@ -1294,7 +1294,7 @@ function AboutWhoExperience({
  */
 function ClientLogoTile({ name, src }: { name: string; src: string }) {
   return (
-    <div className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
+    <div role="listitem" className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
       <img
         src={src}
         alt={name}
@@ -1468,6 +1468,7 @@ export function AboutPageView() {
             {LUSION_ABOUT.clients.carouselRows.map((row, rowIdx) => (
               <div
                 key={rowIdx}
+                role="list"
                 className="about-client-marquee group"
                 data-direction={rowIdx === 1 ? "reverse" : "forward"}
                 style={{ "--marquee-duration": `${34 + rowIdx * 7}s` } as React.CSSProperties}
