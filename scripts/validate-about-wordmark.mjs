@@ -61,6 +61,8 @@ try {
           opacity: Number(getComputedStyle(element).opacity),
           visibility: getComputedStyle(element).visibility,
           transform: element.style.transform,
+          fill: text ? getComputedStyle(text).fill : null,
+          stroke: text ? getComputedStyle(text).stroke : null,
           text: textPath?.textContent?.trim() ?? null,
           fontSize: text ? Number.parseFloat(getComputedStyle(text).fontSize) : 0,
           pathLength: path?.getTotalLength() ?? 0,
@@ -93,6 +95,10 @@ try {
       }
       assert.equal(atPeak.visibility, 'visible');
       assert.equal(atPeak.text, 'LUSION');
+      assert.equal(atPeak.fill, 'rgb(255, 255, 255)', 'curved wordmark is solid white, not outline-only');
+      assert.equal(atPeak.stroke, 'none', 'curved wordmark does not render as a double outline');
+      const openingFill = await page.locator('[data-about-opening-wordmark] text').evaluate(element => getComputedStyle(element).fill);
+      assert.equal(openingFill, 'rgb(255, 255, 255)', 'opening wordmark remains a filled solid glyph');
       assert.equal(atPeak.activeText, width === 390 ? 'mobile' : 'desktop');
       assert.ok(atPeak.pathLength > 1000, 'the active sweep path must be a genuine long curve');
       assert.ok(width === 390 ? atPeak.fontSize <= 240 : atPeak.fontSize >= 380, 'responsive mark uses the correct glyph scale');
