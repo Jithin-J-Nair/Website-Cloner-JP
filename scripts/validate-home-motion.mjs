@@ -221,7 +221,7 @@ try {
  assert.equal(vortexState.vortexGlassEdges,(width<813?3:4)*32,'each projected hypercube has 32 tesseract edges');
  assert.equal(vortexState.shardSidewallsLoaded,true,'captured glass shards have volumetric sidewalls');
  assert.ok(vortexState.shardSidewallTriangles>0,'the sidewall pass creates reflective glass edge faces');
- assert.equal(vortexState.shardSpread,1.14,'the captured breakup uses a wider art-directed shard envelope');
+ assert.equal(vortexState.shardSpread,1.2,'the captured breakup uses a wider art-directed shard envelope');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
  const vortexPeakY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.73));
  const vortexPeakState = await seekScenePhase('vortex-peak',vortexPeakY,'tunnelProgress',0.73);

@@ -711,7 +711,7 @@ export function buildVortexHypercubeLattice(
     iridescenceIOR: 1.31,
     iridescenceThicknessRange: [170, 430],
     envMap: environment,
-    envMapIntensity: 2.35,
+    envMapIntensity: 2.45,
     vertexColors: true,
     transparent: true,
     opacity: 0.52,

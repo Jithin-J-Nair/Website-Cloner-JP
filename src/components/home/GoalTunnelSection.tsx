@@ -477,7 +477,7 @@ export function GoalTunnelSection() {
         const shardCenter = restBounds.getCenter(new THREE.Vector3());
         const shardBoundsSize = restBounds.getSize(new THREE.Vector3()).length();
         const shardSideThickness = Math.max(0.001, shardBoundsSize * 0.00125);
-        const shardSpread = 1.14;
+        const shardSpread = 1.20;
         
         const mat = track(
           new THREE.ShaderMaterial({
@@ -560,7 +560,7 @@ export function GoalTunnelSection() {
               "  float fres = fresnelSchlick(facing, f0);",
               "  vec2 screenUv = vClipPosition.xy / max(0.0001, vClipPosition.w) * 0.5 + 0.5;",
               "  float pixelScale = min(1.65, 900.0 / max(1.0, min(uRefractionSize.x, uRefractionSize.y)));",
-              "  float edge = pow(1.0 - facing, 1.38);",
+               "  float edge = pow(1.0 - facing, 1.12);",
                "  float opticalPath = min(0.42, uGlassThickness / max(0.18, facing));",
               "  vec3 incident = normalize(vPosV);",
               "  float etaR = gl_FrontFacing ? (1.0 / iorR) : iorR;",
@@ -582,10 +582,10 @@ export function GoalTunnelSection() {
               "  transmitted = mix(transmitted, envTransmission, 0.075);",
               "  vec3 envReflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
               "  vec3 reflectedRay = reflect(incident, Nv);",
-              "  vec2 reflectedUv = clamp(screenUv + reflectedRay.xy * (0.026 + edge * 0.020) * pixelScale, vec2(0.001), vec2(0.999));",
+               "  vec2 reflectedUv = clamp(screenUv + reflectedRay.xy * (0.032 + edge * 0.026) * pixelScale, vec2(0.001), vec2(0.999));",
               "  vec3 screenReflection = texture2D(uSceneColor, reflectedUv).rgb;",
-               "  vec3 reflection = mix(envReflection, screenReflection, 0.88);",
-               "  float reflectance = clamp(fres + edge * 0.095, 0.04, 0.98);",
+               "  vec3 reflection = mix(envReflection, screenReflection, 0.92);",
+               "  float reflectance = clamp(fres + edge * 0.14, 0.04, 0.99);",
               "  vec3 keyLight = normalize(vec3(-0.45, 0.72, 0.55));",
               "  float nDotV = max(dot(N, V), 0.001);",
               "  float nDotL = max(dot(N, keyLight), 0.0);",
@@ -609,10 +609,10 @@ export function GoalTunnelSection() {
               "  float wideSpec = wideA2 / max(PI * wideDenom * wideDenom, 0.00001) * geometryV * geometryL * specFres / max(4.0 * nDotV * nDotL, 0.001) * nDotL;",
               "  vec3 absorption = exp(-vec3(0.010, 0.005, 0.0025) * opticalPath);",
               "  vec3 col = mix(transmitted * absorption, reflection, reflectance);",
-               "  col += vec3(0.72, 0.87, 1.0) * edge * 0.22;",
-               "  col += vec3(1.0, 0.995, 0.985) * ggxSpec * 3.8;",
+               "  col += vec3(0.72, 0.87, 1.0) * edge * 0.28;",
+               "  col += vec3(1.0, 0.995, 0.985) * ggxSpec * 4.2;",
               "  col += vec3(0.48, 0.70, 1.0) * wideSpec * 0.56;",
-               "  float alpha = clamp(0.065 + fres * 0.60 + edge * 0.11 + ggxSpec * 0.10, 0.07, 0.88) * uOpacity;",
+               "  float alpha = clamp(0.08 + fres * 0.62 + edge * 0.16 + ggxSpec * 0.11, 0.08, 0.94) * uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
             ].join("\n"),
@@ -889,7 +889,7 @@ export function GoalTunnelSection() {
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
         corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, glassThickness: 0,
-        glassRefractionReady: false, shardDepthWrite: false, shardSpread: 1.14,
+shardSpread: 1.20,
         shardSidewallsLoaded: false, shardSidewallTriangles: 0,
         shardCount: 0, shardFrames: 0, vortexIntensity: 0,
         vortexGlassVisible: false, vortexGlassLayers: 0, vortexGlassEdges: 0, ringVisible: false,
@@ -2001,7 +2001,7 @@ export function GoalTunnelSection() {
          state.glassThickness = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uGlassThickness.value : 0;
         state.glassRefractionReady = glassRefractionReady;
         state.shardDepthWrite = shardsMesh ? (shardsMesh.material as THREE.ShaderMaterial).depthWrite : false;
-        state.shardSpread = shardsMesh ? (shardsMesh.userData.shardSpread as number) : 1.14;
+: 1.20;
         state.shardCount = numShards;
         state.shardFrames = framesPerShard;
         state.vortexIntensity = trussSystem.vortexCoreMat.uniforms.uIntensity.value;

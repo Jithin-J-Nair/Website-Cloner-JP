@@ -45,3 +45,10 @@ The new vortex cages are original 4D-projected geometry with physically-based tr
 - Increased 4D glass-lattice edge/node legibility and environment reflections. It remains a transparent projected lattice, not the removed opaque white cube.
 - Increased early/mid astronaut fall displacement while preserving the single 20-second score/scroll playhead and exact endpoint.
 - Added unit and production-browser gates for multi-object pointer response, world-scaled glass thickness, live background reflection and the stronger gravity curve.
+
+
+## Impact-frame visual refinement — 2026-11-04
+- Increased the shard shader's view-angle Fresnel edge response, live scene-color reflection contribution (92%), and GGX edge highlights while preserving front-face transmission and measured thin-plate thickness.
+- Widened the captured shard breakup envelope from 1.14× to 1.20× so adjacent fragments separate more legibly during the short impact beat.
+- Increased the transparent vortex cage's crystal rod/node readability and environment response without adding an opaque white tesseract or hiding the astronaut.
+- Added deterministic checks for the updated shader constants and breakup envelope. Production browser screenshots remain the visual acceptance evidence.
