@@ -541,21 +541,34 @@ export function HeroCrossesStage() {
       if (spec.kind === "blue") blueMats.push(mat);
 
       const mesh = new THREE.Mesh(crossGeometry, mat);
-      const anchor = initAspect < PORTRAIT_STAGE_ASPECT ? spec.anchorMobile : spec.anchorDesktop;
-      mesh.position.set(anchor[0], anchor[1], anchor[2]);
+      // Start as one compact, overlapping cloud. These are free rigid bodies, not
+      // individually anchored props: the solver establishes the initial contacts.
+      const pieceIndex = meshes.length;
+      const pieceCount = HERO_PIECES.length;
+      const latitude = 1 - 2 * (pieceIndex + 0.5) / pieceCount;
+      const ring = Math.sqrt(Math.max(0, 1 - latitude * latitude));
+      const azimuth = pieceIndex * 2.399963229728653;
+      const radial = 1.42 * Math.cbrt((pieceIndex + 0.5) / pieceCount);
+      const portraitScale = initAspect < PORTRAIT_STAGE_ASPECT ? 0.72 : 1;
+      mesh.position.set(
+        Math.cos(azimuth) * ring * radial * 1.45,
+        latitude * radial * 1.16,
+        Math.sin(azimuth) * ring * radial * 0.92
+      );
       mesh.rotation.set(spec.euler[0], spec.euler[1], spec.euler[2]);
-      mesh.scale.setScalar(initAspect < PORTRAIT_STAGE_ASPECT ? spec.scale * 0.72 : spec.scale);
+      mesh.scale.setScalar(spec.scale * portraitScale);
       livePositions.push(mesh.position.clone());
+      // A little translational energy prevents the pile reading as a static sculpture.
       linearVelocities.push(new THREE.Vector3(
-        Math.sin(meshes.length * 2.17) * 0.20,
-        Math.cos(meshes.length * 1.71) * 0.15,
-        Math.sin(meshes.length * 0.93) * 0.13
+        Math.sin(pieceIndex * 2.17) * 0.34,
+        Math.cos(pieceIndex * 1.71) * 0.28,
+        Math.sin(pieceIndex * 0.93) * 0.24
       ));
-      // Independent angular momentum gives each free connector a changing tumble axis.
+      // Distinct angular momentum produces a slow, natural tumble with changing axes.
       angularVelocities.push(new THREE.Vector3(
-        0.20 + Math.sin(meshes.length * 1.31) * 0.16,
-        -0.18 + Math.cos(meshes.length * 1.73) * 0.15,
-        0.17 + Math.sin(meshes.length * 0.87) * 0.14
+        0.34 + Math.sin(pieceIndex * 1.31) * 0.25,
+        -0.28 + Math.cos(pieceIndex * 1.73) * 0.22,
+        0.26 + Math.sin(pieceIndex * 0.87) * 0.20
       ));
       mesh.castShadow = true;
       mesh.receiveShadow = true;
