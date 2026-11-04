@@ -27,6 +27,8 @@ assert.match(page, /function ClientLogoTile\(\{ name, src \}/);
 assert.match(page, /<img[\s\S]*?src=\{src\}[\s\S]*?alt=\{name\}/, "client marks render as named image assets");
 assert.match(page, /LUSION_ABOUT\.clients\.carouselRows\.map/);
 assert.match(page, /about-client-marquee-track/);
+assert.match(page, /role="list"/, "each marquee row is exposed as a semantic list");
+assert.match(page, /role="listitem"/, "each logo has a list-item relationship");
 assert.match(page, /aria-hidden=\{copy === 1 \? true : undefined\}/, "duplicated marquee row is hidden from assistive technology");
 assert.match(css, /@keyframes about-client-marquee/);
 assert.match(css, /prefers-reduced-motion:\s*reduce/);
