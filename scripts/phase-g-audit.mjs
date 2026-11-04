@@ -448,7 +448,7 @@ if (MODE === "capture-reference") {
       }
     }
 
-    // Group remaining states by `(vp, route)` and run 4 parallel Chromium route workers so all 22 routes finish in ~60s!
+    // Group remaining states by `(vp, route)` and run 4 parallel Chromium route workers so all 20 routes finish in ~60s!
     const routeGroups = [];
     for (const vp of [...VIEWPORTS, INTERMEDIATE_VIEWPORT]) {
       const statesForVp = (vp.name === "1024x768" ? INTERMEDIATE_STATES : STATES).filter(
@@ -834,7 +834,7 @@ try {
   const outJson = path.join(PHASE_G_ROOT, `metrics-${RUN_LABEL}.json`);
   fs.writeFileSync(outJson, JSON.stringify(summary, null, 2));
   console.log(
-    `\n=== PHASE G SUMMARY [${RUN_LABEL}] (${results.length} states across ALL 22 routes): Mean MAE=${summary.meanMae} | Mean PSNR=${summary.meanPsnr} dB | Mean SSIM=${summary.meanSsim} ===`
+    `\n=== PHASE G SUMMARY [${RUN_LABEL}] (${results.length} states across ALL 20 routes): Mean MAE=${summary.meanMae} | Mean PSNR=${summary.meanPsnr} dB | Mean SSIM=${summary.meanSsim} ===`
   );
   console.log(
     `    Desktop 1440x900: MAE=${byVp["1440x900"].meanMae} (SSIM=${byVp["1440x900"].meanSsim}) | Mobile 390x844: MAE=${byVp["390x844"].meanMae} (SSIM=${byVp["390x844"].meanSsim}) | Tablet 1024x768: MAE=${byVp["1024x768"].meanMae}`
