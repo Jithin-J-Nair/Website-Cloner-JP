@@ -281,12 +281,19 @@ try {
       const footer = page.locator('#footer-section');
       const footerTop = await footer.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       await seekY(footerTop);
-      const contactLinks = await page.evaluate(() => ({
-        general: document.querySelector('#footer-enquires-link')?.getAttribute('href') ?? null,
-        business: document.querySelector('#footer-business-link')?.getAttribute('href') ?? null,
-        socials: [...document.querySelectorAll('#footer-contact-socials a')].map(link => link.href),
-        next: Boolean(document.querySelector('#scroll-nav-next')),
-      }));
+      const contactLinks = await page.evaluate(() => {
+        const logo = document.querySelector('#header-logo')?.getBoundingClientRect();
+        const address = document.querySelector('#footer-contact-address')?.getBoundingClientRect();
+        return {
+          general: document.querySelector('#footer-enquires-link')?.getAttribute('href') ?? null,
+          business: document.querySelector('#footer-business-link')?.getAttribute('href') ?? null,
+          socials: [...document.querySelectorAll('#footer-contact-socials a')].map(link => link.href),
+          next: Boolean(document.querySelector('#scroll-nav-next')),
+          mastheadBottom: logo?.bottom ?? 0,
+          addressTop: address?.top ?? 0,
+        };
+      });
+      assert.ok(contactLinks.addressTop >= contactLinks.mastheadBottom + 12, 'footer address clears the fixed LUSION masthead');
       assert.match(contactLinks.general ?? '', /^mailto:/, 'general enquiries must remain a mailto link');
       assert.match(contactLinks.business ?? '', /^mailto:/, 'new business must remain a mailto link');
       assert.ok(contactLinks.socials.length >= 3 && contactLinks.socials.every(href => /^https:\/\//.test(href)), 'social destinations must be real HTTPS links');
