@@ -32,7 +32,13 @@ try {
     assert.ok(triangles <= count * 24, 'bounded real extruded geometry');
     assert.match(a.group.children[0].material.vertexShader, /uProgress/);
     assert.match(a.group.children[0].material.vertexShader, /uTextBottom/);
-    assert.match(a.group.children[0].material.vertexShader, /uPointer/);
+    const vertexShader = a.group.children[0].material.vertexShader;
+    assert.match(vertexShader, /uPointer/);
+    assert.match(vertexShader, /fallWidth/, 'incoming stream must occupy a broad, gathering footprint');
+    assert.match(vertexShader, /depthFlow/, 'falling grains must occupy real depth, not a flat ribbon');
+    assert.match(vertexShader, /radial \* influence \* \.72/, 'pointer response must deflect the field in 3D');
+    assert.match(vertexShader, /tangent \* influence \* \.26/, 'pointer response must impart a tangential sweep');
+    assert.doesNotMatch(vertexShader, /sin\(aSeed\.x \* 7\..*\) \* \.12/, 'the former near-zero-width emitter must not return');
     assert.match(a.group.children[0].material.fragmentShader, /vNormal/);
     a.setTime(2); assert.equal(a.uniforms.uTime.value, 2); a.setTime(NaN); assert.equal(a.uniforms.uTime.value, 0);
     a.dispose(); a.dispose(); assert.equal(disposals, 3, 'idempotent geometry ownership'); b.dispose();
