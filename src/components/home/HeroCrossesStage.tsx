@@ -877,7 +877,7 @@ export function HeroCrossesStage() {
       if (isReduced || !moving) return;
 
       // Idle cloud motion runs at 30fps; pointer throws get the full display refresh rate.
-      scheduleNext(elapsedFrameMs, idleEnabled && !ptr.active);
+      scheduleNext(elapsedFrameMs, idleEnabled && isSoftwareRenderer);
     };
 
     const wakeScene = () => {
