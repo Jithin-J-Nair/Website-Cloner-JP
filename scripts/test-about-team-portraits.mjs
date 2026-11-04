@@ -22,6 +22,10 @@ for (const member of team) {
 }
 assert.match(page, /loadLusionBuf\(member\.modelPath\)/, "team selection loads its mapped portrait asset");
 assert.match(page, /teamPortraitSource = "bundle"/, "the active section exposes bundled portrait status");
+assert.match(page, /new THREE\.BufferAttribute\(shade, 4, true\)/, "bundled point normals and shade use normalized byte attributes");
+assert.match(page, /attribute vec4 nShade;/, "portrait shader consumes packed per-point shading");
+assert.match(page, /normalMatrix \* sourceNormal/, "portrait highlights use the original point-cloud normal");
+
 assert.match(page, /procedural-fallback/, "an offline-safe procedural fallback remains");
 assert.match(page, /cancelled \|\| portraitGeoRef\.current !== geo/, "late portrait loads cannot mutate a disposed scene");
 assert.match(modelLoader, /export function loadLusionBuf/);
