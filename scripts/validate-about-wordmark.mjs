@@ -135,10 +135,16 @@ try {
         return probe && probe.u > 7 && document.querySelector('#about-who-team-name');
       }, null, { timeout: 15000 });
       const originalMember = (await page.locator('#about-who-team-name').textContent())?.trim();
+      const advanceControl = await page.getByRole('button', { name: 'Next team member' }).evaluate(button => {
+        const rect = button.getBoundingClientRect();
+        return { width: rect.width, height: rect.height, visible: getComputedStyle(button).visibility !== 'hidden' };
+      });
+      assert.ok(advanceControl.visible);
+      assert.ok(advanceControl.width <= 90 && advanceControl.height <= 90, 'team navigation must not cover the point-cloud portrait');
       await page.getByRole('button', { name: 'Select Ffion Morgan' }).click();
       await page.waitForFunction(() => document.querySelector('#about-who-team-name')?.textContent?.trim() === 'Ffion Morgan', null, { timeout: 5000 });
       assert.notEqual(originalMember, 'Ffion Morgan', 'team selector changes the active member');
-      let teamInteraction = { originalMember, selectedMember: 'Ffion Morgan' };
+      let teamInteraction = { originalMember, selectedMember: 'Ffion Morgan', advanceControl };
       if (width !== 390) {
         await page.mouse.move(width * .95, height * .46);
         await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 0) > .07, null, { timeout: 5000 });
