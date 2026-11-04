@@ -6,6 +6,7 @@ export interface HomePhysicsStep {
   interactionEnergy: number;
   kineticEnergy: number;
   maxTravel: number;
+  meanRadius: number;
 }
 
 function closestSegmentPoints(
@@ -259,10 +260,12 @@ export class HomeConnectorPhysics {
     if(this.interactionEnergy<0.00001) this.interactionEnergy=0;
     let kineticEnergy=0;
     let maxTravel=0;
+    let radiusTotal=0;
     for(let i=0;i<this.meshes.length;i++) {
       this.meshes[i].position.copy(this.positions[i]);
       kineticEnergy+=this.linear[i].lengthSq()+this.angular[i].lengthSq()*0.18;
       maxTravel=Math.max(maxTravel,this.positions[i].distanceTo(this.spawnPositions[i]));
+      radiusTotal+=this.positions[i].length();
     }
     return {
       collisions,
@@ -270,6 +273,7 @@ export class HomeConnectorPhysics {
       interactionEnergy:this.interactionEnergy,
       kineticEnergy,
       maxTravel,
+      meanRadius:radiusTotal/Math.max(1,this.positions.length),
     };
   }
 }
