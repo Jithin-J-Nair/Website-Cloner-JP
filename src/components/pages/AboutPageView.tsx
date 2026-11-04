@@ -1307,6 +1307,29 @@ function ClientLogoTile({ name, src }: { name: string; src: string }) {
   );
 }
 
+/** Keep decorative marquees off the compositor when the brand wall is off-screen. */
+function AboutClientMarqueeLifecycle() {
+  useEffect(() => {
+    const rows = [...document.querySelectorAll<HTMLElement>("#about-clients .about-client-marquee")];
+    if (!rows.length) return;
+    if (!("IntersectionObserver" in window)) {
+      rows.forEach(row => row.classList.add("is-in-view"));
+      return;
+    }
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        (entry.target as HTMLElement).classList.toggle("is-in-view", entry.isIntersecting);
+      }
+    }, { rootMargin: "140px 0px", threshold: 0.01 });
+    rows.forEach(row => observer.observe(row));
+    return () => {
+      observer.disconnect();
+      rows.forEach(row => row.classList.remove("is-in-view"));
+    };
+  }, []);
+  return null;
+}
+
 /** Historical-evidence reconstruction, not a claim of exact current live parity.
  * Sticky native Three world → brands → recognition → expertise → shared CTA/footer.
  * Original generic portrait and procedural terrain replace restricted capture data;
@@ -1462,6 +1485,7 @@ export function AboutPageView() {
             </div>
           </div>
 
+          <AboutClientMarqueeLifecycle />
           <div className="about-client-marquee-stack mt-16 flex flex-col gap-6 md:mt-20 md:gap-8">
             {LUSION_ABOUT.clients.carouselRows.map((row, rowIdx) => (
               <div
