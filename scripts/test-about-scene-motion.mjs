@@ -39,6 +39,7 @@ try {
    for(const k of ['y','z','lookY'])assert.ok(Math.abs((b[k]-a[k])/.00001-(c[k]-b[k])/.00001)<.02,`${k} slope at ${u}`);
   }
  }
+ assert.equal(sweep(1.6, false).opacity, 0, 'desktop LUSION sweep clears before the settled valley manifesto');
  for(const mobile of [false,true]){
   const end = mobile ? 11.25 : 9.5;
   const samples=[];
