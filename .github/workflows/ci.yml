@@ -55,6 +55,9 @@ jobs:
       - name: About CTA particle-field tests
         run: node scripts/test-contact-field.mjs
 
+      - name: About expertise-card motion tests
+        run: node scripts/test-about-expertise-motion.mjs
+
       - name: Build
         run: npm run build
 
