@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "referenceCaptureDate": "2026-09-23",
   "canonicalOrigin": "https://lusion.co",
-  "routeCount": 22,
+  "routeCount": 20,
   "routes": [
     {
       "route": "/",
@@ -30,20 +30,6 @@
       "projectId": "oryzo_ai"
     },
     {
-      "route": "/projects/atlas_motion",
-      "type": "project-detail",
-      "sourceHtml": "projects/atlas_motion/index.html",
-      "title": "Lusion - Atlas Motion",
-      "projectId": "atlas_motion"
-    },
-    {
-      "route": "/projects/devin_ai",
-      "type": "project-detail",
-      "sourceHtml": "projects/devin_ai/index.html",
-      "title": "Lusion - Devin AI",
-      "projectId": "devin_ai"
-    },
-    {
       "route": "/projects/of_the_oak",
       "type": "project-detail",
       "sourceHtml": "projects/of_the_oak/index.html",
@@ -51,11 +37,11 @@
       "projectId": "of_the_oak"
     },
     {
-      "route": "/projects/everswap",
+      "route": "/projects/devin_ai",
       "type": "project-detail",
-      "sourceHtml": "projects/everswap/index.html",
-      "title": "Lusion - Everswap",
-      "projectId": "everswap"
+      "sourceHtml": "projects/devin_ai/index.html",
+      "title": "Lusion - Devin AI",
+      "projectId": "devin_ai"
     },
     {
       "route": "/projects/porsche_dream_machine",
@@ -220,7 +206,7 @@
             "upm": 2048,
             "xHeightEm": 0.51,
             "capHeightEm": 0.701,
-            "ascentEm": 1.0,
+            "ascentEm": 1,
             "descentEm": -0.2,
             "hero91CharAdvanceEm": 40.858
           },
@@ -414,7 +400,7 @@
       "disclaimer": "A selection of immersive digital experiences created for ambitious brands and forward thinking teams.",
       "ctaLabel": "See all projects",
       "ctaHref": "/projects",
-      "count": 12,
+      "count": 10,
       "projects": [
         {
           "id": "oryzo_ai",
@@ -436,50 +422,6 @@
           "thumbnailWidth": 1200,
           "thumbnailHeight": 900,
           "depthMap": "/assets/projects/oryzo_ai/home_depth.webp",
-          "depthMapWidth": 1200,
-          "depthMapHeight": 900
-        },
-        {
-          "id": "atlas_motion",
-          "href": "/projects/atlas_motion",
-          "title": "Atlas Motion",
-          "categoriesText": "concept • web • design • development • 3d • animation",
-          "categories": [
-            "concept",
-            "web",
-            "design",
-            "development",
-            "3d",
-            "animation"
-          ],
-          "colorBg": "#181818",
-          "colorText": "#FFFDE0",
-          "colorShadow": 0.95,
-          "thumbnail": "/assets/projects/atlas_motion/home.webp",
-          "thumbnailWidth": 1200,
-          "thumbnailHeight": 900,
-          "depthMap": "/assets/projects/atlas_motion/home_depth.webp",
-          "depthMapWidth": 1200,
-          "depthMapHeight": 900
-        },
-        {
-          "id": "devin_ai",
-          "href": "/projects/devin_ai",
-          "title": "Devin AI",
-          "categoriesText": "web • design • development • 3d",
-          "categories": [
-            "web",
-            "design",
-            "development",
-            "3d"
-          ],
-          "colorBg": "#121414",
-          "colorText": "#ffffff",
-          "colorShadow": 0.9,
-          "thumbnail": "/assets/projects/devin_ai/home.webp",
-          "thumbnailWidth": 1200,
-          "thumbnailHeight": 900,
-          "depthMap": "/assets/projects/devin_ai/home_depth.webp",
           "depthMapWidth": 1200,
           "depthMapHeight": 900
         },
@@ -506,25 +448,23 @@
           "depthMapHeight": 900
         },
         {
-          "id": "everswap",
-          "href": "/projects/everswap",
-          "title": "Everswap",
-          "categoriesText": "concept • web • design • development • 3d • animation",
+          "id": "devin_ai",
+          "href": "/projects/devin_ai",
+          "title": "Devin AI",
+          "categoriesText": "web • design • development • 3d",
           "categories": [
-            "concept",
             "web",
             "design",
             "development",
-            "3d",
-            "animation"
+            "3d"
           ],
-          "colorBg": "#E3E3F8",
-          "colorText": "#000",
-          "colorShadow": 0.95,
-          "thumbnail": "/assets/projects/everswap/home.webp",
+          "colorBg": "#121414",
+          "colorText": "#ffffff",
+          "colorShadow": 0.9,
+          "thumbnail": "/assets/projects/devin_ai/home.webp",
           "thumbnailWidth": 1200,
           "thumbnailHeight": 900,
-          "depthMap": "/assets/projects/everswap/home_depth.webp",
+          "depthMap": "/assets/projects/devin_ai/home_depth.webp",
           "depthMapWidth": 1200,
           "depthMapHeight": 900
         },
@@ -1323,8 +1263,8 @@
       "ogImage": "/assets/meta/social_sharing.jpg"
     },
     "heading": "PROJECTS",
-    "displayedCount": "19",
-    "count": 19,
+    "displayedCount": "17",
+    "count": 17,
     "projects": [
       {
         "id": "oryzo_ai",
@@ -1346,50 +1286,6 @@
         "thumbnailWidth": 1200,
         "thumbnailHeight": 900,
         "depthMap": "/assets/projects/oryzo_ai/home_depth.webp",
-        "depthMapWidth": 1200,
-        "depthMapHeight": 900
-      },
-      {
-        "id": "atlas_motion",
-        "href": "/projects/atlas_motion",
-        "title": "Atlas Motion",
-        "categoriesText": "concept • web • design • development • 3d • animation",
-        "categories": [
-          "concept",
-          "web",
-          "design",
-          "development",
-          "3d",
-          "animation"
-        ],
-        "colorBg": "#181818",
-        "colorText": "#FFFDE0",
-        "colorShadow": 0.95,
-        "thumbnail": "/assets/projects/atlas_motion/home.webp",
-        "thumbnailWidth": 1200,
-        "thumbnailHeight": 900,
-        "depthMap": "/assets/projects/atlas_motion/home_depth.webp",
-        "depthMapWidth": 1200,
-        "depthMapHeight": 900
-      },
-      {
-        "id": "devin_ai",
-        "href": "/projects/devin_ai",
-        "title": "Devin AI",
-        "categoriesText": "web • design • development • 3d",
-        "categories": [
-          "web",
-          "design",
-          "development",
-          "3d"
-        ],
-        "colorBg": "#121414",
-        "colorText": "#ffffff",
-        "colorShadow": 0.9,
-        "thumbnail": "/assets/projects/devin_ai/home.webp",
-        "thumbnailWidth": 1200,
-        "thumbnailHeight": 900,
-        "depthMap": "/assets/projects/devin_ai/home_depth.webp",
         "depthMapWidth": 1200,
         "depthMapHeight": 900
       },
@@ -1416,25 +1312,23 @@
         "depthMapHeight": 900
       },
       {
-        "id": "everswap",
-        "href": "/projects/everswap",
-        "title": "Everswap",
-        "categoriesText": "concept • web • design • development • 3d • animation",
+        "id": "devin_ai",
+        "href": "/projects/devin_ai",
+        "title": "Devin AI",
+        "categoriesText": "web • design • development • 3d",
         "categories": [
-          "concept",
           "web",
           "design",
           "development",
-          "3d",
-          "animation"
+          "3d"
         ],
-        "colorBg": "#E3E3F8",
-        "colorText": "#000",
-        "colorShadow": 0.95,
-        "thumbnail": "/assets/projects/everswap/home.webp",
+        "colorBg": "#121414",
+        "colorText": "#ffffff",
+        "colorShadow": 0.9,
+        "thumbnail": "/assets/projects/devin_ai/home.webp",
         "thumbnailWidth": 1200,
         "thumbnailHeight": 900,
-        "depthMap": "/assets/projects/everswap/home_depth.webp",
+        "depthMap": "/assets/projects/devin_ai/home_depth.webp",
         "depthMapWidth": 1200,
         "depthMapHeight": 900
       },
@@ -1939,340 +1833,6 @@
         }
       ],
       "nextProject": {
-        "id": "atlas_motion",
-        "href": "/projects/atlas_motion",
-        "title": "Atlas Motion",
-        "label": "NEXT PROJECT",
-        "colorBg": "#181818",
-        "colorText": "#FFFDE0",
-        "shadow": 0.95
-      },
-      "scrollNav": {
-        "subtitle": "Keep Scrollingto Learn More",
-        "targetTitle": "About Us",
-        "nextPageLabel": "Next Page"
-      }
-    },
-    {
-      "archiveIndex": 2,
-      "featuredIndex": 2,
-      "isFeatured": true,
-      "id": "atlas_motion",
-      "route": "/projects/atlas_motion",
-      "sourceHtml": "projects/atlas_motion/index.html",
-      "meta": {
-        "title": "Lusion - Atlas Motion",
-        "description": "Our detailed case study on Atlas Motion. Produced by Lusion.",
-        "ogTitle": "Lusion - Atlas Motion",
-        "ogDescription": "Our detailed case study on Atlas Motion. Produced by Lusion.",
-        "ogImage": "/assets/meta/social_sharing.jpg"
-      },
-      "title": "Atlas Motion",
-      "categoriesText": "concept • web • design • development • 3d • animation",
-      "categories": [
-        "concept",
-        "web",
-        "design",
-        "development",
-        "3d",
-        "animation"
-      ],
-      "thumbnail": "/assets/projects/atlas_motion/home.webp",
-      "thumbnailWidth": 1200,
-      "thumbnailHeight": 900,
-      "depthMap": "/assets/projects/atlas_motion/home_depth.webp",
-      "scrollPrompt": "scroll to explore",
-      "theme": {
-        "colorBg": "#181818",
-        "colorText": "#FFFDE0",
-        "colorHighlight": "#F65893",
-        "colorBtnBg": "#FFFDE0",
-        "colorBtnBgHover": "#F65893",
-        "colorBtnText": "#192743",
-        "colorBtnTextHover": "#FFFDE0",
-        "colorIcon": null,
-        "colorIconBg": "#FFFDE0",
-        "colorIconColor": "#192743",
-        "shadow": 0.95
-      },
-      "paragraphs": [
-        {
-          "text": "Atlas is building next generation motion systems for drones, robotics, and autonomous hardware. We worked with the team to create a focused digital experience that turns a complex manufacturing story into something clear, confident, and tangible. The site introduces Atlas’ joint development model, brings their product and factory story to the surface, and uses precise motion, visual pacing, and selective WebGL to communicate the scale of their ambition without losing the seriousness of the category.",
-          "html": "Atlas is building next generation motion systems for drones, robotics, and autonomous hardware. We worked with the team to create a focused digital experience that turns a complex manufacturing story into something clear, confident, and tangible. The site introduces Atlas’ joint development model, brings their product and factory story to the surface, and uses precise motion, visual pacing, and selective WebGL to communicate the scale of their ambition without losing the seriousness of the category.",
-          "links": []
-        }
-      ],
-      "launchCta": {
-        "label": "Launch Project",
-        "href": "https://atlasmotion.com/",
-        "isVimeoOverlay": false,
-        "vimeoId": null
-      },
-      "services": [
-        "Concept",
-        "Web Design",
-        "Web Development",
-        "3D Design",
-        "WebGL",
-        "Animation"
-      ],
-      "links": [],
-      "mediaCount": 7,
-      "media": [
-        {
-          "index": 0,
-          "type": "video",
-          "basePath": "/assets/projects/atlas_motion/main",
-          "desktopSrc": "/assets/projects/atlas_motion/main.mp4",
-          "mobileSrc": "/assets/projects/atlas_motion/main.mp4",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1234,
-          "declaredHeight": 720,
-          "actualWidth": 1234,
-          "actualHeight": 720,
-          "fullscreen": false,
-          "durationSec": 5.4,
-          "fps": 50,
-          "hasAudio": false
-        },
-        {
-          "index": 1,
-          "type": "image",
-          "basePath": "/assets/projects/atlas_motion/1",
-          "desktopSrc": "/assets/projects/atlas_motion/1.webp",
-          "mobileSrc": "/assets/projects/atlas_motion/1.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1820,
-          "declaredHeight": 1024,
-          "actualWidth": 1820,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 2,
-          "type": "image",
-          "basePath": "/assets/projects/atlas_motion/2",
-          "desktopSrc": "/assets/projects/atlas_motion/2.webp",
-          "mobileSrc": "/assets/projects/atlas_motion/2.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1820,
-          "declaredHeight": 1024,
-          "actualWidth": 1820,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 3,
-          "type": "image",
-          "basePath": "/assets/projects/atlas_motion/3",
-          "desktopSrc": "/assets/projects/atlas_motion/3.webp",
-          "mobileSrc": "/assets/projects/atlas_motion/3.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1820,
-          "declaredHeight": 1024,
-          "actualWidth": 1820,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 4,
-          "type": "image",
-          "basePath": "/assets/projects/atlas_motion/4",
-          "desktopSrc": "/assets/projects/atlas_motion/4.webp",
-          "mobileSrc": "/assets/projects/atlas_motion/4.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1820,
-          "declaredHeight": 1024,
-          "actualWidth": 1820,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 5,
-          "type": "image",
-          "basePath": "/assets/projects/atlas_motion/5",
-          "desktopSrc": "/assets/projects/atlas_motion/5.webp",
-          "mobileSrc": "/assets/projects/atlas_motion/5.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1820,
-          "declaredHeight": 1024,
-          "actualWidth": 1820,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 6,
-          "type": "image",
-          "basePath": "/assets/projects/atlas_motion/6",
-          "desktopSrc": "/assets/projects/atlas_motion/6.webp",
-          "mobileSrc": "/assets/projects/atlas_motion/6.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1820,
-          "declaredHeight": 1024,
-          "actualWidth": 1820,
-          "actualHeight": 1024,
-          "fullscreen": false
-        }
-      ],
-      "nextProject": {
-        "id": "devin_ai",
-        "href": "/projects/devin_ai",
-        "title": "Devin AI",
-        "label": "NEXT PROJECT",
-        "colorBg": "#121414",
-        "colorText": "#ffffff",
-        "shadow": 0.9
-      },
-      "scrollNav": {
-        "subtitle": "Keep Scrollingto Learn More",
-        "targetTitle": "About Us",
-        "nextPageLabel": "Next Page"
-      }
-    },
-    {
-      "archiveIndex": 3,
-      "featuredIndex": 3,
-      "isFeatured": true,
-      "id": "devin_ai",
-      "route": "/projects/devin_ai",
-      "sourceHtml": "projects/devin_ai/index.html",
-      "meta": {
-        "title": "Lusion - Devin AI",
-        "description": "Our detailed case study on Devin AI. Produced by Lusion.",
-        "ogTitle": "Lusion - Devin AI",
-        "ogDescription": "Our detailed case study on Devin AI. Produced by Lusion.",
-        "ogImage": "/assets/meta/social_sharing.jpg"
-      },
-      "title": "Devin AI",
-      "categoriesText": "web • design • development • 3d",
-      "categories": [
-        "web",
-        "design",
-        "development",
-        "3d"
-      ],
-      "thumbnail": "/assets/projects/devin_ai/home.webp",
-      "thumbnailWidth": 1200,
-      "thumbnailHeight": 900,
-      "depthMap": "/assets/projects/devin_ai/home_depth.webp",
-      "scrollPrompt": "scroll to explore",
-      "theme": {
-        "colorBg": "#121414",
-        "colorText": "#ffffff",
-        "colorHighlight": "#64e1ce",
-        "colorBtnBg": "#ffffff",
-        "colorBtnBgHover": "#64e1ce",
-        "colorBtnText": "#192743",
-        "colorBtnTextHover": "#ffffff",
-        "colorIcon": null,
-        "colorIconBg": "#ffffff",
-        "colorIconColor": "#192743",
-        "shadow": 0.9
-      },
-      "paragraphs": [
-        {
-          "text": "We partnered with Cognition AI to create a modern website for Devin, their AI software engineer. The challenge was to communicate a complex AI product in a way that felt clear, sleek, and accessible.",
-          "html": "We partnered with Cognition AI to create a modern website for Devin, their AI software engineer. The challenge was to communicate a complex AI product in a way that felt clear, sleek, and accessible.",
-          "links": []
-        },
-        {
-          "text": "Through subtle storytelling, animation, and interactive design, we introduced Devin’s features in a more engaging way and created a polished experience that felt both advanced and approachable.",
-          "html": "Through subtle storytelling, animation, and interactive design, we introduced Devin’s features in a more engaging way and created a polished experience that felt both advanced and approachable.",
-          "links": []
-        }
-      ],
-      "launchCta": {
-        "label": "Launch Project",
-        "href": "https://archive-devin-ai.lusion.co/",
-        "isVimeoOverlay": false,
-        "vimeoId": null
-      },
-      "services": [
-        "Concept",
-        "Web Design",
-        "Web Development",
-        "3D Design",
-        "WebGL"
-      ],
-      "links": [],
-      "mediaCount": 5,
-      "media": [
-        {
-          "index": 0,
-          "type": "video",
-          "basePath": "/assets/projects/devin_ai/video0",
-          "desktopSrc": "/assets/projects/devin_ai/video0.mp4",
-          "mobileSrc": "/assets/projects/devin_ai/mobile_video0.mp4",
-          "hasDedicatedMobileVariant": true,
-          "declaredWidth": 1920,
-          "declaredHeight": 1080,
-          "actualWidth": 1280,
-          "actualHeight": 720,
-          "fullscreen": false,
-          "durationSec": 12.68,
-          "fps": 29.97,
-          "hasAudio": false
-        },
-        {
-          "index": 1,
-          "type": "image",
-          "basePath": "/assets/projects/devin_ai/image1",
-          "desktopSrc": "/assets/projects/devin_ai/image1.webp",
-          "mobileSrc": "/assets/projects/devin_ai/mobile_image1.webp",
-          "hasDedicatedMobileVariant": true,
-          "declaredWidth": 1920,
-          "declaredHeight": 1080,
-          "actualWidth": 1920,
-          "actualHeight": 1080,
-          "fullscreen": false
-        },
-        {
-          "index": 2,
-          "type": "video",
-          "basePath": "/assets/projects/devin_ai/video2",
-          "desktopSrc": "/assets/projects/devin_ai/video2.mp4",
-          "mobileSrc": "/assets/projects/devin_ai/mobile_video2.mp4",
-          "hasDedicatedMobileVariant": true,
-          "declaredWidth": 1080,
-          "declaredHeight": 1080,
-          "actualWidth": 1920,
-          "actualHeight": 1080,
-          "fullscreen": true,
-          "durationSec": 17.63,
-          "fps": 30,
-          "hasAudio": false
-        },
-        {
-          "index": 3,
-          "type": "video",
-          "basePath": "/assets/projects/devin_ai/video3",
-          "desktopSrc": "/assets/projects/devin_ai/video3.mp4",
-          "mobileSrc": "/assets/projects/devin_ai/mobile_video3.mp4",
-          "hasDedicatedMobileVariant": true,
-          "declaredWidth": 1920,
-          "declaredHeight": 1080,
-          "actualWidth": 1280,
-          "actualHeight": 720,
-          "fullscreen": false,
-          "durationSec": 6.41,
-          "fps": 29.97,
-          "hasAudio": false
-        },
-        {
-          "index": 4,
-          "type": "image",
-          "basePath": "/assets/projects/devin_ai/image4",
-          "desktopSrc": "/assets/projects/devin_ai/image4.webp",
-          "mobileSrc": "/assets/projects/devin_ai/mobile_image4.webp",
-          "hasDedicatedMobileVariant": true,
-          "declaredWidth": 1920,
-          "declaredHeight": 1080,
-          "actualWidth": 1920,
-          "actualHeight": 1080,
-          "fullscreen": false
-        }
-      ],
-      "nextProject": {
         "id": "of_the_oak",
         "href": "/projects/of_the_oak",
         "title": "Of The Oak",
@@ -2288,8 +1848,8 @@
       }
     },
     {
-      "archiveIndex": 4,
-      "featuredIndex": 4,
+      "archiveIndex": 2,
+      "featuredIndex": 2,
       "isFeatured": true,
       "id": "of_the_oak",
       "route": "/projects/of_the_oak",
@@ -2459,13 +2019,13 @@
         }
       ],
       "nextProject": {
-        "id": "everswap",
-        "href": "/projects/everswap",
-        "title": "Everswap",
+        "id": "devin_ai",
+        "href": "/projects/devin_ai",
+        "title": "Devin AI",
         "label": "NEXT PROJECT",
-        "colorBg": "#E3E3F8",
-        "colorText": "#000",
-        "shadow": 0.95
+        "colorBg": "#121414",
+        "colorText": "#ffffff",
+        "shadow": 0.9
       },
       "scrollNav": {
         "subtitle": "Keep Scrollingto Learn More",
@@ -2474,57 +2034,60 @@
       }
     },
     {
-      "archiveIndex": 5,
-      "featuredIndex": 5,
+      "archiveIndex": 3,
+      "featuredIndex": 3,
       "isFeatured": true,
-      "id": "everswap",
-      "route": "/projects/everswap",
-      "sourceHtml": "projects/everswap/index.html",
+      "id": "devin_ai",
+      "route": "/projects/devin_ai",
+      "sourceHtml": "projects/devin_ai/index.html",
       "meta": {
-        "title": "Lusion - Everswap",
-        "description": "Our detailed case study on Everswap. Produced by Lusion.",
-        "ogTitle": "Lusion - Everswap",
-        "ogDescription": "Our detailed case study on Everswap. Produced by Lusion.",
+        "title": "Lusion - Devin AI",
+        "description": "Our detailed case study on Devin AI. Produced by Lusion.",
+        "ogTitle": "Lusion - Devin AI",
+        "ogDescription": "Our detailed case study on Devin AI. Produced by Lusion.",
         "ogImage": "/assets/meta/social_sharing.jpg"
       },
-      "title": "Everswap",
-      "categoriesText": "concept • web • design • development • 3d • animation",
+      "title": "Devin AI",
+      "categoriesText": "web • design • development • 3d",
       "categories": [
-        "concept",
         "web",
         "design",
         "development",
-        "3d",
-        "animation"
+        "3d"
       ],
-      "thumbnail": "/assets/projects/everswap/home.webp",
+      "thumbnail": "/assets/projects/devin_ai/home.webp",
       "thumbnailWidth": 1200,
       "thumbnailHeight": 900,
-      "depthMap": "/assets/projects/everswap/home_depth.webp",
+      "depthMap": "/assets/projects/devin_ai/home_depth.webp",
       "scrollPrompt": "scroll to explore",
       "theme": {
-        "colorBg": "#E3E3F8",
-        "colorText": "#000",
-        "colorHighlight": "#756ACC",
-        "colorBtnBg": "#000",
-        "colorBtnBgHover": "#756ACC",
+        "colorBg": "#121414",
+        "colorText": "#ffffff",
+        "colorHighlight": "#64e1ce",
+        "colorBtnBg": "#ffffff",
+        "colorBtnBgHover": "#64e1ce",
         "colorBtnText": "#192743",
-        "colorBtnTextHover": "#000",
+        "colorBtnTextHover": "#ffffff",
         "colorIcon": null,
-        "colorIconBg": "#000",
+        "colorIconBg": "#ffffff",
         "colorIconColor": "#192743",
-        "shadow": 0.95
+        "shadow": 0.9
       },
       "paragraphs": [
         {
-          "text": "We were commissioned by the EverSwap team to create an immersive storytelling experience that makes their Web3 products feel intuitive and engaging. Inspired by the natural flow of liquidity, we built a journey through evolving terrains, rivers and lakes - transforming the complexities of trading, lending and borrowing into a fluid visual narrative of movement, connection and exchange.",
-          "html": "We were commissioned by the EverSwap team to create an immersive storytelling experience that makes their Web3 products feel intuitive and engaging. Inspired by the natural flow of liquidity, we built a journey through evolving terrains, rivers and lakes - transforming the complexities of trading, lending and borrowing into a fluid visual narrative of movement, connection and exchange.",
+          "text": "We partnered with Cognition AI to create a modern website for Devin, their AI software engineer. The challenge was to communicate a complex AI product in a way that felt clear, sleek, and accessible.",
+          "html": "We partnered with Cognition AI to create a modern website for Devin, their AI software engineer. The challenge was to communicate a complex AI product in a way that felt clear, sleek, and accessible.",
+          "links": []
+        },
+        {
+          "text": "Through subtle storytelling, animation, and interactive design, we introduced Devin’s features in a more engaging way and created a polished experience that felt both advanced and approachable.",
+          "html": "Through subtle storytelling, animation, and interactive design, we introduced Devin’s features in a more engaging way and created a polished experience that felt both advanced and approachable.",
           "links": []
         }
       ],
       "launchCta": {
         "label": "Launch Project",
-        "href": "https://everswap.com/",
+        "href": "https://archive-devin-ai.lusion.co/",
         "isVimeoOverlay": false,
         "vimeoId": null
       },
@@ -2533,155 +2096,90 @@
         "Web Design",
         "Web Development",
         "3D Design",
-        "WebGL",
-        "Animation"
+        "WebGL"
       ],
-      "links": [
-        {
-          "label": "Awwwards SOTD",
-          "href": "https://www.awwwards.com/sites/everswap"
-        }
-      ],
-      "mediaCount": 10,
+      "links": [],
+      "mediaCount": 5,
       "media": [
         {
           "index": 0,
           "type": "video",
-          "basePath": "/assets/projects/everswap/main",
-          "desktopSrc": "/assets/projects/everswap/main.mp4",
-          "mobileSrc": "/assets/projects/everswap/main.mp4",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1280,
-          "declaredHeight": 720,
+          "basePath": "/assets/projects/devin_ai/video0",
+          "desktopSrc": "/assets/projects/devin_ai/video0.mp4",
+          "mobileSrc": "/assets/projects/devin_ai/mobile_video0.mp4",
+          "hasDedicatedMobileVariant": true,
+          "declaredWidth": 1920,
+          "declaredHeight": 1080,
           "actualWidth": 1280,
           "actualHeight": 720,
           "fullscreen": false,
-          "durationSec": 33.55,
-          "fps": 60,
+          "durationSec": 12.68,
+          "fps": 29.97,
           "hasAudio": false
         },
         {
           "index": 1,
           "type": "image",
-          "basePath": "/assets/projects/everswap/1",
-          "desktopSrc": "/assets/projects/everswap/1.webp",
-          "mobileSrc": "/assets/projects/everswap/1.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1679,
-          "declaredHeight": 1024,
-          "actualWidth": 1679,
-          "actualHeight": 1024,
+          "basePath": "/assets/projects/devin_ai/image1",
+          "desktopSrc": "/assets/projects/devin_ai/image1.webp",
+          "mobileSrc": "/assets/projects/devin_ai/mobile_image1.webp",
+          "hasDedicatedMobileVariant": true,
+          "declaredWidth": 1920,
+          "declaredHeight": 1080,
+          "actualWidth": 1920,
+          "actualHeight": 1080,
           "fullscreen": false
         },
         {
           "index": 2,
-          "type": "image",
-          "basePath": "/assets/projects/everswap/2",
-          "desktopSrc": "/assets/projects/everswap/2.webp",
-          "mobileSrc": "/assets/projects/everswap/2.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 2262,
-          "declaredHeight": 1280,
-          "actualWidth": 2262,
-          "actualHeight": 1280,
-          "fullscreen": true
+          "type": "video",
+          "basePath": "/assets/projects/devin_ai/video2",
+          "desktopSrc": "/assets/projects/devin_ai/video2.mp4",
+          "mobileSrc": "/assets/projects/devin_ai/mobile_video2.mp4",
+          "hasDedicatedMobileVariant": true,
+          "declaredWidth": 1080,
+          "declaredHeight": 1080,
+          "actualWidth": 1920,
+          "actualHeight": 1080,
+          "fullscreen": true,
+          "durationSec": 17.63,
+          "fps": 30,
+          "hasAudio": false
         },
         {
           "index": 3,
-          "type": "image",
-          "basePath": "/assets/projects/everswap/3",
-          "desktopSrc": "/assets/projects/everswap/3.webp",
-          "mobileSrc": "/assets/projects/everswap/3.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1810,
-          "declaredHeight": 1024,
-          "actualWidth": 1810,
-          "actualHeight": 1024,
-          "fullscreen": false
+          "type": "video",
+          "basePath": "/assets/projects/devin_ai/video3",
+          "desktopSrc": "/assets/projects/devin_ai/video3.mp4",
+          "mobileSrc": "/assets/projects/devin_ai/mobile_video3.mp4",
+          "hasDedicatedMobileVariant": true,
+          "declaredWidth": 1920,
+          "declaredHeight": 1080,
+          "actualWidth": 1280,
+          "actualHeight": 720,
+          "fullscreen": false,
+          "durationSec": 6.41,
+          "fps": 29.97,
+          "hasAudio": false
         },
         {
           "index": 4,
           "type": "image",
-          "basePath": "/assets/projects/everswap/4",
-          "desktopSrc": "/assets/projects/everswap/4.webp",
-          "mobileSrc": "/assets/projects/everswap/4.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1819,
-          "declaredHeight": 1024,
-          "actualWidth": 1819,
-          "actualHeight": 1024,
+          "basePath": "/assets/projects/devin_ai/image4",
+          "desktopSrc": "/assets/projects/devin_ai/image4.webp",
+          "mobileSrc": "/assets/projects/devin_ai/mobile_image4.webp",
+          "hasDedicatedMobileVariant": true,
+          "declaredWidth": 1920,
+          "declaredHeight": 1080,
+          "actualWidth": 1920,
+          "actualHeight": 1080,
           "fullscreen": false
-        },
-        {
-          "index": 5,
-          "type": "image",
-          "basePath": "/assets/projects/everswap/5",
-          "desktopSrc": "/assets/projects/everswap/5.webp",
-          "mobileSrc": "/assets/projects/everswap/5.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1885,
-          "declaredHeight": 1280,
-          "actualWidth": 1885,
-          "actualHeight": 1280,
-          "fullscreen": true
-        },
-        {
-          "index": 6,
-          "type": "image",
-          "basePath": "/assets/projects/everswap/6",
-          "desktopSrc": "/assets/projects/everswap/6.webp",
-          "mobileSrc": "/assets/projects/everswap/6.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1819,
-          "declaredHeight": 1024,
-          "actualWidth": 1819,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 7,
-          "type": "image",
-          "basePath": "/assets/projects/everswap/7",
-          "desktopSrc": "/assets/projects/everswap/7.webp",
-          "mobileSrc": "/assets/projects/everswap/7.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1819,
-          "declaredHeight": 1024,
-          "actualWidth": 1819,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 8,
-          "type": "image",
-          "basePath": "/assets/projects/everswap/8",
-          "desktopSrc": "/assets/projects/everswap/8.webp",
-          "mobileSrc": "/assets/projects/everswap/8.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 1819,
-          "declaredHeight": 1024,
-          "actualWidth": 1819,
-          "actualHeight": 1024,
-          "fullscreen": false
-        },
-        {
-          "index": 9,
-          "type": "image",
-          "basePath": "/assets/projects/everswap/9",
-          "desktopSrc": "/assets/projects/everswap/9.webp",
-          "mobileSrc": "/assets/projects/everswap/9.webp",
-          "hasDedicatedMobileVariant": false,
-          "declaredWidth": 2280,
-          "declaredHeight": 1280,
-          "actualWidth": 2280,
-          "actualHeight": 1280,
-          "fullscreen": true
         }
       ],
       "nextProject": {
         "id": "porsche_dream_machine",
         "href": "/projects/porsche_dream_machine",
-        "title": "Porsche:<br>Dream Machine",
+        "title": "Porsche: Dream Machine",
         "label": "NEXT PROJECT",
         "colorBg": "#EFD5D3",
         "colorText": "#000000",
@@ -2694,8 +2192,8 @@
       }
     },
     {
-      "archiveIndex": 6,
-      "featuredIndex": 6,
+      "archiveIndex": 4,
+      "featuredIndex": 4,
       "isFeatured": true,
       "id": "porsche_dream_machine",
       "route": "/projects/porsche_dream_machine",
@@ -3013,8 +2511,8 @@
       }
     },
     {
-      "archiveIndex": 7,
-      "featuredIndex": 7,
+      "archiveIndex": 5,
+      "featuredIndex": 5,
       "isFeatured": true,
       "id": "synthetic_human",
       "route": "/projects/synthetic_human",
@@ -3190,8 +2688,8 @@
       }
     },
     {
-      "archiveIndex": 8,
-      "featuredIndex": 10,
+      "archiveIndex": 6,
+      "featuredIndex": 8,
       "isFeatured": true,
       "id": "ddd_2024",
       "route": "/projects/ddd_2024",
@@ -3311,7 +2809,7 @@
       "nextProject": {
         "id": "spaace",
         "href": "/projects/spaace",
-        "title": "Spaace",
+        "title": "Spaace - NFT Marketplace",
         "label": "NEXT PROJECT",
         "colorBg": "#010a16",
         "colorText": "#ffece2",
@@ -3324,8 +2822,8 @@
       }
     },
     {
-      "archiveIndex": 9,
-      "featuredIndex": 9,
+      "archiveIndex": 7,
+      "featuredIndex": 7,
       "isFeatured": true,
       "id": "spaace",
       "route": "/projects/spaace",
@@ -3507,8 +3005,8 @@
       }
     },
     {
-      "archiveIndex": 10,
-      "featuredIndex": 11,
+      "archiveIndex": 8,
+      "featuredIndex": 9,
       "isFeatured": true,
       "id": "choo_choo_world",
       "route": "/projects/choo_choo_world",
@@ -3854,7 +3352,7 @@
       }
     },
     {
-      "archiveIndex": 11,
+      "archiveIndex": 9,
       "featuredIndex": null,
       "isFeatured": false,
       "id": "zero_tech",
@@ -4129,8 +3627,8 @@
       }
     },
     {
-      "archiveIndex": 12,
-      "featuredIndex": 8,
+      "archiveIndex": 10,
+      "featuredIndex": 6,
       "isFeatured": true,
       "id": "spatial_fusion",
       "route": "/projects/spatial_fusion",
@@ -4441,7 +3939,7 @@
       }
     },
     {
-      "archiveIndex": 13,
+      "archiveIndex": 11,
       "featuredIndex": null,
       "isFeatured": false,
       "id": "worldcoin",
@@ -4601,7 +4099,7 @@
       }
     },
     {
-      "archiveIndex": 14,
+      "archiveIndex": 12,
       "featuredIndex": null,
       "isFeatured": false,
       "id": "lusion_labs",
@@ -4918,7 +4416,7 @@
       }
     },
     {
-      "archiveIndex": 15,
+      "archiveIndex": 13,
       "featuredIndex": null,
       "isFeatured": false,
       "id": "my_little_story_book",
@@ -5226,8 +4724,8 @@
       }
     },
     {
-      "archiveIndex": 16,
-      "featuredIndex": 12,
+      "archiveIndex": 14,
+      "featuredIndex": 10,
       "isFeatured": true,
       "id": "soda_experience",
       "route": "/projects/soda_experience",
@@ -5419,7 +4917,7 @@
       }
     },
     {
-      "archiveIndex": 17,
+      "archiveIndex": 15,
       "featuredIndex": null,
       "isFeatured": false,
       "id": "infinite_passerella",
@@ -5648,7 +5146,7 @@
       }
     },
     {
-      "archiveIndex": 18,
+      "archiveIndex": 16,
       "featuredIndex": null,
       "isFeatured": false,
       "id": "the_turn_of_the_screw",
@@ -5919,7 +5417,7 @@
       }
     },
     {
-      "archiveIndex": 19,
+      "archiveIndex": 17,
       "featuredIndex": null,
       "isFeatured": false,
       "id": "maxmara_bearings_gifts",
