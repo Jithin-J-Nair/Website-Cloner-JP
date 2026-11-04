@@ -8,7 +8,7 @@ const browser=await launchMotionBrowser();
 try{
  for(const width of [1440,390]){
   const context=await browser.newContext({viewport:{width,height:width===390?844:900},isMobile:width===390,hasTouch:width===390,reducedMotion:'no-preference'});
-  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;window.__aboutBuffersCreated=0;
+  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;window.__enableCtaProbe=true;window.__aboutBuffersCreated=0;
     const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){const gl=Reflect.apply(get,this,[type,...args]);if(gl&&/webgl/.test(type)&&!gl.__counted){gl.__counted=true;const create=gl.createBuffer;gl.createBuffer=function(...a){window.__aboutBuffersCreated++;return Reflect.apply(create,this,a);};}return gl;};});
   const page=await context.newPage(),report={width,height:width===390?844:900,baseline,errors:[],consoleErrors:[],restrictedRequests:[],milestones:[]};
   page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.consoleErrors.push(m.text());});
@@ -24,6 +24,24 @@ try{
    for(const id of ['about-clients','about-award','about-capability','end-section','footer-section']){
     const y=await page.locator(`#${id}`).evaluate(e=>e.getBoundingClientRect().top+scrollY);await seek(y);
     const file=`${width}-${id}.jpg`;await page.screenshot({path:`${out}/${file}`,type:'jpeg',quality:65,timeout:120000});report.milestones.push({id,file,y});
+    if(id==='end-section' && !baseline){
+     await page.waitForFunction(()=>window.__ctaProbe?.().frames>0,{timeout:20000});
+     const cta=await page.evaluate(()=>window.__ctaProbe());
+     assert.ok(cta.count===(width===390?720:1600));
+     assert.ok(cta.draws<=3,'CTA field must remain at three instanced draws');
+     assert.ok(cta.triangles<=cta.count*24,'CTA geometry must remain within its triangle budget');
+     if(width!==390){
+      await page.mouse.move(width*.56,height*.68);
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer>.85,{timeout:5000});
+      const engaged=await page.evaluate(()=>window.__ctaProbe().pointer);
+      await page.mouse.move(width+40,height+40);
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer<.12,{timeout:5000});
+      report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,pointerEngaged:engaged,pointerReleased:true};
+     }else{
+      report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,touchPointerInactive:cta.pointer===0};
+      assert.equal(cta.pointer,0,'touch scrolling must not activate mouse repulsion');
+     }
+    }
    }
    if(!baseline){
     assert.deepEqual(report.restrictedRequests,[]);assert.deepEqual(report.errors,[]);assert.deepEqual(report.consoleErrors,[]);
