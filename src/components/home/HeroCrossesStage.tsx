@@ -757,7 +757,7 @@ export function HeroCrossesStage() {
     let needsRender = true;
 
     const scheduleNext = (frameCostMs: number, idleOnly = false) => {
-      if (isSoftwareRenderer && frameCostMs > 40) {
+      if (isSoftwareRenderer && frameCostMs > 40 && idleOnly) {
         yieldTimerId = window.setTimeout(() => {
           yieldTimerId = 0;
           rafId = window.requestAnimationFrame(renderFrame);
@@ -888,8 +888,11 @@ export function HeroCrossesStage() {
       const idleEnabled = !isReduced && inView && preloaderDoneRef.current;
       if (isReduced || !moving) return;
 
-      // Idle cloud motion runs at 30fps; pointer throws get the full display refresh rate.
-      scheduleNext(elapsedFrameMs, idleEnabled && isSoftwareRenderer);
+      // Software rendering yields only while the cloud is genuinely idle. Pointer
+      // throws must not inherit the 220ms background throttle: even a slow frame
+      // should schedule the next available RAF so the cursor force feels attached.
+      const idleOnly = idleEnabled && isSoftwareRenderer && !ptr.active && !transientMoving;
+      scheduleNext(elapsedFrameMs, idleOnly);
     };
 
     const wakeScene = () => {
