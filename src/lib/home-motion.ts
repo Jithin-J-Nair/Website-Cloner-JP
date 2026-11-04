@@ -12,7 +12,7 @@ export function homeRenderDpr(width: number, height: number, deviceDpr: number):
 /** Faster gravity-led fall: stronger entry descent, smooth acceleration, and an exact 0→1 endpoint. */
 export function acceleratedFall(progress: number): number {
   const t = clampMotion(progress);
-  return 0.56 * t + 0.29 * t * t + 0.15 * t * t * t;
+  return 0.65 * t + 0.26 * t * t + 0.09 * t * t * t;
 }
 
 export interface MotionSpring { value: number; velocity: number }

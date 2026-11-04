@@ -26,8 +26,8 @@ try {
   assert.equal(advanceCinematicProgress(.2,NaN),.2);
   assert.equal(advanceCinematicProgress(0,100),1);
   assert.equal(acceleratedFall(-1),0); assert.equal(acceleratedFall(2),1);
-  assert.ok(acceleratedFall(0.25)>0.155,'astronaut reaches a stronger early descent than the previous curve');
-  assert.ok(acceleratedFall(0.5)>0.365,'astronaut carries more speed through the middle of the fall');
+  assert.ok(acceleratedFall(0.25)>0.17,'astronaut reaches a stronger early descent than the previous curve');
+  assert.ok(acceleratedFall(0.5)>0.39,'astronaut carries more speed through the middle of the fall');
   assert.ok(Math.abs(acceleratedFall(1)-1)<1e-12,'faster fall retains its exact endpoint');
   let lastVelocity = -Infinity;
   for(let i=1;i<1000;i++) {
@@ -87,11 +87,15 @@ try {
     'the vortex is a nested perspective-projected 4D glass lattice, not an opaque white cube');
   assert.ok(downstreamSource.includes('buildGlassShardSideGeometry') && downstreamSource.includes('sideNormal.crossVectors'),
     'captured glass fragments gain closed volumetric side faces');
-  assert.ok(goalSource.includes('uGlassThickness') && goalSource.includes('shardSidewallTriangles'),
-    'glass shards combine thickness-aware optics with a separate reflective sidewall pass');
+  assert.ok(goalSource.includes('uGlassThickness') && goalSource.includes('sideHalfThickness') && goalSource.includes('Math.max(0.035,'),
+    'glass optical path is derived from the actual world-scaled shard plate thickness');
+  assert.ok(goalSource.includes('mix(envReflection, screenReflection, 0.88)'),
+    'moving glass reflects the live corridor/astronaut scene rather than relying on a static environment alone');
+  assert.ok(downstreamSource.includes('const tubeRadius = 0.0130') && downstreamSource.includes('envMapIntensity: 2.35'),
+    'the 4D glass lattice has legible crystal edges and stronger environmental reflections');
   assert.ok(goalSource.includes('(tShatter - 0.205) / 0.145'),
     'the 946-piece glass breakup is compressed to a short impact beat');
-  assert.ok(goalSource.includes('smoothstep(0.08, 0.28, tShatter)') && goalSource.includes('descent * 1.42'),
+  assert.ok(goalSource.includes('smoothstep(0.08, 0.28, tShatter)') && goalSource.includes('descent * 1.72'),
     'the astronaut breakout and tunnel descent use the faster gravity trajectory');
   assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
     'Lenis uses the tuned smooth-wheel profile');

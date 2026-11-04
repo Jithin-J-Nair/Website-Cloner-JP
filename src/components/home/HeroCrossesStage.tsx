@@ -739,6 +739,7 @@ export function HeroCrossesStage() {
 
       let moving = false;
       let transientMoving = false;
+      let pointerInfluencedPieces = 0;
       const ptr = pointerNdcRef.current;
       if (ptr.active && !isReduced) {
         pointerNdc.set(ptr.x,ptr.y);
@@ -760,19 +761,20 @@ export function HeroCrossesStage() {
           if (pointerRay.ray.intersectPlane(pointerPlane,pointerWorld)) {
             pointerDelta.copy(anchorPosition).sub(pointerWorld);
             const distance = pointerDelta.length();
-            const radius = 3.0 * spec.scale;
+            const radius = 4.0 * spec.scale;
             if (distance < radius) {
               if (distance < 0.001) pointerDelta.set(0.6,0.4,0);
               const influence = Math.pow(1-distance/radius,2);
-              pointerDelta.normalize().multiplyScalar(influence * 1.62);
+              pointerDelta.normalize().multiplyScalar(influence * 1.85);
               const radialX = pointerDelta.x;
               const radialY = pointerDelta.y;
               // A small tangential component sweeps nearby connectors around the cursor;
               // the same critically-damped spring returns them to their authored anchors.
-              const orbit = influence * 0.18;
+              const orbit = influence * 0.22;
               pushX = radialX - radialY * orbit;
               pushY = radialY + radialX * orbit;
-              pushZ = -0.34 * influence;
+              pushZ = -0.40 * influence;
+              pointerInfluencedPieces++;
               if (!pointerReportedRef.current) {
                 pointerReportedRef.current = true;
                 setPointerHits((c) => c+1);
@@ -783,7 +785,7 @@ export function HeroCrossesStage() {
         const springs = pointerSprings[i];
         for (let axis = 0; axis < 6; axis++) {
           const target = axis === 0 ? pushX : axis === 1 ? pushY : axis === 2 ? pushZ
-            : axis === 3 ? -pushY * 0.72 : axis === 4 ? pushX * 0.78 : pushX * 0.32;
+            : axis === 3 ? -pushY * 0.90 : axis === 4 ? pushX * 0.92 : pushX * 0.42;
           if (isReduced) { springs[axis].value = springs[axis].velocity = 0; }
           else stepMotionSpring(springs[axis],target,dt,16);
           const springMoving = Math.abs(springs[axis].value-target)>0.0001 || Math.abs(springs[axis].velocity)>0.0001;
@@ -844,6 +846,7 @@ export function HeroCrossesStage() {
       container.dataset.activeRaf = transientMoving ? "true" : "false";
       container.dataset.renderPixels = `${renderer.domElement.width}x${renderer.domElement.height}`;
       container.dataset.offsetEnergy = pointerSprings.reduce((sum,axes) => sum+axes.reduce((total,axis) => total+Math.abs(axis.value),0),0).toFixed(5);
+      container.dataset.pointerInfluencedPieces = String(pointerInfluencedPieces);
       const elapsedFrameMs = performance.now() - frameStart;
       container.dataset.renderCount = String(++renderCount);
       container.dataset.frameCpuMs = elapsedFrameMs.toFixed(2);

@@ -58,10 +58,12 @@ try {
   const box=await hero.boundingBox();
   // Hit an outer connector in the new overlapping cluster; verify displacement and magnetic return.
   await page.mouse.move(box.x+box.width*.84,box.y+box.height*.65);
-  await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)>.16,null,{timeout:30000});
+  await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)>.16 && Number(document.querySelector('#home-hero-visual-container').dataset.pointerInfluencedPieces)>=2,null,{timeout:30000});
   const hovered=await hero.evaluate(el=>({...el.dataset}));
   assert.ok(Number(hovered.pointerInteractions)>Number(initial.pointerInteractions),
-    'hover must reach and physically displace at least one centered connector');
+    'hover must reach and physically displace the centered connector field');
+  assert.ok(Number(hovered.pointerInfluencedPieces)>=2,
+    'a pointer pass moves multiple nearby connectors, not just one isolated object');
   await page.screenshot({path:out+'/hero-hover.png',timeout:90000});
   await page.mouse.move(2,2);
   await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container').dataset.motionState==='settled'&&Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)===0,null,{timeout:90000});
@@ -188,6 +190,7 @@ try {
      bakedFrame:window.__goalAstronautTelemetry.sceneState.bakedFrame,
      corridorTravel:window.__goalAstronautTelemetry.sceneState.corridorTravel,
      glassOpacity:window.__goalAstronautTelemetry.sceneState.glassOpacity,
+     glassThickness:window.__goalAstronautTelemetry.sceneState.glassThickness,
      glassRefractionReady:window.__goalAstronautTelemetry.sceneState.glassRefractionReady,
      shardDepthWrite:window.__goalAstronautTelemetry.sceneState.shardDepthWrite,
      shardCount:window.__goalAstronautTelemetry.sceneState.shardCount,
@@ -236,6 +239,8 @@ try {
  const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.285);
  assert.ok(shatterState.glassOpacity>0.72,'plate-glass fragments separate on the compressed impact beat');
  assert.equal(shatterState.glassRefractionReady,true,'moving glass samples the live scene behind each fragment');
+ assert.ok(shatterState.glassThickness>=0.03 && shatterState.glassThickness<=0.15,
+   `display-glass optical thickness stays tied to its thin extruded plate (actual=${shatterState.glassThickness})`);
  assert.equal(shatterState.shardDepthWrite,true,'nearer glass facets depth-occlude more distant facets');
  assert.equal(shatterState.shardSidewallsLoaded,true,'fragment sidewalls use the same captured rigid-body transforms');
  assert.ok(shatterState.shardSidewallTriangles>0,'thick glass edges are rendered as actual side faces');

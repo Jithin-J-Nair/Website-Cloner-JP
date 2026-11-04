@@ -37,3 +37,11 @@ Before this refinement, the named references were reviewed for the parts relevan
 ## Physics and rendering boundary
 
 The new vortex cages are original 4D-projected geometry with physically-based transmission/reflection material; the glass fragments are the repository's captured 946-piece rigid-body transform data, now closed into thin volumetric plates. The branch uses real-time screen-space refraction plus environment-map reflections and GGX highlights. It does not introduce a live Rapier/Ammo collision solver or path tracer, and it does not claim to reproduce Lusion's private physics/shader implementation.
+
+
+## Follow-up refinement — 2026-11-04
+- Broadened hero cursor influence to a multi-object magnetic field and increased its tangential/rotational response. The production browser now asserts that at least two individual connectors respond; the same critically-damped springs still restore their exact rest transforms.
+- Removed the fixed 0.75-unit glass optical path. Refraction thickness is now derived from the measured convex-hull sidewall thickness after world scaling; live-scene reflection contribution increased while front/back transmission alpha and synthetic edge glow were reduced.
+- Increased 4D glass-lattice edge/node legibility and environment reflections. It remains a transparent projected lattice, not the removed opaque white cube.
+- Increased early/mid astronaut fall displacement while preserving the single 20-second score/scroll playhead and exact endpoint.
+- Added unit and production-browser gates for multi-object pointer response, world-scaled glass thickness, live background reflection and the stronger gravity curve.

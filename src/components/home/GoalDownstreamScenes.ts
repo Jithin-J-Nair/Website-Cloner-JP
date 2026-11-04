@@ -711,10 +711,10 @@ export function buildVortexHypercubeLattice(
     iridescenceIOR: 1.31,
     iridescenceThicknessRange: [170, 430],
     envMap: environment,
-    envMapIntensity: 2.15,
+    envMapIntensity: 2.35,
     vertexColors: true,
     transparent: true,
-    opacity: 0.48,
+    opacity: 0.52,
     depthWrite: false,
     side: THREE.DoubleSide,
   }));
@@ -779,7 +779,7 @@ export function buildVortexHypercubeLattice(
       const p = THREE.MathUtils.clamp(progress, 0, 1);
       const glow = THREE.MathUtils.clamp(intensity, 0, 1);
       group.visible = glow > 0.012 && p > 0.34 && p < 0.855;
-      material.opacity = 0.18 + glow * 0.40;
+      material.opacity = 0.20 + glow * 0.47;
       material.roughness = 0.045 + (1 - glow) * 0.028;
 
       const orbit = (p - 0.40) / 0.40;
@@ -805,7 +805,7 @@ export function buildVortexHypercubeLattice(
           const y = four[1] * perspective * radius;
           const z = zCenter + four[2] * perspective * radius * 0.86;
           projected[vertex].set(x, y, z);
-          scale.setScalar(0.026 * (1 - layerT * 0.16));
+          scale.setScalar(0.030 * (1 - layerT * 0.16));
           matrix.compose(projected[vertex], identity, scale);
           nodeMesh.setMatrixAt(layer * nodesPerLayer + vertex, matrix);
         }
@@ -819,7 +819,7 @@ export function buildVortexHypercubeLattice(
           direction.multiplyScalar(1 / length);
           midpoint.addVectors(start, end).multiplyScalar(0.5);
           quaternion.setFromUnitVectors(axisY, direction);
-          const tubeRadius = 0.0105 * (1 - layerT * 0.17);
+          const tubeRadius = 0.0130 * (1 - layerT * 0.17);
           scale.set(tubeRadius, length, tubeRadius);
           matrix.compose(midpoint, quaternion, scale);
           edgeMesh.setMatrixAt(layer * edgesPerLayer + edge, matrix);
