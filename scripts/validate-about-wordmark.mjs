@@ -257,9 +257,9 @@ try {
       const footerTop = await footer.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       await seekY(footerTop);
       const contactLinks = await page.evaluate(() => ({
-        general: (document.querySelector('#footer-enquires-link') as HTMLAnchorElement | null)?.getAttribute('href'),
-        business: (document.querySelector('#footer-business-link') as HTMLAnchorElement | null)?.getAttribute('href'),
-        socials: [...(document.querySelectorAll('#footer-contact-socials a') as NodeListOf<HTMLAnchorElement>)].map(link => link.href),
+        general: document.querySelector('#footer-enquires-link')?.getAttribute('href') ?? null,
+        business: document.querySelector('#footer-business-link')?.getAttribute('href') ?? null,
+        socials: [...document.querySelectorAll('#footer-contact-socials a')].map(link => link.href),
         next: Boolean(document.querySelector('#scroll-nav-next')),
       }));
       assert.match(contactLinks.general ?? '', /^mailto:/, 'general enquiries must remain a mailto link');
@@ -271,7 +271,7 @@ try {
       await newsletter.fill('not-an-email');
       await page.locator('#footer-newsletter-input-arrow').click();
       await page.waitForFunction(() => {
-        const input = document.querySelector('#footer-newsletter-input-field') as HTMLInputElement | null;
+        const input = document.querySelector('#footer-newsletter-input-field');
         return input?.getAttribute('aria-invalid') === 'true' && document.querySelector('#footer-newsletter-feedback-message')?.getAttribute('role') === 'alert';
       }, null, { timeout: 5000 });
       const invalidState = await newsletter.evaluate(input => ({
