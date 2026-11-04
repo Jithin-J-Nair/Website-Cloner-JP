@@ -251,6 +251,50 @@ try {
       }
       await page.screenshot({ path: `${out}/${width}-cta-particle-field.png`, fullPage: false, timeout: 120000 });
 
+      // Footer/portal: verify real destinations, honest local newsletter feedback,
+      // and a working return-to-top action at all three shipped viewport sizes.
+      const footer = page.locator('#footer-section');
+      const footerTop = await footer.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
+      await seekY(footerTop);
+      const contactLinks = await page.evaluate(() => ({
+        general: (document.querySelector('#footer-enquires-link') as HTMLAnchorElement | null)?.getAttribute('href'),
+        business: (document.querySelector('#footer-business-link') as HTMLAnchorElement | null)?.getAttribute('href'),
+        socials: [...(document.querySelectorAll('#footer-contact-socials a') as NodeListOf<HTMLAnchorElement>)].map(link => link.href),
+        next: Boolean(document.querySelector('#scroll-nav-next')),
+      }));
+      assert.match(contactLinks.general ?? '', /^mailto:/, 'general enquiries must remain a mailto link');
+      assert.match(contactLinks.business ?? '', /^mailto:/, 'new business must remain a mailto link');
+      assert.ok(contactLinks.socials.length >= 3 && contactLinks.socials.every(href => /^https:\/\//.test(href)), 'social destinations must be real HTTPS links');
+      assert.ok(contactLinks.next, 'next-page portal remains in the footer');
+
+      const newsletter = page.locator('#footer-newsletter-input-field');
+      await newsletter.fill('not-an-email');
+      await page.locator('#footer-newsletter-input-arrow').click();
+      await page.waitForFunction(() => {
+        const input = document.querySelector('#footer-newsletter-input-field') as HTMLInputElement | null;
+        return input?.getAttribute('aria-invalid') === 'true' && document.querySelector('#footer-newsletter-feedback-message')?.getAttribute('role') === 'alert';
+      }, null, { timeout: 5000 });
+      const invalidState = await newsletter.evaluate(input => ({
+        focused: document.activeElement === input,
+        invalid: input.getAttribute('aria-invalid'),
+        describedBy: input.getAttribute('aria-describedby'),
+      }));
+      assert.equal(invalidState.invalid, 'true');
+      assert.ok(invalidState.focused, 'invalid newsletter input receives focus');
+      assert.equal(invalidState.describedBy, 'footer-newsletter-feedback-message');
+
+      await newsletter.fill('jithin@example.com');
+      await page.locator('#footer-newsletter-input-arrow').click();
+      await page.waitForFunction(() => document.querySelector('#footer-newsletter-feedback-message')?.textContent?.includes('Saved locally'), null, { timeout: 5000 });
+      assert.equal(await newsletter.inputValue(), '', 'local acknowledgement clears the accepted email');
+      const savedMessage = await page.locator('#footer-newsletter-feedback-message').textContent();
+      assert.match(savedMessage ?? '', /static reconstruction/, 'the UI must not imply a real subscription occurred');
+
+      await page.screenshot({ path: `${out}/${width}-footer-newsletter.png`, fullPage: false, timeout: 120000 });
+      await page.locator('#footer-bottom-up').click();
+      await page.waitForFunction(() => window.scrollY < 80, null, { timeout: 15000 });
+      await page.screenshot({ path: `${out}/${width}-footer-return.png`, fullPage: false, timeout: 120000 });
+
       assert.deepEqual(errors, [], 'no uncaught browser errors');
       fs.writeFileSync(`${out}/${width}.json`, JSON.stringify({
         width, height, peak, end, atPeak, atExit, onReverse, probeAtPeak, probeOnReverse,
