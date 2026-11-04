@@ -546,90 +546,123 @@ export function buildGlassShardSideGeometry(
   const position = source.getAttribute("position");
   const normal = source.getAttribute("normal");
   const piece = source.getAttribute("piece") ?? source.getAttribute("aPiece");
-  if (!position || !normal || !piece) throw new Error("Glass shard geometry is missing position, normal, or piece attributes.");
+  if (!position || !normal || !piece) {
+    throw new Error("Glass shard geometry is missing position, normal, or piece attributes.");
+  }
 
-  type EdgeRecord = {
-    piece: number;
-    a: [number, number, number];
-    b: [number, number, number];
-    na: [number, number, number];
-    nb: [number, number, number];
-    count: number;
-  };
-  const edges = new Map<string, EdgeRecord>();
-  const index = source.index;
-  const triangleCount = Math.floor((index?.count ?? position.count) / 3);
-  const coordinateKey = (v: [number, number, number]) =>
-    [Math.round(v[0] * 100000), Math.round(v[1] * 100000), Math.round(v[2] * 100000)].join(",");
-  const pointAt = (i: number): [number, number, number] =>
-    [position.getX(i), position.getY(i), position.getZ(i)];
-  const normalAt = (i: number): [number, number, number] =>
-    [normal.getX(i), normal.getY(i), normal.getZ(i)];
-  const edgeKey = (pieceId: number, a: [number, number, number], b: [number, number, number]) => {
-    const ka = coordinateKey(a), kb = coordinateKey(b);
-    return String(pieceId) + ":" + (ka < kb ? ka + "|" + kb : kb + "|" + ka);
-  };
+  type Vertex = { point: THREE.Vector3; normal: THREE.Vector3; x: number; y: number };
+  const pointKey = (p: THREE.Vector3) =>
+    [Math.round(p.x * 100000), Math.round(p.y * 100000), Math.round(p.z * 100000)].join(",");
+  const shards = new Map<number, Map<string, Vertex>>();
 
-  for (let tri = 0; tri < triangleCount; tri++) {
-    const ids = [0, 1, 2].map((corner) => {
-      const offset = tri * 3 + corner;
-      return index ? index.getX(offset) : offset;
-    });
-    const pieceId = Math.round(piece.getX(ids[0]));
-    for (const [aCorner, bCorner] of [[0, 1], [1, 2], [2, 0]] as const) {
-      const a = pointAt(ids[aCorner]);
-      const b = pointAt(ids[bCorner]);
-      const na = normalAt(ids[aCorner]);
-      const nb = normalAt(ids[bCorner]);
-      const key = edgeKey(pieceId, a, b);
-      const existing = edges.get(key);
-      if (existing) existing.count++;
-      else edges.set(key, { piece: pieceId, a, b, na, nb, count: 1 });
+  // Collect unique vertices per captured shard. The source buffer can be indexed,
+  // non-indexed, or duplicated for front/back faces, so do not rely on edge-use count.
+  for (let i = 0; i < position.count; i++) {
+    const pieceId = Math.round(piece.getX(i));
+    let vertices = shards.get(pieceId);
+    if (!vertices) {
+      vertices = new Map<string, Vertex>();
+      shards.set(pieceId, vertices);
+    }
+    const point = new THREE.Vector3(position.getX(i), position.getY(i), position.getZ(i));
+    const key = pointKey(point);
+    if (!vertices.has(key)) {
+      vertices.set(key, {
+        point,
+        normal: new THREE.Vector3(normal.getX(i), normal.getY(i), normal.getZ(i)),
+        x: 0,
+        y: 0,
+      });
+    } else {
+      vertices.get(key)!.normal.add(new THREE.Vector3(normal.getX(i), normal.getY(i), normal.getZ(i)));
     }
   }
 
   const positions: number[] = [];
   const normals: number[] = [];
   const pieces: number[] = [];
-  const a = new THREE.Vector3();
-  const b = new THREE.Vector3();
-  const na = new THREE.Vector3();
-  const nb = new THREE.Vector3();
+  const axis = new THREE.Vector3();
+  const planeNormal = new THREE.Vector3();
+  const basisU = new THREE.Vector3();
+  const basisV = new THREE.Vector3();
   const tangent = new THREE.Vector3();
-  const faceNormal = new THREE.Vector3();
   const sideNormal = new THREE.Vector3();
   const frontA = new THREE.Vector3();
   const frontB = new THREE.Vector3();
   const backA = new THREE.Vector3();
   const backB = new THREE.Vector3();
 
-  const pushTriangle = (p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, n: THREE.Vector3, pieceId: number) => {
+  const pushTriangle = (
+    p0: THREE.Vector3,
+    p1: THREE.Vector3,
+    p2: THREE.Vector3,
+    n: THREE.Vector3,
+    pieceId: number
+  ) => {
     for (const p of [p0, p1, p2]) {
       positions.push(p.x, p.y, p.z);
       normals.push(n.x, n.y, n.z);
       pieces.push(pieceId);
     }
   };
+  const cross2 = (o: Vertex, a: Vertex, b: Vertex) =>
+    (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
 
-  for (const edge of edges.values()) {
-    if (edge.count !== 1) continue;
-    a.set(...edge.a); b.set(...edge.b);
-    na.set(...edge.na); nb.set(...edge.nb);
-    tangent.subVectors(b, a);
-    if (tangent.lengthSq() < 1e-10) continue;
-    tangent.normalize();
-    faceNormal.addVectors(na, nb);
-    if (faceNormal.lengthSq() < 1e-8) continue;
-    faceNormal.normalize();
-    sideNormal.crossVectors(tangent, faceNormal);
-    if (sideNormal.lengthSq() < 1e-8) continue;
-    sideNormal.normalize();
-    frontA.copy(a).addScaledVector(faceNormal, halfThickness);
-    frontB.copy(b).addScaledVector(faceNormal, halfThickness);
-    backA.copy(a).addScaledVector(faceNormal, -halfThickness);
-    backB.copy(b).addScaledVector(faceNormal, -halfThickness);
-    pushTriangle(frontA, frontB, backB, sideNormal, edge.piece);
-    pushTriangle(frontA, backB, backA, sideNormal, edge.piece);
+  for (const [pieceId, vertexMap] of shards) {
+    const vertices = [...vertexMap.values()];
+    if (vertices.length < 3) continue;
+
+    planeNormal.set(0, 0, 0);
+    for (const vertex of vertices) planeNormal.add(vertex.normal);
+    if (planeNormal.lengthSq() < 1e-8) continue;
+    planeNormal.normalize();
+
+    // Construct an oriented 2D basis on this shard's dominant plane.
+    axis.set(Math.abs(planeNormal.z) < 0.88 ? 0 : 0, Math.abs(planeNormal.z) < 0.88 ? 0 : 1, Math.abs(planeNormal.z) < 0.88 ? 1 : 0);
+    basisU.crossVectors(axis, planeNormal);
+    if (basisU.lengthSq() < 1e-8) continue;
+    basisU.normalize();
+    basisV.crossVectors(planeNormal, basisU).normalize();
+
+    for (const vertex of vertices) {
+      vertex.x = vertex.point.dot(basisU);
+      vertex.y = vertex.point.dot(basisV);
+    }
+    vertices.sort((a, b) => a.x - b.x || a.y - b.y);
+
+    // Monotone-chain hull removes triangulation duplicates and produces the true
+    // outside contour of each rigid shard before it is extruded into a thin plate.
+    const lower: Vertex[] = [];
+    for (const vertex of vertices) {
+      while (lower.length >= 2 && cross2(lower[lower.length - 2], lower[lower.length - 1], vertex) <= 1e-8) lower.pop();
+      lower.push(vertex);
+    }
+    const upper: Vertex[] = [];
+    for (let i = vertices.length - 1; i >= 0; i--) {
+      const vertex = vertices[i];
+      while (upper.length >= 2 && cross2(upper[upper.length - 2], upper[upper.length - 1], vertex) <= 1e-8) upper.pop();
+      upper.push(vertex);
+    }
+    const hull = lower.slice(0, -1).concat(upper.slice(0, -1));
+    if (hull.length < 3) continue;
+
+    for (let i = 0; i < hull.length; i++) {
+      const a = hull[i].point;
+      const b = hull[(i + 1) % hull.length].point;
+      tangent.subVectors(b, a);
+      if (tangent.lengthSq() < 1e-10) continue;
+      tangent.normalize();
+      sideNormal.crossVectors(tangent, planeNormal);
+      if (sideNormal.lengthSq() < 1e-8) continue;
+      sideNormal.normalize();
+
+      frontA.copy(a).addScaledVector(planeNormal, halfThickness);
+      frontB.copy(b).addScaledVector(planeNormal, halfThickness);
+      backA.copy(a).addScaledVector(planeNormal, -halfThickness);
+      backB.copy(b).addScaledVector(planeNormal, -halfThickness);
+      pushTriangle(frontA, frontB, backB, sideNormal, pieceId);
+      pushTriangle(frontA, backB, backA, sideNormal, pieceId);
+    }
   }
 
   const result = new THREE.BufferGeometry();
@@ -637,6 +670,8 @@ export function buildGlassShardSideGeometry(
   result.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
   result.setAttribute("aPiece", new THREE.Float32BufferAttribute(pieces, 1));
   result.computeBoundingSphere();
+  result.userData.shardCount = shards.size;
+  result.userData.sidewallTriangleCount = Math.floor(positions.length / 9);
   return result;
 }
 
