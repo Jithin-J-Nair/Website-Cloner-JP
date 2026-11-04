@@ -28,8 +28,8 @@ export function terrainHeightAt(x: number, z: number): number {
   const ridgeA = 1 - Math.abs(noise(wx * .14, wz * .14) * 2 - 1);
   const ridgeB = 1 - Math.abs(noise(wx * .34 + 31, wz * .31 - 11) * 2 - 1);
   const ridgeC = 1 - Math.abs(noise(wx * .72 - 7, wz * .72 + 41) * 2 - 1);
-  const escarpment = (Math.pow(ridgeA, 2) - .32) * .88 + (Math.pow(ridgeB, 3) - .2) * .28 + ridgeC * .22;
-  const detail = (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (0.28 + flankMask);
+  const escarpment = (Math.pow(ridgeA, 2) - .32) * .96 + (Math.pow(ridgeB, 3) - .2) * .36 + ridgeC * .32;
+  const detail = (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (.32 + flankMask * 1.12);
   // Distinct narrow escarpments, not a single smooth bowl. Erosion runs
   // downhill in actual mesh relief and shares the floor/stone/figure sampler.
   const ridge = (center: number, width: number) => Math.pow(Math.max(0, 1 - Math.pow((x - center) / width, 2)), 1.6);
@@ -37,8 +37,8 @@ export function terrainHeightAt(x: number, z: number): number {
   const left = ridge(-11 + Math.sin(z * .12) * 1.5, 6.2) * (2.95 + noise(z * .42, 2) * 1.15);
   const right = ridge(12 + Math.sin(z * .12 + 1) * 1.6, 7.6) * (1.25 + noise(z * .38, 7) * .45);
   const channels = Math.pow(1 - Math.abs(noise(wx * .22, wz * 1.5) * 2 - 1), 3);
-  const erosion = (channels - .38) * .7 * flankMask;
-  const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .13 * flankMask;
+  const erosion = (channels - .38) * .82 * flankMask;
+  const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .17 * flankMask;
   const edge = 1 - smoothstep(27, 43, Math.hypot(x, z * .8));
   return (rimRise * .78 + (left + right) * nearRim + escarpment * flankMask + erosion + micro + detail) * edge - 1.7;
 }
@@ -92,7 +92,7 @@ export function createAboutTerrainMaterial() {
         vec2 channels = vec2(p.y * 2.2 + sin(p.x * .48) * .45, p.x * .22);
         vec2 surfaceUV = mix(p, channels, smoothstep(4.5, 10., abs(p.x)));
         float footprint = max(length(dFdx(surfaceUV)), length(dFdy(surfaceUV)));
-        float grain = 0., relief = 0., frequency = 4., amplitude = .025;
+        float grain = 0., relief = 0., frequency = 4.4, amplitude = .036;
         for (int i = 0; i < 4; i++) {
           float weight = 1. - smoothstep(.25, .85, footprint * frequency);
           float n = noise(surfaceUV * frequency + float(i) * 17.3) - .5;
