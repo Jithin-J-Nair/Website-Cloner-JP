@@ -117,10 +117,10 @@ export class HomeConnectorPhysics {
         const radius=p.length();
         const outside=THREE.MathUtils.clamp((radius-1.9)/1.6,0,1);
         const smoothOutside=outside*outside*(3-2*outside);
-        const returnK=0.045+smoothOutside*0.92;
+        const returnK=0.18+smoothOutside*0.78;
         const phase=time*0.31+i*2.399963;
         v.x+=(-p.x*returnK+Math.sin(phase*1.17)*0.11)*h;
-        v.y+=(-p.y*returnK-0.16+Math.cos(phase*0.83)*0.095)*h;
+        v.y+=(-p.y*returnK-0.035+Math.cos(phase*0.83)*0.085)*h;
         v.z+=(-p.z*returnK+Math.sin(phase*0.69+0.8)*0.085)*h;
         v.multiplyScalar(Math.exp(-0.55*h));
 
@@ -128,7 +128,7 @@ export class HomeConnectorPhysics {
           pointerRay.closestPointToPoint(p,this.temp);
           this.normal.subVectors(p,this.temp);
           const d=this.normal.length();
-          const reach=2.85*this.meshes[i].scale.x+0.24;
+          const reach=1.75*this.meshes[i].scale.x+0.18;
           if(d<reach) {
             if(d<0.015) {
               this.normal.copy(pointerSweep).negate();
@@ -137,12 +137,12 @@ export class HomeConnectorPhysics {
             } else this.normal.multiplyScalar(1/d);
             const influence=Math.pow(1-d/reach,2);
             // Hovering repels continuously; pointer travel adds a swipe impulse.
-            v.addScaledVector(this.normal,175*influence*h);
-            v.addScaledVector(pointerSweep,2.8*influence*h);
+            v.addScaledVector(this.normal,135*influence*h);
+            v.addScaledVector(pointerSweep,1.45*influence*h);
             this.tangent.crossVectors(this.normal,this.axis.set(0,0,1));
             if(this.tangent.lengthSq()>1e-6) {
               this.tangent.normalize();
-              w.addScaledVector(this.tangent,pointerSweep.length()*0.12*influence*h);
+              w.addScaledVector(this.tangent,pointerSweep.length()*0.24*influence*h);
             }
             this.interactionEnergy=Math.min(1,this.interactionEnergy+influence*h*3.2);
             this.touched[i]=true;
@@ -173,84 +173,91 @@ export class HomeConnectorPhysics {
         }
       }
 
-      // Oriented arm-to-arm sequential impulses. A connector pair is checked across
-      // all nine arm combinations; normal impulse, friction and torque are coupled.
+      // Full 3x3 oriented arm contacts. Resolve every colliding arm pair rather than
+      // pushing the connector centres apart: this lets pieces roll, slide and rebound
+      // independently instead of locking into one rigid-looking clump.
       for(let pass=0;pass<this.iterations;pass++) {
         for(let i=0;i<this.meshes.length;i++) for(let j=i+1;j<this.meshes.length;j++) {
-          const scaleA=this.meshes[i].scale.x,scaleB=this.meshes[j].scale.x;
-          if(this.positions[i].distanceToSquared(this.positions[j])>Math.pow(1.25*(scaleA+scaleB),2)) continue;
-          let best=Infinity;
-          for(let a=0;a<3;a++) for(let b=0;b<3;b++) {
-            const d=closestSegmentPoints(this.starts[i][a],this.ends[i][a],this.starts[j][b],this.ends[j][b],this.closestA,this.closestB);
-            if(d<best) {best=d;this.bestA.copy(this.closestA);this.bestB.copy(this.closestB);}
-          }
-          const radiusA=0.335*scaleA,radiusB=0.335*scaleB;
+          const scaleA=this.meshes[i].scale.x, scaleB=this.meshes[j].scale.x;
+          if(this.positions[i].distanceToSquared(this.positions[j])>Math.pow(1.22*(scaleA+scaleB),2)) continue;
+          const massA=scaleA*scaleA*scaleA, massB=scaleB*scaleB;
+          const invMassA=1/massA, invMassB=1/massB;
+          const invIA=1/(0.40*massA*scaleA*scaleA), invIB=1/(0.40*massB*scaleB*scaleB);
+          const radiusA=0.335*scaleA, radiusB=0.335*scaleB;
           const minDistance=radiusA+radiusB;
-          if(best>=minDistance*minDistance) continue;
-          const distance=Math.sqrt(Math.max(best,1e-10));
-          const penetration=minDistance-distance;
-          this.normal.subVectors(this.bestB,this.bestA);
-          if(this.normal.lengthSq()<1e-8) {
-            this.normal.subVectors(this.positions[j],this.positions[i]);
-            if(this.normal.lengthSq()<1e-8) this.normal.set(i%2===0?1:-1,0.15,0.2);
-          }
-          this.normal.normalize();
 
-          const massA=scaleA*scaleA*scaleA,massB=scaleB*scaleB*scaleB;
-          const invMassA=1/massA,invMassB=1/massB;
-          const invIA=1/(0.40*massA*scaleA*scaleA),invIB=1/(0.40*massB*scaleB*scaleB);
-          const correction=Math.max(penetration-0.002,0)*0.42/(invMassA+invMassB);
-          if(correction>0) {
-            const moveA=correction*invMassA,moveB=correction*invMassB;
-            this.positions[i].addScaledVector(this.normal,-moveA);
-            this.positions[j].addScaledVector(this.normal,moveB);
-            this.bestA.addScaledVector(this.normal,-moveA);
-            this.bestB.addScaledVector(this.normal,moveB);
-            for(let k=0;k<3;k++) {
-              this.starts[i][k].addScaledVector(this.normal,-moveA);this.ends[i][k].addScaledVector(this.normal,-moveA);
-              this.starts[j][k].addScaledVector(this.normal,moveB);this.ends[j][k].addScaledVector(this.normal,moveB);
+          for(let a=0;a<3;a++) for(let b=0;b<3;b++) {
+            const distanceSq=closestSegmentPoints(
+              this.starts[i][a],this.ends[i][a],this.starts[j][b],this.ends[j][b],
+              this.closestA,this.closestB
+            );
+            if(distanceSq>=minDistance*minDistance) continue;
+            const distance=Math.sqrt(Math.max(distanceSq,1e-10));
+            const penetration=minDistance-distance;
+            this.normal.subVectors(this.closestB,this.closestA);
+            if(this.normal.lengthSq()<1e-8) {
+              this.normal.subVectors(this.positions[j],this.positions[i]);
+              if(this.normal.lengthSq()<1e-8) this.normal.set(i%2===0?1:-1,0.15,0.2);
             }
-          }
+            this.normal.normalize();
 
-          this.rA.copy(this.bestA).addScaledVector(this.normal,radiusA).sub(this.positions[i]);
-          this.rB.copy(this.bestB).addScaledVector(this.normal,-radiusB).sub(this.positions[j]);
-          this.omegaRA.crossVectors(this.angular[i],this.rA);
-          this.omegaRB.crossVectors(this.angular[j],this.rB);
-          this.relative.copy(this.linear[j]).add(this.omegaRB).sub(this.linear[i]).sub(this.omegaRA);
-          const closing=this.relative.dot(this.normal);
-          if(closing<0) {
-            this.crossA.crossVectors(this.rA,this.normal).multiplyScalar(invIA);
-            this.crossB.crossVectors(this.rB,this.normal).multiplyScalar(invIB);
-            this.angularA.crossVectors(this.crossA,this.rA);
-            this.angularB.crossVectors(this.crossB,this.rB);
-            const denominator=invMassA+invMassB+this.normal.dot(this.angularA.add(this.angularB));
-            const normalImpulse=-(1+0.16)*closing/Math.max(denominator,1e-6);
-            this.impulse.copy(this.normal).multiplyScalar(normalImpulse);
-            this.linear[i].addScaledVector(this.impulse,-invMassA);
-            this.linear[j].addScaledVector(this.impulse,invMassB);
-            this.temp.crossVectors(this.rA,this.impulse);
-            this.angular[i].addScaledVector(this.temp,-invIA);
-            this.temp.crossVectors(this.rB,this.impulse);
-            this.angular[j].addScaledVector(this.temp,invIB);
+            // Small per-contact positional correction; several passes converge without
+            // introducing the artificial visible gaps from over-sized sphere colliders.
+            const correction=Math.max(penetration-0.003,0)*0.24/(invMassA+invMassB);
+            if(correction>0) {
+              const moveA=correction*invMassA, moveB=correction*invMassB;
+              this.positions[i].addScaledVector(this.normal,-moveA);
+              this.positions[j].addScaledVector(this.normal,moveB);
+              for(let k=0;k<3;k++) {
+                this.starts[i][k].addScaledVector(this.normal,-moveA);
+                this.ends[i][k].addScaledVector(this.normal,-moveA);
+                this.starts[j][k].addScaledVector(this.normal,moveB);
+                this.ends[j][k].addScaledVector(this.normal,moveB);
+              }
+            }
 
+            // Contact offsets generate real angular response at the connector arms.
+            this.rA.copy(this.closestA).addScaledVector(this.normal,radiusA).sub(this.positions[i]);
+            this.rB.copy(this.closestB).addScaledVector(this.normal,-radiusB).sub(this.positions[j]);
             this.omegaRA.crossVectors(this.angular[i],this.rA);
             this.omegaRB.crossVectors(this.angular[j],this.rB);
             this.relative.copy(this.linear[j]).add(this.omegaRB).sub(this.linear[i]).sub(this.omegaRA);
-            this.tangent.copy(this.relative).addScaledVector(this.normal,-this.relative.dot(this.normal));
-            const tangentSpeed=this.tangent.length();
-            if(tangentSpeed>1e-5) {
-              this.tangent.multiplyScalar(1/tangentSpeed);
-              const jt=Math.min(tangentSpeed/(invMassA+invMassB),normalImpulse*0.24);
-              this.friction.copy(this.tangent).multiplyScalar(-jt);
-              this.linear[i].addScaledVector(this.friction,-invMassA);
-              this.linear[j].addScaledVector(this.friction,invMassB);
-              this.temp.crossVectors(this.rA,this.friction);
+            const closing=this.relative.dot(this.normal);
+            if(closing<0) {
+              this.crossA.crossVectors(this.rA,this.normal).multiplyScalar(invIA);
+              this.crossB.crossVectors(this.rB,this.normal).multiplyScalar(invIB);
+              this.angularA.crossVectors(this.crossA,this.rA);
+              this.angularB.crossVectors(this.crossB,this.rB);
+              const denominator=invMassA+invMassB+this.normal.dot(this.angularA.add(this.angularB));
+              const normalImpulse=-(1+0.20)*closing/Math.max(denominator,1e-6);
+              this.impulse.copy(this.normal).multiplyScalar(normalImpulse);
+              this.linear[i].addScaledVector(this.impulse,-invMassA);
+              this.linear[j].addScaledVector(this.impulse,invMassB);
+              this.temp.crossVectors(this.rA,this.impulse);
               this.angular[i].addScaledVector(this.temp,-invIA);
-              this.temp.crossVectors(this.rB,this.friction);
+              this.temp.crossVectors(this.rB,this.impulse);
               this.angular[j].addScaledVector(this.temp,invIB);
+
+              // Low surface friction preserves the visible sliding/rearranging motion.
+              this.omegaRA.crossVectors(this.angular[i],this.rA);
+              this.omegaRB.crossVectors(this.angular[j],this.rB);
+              this.relative.copy(this.linear[j]).add(this.omegaRB).sub(this.linear[i]).sub(this.omegaRA);
+              this.tangent.copy(this.relative).addScaledVector(this.normal,-this.relative.dot(this.normal));
+              const tangentSpeed=this.tangent.length();
+              if(tangentSpeed>1e-5) {
+                this.tangent.multiplyScalar(1/tangentSpeed);
+                const frictionImpulse=Math.min(tangentSpeed/(invMassA+invMassB),normalImpulse*0.10);
+                this.friction.copy(this.tangent).multiplyScalar(-frictionImpulse);
+                this.linear[i].addScaledVector(this.friction,-invMassA);
+                this.linear[j].addScaledVector(this.friction,invMassB);
+                this.temp.crossVectors(this.rA,this.friction);
+                this.angular[i].addScaledVector(this.temp,-invIA);
+                this.temp.crossVectors(this.rB,this.friction);
+                this.angular[j].addScaledVector(this.temp,invIB);
+              }
             }
+            collisions++;
           }
-          collisions++;
         }
       }
       this.accumulator-=h;
