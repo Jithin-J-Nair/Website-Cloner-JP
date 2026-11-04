@@ -4,6 +4,8 @@ export interface HomePhysicsStep {
   collisions: number;
   influencedPieces: number;
   interactionEnergy: number;
+  kineticEnergy: number;
+  maxTravel: number;
 }
 
 function closestSegmentPoints(
@@ -40,6 +42,7 @@ function closestSegmentPoints(
 export class HomeConnectorPhysics {
   private readonly meshes: THREE.Mesh[];
   private readonly positions: THREE.Vector3[];
+  private readonly spawnPositions: THREE.Vector3[];
   private readonly linear: THREE.Vector3[];
   private readonly angular: THREE.Vector3[];
   private readonly starts: THREE.Vector3[][];
@@ -84,6 +87,7 @@ export class HomeConnectorPhysics {
   ) {
     this.meshes=meshes;
     this.positions=positions;
+    this.spawnPositions=positions.map(position=>position.clone());
     this.linear=linearVelocities;
     this.angular=angularVelocities;
     this.starts=meshes.map(()=>[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()]);
@@ -125,8 +129,11 @@ export class HomeConnectorPhysics {
           const d=this.normal.length();
           const reach=2.85*this.meshes[i].scale.x+0.24;
           if(d<reach) {
-            if(d<0.015) this.normal.set(i%2===0?1:-1,((i%3)-1)*0.35,0.2).normalize();
-            else this.normal.multiplyScalar(1/d);
+            if(d<0.015) {
+              this.normal.copy(pointerSweep).negate();
+              if(this.normal.lengthSq()<1e-6) this.normal.set(i%2===0?1:-1,((i%3)-1)*0.35,0.2);
+              this.normal.normalize();
+            } else this.normal.multiplyScalar(1/d);
             const influence=Math.pow(1-d/reach,2);
             // Hovering repels continuously; pointer travel adds a swipe impulse.
             v.addScaledVector(this.normal,175*influence*h);
@@ -250,11 +257,19 @@ export class HomeConnectorPhysics {
     }
 
     if(this.interactionEnergy<0.00001) this.interactionEnergy=0;
-    for(let i=0;i<this.meshes.length;i++) this.meshes[i].position.copy(this.positions[i]);
+    let kineticEnergy=0;
+    let maxTravel=0;
+    for(let i=0;i<this.meshes.length;i++) {
+      this.meshes[i].position.copy(this.positions[i]);
+      kineticEnergy+=this.linear[i].lengthSq()+this.angular[i].lengthSq()*0.18;
+      maxTravel=Math.max(maxTravel,this.positions[i].distanceTo(this.spawnPositions[i]));
+    }
     return {
       collisions,
       influencedPieces:this.touched.reduce((count,value)=>count+(value?1:0),0),
       interactionEnergy:this.interactionEnergy,
+      kineticEnergy,
+      maxTravel,
     };
   }
 }
