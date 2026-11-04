@@ -189,7 +189,7 @@ function ProjectMediaCard({
 }
 
 /**
- * Verified Lusion Case-Study Page (`/projects/[slug]` — All 19 Canonical Routes)
+ * Verified Lusion Case-Study Page (`/projects/[slug]` — All 17 Current Canonical Routes)
  *
  * Matches all 38 desktop (`1440x900`) and mobile (`390x844`) captures in `docs/validation/phase-g/reference/`:
  *   - Exact brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
