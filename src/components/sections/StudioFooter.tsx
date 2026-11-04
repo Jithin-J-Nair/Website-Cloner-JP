@@ -318,7 +318,6 @@ export function StudioFooter({
                   autoComplete="email"
                   aria-invalid={status === "error"}
                   aria-describedby={status !== "idle" ? "footer-newsletter-feedback-message" : undefined}
-                  name="EMAIL"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
