@@ -1298,7 +1298,7 @@ function ClientLogoTile({ name, src }: { name: string; src: string }) {
         alt={name}
         width={240}
         height={240}
-        loading="lazy"
+        loading="eager"
         decoding="async"
         draggable={false}
         className="about-client-logo-mark opacity-75"
