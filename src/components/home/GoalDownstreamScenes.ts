@@ -963,13 +963,13 @@ export function buildArchitecturalTrussTunnel(
           float warm = smoothstep(0.24, 0.36, uPhase);
           float pink = smoothstep(0.49, 0.59, uPhase);
           vec3 primary = mix(vec3(0.72, 0.9, 1.0), vec3(1.0, 0.10, 0.055), warm);
-          primary = mix(primary, vec3(1.0, 0.075, 0.40), pink);
+          primary = mix(primary, vec3(0.94, 0.13, 0.62), pink);
           vec3 secondary = mix(vec3(0.14, 0.85, 1.0), vec3(0.18, 0.72, 1.0), pink);
           // Shaft-mounted strips: lighting follows depth, never random per-frame glint flashes.
           vec3 L1 = normalize(vec3(-2.0, 2.1, 2.5) - vWorldPos * vec3(1.0, 1.0, 0.18));
           vec3 L2 = normalize(vec3(2.2, -1.5, 0.0) - vWorldPos * vec3(1.0, 1.0, 0.12));
-          vec3 col = lightBRDF(N,V,L1,primary*3.5,base,roughness,metal);
-          col += lightBRDF(N,V,L2,secondary*2.5,base,roughness,metal);
+          vec3 col = lightBRDF(N,V,L1,primary*mix(3.5,2.6,pink),base,roughness,metal);
+          col += lightBRDF(N,V,L2,secondary*2.2,base,roughness,metal);
           vec3 reflected = textureCube(uEnvironment, reflect(-V, N)).rgb;
           float luminance = dot(reflected, vec3(0.2126,0.7152,0.0722));
           float fresnel = pow(1.0 - max(dot(N,V),0.0),5.0);

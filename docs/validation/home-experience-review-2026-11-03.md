@@ -52,3 +52,8 @@ The new vortex cages are original 4D-projected geometry with physically-based tr
 - Widened the captured shard breakup envelope from 1.14× to 1.20× so adjacent fragments separate more legibly during the short impact beat.
 - Increased the transparent vortex cage's crystal rod/node readability and environment response without adding an opaque white tesseract or hiding the astronaut.
 - Added deterministic checks for the updated shader constants and breakup envelope. Production browser screenshots remain the visual acceptance evidence.
+
+
+## Vortex visual hierarchy pass — 2026-11-04
+- Softened the captured metallic truss at the vortex peak (its geometry and tunnel deformation remain intact), shifted the peak key tint toward magenta, and reduced peak truss radiance so the transparent 4D crystal lattice and spiral core become the focal structure.
+- Added a deterministic source assertion for the vortex hierarchy and palette transition.

@@ -1518,7 +1518,7 @@ export function GoalTunnelSection() {
           ? smoothstep(0.42, 0.76, tTunnel) * 0.23
           : smoothstep(0.40, 0.58, tTunnel) * 0.18 + smoothstep(0.60, 0.76, tTunnel) * 0.34;
         const vortexPinch = smoothstep(0.56, 0.75, tTunnel);
-        const vortexStructureFade = 1 - 0.13 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
+        const vortexStructureFade = 1 - 0.36 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
         trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis * vortexStructureFade;
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
         trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
