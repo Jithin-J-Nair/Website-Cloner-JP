@@ -64,6 +64,9 @@ jobs:
       - name: About recognition-ledger tests
         run: node scripts/test-about-recognition.mjs
 
+      - name: About team-portrait tests
+        run: node scripts/test-about-team-portraits.mjs
+
       - name: Build
         run: npm run build
 
