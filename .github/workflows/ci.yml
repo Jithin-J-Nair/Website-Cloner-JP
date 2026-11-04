@@ -58,6 +58,9 @@ jobs:
       - name: About expertise-card motion tests
         run: node scripts/test-about-expertise-motion.mjs
 
+      - name: About client-logo wall tests
+        run: node scripts/test-about-clients.mjs
+
       - name: Build
         run: npm run build
 
