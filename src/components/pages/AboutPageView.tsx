@@ -40,8 +40,8 @@ function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Fl
   };
 
   const yawTurn = ((memberIndex % 3) - 1) * 0.18;
-  const jawWidth = 0.88 + (memberIndex % 4) * 0.04;
-  const hairCrown = 1.04 + (memberIndex % 3) * 0.06;
+  const jawWidth = 0.98 + (memberIndex % 4) * 0.045;
+  const hairCrown = 1.02 + (memberIndex % 3) * 0.045;
 
   let written = 0;
   let guard = 0;
@@ -83,9 +83,12 @@ function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Fl
     }
 
     // Apply slight 3/4 portrait turn
-    const px = u * 1.42;
-    const py = v * 1.52;
-    const pz = z * 1.35;
+    // The previous study read as a narrow vertical plume behind the change orb.
+    // Widen the cranial/shoulder envelope and lower its height so the portrait reads
+    // as a human-scale bust with visible lateral volume around the central control.
+    const px = u * 1.92;
+    const py = v * 1.40;
+    const pz = z * 1.48;
     const rx = px * Math.cos(yawTurn) + pz * Math.sin(yawTurn);
     const rz = -px * Math.sin(yawTurn) + pz * Math.cos(yawTurn);
 
