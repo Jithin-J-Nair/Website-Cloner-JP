@@ -148,3 +148,30 @@ jobs:
           name: about-wordmark-render-evidence
           path: temp/about-wordmark-validation/
           if-no-files-found: ignore
+
+      - name: Validate current Projects experience in production browser
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          PROJECTS_EXPERIENCE_BASE: http://127.0.0.1:3003
+        run: |
+          PORT=3003 npm run start > /tmp/website-cloner-jp-projects.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3003/projects > /dev/null; then
+              node scripts/validate-projects-experience.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-projects.log
+          exit 1
+
+      - name: Upload Projects production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: projects-experience-render-evidence
+          path: temp/projects-experience/
+          if-no-files-found: ignore
