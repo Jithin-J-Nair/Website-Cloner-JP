@@ -159,6 +159,13 @@ function AboutWhoExperience({
         positions[i * 3 + 2] = raw[i * 3 + 2] * 1.35;
       }
       geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      const shade = parsed.attributes.nShade;
+      if (!(shade instanceof Uint8Array) || shade.length !== member.vertexCount * 4) {
+        throw new Error(`Portrait ${member.id} has invalid nShade data`);
+      }
+      // nShade stores packed per-point normal and shade. Normalized Uint8 keeps
+      // the original compact source precision while making it shader-readable.
+      geo.setAttribute("nShade", new THREE.BufferAttribute(shade, 4, true));
       geo.computeBoundingSphere();
       const section = geo.userData.section as HTMLElement | undefined;
       if (section) section.dataset.teamPortraitSource = "bundle";
@@ -495,6 +502,9 @@ function AboutWhoExperience({
       "position",
       new THREE.BufferAttribute(buildSculpturalPortraitPositions(memberRef.current, 8192), 3)
     );
+    const fallbackShade = new Float32Array(8192 * 4);
+    for (let i = 0; i < 8192; i++) fallbackShade.set([.5, .5, 1, .55], i * 4);
+    portraitGeo.setAttribute("nShade", new THREE.BufferAttribute(fallbackShade, 4));
     portraitGeoRef.current = portraitGeo;
     portraitGeo.userData.section = sectionEl;
     sectionEl.dataset.teamPortraitSource = "procedural-fallback";
@@ -515,6 +525,7 @@ function AboutWhoExperience({
           uniform float uTime;
           uniform float uPixelRatio;
           uniform vec2 uPointerNDC;
+          attribute vec4 nShade;
           varying float vDepth;
           varying float vShade;
           void main() {
@@ -524,7 +535,11 @@ function AboutWhoExperience({
             p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
             vec4 mv = modelViewMatrix * vec4(p, 1.0);
             vDepth = -mv.z;
-            vShade = clamp(p.z * 0.85 + 0.42, 0.12, 1.0);
+            vec3 sourceNormal = normalize(nShade.xyz * 2.0 - 1.0);
+            vec3 viewNormal = normalize(normalMatrix * sourceNormal);
+            float facing = dot(viewNormal, normalize(vec3(-.35, .72, .6)));
+            float sourceShade = mix(.42, 1.0, nShade.w);
+            vShade = clamp((.42 + facing * .58) * sourceShade, .08, 1.0);
             float dof = 1.0 + abs(p.z - 0.35) * 2.2;
             gl_PointSize = (2.15 * dof) * uPixelRatio;
             gl_Position = projectionMatrix * mv;
