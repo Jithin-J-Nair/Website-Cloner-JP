@@ -57,7 +57,10 @@ try {
  if(!reduced && !touch){
   const box=await hero.boundingBox();
   // Hit an outer connector in the new overlapping cluster; verify displacement and magnetic return.
-  await page.mouse.move(box.x+box.width*.84,box.y+box.height*.65);
+  // First place the pointer outside the cloud, then sweep through it so the test
+  // exercises velocity-driven throws rather than only static cursor repulsion.
+  await page.mouse.move(box.x+box.width*.14,box.y+box.height*.48);
+  await page.mouse.move(box.x+box.width*.84,box.y+box.height*.65,{steps:18});
   await page.waitForFunction((startTravel)=> {
     const el=document.querySelector('#home-hero-visual-container');
     return Number(el.dataset.offsetEnergy)>.16 &&
@@ -82,16 +85,20 @@ try {
   const returned=await hero.evaluate(el=>({...el.dataset}));
   assert.ok(Number(returned.meanRadius)<Number(hovered.meanRadius),
     'the shared soft-centre field must gather thrown pieces back toward the cluster');
-  await page.waitForTimeout(650);
-  const idleFrames = Number(await hero.getAttribute('data-render-count')) - Number(returned.renderCount);
-  assert.ok(idleFrames >= 2 && idleFrames <= 52, `free connectors must keep moving after pointer release (frames=${idleFrames})`);
-  assert.equal(returned.physicsActive,'true','the connector cloud remains physically animated at rest');
+  // Software-rendered CI frames can take hundreds of milliseconds; wait for an
+  // actual post-release simulation frame instead of assuming a 650ms render budget.
+  await page.waitForFunction((previousCount)=>Number(document.querySelector('#home-hero-visual-container').dataset.renderCount)>previousCount,
+    Number(returned.renderCount), {timeout:10000});
+  const idle=await hero.evaluate(el=>({...el.dataset}));
+  const idleFrames=Number(idle.renderCount)-Number(returned.renderCount);
+  assert.ok(Number(idle.kineticEnergy)>0.01,'free connectors retain angular and linear momentum after pointer release');
+  assert.equal(idle.physicsActive,'true','the connector cloud remains physically animated at rest');
   assert.equal(Number(returned.clusterPieces),23,'the home stage renders the full layered connector cluster');
   // Rapid direction changes followed by cancellation must still release pointer energy.
   for (const x of [.2,.8,.3,.7,.49]) await page.mouse.move(box.x+box.width*x,box.y+box.height*.56);
   await hero.dispatchEvent('pointercancel',{pointerType:'mouse'});
   await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)===0,null,{timeout:90000});
-  report.hero={initial,hovered,settled,returned,rapidCancel:true,idleFrames};
+  report.hero={initial,hovered,settled,returned,idle,rapidCancel:true,idleFrames};
  }else {
   report.hero={initial};
   if(touch){
