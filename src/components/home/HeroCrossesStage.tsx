@@ -348,6 +348,20 @@ function StaticSculpturalFallback({ accentHex }: { accentHex: string }) {
   );
 }
 
+
+function closestArmContact(p1:THREE.Vector3,q1:THREE.Vector3,p2:THREE.Vector3,q2:THREE.Vector3,out1:THREE.Vector3,out2:THREE.Vector3):number {
+ const d1x=q1.x-p1.x,d1y=q1.y-p1.y,d1z=q1.z-p1.z,d2x=q2.x-p2.x,d2y=q2.y-p2.y,d2z=q2.z-p2.z;
+ const rx=p1.x-p2.x,ry=p1.y-p2.y,rz=p1.z-p2.z,a=d1x*d1x+d1y*d1y+d1z*d1z,e=d2x*d2x+d2y*d2y+d2z*d2z;
+ const f=d2x*rx+d2y*ry+d2z*rz,c=d1x*rx+d1y*ry+d1z*rz,b=d1x*d2x+d1y*d2y+d1z*d2z;
+ let u=0,v=0;
+ if(a<1e-8) v=THREE.MathUtils.clamp(f/e,0,1);
+ else if(e<1e-8) u=THREE.MathUtils.clamp(-c/a,0,1);
+ else { const den=a*e-b*b; if(den>1e-8) u=THREE.MathUtils.clamp((b*f-c*e)/den,0,1); v=(b*u+f)/e;
+ if(v<0){v=0;u=THREE.MathUtils.clamp(-c/a,0,1);} else if(v>1){v=1;u=THREE.MathUtils.clamp((b-c)/a,0,1);} }
+ out1.set(p1.x+d1x*u,p1.y+d1y*u,p1.z+d1z*u); out2.set(p2.x+d2x*v,p2.y+d2y*v,p2.z+d2z*v);
+ return out1.distanceToSquared(out2);
+}
+
 export function HeroCrossesStage() {
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const preloaderDone = useStudioStore((s) => s.preloaderDone);
@@ -795,51 +809,53 @@ export function HeroCrossesStage() {
       // velocity and keep the pile lively without allowing pieces to drift out of frame.
       let collisionCount = 0;
       if (!isReduced) {
-        for (let i = 0; i < livePositions.length; i++) {
-          const spec = HERO_PIECES[i];
-          const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
-          const pos = livePositions[i];
-          const velocity = linearVelocities[i];
-          const phase = now * 0.00055 + spec.driftPhase;
-          velocity.x += ((anchor[0] - pos.x) * 0.48 + Math.sin(phase * 1.13) * 0.075) * dt;
-          velocity.y += ((anchor[1] - pos.y) * 0.48 + Math.cos(phase * 0.91) * 0.085 - 0.018) * dt;
-          velocity.z += ((anchor[2] - pos.z) * 0.42 + Math.sin(phase * 0.77) * 0.05) * dt;
-          velocity.multiplyScalar(Math.exp(-0.34 * dt));
-          pos.addScaledVector(velocity, dt);
-          const bounds = isPortrait ? [1.75, 2.85, 1.45] : [3.65, 2.25, 1.55];
-          for (let axis = 0; axis < 3; axis++) {
-            const limit = bounds[axis];
-            if (pos.getComponent(axis) > limit) {
-              pos.setComponent(axis, limit);
-              velocity.setComponent(axis, -Math.abs(velocity.getComponent(axis)) * 0.72);
-            } else if (pos.getComponent(axis) < -limit) {
-              pos.setComponent(axis, -limit);
-              velocity.setComponent(axis, Math.abs(velocity.getComponent(axis)) * 0.72);
-            }
-          }
+
+        const starts=meshes.map(()=>[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()]);
+        const ends=meshes.map(()=>[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()]);
+        const basis=[new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1)];
+        const cpA=new THREE.Vector3(),cpB=new THREE.Vector3(),normal=new THREE.Vector3(),rel=new THREE.Vector3();
+        for(let i=0;i<meshes.length;i++) for(let k=0;k<3;k++){
+          const axis=basis[k].clone().applyQuaternion(meshes[i].quaternion).normalize(),half=0.91*meshes[i].scale.x;
+          starts[i][k].copy(livePositions[i]).addScaledVector(axis,-half);
+          ends[i][k].copy(livePositions[i]).addScaledVector(axis,half);
         }
-        for (let i = 0; i < livePositions.length; i++) {
-          for (let j = i + 1; j < livePositions.length; j++) {
-            const a = livePositions[i], b = livePositions[j];
-            const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
-            const distanceSq = dx * dx + dy * dy + dz * dz;
-            const minDistance = (0.76 + 0.12 * (HERO_PIECES[i].scale + HERO_PIECES[j].scale));
-            if (distanceSq < minDistance * minDistance && distanceSq > 1e-8) {
-              const distance = Math.sqrt(distanceSq);
-              const nx = dx / distance, ny = dy / distance, nz = dz / distance;
-              const overlap = (minDistance - distance) * 0.5;
-              a.x -= nx * overlap; a.y -= ny * overlap; a.z -= nz * overlap;
-              b.x += nx * overlap; b.y += ny * overlap; b.z += nz * overlap;
-              const va = linearVelocities[i], vb = linearVelocities[j];
-              const closing = (vb.x - va.x) * nx + (vb.y - va.y) * ny + (vb.z - va.z) * nz;
-              if (closing < 0) {
-                const impulse = -closing * 0.58;
-                va.x -= nx * impulse; va.y -= ny * impulse; va.z -= nz * impulse;
-                vb.x += nx * impulse; vb.y += ny * impulse; vb.z += nz * impulse;
-              }
-              collisionCount++;
-            }
+        // Four sequential-impulse passes resolve the three solid orthogonal arms of each cross.
+        for(let pass=0;pass<4;pass++) for(let i=0;i<meshes.length;i++) for(let j=i+1;j<meshes.length;j++){
+          let best=Infinity,ia=0,ib=0;
+          for(let a=0;a<3;a++) for(let b=0;b<3;b++){
+            const d=closestArmContact(starts[i][a],ends[i][a],starts[j][b],ends[j][b],cpA,cpB);
+            if(d<best){best=d;ia=a;ib=b;}
           }
+          const min=0.342*(meshes[i].scale.x+meshes[j].scale.x);
+          if(best>=min*min) continue;
+          const dist=Math.sqrt(Math.max(best,1e-10)),depth=min-dist;
+          if(depth<=0) continue;
+          normal.subVectors(cpB,cpA);
+          if(normal.lengthSq()<1e-8) normal.subVectors(livePositions[j],livePositions[i]);
+          if(normal.lengthSq()<1e-8) normal.set(1,0,0);
+          normal.normalize();
+          const correction=Math.max(0,depth-0.002)*0.46;
+          livePositions[i].addScaledVector(normal,-correction);
+          livePositions[j].addScaledVector(normal,correction);
+          for(let k=0;k<3;k++){
+            starts[i][k].addScaledVector(normal,-correction); ends[i][k].addScaledVector(normal,-correction);
+            starts[j][k].addScaledVector(normal,correction); ends[j][k].addScaledVector(normal,correction);
+          }
+          const va=linearVelocities[i],vb=linearVelocities[j];
+          rel.subVectors(vb,va); const closing=rel.dot(normal);
+          if(closing<0){
+            const impulse=-closing*0.60;
+            va.addScaledVector(normal,-impulse); vb.addScaledVector(normal,impulse);
+            // Damp tangential slip slightly; preserve enough energy for visible rebounds.
+            rel.subVectors(vb,va); rel.addScaledVector(normal,-rel.dot(normal));
+            if(rel.lengthSq()>1e-8){rel.multiplyScalar(Math.min(0.10,rel.length()*0.10)/rel.length());va.addScaledVector(rel,0.5);vb.addScaledVector(rel,-0.5);}
+            // Contact torque perturbs the tumble after impact.
+            impulseStates[i].rot.x += (cpA.y-livePositions[i].y)*impulse*0.035;
+            impulseStates[i].rot.y -= (cpA.x-livePositions[i].x)*impulse*0.035;
+            impulseStates[j].rot.x -= (cpB.y-livePositions[j].y)*impulse*0.035;
+            impulseStates[j].rot.y += (cpB.x-livePositions[j].x)*impulse*0.035;
+          }
+          collisionCount++;
         }
       }
 
