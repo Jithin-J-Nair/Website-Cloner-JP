@@ -617,6 +617,9 @@ export function GoalTunnelSection() {
                "  // would composite the background twice and make broken glass disappear.",
                "  float alpha = uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
+              ...(isMobileInit || isSoftwareRenderer
+                ? ["#include <tonemapping_fragment>", "#include <colorspace_fragment>"]
+                : []),
               "}",
             ].join("\n"),
           })
