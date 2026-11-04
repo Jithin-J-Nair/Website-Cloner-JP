@@ -11,7 +11,8 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
 import { createHollowCrossGeometry } from "@/components/home/HollowCrossGeometry";
 import { loadLusionBuf } from "@/lib/lusion-buf-loader";
-import { homeRenderDpr, stepMotionSpring } from "@/lib/home-motion";
+import { homeRenderDpr } from "@/lib/home-motion";
+import { HomeConnectorPhysics } from "@/lib/home-free-body-physics";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
@@ -388,11 +389,10 @@ export function HeroCrossesStage() {
     wakeSceneRef.current();
   }, [preloaderDone]);
 
-  const pointerNdcRef = useRef<{ x: number; y: number; active: boolean }>({
-    x: 0,
-    y: 0,
-    active: false,
+  const pointerNdcRef = useRef<{ x: number; y: number; vx: number; vy: number; active: boolean }>({
+    x: 0, y: 0, vx: 0, vy: 0, active: false,
   });
+  const pointerMotionRef = useRef({ x: 0, y: 0, time: 0, initialized: false });
   const pointerReportedRef = useRef(false);
 
   const accentHex = HERO_ACCENT_PALETTE[colorIdx % HERO_ACCENT_PALETTE.length];
@@ -560,21 +560,25 @@ export function HeroCrossesStage() {
       mesh.scale.setScalar(initAspect < PORTRAIT_STAGE_ASPECT ? spec.scale * 0.72 : spec.scale);
       livePositions.push(mesh.position.clone());
       linearVelocities.push(new THREE.Vector3(
-        Math.sin(meshes.length * 2.17) * 0.12,
-        Math.cos(meshes.length * 1.71) * 0.10,
-        Math.sin(meshes.length * 0.93) * 0.07
+        Math.sin(meshes.length * 2.17) * 0.20,
+        Math.cos(meshes.length * 1.71) * 0.15,
+        Math.sin(meshes.length * 0.93) * 0.13
       ));
+      // Independent angular momentum gives each free connector a changing tumble axis.
       angularVelocities.push(new THREE.Vector3(
-        0.48 + (meshes.length % 4) * 0.14,
-        -0.42 - (meshes.length % 5) * 0.11,
-        0.36 + (meshes.length % 3) * 0.12
+        0.20 + Math.sin(meshes.length * 1.31) * 0.16,
+        -0.18 + Math.cos(meshes.length * 1.73) * 0.15,
+        0.17 + Math.sin(meshes.length * 0.87) * 0.14
       ));
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       scene.add(mesh);
 
       meshes.push(mesh);
-      impulseStates.push({ pos: new THREE.Vector3(), rot: new THREE.Vector3() });
+      impulseStates.push({
+        pos: linearVelocities[linearVelocities.length-1],
+        rot: angularVelocities[angularVelocities.length-1],
+      });
       if (spec.isHero) heroMesh = mesh;
     }
 
@@ -695,12 +699,16 @@ export function HeroCrossesStage() {
       if (bokehUniforms.farClip) bokehUniforms.farClip.value = camera.far;
 
       const isPortrait = w / Math.max(1, h) < PORTRAIT_STAGE_ASPECT;
+      if (isPortrait !== currentIsPortrait) {
+        const xRatio = isPortrait ? 0.68 : 1/0.68;
+        for(let idx=0;idx<meshes.length;idx++) {
+          livePositions[idx].x *= xRatio;
+          linearVelocities[idx].x *= xRatio;
+        }
+        currentIsPortrait = isPortrait;
+      }
       meshes.forEach((m, idx) => {
         const spec = HERO_PIECES[idx];
-        const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
-        m.position.set(anchor[0], anchor[1], anchor[2]);
-        livePositions[idx].set(anchor[0], anchor[1], anchor[2]);
-        linearVelocities[idx].set(0, 0, 0);
         m.scale.setScalar(isPortrait ? spec.scale * 0.72 : spec.scale);
       });
       needsRender = true;
@@ -732,18 +740,14 @@ export function HeroCrossesStage() {
     visibilityObserver.observe(container);
 
     // Pre-allocated math scratch objects (zero per-frame heap allocations)
+    const physics = new HomeConnectorPhysics(meshes,livePositions,linearVelocities,angularVelocities);
     const heroViewPos = new THREE.Vector3();
-    const targetPos = new THREE.Vector3();
-    const targetQuat = new THREE.Quaternion();
-    const targetEuler = new THREE.Euler();
-    const pointerSprings = meshes.map(() => Array.from({length:6},() => ({value:0,velocity:0})));
     const pointerRay = new THREE.Raycaster();
     const pointerNdc = new THREE.Vector2();
-    const pointerPlane = new THREE.Plane();
-    const planeNormal = new THREE.Vector3();
-    const anchorPosition = new THREE.Vector3();
-    const pointerWorld = new THREE.Vector3();
-    const pointerDelta = new THREE.Vector3();
+    const pointerRight = new THREE.Vector3();
+    const pointerUp = new THREE.Vector3();
+    const pointerSweep = new THREE.Vector3();
+    let currentIsPortrait = initAspect < PORTRAIT_STAGE_ASPECT;
 
     let prevTime = performance.now();
 
@@ -792,159 +796,35 @@ export function HeroCrossesStage() {
       const isReduced = reducedMotionRef.current;
 
       const decay = Math.exp(-2.6 * dt);
-      const isPortrait = camera.aspect < PORTRAIT_STAGE_ASPECT;
-
-      let moving = false;
-      let transientMoving = false;
-      let pointerInfluencedPieces = 0;
       const ptr = pointerNdcRef.current;
-      if (ptr.active && !isReduced) {
+      if(ptr.active && !isReduced) {
         pointerNdc.set(ptr.x,ptr.y);
         pointerRay.setFromCamera(pointerNdc,camera);
-        camera.getWorldDirection(planeNormal);
+        pointerRight.setFromMatrixColumn(camera.matrixWorld,0).normalize();
+        pointerUp.setFromMatrixColumn(camera.matrixWorld,1).normalize();
+        pointerSweep.copy(pointerRight).multiplyScalar(ptr.vx*0.90)
+          .addScaledVector(pointerUp,ptr.vy*0.90);
+      } else pointerSweep.set(0,0,0);
+
+      if(isReduced) {
+        physics.interactionEnergy=0;
+        linearVelocities.forEach(v=>v.set(0,0,0));
+        angularVelocities.forEach(v=>v.set(0,0,0));
       }
-
-      // Autonomous, frame-rate-independent rigid-body-lite motion. Each piece is gently
-      // attracted to its art-directed envelope, while pairwise sphere contacts exchange
-      // velocity and keep the pile lively without allowing pieces to drift out of frame.
-      let collisionCount = 0;
-      if (!isReduced) {
-
-        const starts=meshes.map(()=>[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()]);
-        const ends=meshes.map(()=>[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()]);
-        const basis=[new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1)];
-        const cpA=new THREE.Vector3(),cpB=new THREE.Vector3(),normal=new THREE.Vector3(),rel=new THREE.Vector3();
-        for(let i=0;i<meshes.length;i++) for(let k=0;k<3;k++){
-          const axis=basis[k].clone().applyQuaternion(meshes[i].quaternion).normalize(),half=0.91*meshes[i].scale.x;
-          starts[i][k].copy(livePositions[i]).addScaledVector(axis,-half);
-          ends[i][k].copy(livePositions[i]).addScaledVector(axis,half);
-        }
-        // Four sequential-impulse passes resolve the three solid orthogonal arms of each cross.
-        for(let pass=0;pass<4;pass++) for(let i=0;i<meshes.length;i++) for(let j=i+1;j<meshes.length;j++){
-          let best=Infinity,ia=0,ib=0;
-          for(let a=0;a<3;a++) for(let b=0;b<3;b++){
-            const d=closestArmContact(starts[i][a],ends[i][a],starts[j][b],ends[j][b],cpA,cpB);
-            if(d<best){best=d;ia=a;ib=b;}
-          }
-          const min=0.342*(meshes[i].scale.x+meshes[j].scale.x);
-          if(best>=min*min) continue;
-          closestArmContact(starts[i][ia],ends[i][ia],starts[j][ib],ends[j][ib],cpA,cpB);
-          const dist=Math.sqrt(Math.max(best,1e-10)),depth=min-dist;
-          if(depth<=0) continue;
-          normal.subVectors(cpB,cpA);
-          if(normal.lengthSq()<1e-8) normal.subVectors(livePositions[j],livePositions[i]);
-          if(normal.lengthSq()<1e-8) normal.set(1,0,0);
-          normal.normalize();
-          const correction=Math.max(0,depth-0.002)*0.46;
-          livePositions[i].addScaledVector(normal,-correction);
-          livePositions[j].addScaledVector(normal,correction);
-          for(let k=0;k<3;k++){
-            starts[i][k].addScaledVector(normal,-correction); ends[i][k].addScaledVector(normal,-correction);
-            starts[j][k].addScaledVector(normal,correction); ends[j][k].addScaledVector(normal,correction);
-          }
-          const va=linearVelocities[i],vb=linearVelocities[j];
-          rel.subVectors(vb,va); const closing=rel.dot(normal);
-          if(closing<0){
-            const impulse=-closing*0.60;
-            va.addScaledVector(normal,-impulse); vb.addScaledVector(normal,impulse);
-            // Damp tangential slip slightly; preserve enough energy for visible rebounds.
-            rel.subVectors(vb,va); rel.addScaledVector(normal,-rel.dot(normal));
-            if(rel.lengthSq()>1e-8){rel.multiplyScalar(Math.min(0.10,rel.length()*0.10)/rel.length());va.addScaledVector(rel,0.5);vb.addScaledVector(rel,-0.5);}
-            // Contact torque perturbs the tumble after impact.
-            impulseStates[i].rot.x += (cpA.y-livePositions[i].y)*impulse*0.035;
-            impulseStates[i].rot.y -= (cpA.x-livePositions[i].x)*impulse*0.035;
-            impulseStates[j].rot.x -= (cpB.y-livePositions[j].y)*impulse*0.035;
-            impulseStates[j].rot.y += (cpB.x-livePositions[j].x)*impulse*0.035;
-          }
-          collisionCount++;
-        }
+      const physicsFrame = isReduced
+        ? {collisions:0,influencedPieces:0,interactionEnergy:0}
+        : physics.step(dt,now*0.001,ptr.active?pointerRay.ray:null,pointerSweep);
+      ptr.vx*=Math.exp(-4.5*dt);
+      ptr.vy*=Math.exp(-4.5*dt);
+      const collisionCount=physicsFrame.collisions;
+      const pointerInfluencedPieces=physicsFrame.influencedPieces;
+      const transientMoving=physicsFrame.interactionEnergy>0.001;
+      const moving=!isReduced && inView;
+      if(pointerInfluencedPieces>0 && !pointerReportedRef.current) {
+        pointerReportedRef.current=true;
+        setPointerHits(c=>c+1);
       }
-
-      for (let i = 0; i < meshes.length; i++) {
-        const spec = HERO_PIECES[i];
-        const mesh = meshes[i];
-        const imp = impulseStates[i];
-        if (isReduced) { imp.pos.set(0, 0, 0); imp.rot.set(0, 0, 0); }
-        const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
-
-        let pushX = 0, pushY = 0, pushZ = 0;
-        if (ptr.active && !isReduced) {
-          anchorPosition.set(anchor[0],anchor[1],anchor[2]);
-          pointerPlane.setFromNormalAndCoplanarPoint(planeNormal,anchorPosition);
-          if (pointerRay.ray.intersectPlane(pointerPlane,pointerWorld)) {
-            pointerDelta.copy(anchorPosition).sub(pointerWorld);
-            const distance = pointerDelta.length();
-            const radius = 4.0 * spec.scale;
-            if (distance < radius) {
-              if (distance < 0.001) pointerDelta.set(0.6,0.4,0);
-              const influence = Math.pow(1-distance/radius,2);
-              pointerDelta.normalize().multiplyScalar(influence * 1.85);
-              const radialX = pointerDelta.x;
-              const radialY = pointerDelta.y;
-              // A small tangential component sweeps nearby connectors around the cursor;
-              // the same critically-damped spring returns them to their authored anchors.
-              const orbit = influence * 0.22;
-              pushX = radialX - radialY * orbit;
-              pushY = radialY + radialX * orbit;
-              pushZ = -0.40 * influence;
-              pointerInfluencedPieces++;
-              if (!pointerReportedRef.current) {
-                pointerReportedRef.current = true;
-                setPointerHits((c) => c+1);
-              }
-            }
-          }
-        }
-        const springs = pointerSprings[i];
-        for (let axis = 0; axis < 6; axis++) {
-          const target = axis === 0 ? pushX : axis === 1 ? pushY : axis === 2 ? pushZ
-            : axis === 3 ? -pushY * 0.90 : axis === 4 ? pushX * 0.92 : pushX * 0.42;
-          if (isReduced) { springs[axis].value = springs[axis].velocity = 0; }
-          else stepMotionSpring(springs[axis],target,dt,16);
-          const springMoving = Math.abs(springs[axis].value-target)>0.0001 || Math.abs(springs[axis].velocity)>0.0001;
-          transientMoving ||= springMoving;
-          moving ||= springMoving;
-        }
-
-        // Subtle phase-offset drift makes the anchored group feel suspended between pointer moves.
-        const idlePhase = now * 0.00042 + spec.driftPhase;
-        const idleWeight = !isReduced ? 1 : 0;
-        const idleX = Math.sin(idlePhase) * spec.driftAmp[0] * idleWeight;
-        const idleY = Math.cos(idlePhase * 0.91) * spec.driftAmp[1] * idleWeight;
-        const idleZ = Math.sin(idlePhase * 0.72 + 1.1) * spec.driftAmp[2] * idleWeight;
-        const idleRX = Math.sin(idlePhase * 0.68) * spec.rotAmp[0] * idleWeight;
-        const idleRY = Math.cos(idlePhase * 0.76) * spec.rotAmp[1] * idleWeight;
-        const idleRZ = Math.sin(idlePhase * 0.58 + 0.6) * spec.rotAmp[2] * idleWeight;
-        const live = livePositions[i];
-        targetPos.set(
-          live.x+springs[0].value+imp.pos.x+idleX,
-          live.y+springs[1].value+imp.pos.y+idleY,
-          live.z+springs[2].value+imp.pos.z+idleZ
-        );
-        const spin = angularVelocities[i];
-        const spinTime = now * 0.001;
-        targetEuler.set(
-          spec.euler[0]+spin.x*spinTime+springs[3].value+imp.rot.x+idleRX,
-          spec.euler[1]+spin.y*spinTime+springs[4].value+imp.rot.y+idleRY,
-          spec.euler[2]+spin.z*spinTime+springs[5].value+imp.rot.z+idleRZ
-        );
-        targetQuat.setFromEuler(targetEuler);
-
-        if (!isReduced && (mesh.position.distanceToSquared(targetPos)>0.00000001 || mesh.quaternion.angleTo(targetQuat)>0.0001)) moving = true;
-        // The critically damped pointer spring already provides smooth, bounded motion.
-        // Do not add a second transform lerp: it delays the magnetic return after the
-        // cursor leaves and makes the connectors appear to drift away from their rest pose.
-        mesh.position.copy(targetPos);
-        mesh.quaternion.copy(targetQuat);
-
-        imp.pos.multiplyScalar(decay);
-        imp.rot.multiplyScalar(decay);
-        if (imp.pos.lengthSq()<0.00000001) imp.pos.set(0,0,0);
-        if (imp.rot.lengthSq()<0.00000001) imp.rot.set(0,0,0);
-        const impulseMoving = imp.pos.lengthSq()>0 || imp.rot.lengthSq()>0;
-        transientMoving ||= impulseMoving;
-        moving ||= impulseMoving;
-      }
+      if(!ptr.active) pointerReportedRef.current=false;
 
       // Dynamic view-space DOF focus locked every frame onto the royal-blue hero connector
       if (heroMesh) {
@@ -961,7 +841,7 @@ export function HeroCrossesStage() {
       container.dataset.motionState = transientMoving ? "responding" : "settled";
       container.dataset.activeRaf = transientMoving ? "true" : "false";
       container.dataset.renderPixels = `${renderer.domElement.width}x${renderer.domElement.height}`;
-      container.dataset.offsetEnergy = pointerSprings.reduce((sum,axes) => sum+axes.reduce((total,axis) => total+Math.abs(axis.value),0),0).toFixed(5);
+      container.dataset.offsetEnergy = physicsFrame.interactionEnergy.toFixed(5);
       container.dataset.pointerInfluencedPieces = String(pointerInfluencedPieces);
       container.dataset.clusterPieces = String(meshes.length);
       container.dataset.physicsCollisions = String(collisionCount);
@@ -993,10 +873,11 @@ export function HeroCrossesStage() {
       }
 
       // True zero-loop accessibility under `prefers-reduced-motion: reduce` once static frame is painted
-      const idleEnabled = !isReduced && inView && preloaderDoneRef.current && ptr.active;
-      if (isReduced || (!moving && !idleEnabled)) return;
+      const idleEnabled = !isReduced && inView && preloaderDoneRef.current;
+      if (isReduced || !moving) return;
 
-      scheduleNext(elapsedFrameMs, idleEnabled && !transientMoving);
+      // Idle cloud motion runs at 30fps; pointer throws get the full display refresh rate.
+      scheduleNext(elapsedFrameMs, idleEnabled && !ptr.active);
     };
 
     const wakeScene = () => {
@@ -1051,14 +932,27 @@ export function HeroCrossesStage() {
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    pointerNdcRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    pointerNdcRef.current.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-    pointerNdcRef.current.active = e.pointerType !== "touch";
+    const x=((e.clientX-rect.left)/rect.width)*2-1;
+    const y=-(((e.clientY-rect.top)/rect.height)*2-1);
+    const time=e.timeStamp;
+    const last=pointerMotionRef.current;
+    if(last.initialized) {
+      const elapsed=Math.max(0.008,(time-last.time)*0.001);
+      pointerNdcRef.current.vx=THREE.MathUtils.clamp((x-last.x)/elapsed,-12,12);
+      pointerNdcRef.current.vy=THREE.MathUtils.clamp((y-last.y)/elapsed,-12,12);
+    }
+    last.x=x;last.y=y;last.time=time;last.initialized=true;
+    pointerNdcRef.current.x=x;
+    pointerNdcRef.current.y=y;
+    pointerNdcRef.current.active=e.pointerType!=="touch";
     wakeSceneRef.current();
   }, []);
 
   const handlePointerLeave = useCallback(() => {
     pointerNdcRef.current.active = false;
+    pointerNdcRef.current.vx = 0;
+    pointerNdcRef.current.vy = 0;
+    pointerReportedRef.current = false;
     wakeSceneRef.current();
   }, []);
 
@@ -1068,12 +962,12 @@ export function HeroCrossesStage() {
     if (reducedMotionRef.current) return;
     impulseVelRef.current.forEach((imp, idx) => {
       const angle = idx * 1.9;
-      imp.pos.set(Math.cos(angle) * 0.42, Math.sin(angle) * 0.36, Math.sin(idx) * 0.25);
-      imp.rot.set(
-        (Math.sin(idx * 2.1) - 0.15) * 0.55,
-        (Math.cos(idx * 1.4) + 0.15) * 0.55,
-        Math.sin(idx * 0.9) * 0.45
-      );
+      imp.pos.add(new THREE.Vector3(Math.cos(angle)*1.8,Math.sin(angle)*1.5,Math.sin(idx)*0.9));
+      imp.rot.add(new THREE.Vector3(
+        (Math.sin(idx*2.1)-0.15)*0.75,
+        (Math.cos(idx*1.4)+0.15)*0.75,
+        Math.sin(idx*0.9)*0.65
+      ));
     });
     wakeSceneRef.current();
   }, []);
@@ -1098,8 +992,8 @@ export function HeroCrossesStage() {
       tabIndex={0}
       aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to cycle studio palette"
       data-color-index={colorIdx}
-      data-cluster-mode="centered-magnetic"
-      data-cluster-envelope="desktop-80x78"
+      data-cluster-mode="free-body-cloud"
+      data-cluster-envelope="soft-central-return"
       data-accent-color={accentHex}
       data-webgl-status={webglSupported ? shaderStatus : "fallback"}
       data-pointer-interactions={pointerHits}
