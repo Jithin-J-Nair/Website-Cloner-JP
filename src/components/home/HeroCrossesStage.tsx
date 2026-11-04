@@ -764,10 +764,15 @@ export function HeroCrossesStage() {
             if (distance < radius) {
               if (distance < 0.001) pointerDelta.set(0.6,0.4,0);
               const influence = Math.pow(1-distance/radius,2);
-              pointerDelta.normalize().multiplyScalar(influence * 1.42);
-              pushX = pointerDelta.x;
-              pushY = pointerDelta.y;
-              pushZ = -0.28 * influence;
+              pointerDelta.normalize().multiplyScalar(influence * 1.62);
+              const radialX = pointerDelta.x;
+              const radialY = pointerDelta.y;
+              // A small tangential component sweeps nearby connectors around the cursor;
+              // the same critically-damped spring returns them to their authored anchors.
+              const orbit = influence * 0.18;
+              pushX = radialX - radialY * orbit;
+              pushY = radialY + radialX * orbit;
+              pushZ = -0.34 * influence;
               if (!pointerReportedRef.current) {
                 pointerReportedRef.current = true;
                 setPointerHits((c) => c+1);

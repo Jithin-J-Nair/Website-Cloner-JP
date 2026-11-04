@@ -33,7 +33,9 @@ import {
 import {
   buildArchitecturalTrussTunnel,
   buildBlueArchCorridor,
+  buildGlassShardSideGeometry,
   buildTunnelGlazing,
+  buildVortexHypercubeLattice,
   buildDiamondsAndPopStickers,
   buildHologramEchoMaterial,
   buildVisorLedMatrix,
@@ -107,7 +109,12 @@ declare global {
         glassRefractionReady: boolean;
         shardDepthWrite: boolean;
         shardSpread: number;
+        shardSidewallsLoaded: boolean;
+        shardSidewallTriangles: number;
         vortexIntensity: number;
+        vortexGlassVisible: boolean;
+        vortexGlassLayers: number;
+        vortexGlassEdges: number;
         shardCount: number;
         shardFrames: number;
         ringVisible: boolean;
@@ -413,6 +420,10 @@ export function GoalTunnelSection() {
     const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit || isSoftwareRenderer, corridorEnvironment.texture);
     trussSystem.group.visible = false;
     scene.add(trussSystem.group);
+    // Nested transparent 4D-projected glass cages surround the core; no opaque white tesseract.
+    const vortexGlass = buildVortexHypercubeLattice(track, corridorEnvironment.texture, isMobileInit);
+    vortexGlass.group.visible = false;
+    scene.add(vortexGlass.group);
     const glazing = buildTunnelGlazing(track, corridorEnvironment.texture, isMobileInit);
     scene.add(glazing.group);
     glazing.group.visible = false;
@@ -422,6 +433,7 @@ export function GoalTunnelSection() {
 
     // Captured rigid-body shard transforms are interpolated continuously at each scroll sample.
     let shardsMesh: THREE.Mesh | null = null;
+    let shardEdgesMesh: THREE.Mesh | null = null;
     let numShards = 0;
     let framesPerShard = 0;
 
@@ -462,6 +474,8 @@ export function GoalTunnelSection() {
         const animData = new Float32Array(bga.attributes.position);
         const animOrient = new Float32Array(bga.attributes.orient);
         const shardCenter = restBounds.getCenter(new THREE.Vector3());
+        const shardBoundsSize = restBounds.getSize(new THREE.Vector3()).length();
+        const shardSideThickness = Math.max(0.001, shardBoundsSize * 0.00125);
         const shardSpread = 1.14;
         
         const mat = track(
@@ -476,7 +490,8 @@ export function GoalTunnelSection() {
               uEnvironment: { value: corridorEnvironment.texture },
               uSceneColor: { value: glassRefractionTarget?.texture ?? null },
               uRefractionSize: { value: new THREE.Vector2(1, 1) },
-              uRefractionStrength: { value: 1.24 },
+              uRefractionStrength: { value: 1.38 },
+              uGlassThickness: { value: Math.max(0.75, shardSideThickness * 2.0) },
               uCameraWorldMatrix: { value: camera.matrixWorld },
               uFrameData: { value: null },
               uOrientData: { value: null },
@@ -520,6 +535,7 @@ export function GoalTunnelSection() {
               "varying vec4 vClipPosition;",
               "uniform float uOpacity;",
               "uniform float uRefractionStrength;",
+              "uniform float uGlassThickness;",
               "uniform samplerCube uEnvironment;",
               "uniform sampler2D uSceneColor;",
               "uniform vec2 uRefractionSize;",
@@ -544,7 +560,7 @@ export function GoalTunnelSection() {
               "  vec2 screenUv = vClipPosition.xy / max(0.0001, vClipPosition.w) * 0.5 + 0.5;",
               "  float pixelScale = min(1.65, 900.0 / max(1.0, min(uRefractionSize.x, uRefractionSize.y)));",
               "  float edge = pow(1.0 - facing, 1.38);",
-              "  float opticalPath = 0.92 + edge * 1.05;",
+              "  float opticalPath = uGlassThickness / max(0.14, facing);",
               "  vec3 incident = normalize(vPosV);",
               "  float etaR = gl_FrontFacing ? (1.0 / iorR) : iorR;",
               "  float etaG = gl_FrontFacing ? (1.0 / iorG) : iorG;",
@@ -606,6 +622,13 @@ export function GoalTunnelSection() {
         shardsMesh.visible = false;
         shardsMesh.frustumCulled = false;
         shardsMesh.renderOrder = 12;
+        // Close every captured fragment into a thin glass plate. Sidewalls use the
+        // same per-piece frame/quaternion textures as the refractive front/back faces.
+        const sideGeometry = track(buildGlassShardSideGeometry(geom, shardSideThickness));
+        shardEdgesMesh = new THREE.Mesh(sideGeometry, mat);
+        shardEdgesMesh.visible = false;
+        shardEdgesMesh.frustumCulled = false;
+        shardEdgesMesh.renderOrder = 13;
         // The data is 946 items. 32x30 texture is 960 items.
         const frameData = new Float32Array(32 * 30 * 4);
         const orientData = new Float32Array(32 * 30 * 4);
@@ -627,8 +650,12 @@ export function GoalTunnelSection() {
             frameData[offset + 2] = shardCenter.z + (frameData[offset + 2] - shardCenter.z) * shardSpread;
           }
         };
-        shardsMesh.userData = { sampleFrame, texFrame, texOrient, framesPerShard, restBounds, shardSpread };
+        shardsMesh.userData = {
+          sampleFrame, texFrame, texOrient, framesPerShard, restBounds, shardSpread,
+          sidewallTriangles: Math.floor(sideGeometry.getAttribute("position").count / 3),
+        };
         scene.add(shardsMesh);
+        scene.add(shardEdgesMesh);
 
       })
       .catch((error: unknown) => {
@@ -677,11 +704,15 @@ export function GoalTunnelSection() {
           const prevTruss = trussSystem.group.visible;
           const prevBlue = blueCorridor.group.visible;
           const prevShards = shardsMesh ? shardsMesh.visible : false;
+          const prevShardEdges = shardEdgesMesh ? shardEdgesMesh.visible : false;
+          const prevVortexGlass = vortexGlass.group.visible;
           const prevDecor = endDecor.group.visible;
           const prevLed = visorLed.mesh.visible;
           trussSystem.group.visible = true;
           blueCorridor.group.visible = true;
           if(shardsMesh) shardsMesh.visible = true;
+          if(shardEdgesMesh) shardEdgesMesh.visible = true;
+          vortexGlass.group.visible = true;
           endDecor.group.visible = true;
           visorLed.mesh.visible = true;
           if (clones[0]) clones[0].root.visible = true;
@@ -689,6 +720,8 @@ export function GoalTunnelSection() {
           trussSystem.group.visible = prevTruss;
           blueCorridor.group.visible = prevBlue;
           if(shardsMesh) shardsMesh.visible = prevShards;
+          if(shardEdgesMesh) shardEdgesMesh.visible = prevShardEdges;
+          vortexGlass.group.visible = prevVortexGlass;
           endDecor.group.visible = prevDecor;
           visorLed.mesh.visible = prevLed;
           if (clones[0]) clones[0].root.visible = false;
@@ -855,7 +888,9 @@ export function GoalTunnelSection() {
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
         corridorTravel: 0, glazingLayers: 0, glassOpacity: 0,
         glassRefractionReady: false, shardDepthWrite: false, shardSpread: 1.14,
-        shardCount: 0, shardFrames: 0, vortexIntensity: 0, ringVisible: false,
+        shardSidewallsLoaded: false, shardSidewallTriangles: 0,
+        shardCount: 0, shardFrames: 0, vortexIntensity: 0,
+        vortexGlassVisible: false, vortexGlassLayers: 0, vortexGlassEdges: 0, ringVisible: false,
       },
       playback: { state: "armed", progress: 0, virtualScroll: 0, activation: 0, end: 0, runs: 0 },
       scrollForEmergence: (u: number) => {
@@ -1489,13 +1524,16 @@ export function GoalTunnelSection() {
         trussSystem.tunnelMaterial.uniforms.uTravelZ.value = acceleratedFall(tTunnel) * 44;
         const pinkVortexGlow = smoothstep(0.49, 0.69, tTunnel);
         const vortexPulse = 0.94 + 0.06 * Math.sin(tTunnel * Math.PI * 14);
+        const vortexIntensity = pinkVortexGlow * blackVis * vortexPulse;
         trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.53, 0.68, tTunnel);
-        trussSystem.vortexCoreMat.uniforms.uIntensity.value = pinkVortexGlow * blackVis * vortexPulse;
+        trussSystem.vortexCoreMat.uniforms.uIntensity.value = vortexIntensity;
+        vortexGlass.update(tTunnel, vortexIntensity, reducedMotion);
         if (bloomPass) {
           bloomPass.strength = lerp(0.14, 0.28, smoothstep(0.66, 0.75, tTunnel));
         }
-      } else if (bloomPass) {
-        bloomPass.strength = 0.16;
+      } else {
+        vortexGlass.update(tTunnel, 0, reducedMotion);
+        if (bloomPass) bloomPass.strength = 0.16;
       }
 
       // 2. Downstream Royal-Blue Arch & White-Ring Corridor (`Frames 15 & 16`)
@@ -1544,16 +1582,17 @@ export function GoalTunnelSection() {
 
       // 3. Authentic Plate-Glass Shatter Burst (`Frame 16`)
       if (shardsMesh) {
-        const shardVis = smoothstep(0.185, 0.215, tShatter) * (1 - smoothstep(0.47, 0.575, tShatter)) * (tWait > 0.001 ? 0 : 1);
+        const shardVis = smoothstep(0.18, 0.205, tShatter) * (1 - smoothstep(0.34, 0.42, tShatter)) * (tWait > 0.001 ? 0 : 1);
         shardsMesh.visible = shardVis > 0.005;
+        if (shardEdgesMesh) shardEdgesMesh.visible = shardsMesh.visible;
         if (shardsMesh.visible) {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
-          mat.uniforms.uRefractionStrength.value = 1.35 + shardVis * 0.65;
+          mat.uniforms.uRefractionStrength.value = 1.55 + shardVis * 0.65;
 
-          // Compress the captured rigid-body trajectory into a fast impact beat,
-          // retaining continuous position interpolation and quaternion slerp.
-          const burst = acceleratedFall(clamp01((tShatter - 0.205) / 0.235));
+          // The 946 captured rigid-body trajectories remain intact; only the
+          // playback window is compressed to a sub-second glass impact.
+          const burst = acceleratedFall(clamp01((tShatter - 0.205) / 0.145));
           const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
           sampleFrame(clamp01(burst) * (framesPerShard - 1));
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
@@ -1562,6 +1601,11 @@ export function GoalTunnelSection() {
           shardsMesh.position.copy(_monitorCenter);
           shardsMesh.quaternion.copy(_monitorRotation);
           shardsMesh.scale.set(scaleX, scaleY, Math.min(scaleX, scaleY));
+          if (shardEdgesMesh) {
+            shardEdgesMesh.position.copy(shardsMesh.position);
+            shardEdgesMesh.quaternion.copy(shardsMesh.quaternion);
+            shardEdgesMesh.scale.copy(shardsMesh.scale);
+          }
           texFrame.needsUpdate = true;
           texOrient.needsUpdate = true;
         }
@@ -1658,8 +1702,8 @@ export function GoalTunnelSection() {
           // Flight-axis gravity adds increasing descent/depth through the shaft, then blends
           // into the authored blue-flight pose; never introduce another playhead.
           const descent = acceleratedFall(clamp01((tTunnel - 0.06) / 0.64)) * (1 - inBlueDive);
-          ay -= descent * 0.24;
-          az -= descent * 1.05;
+          ay -= descent * 0.34;
+          az -= descent * 1.42;
           const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
           const trussRz = intoCurl * (-1.15 - tTunnel * 3.1);
           const vortexSpiral = smoothstep(0.42, 0.78, tTunnel) * (1 - inBlueDive);
@@ -1683,7 +1727,7 @@ export function GoalTunnelSection() {
           // `Frame 16` (`16-monitor-glass-shatter`) -> `Frame 17` (`17-astronaut-stickers-wait`):
           // Astronaut bursts forward through the Studio Display screen with BOTH ARMS RAISED
           // (`SUIT_POSE_SHATTER_BREAK`) and settles smoothly into visor salute (`SUIT_POSE_VISOR_SALUTE`)!
-          const burst = smoothstep(0.12, 0.38, tShatter);
+          const burst = smoothstep(0.08, 0.28, tShatter);
           const settleSalute = smoothstep(0.70, 0.90, tShatter);
           jointPose = blendSuitPose(
             blendSuitPose(SUIT_POSE_CORRIDOR_FLY, SUIT_POSE_SHATTER_BREAK, burst),
@@ -1691,8 +1735,8 @@ export function GoalTunnelSection() {
             settleSalute
           );
           ax = lerp(0.04, pxParallax * 0.05, burst);
-          const gravityDrop = acceleratedFall(clamp01((tShatter-0.12)/0.58));
-          ay = lerp(-0.02,m.isMobile ? -0.18 : -0.32,gravityDrop);
+          const gravityDrop = acceleratedFall(clamp01((tShatter-0.08)/0.40));
+          ay = lerp(-0.02,m.isMobile ? -0.22 : -0.40,gravityDrop);
           az = lerp(-3.75, m.isMobile ? 0.68 : 1.72, burst);
           az = lerp(az, m.isMobile ? 1.24 : 2.66, settleSalute);
           rx = lerp(0.24, -pyParallax * 0.04, burst);
@@ -1873,6 +1917,7 @@ export function GoalTunnelSection() {
       let glassRefractionReady = false;
       if (shardsMesh?.visible && glassRefractionTarget) {
         const wasVisible = shardsMesh.visible;
+        const wereEdgesVisible = shardEdgesMesh?.visible ?? false;
         const previousTarget = glRenderer.getRenderTarget();
         const previousToneMapping = glRenderer.toneMapping;
         const previousOutputColorSpace = glRenderer.outputColorSpace;
@@ -1881,6 +1926,7 @@ export function GoalTunnelSection() {
         const previousClearAlpha = glRenderer.getClearAlpha();
         try {
           shardsMesh.visible = false;
+          if (shardEdgesMesh) shardEdgesMesh.visible = false;
           glRenderer.setRenderTarget(glassRefractionTarget);
           glRenderer.autoClear = true;
           glRenderer.toneMapping = THREE.NoToneMapping;
@@ -1901,6 +1947,7 @@ export function GoalTunnelSection() {
           glRenderer.autoClear = previousAutoClear;
           glRenderer.setClearColor(previousClearColor, previousClearAlpha);
           shardsMesh.visible = wasVisible;
+          if (shardEdgesMesh) shardEdgesMesh.visible = wereEdgesVisible;
         }
       }
       if (composer) {
@@ -1932,6 +1979,12 @@ export function GoalTunnelSection() {
           (child) => child.name === "CapturedInnerLattice" || child.name === "CapturedOuterLattice"
         );
         state.shardsLoaded = shardsMesh !== null;
+        state.shardSidewallsLoaded = shardEdgesMesh !== null;
+        state.shardSidewallTriangles = shardEdgesMesh
+          ? Math.floor(shardEdgesMesh.geometry.getAttribute("position").count / 3) : 0;
+        state.vortexGlassVisible = vortexGlass.group.visible;
+        state.vortexGlassLayers = vortexGlass.layers;
+        state.vortexGlassEdges = vortexGlass.edges;
         state.portalFlash = portalFlash;
         state.flashVisible = trussSystem.group.visible && portalFlash > 0.001;
         state.corridorTravel = blueCorridor.group.visible ? blueCorridor.travelGroup.position.z : 0;

@@ -83,6 +83,16 @@ try {
     'vortex core uses a deformed four-fold spiral, accretion ring and dark central horizon');
   assert.ok(!downstreamSource.includes('GlassTesseractVortex') && !downstreamSource.includes('TesseractGlass'),
     'the white tesseract object is completely removed from the tunnel scene');
+  assert.ok(downstreamSource.includes('buildVortexHypercubeLattice') && downstreamSource.includes('rotatePlane(four, 0, 3'),
+    'the vortex is a nested perspective-projected 4D glass lattice, not an opaque white cube');
+  assert.ok(downstreamSource.includes('buildGlassShardSideGeometry') && downstreamSource.includes('sideNormal.crossVectors'),
+    'captured glass fragments gain closed volumetric side faces');
+  assert.ok(goalSource.includes('uGlassThickness') && goalSource.includes('shardSidewallTriangles'),
+    'glass shards combine thickness-aware optics with a separate reflective sidewall pass');
+  assert.ok(goalSource.includes('(tShatter - 0.205) / 0.145'),
+    'the 946-piece glass breakup is compressed to a short impact beat');
+  assert.ok(goalSource.includes('smoothstep(0.08, 0.28, tShatter)') && goalSource.includes('descent * 1.42'),
+    'the astronaut breakout and tunnel descent use the faster gravity trajectory');
   assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
     'Lenis uses the tuned smooth-wheel profile');
 

@@ -539,6 +539,267 @@ export function buildTunnelGlazing(
   } };
 }
 
+export function buildGlassShardSideGeometry(
+  source: THREE.BufferGeometry,
+  halfThickness: number
+): THREE.BufferGeometry {
+  const position = source.getAttribute("position");
+  const normal = source.getAttribute("normal");
+  const piece = source.getAttribute("piece") ?? source.getAttribute("aPiece");
+  if (!position || !normal || !piece) throw new Error("Glass shard geometry is missing position, normal, or piece attributes.");
+
+  type EdgeRecord = {
+    piece: number;
+    a: [number, number, number];
+    b: [number, number, number];
+    na: [number, number, number];
+    nb: [number, number, number];
+    count: number;
+  };
+  const edges = new Map<string, EdgeRecord>();
+  const index = source.index;
+  const triangleCount = Math.floor((index?.count ?? position.count) / 3);
+  const coordinateKey = (v: [number, number, number]) =>
+    [Math.round(v[0] * 100000), Math.round(v[1] * 100000), Math.round(v[2] * 100000)].join(",");
+  const pointAt = (i: number): [number, number, number] =>
+    [position.getX(i), position.getY(i), position.getZ(i)];
+  const normalAt = (i: number): [number, number, number] =>
+    [normal.getX(i), normal.getY(i), normal.getZ(i)];
+  const edgeKey = (pieceId: number, a: [number, number, number], b: [number, number, number]) => {
+    const ka = coordinateKey(a), kb = coordinateKey(b);
+    return String(pieceId) + ":" + (ka < kb ? ka + "|" + kb : kb + "|" + ka);
+  };
+
+  for (let tri = 0; tri < triangleCount; tri++) {
+    const ids = [0, 1, 2].map((corner) => {
+      const offset = tri * 3 + corner;
+      return index ? index.getX(offset) : offset;
+    });
+    const pieceId = Math.round(piece.getX(ids[0]));
+    for (const [aCorner, bCorner] of [[0, 1], [1, 2], [2, 0]] as const) {
+      const a = pointAt(ids[aCorner]);
+      const b = pointAt(ids[bCorner]);
+      const na = normalAt(ids[aCorner]);
+      const nb = normalAt(ids[bCorner]);
+      const key = edgeKey(pieceId, a, b);
+      const existing = edges.get(key);
+      if (existing) existing.count++;
+      else edges.set(key, { piece: pieceId, a, b, na, nb, count: 1 });
+    }
+  }
+
+  const positions: number[] = [];
+  const normals: number[] = [];
+  const pieces: number[] = [];
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const na = new THREE.Vector3();
+  const nb = new THREE.Vector3();
+  const tangent = new THREE.Vector3();
+  const faceNormal = new THREE.Vector3();
+  const sideNormal = new THREE.Vector3();
+  const frontA = new THREE.Vector3();
+  const frontB = new THREE.Vector3();
+  const backA = new THREE.Vector3();
+  const backB = new THREE.Vector3();
+
+  const pushTriangle = (p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, n: THREE.Vector3, pieceId: number) => {
+    for (const p of [p0, p1, p2]) {
+      positions.push(p.x, p.y, p.z);
+      normals.push(n.x, n.y, n.z);
+      pieces.push(pieceId);
+    }
+  };
+
+  for (const edge of edges.values()) {
+    if (edge.count !== 1) continue;
+    a.set(...edge.a); b.set(...edge.b);
+    na.set(...edge.na); nb.set(...edge.nb);
+    tangent.subVectors(b, a);
+    if (tangent.lengthSq() < 1e-10) continue;
+    tangent.normalize();
+    faceNormal.addVectors(na, nb);
+    if (faceNormal.lengthSq() < 1e-8) continue;
+    faceNormal.normalize();
+    sideNormal.crossVectors(tangent, faceNormal);
+    if (sideNormal.lengthSq() < 1e-8) continue;
+    sideNormal.normalize();
+    frontA.copy(a).addScaledVector(faceNormal, halfThickness);
+    frontB.copy(b).addScaledVector(faceNormal, halfThickness);
+    backA.copy(a).addScaledVector(faceNormal, -halfThickness);
+    backB.copy(b).addScaledVector(faceNormal, -halfThickness);
+    pushTriangle(frontA, frontB, backB, sideNormal, edge.piece);
+    pushTriangle(frontA, backB, backA, sideNormal, edge.piece);
+  }
+
+  const result = new THREE.BufferGeometry();
+  result.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  result.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+  result.setAttribute("aPiece", new THREE.Float32BufferAttribute(pieces, 1));
+  result.computeBoundingSphere();
+  return result;
+}
+
+/**
+ * A glass hypercube tunnel: each layer is a perspective projection of a 4D
+ * tesseract (16 vertices / 32 edges), rotated in XW, YW and ZW planes.
+ * It is an open crystalline lattice around the astronaut, not an opaque white cube.
+ */
+export function buildVortexHypercubeLattice(
+  track: <T extends { dispose: () => void }>(item: T) => T,
+  environment: THREE.CubeTexture,
+  isMobile: boolean
+): {
+  group: THREE.Group;
+  update: (progress: number, intensity: number, reducedMotion: boolean) => void;
+  layers: number;
+  edges: number;
+} {
+  const group = new THREE.Group();
+  const layers = isMobile ? 3 : 4;
+  const edgesPerLayer = 32;
+  const nodesPerLayer = 16;
+  const cylinder = track(new THREE.CylinderGeometry(1, 1, 1, 6, 1, false));
+  const nodeGeometry = track(new THREE.IcosahedronGeometry(1, 1));
+  const material = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color("#a4dfff"),
+    metalness: 0.035,
+    roughness: 0.052,
+    transmission: 0.94,
+    thickness: 0.42,
+    ior: 1.47,
+    attenuationColor: new THREE.Color("#9bcfff"),
+    attenuationDistance: 4.8,
+    clearcoat: 1,
+    clearcoatRoughness: 0.026,
+    iridescence: 0.56,
+    iridescenceIOR: 1.31,
+    iridescenceThicknessRange: [170, 430],
+    envMap: environment,
+    envMapIntensity: 2.15,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.48,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  }));
+
+  const edgeMesh = new THREE.InstancedMesh(cylinder, material, layers * edgesPerLayer);
+  edgeMesh.name = "GlassHypercubeEdges";
+  edgeMesh.frustumCulled = false;
+  edgeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  edgeMesh.renderOrder = 4;
+  const nodeMesh = new THREE.InstancedMesh(nodeGeometry, material, layers * nodesPerLayer);
+  nodeMesh.name = "GlassHypercubeVertices";
+  nodeMesh.frustumCulled = false;
+  nodeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  nodeMesh.renderOrder = 5;
+  group.add(edgeMesh, nodeMesh);
+
+  const edgePairs: Array<[number, number]> = [];
+  for (let a = 0; a < 16; a++) {
+    for (let axis = 0; axis < 4; axis++) {
+      const b = a ^ (1 << axis);
+      if (a < b) edgePairs.push([a, b]);
+    }
+  }
+  if (edgePairs.length !== edgesPerLayer) throw new Error("Tesseract graph must contain exactly 32 edges.");
+
+  const projected = Array.from({ length: nodesPerLayer }, () => new THREE.Vector3());
+  const four = new Float64Array(4);
+  const rotatePlane = (v: Float64Array, a: number, b: number, angle: number) => {
+    const c = Math.cos(angle), s = Math.sin(angle);
+    const av = v[a], bv = v[b];
+    v[a] = av * c - bv * s;
+    v[b] = av * s + bv * c;
+  };
+  const direction = new THREE.Vector3();
+  const midpoint = new THREE.Vector3();
+  const scale = new THREE.Vector3();
+  const quaternion = new THREE.Quaternion();
+  const matrix = new THREE.Matrix4();
+  const identity = new THREE.Quaternion();
+  const axisY = new THREE.Vector3(0, 1, 0);
+  const colors = [
+    new THREE.Color("#76e8ff"),
+    new THREE.Color("#8dbdff"),
+    new THREE.Color("#d39dff"),
+    new THREE.Color("#ff9edb"),
+  ];
+
+  for (let layer = 0; layer < layers; layer++) {
+    const color = colors[layer % colors.length];
+    for (let i = 0; i < edgesPerLayer; i++) edgeMesh.setColorAt(layer * edgesPerLayer + i, color);
+    for (let i = 0; i < nodesPerLayer; i++) {
+      nodeMesh.setColorAt(layer * nodesPerLayer + i, color.clone().multiplyScalar(1.12));
+    }
+  }
+
+  group.visible = false;
+  return {
+    group,
+    layers,
+    edges: layers * edgesPerLayer,
+    update: (progress, intensity, reducedMotion) => {
+      const p = THREE.MathUtils.clamp(progress, 0, 1);
+      const glow = THREE.MathUtils.clamp(intensity, 0, 1);
+      group.visible = glow > 0.012 && p > 0.34 && p < 0.855;
+      material.opacity = 0.18 + glow * 0.40;
+      material.roughness = 0.045 + (1 - glow) * 0.028;
+
+      const orbit = (p - 0.40) / 0.40;
+      const d4 = 3.55;
+      for (let layer = 0; layer < layers; layer++) {
+        const layerT = layers > 1 ? layer / (layers - 1) : 0;
+        const angle = reducedMotion ? 0 : orbit * Math.PI * 2.15;
+        const aXW = angle * (1.0 + layer * 0.075) + layer * 0.41;
+        const aYW = -angle * 0.69 + layer * 0.53;
+        const aZW = angle * 0.47 - layer * 0.37;
+        const aXY = angle * 0.22 + layer * 0.61;
+        const radius = 1.32 - layerT * 0.52;
+        const zCenter = -4.25 - layer * 2.05 + Math.sin(orbit * Math.PI * 2 + layer) * 0.18 * glow;
+
+        for (let vertex = 0; vertex < nodesPerLayer; vertex++) {
+          for (let axis = 0; axis < 4; axis++) four[axis] = (vertex & (1 << axis)) ? 1 : -1;
+          rotatePlane(four, 0, 3, aXW);
+          rotatePlane(four, 1, 3, aYW);
+          rotatePlane(four, 2, 3, aZW);
+          rotatePlane(four, 0, 1, aXY);
+          const perspective = d4 / Math.max(1.55, d4 - four[3] * 0.62);
+          const x = four[0] * perspective * radius;
+          const y = four[1] * perspective * radius;
+          const z = zCenter + four[2] * perspective * radius * 0.86;
+          projected[vertex].set(x, y, z);
+          scale.setScalar(0.026 * (1 - layerT * 0.16));
+          matrix.compose(projected[vertex], identity, scale);
+          nodeMesh.setMatrixAt(layer * nodesPerLayer + vertex, matrix);
+        }
+
+        for (let edge = 0; edge < edgesPerLayer; edge++) {
+          const [from, to] = edgePairs[edge];
+          const start = projected[from];
+          const end = projected[to];
+          direction.subVectors(end, start);
+          const length = Math.max(0.0001, direction.length());
+          direction.multiplyScalar(1 / length);
+          midpoint.addVectors(start, end).multiplyScalar(0.5);
+          quaternion.setFromUnitVectors(axisY, direction);
+          const tubeRadius = 0.0105 * (1 - layerT * 0.17);
+          scale.set(tubeRadius, length, tubeRadius);
+          matrix.compose(midpoint, quaternion, scale);
+          edgeMesh.setMatrixAt(layer * edgesPerLayer + edge, matrix);
+        }
+      }
+      edgeMesh.instanceMatrix.needsUpdate = true;
+      nodeMesh.instanceMatrix.needsUpdate = true;
+      if (edgeMesh.instanceColor) edgeMesh.instanceColor.needsUpdate = true;
+      if (nodeMesh.instanceColor) nodeMesh.instanceColor.needsUpdate = true;
+    },
+  };
+}
+
+
+
 /** Captured inner/outer lattice, greeble PBR and a depth-dependent helical deformation.
  * Both LOD placement sets are part of the source asset, not decorative random cubes.
  */

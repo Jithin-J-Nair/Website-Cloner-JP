@@ -194,6 +194,11 @@ try {
      shardFrames:window.__goalAstronautTelemetry.sceneState.shardFrames,
      vortexIntensity:window.__goalAstronautTelemetry.sceneState.vortexIntensity,
      shardSpread:window.__goalAstronautTelemetry.sceneState.shardSpread,
+     shardSidewallsLoaded:window.__goalAstronautTelemetry.sceneState.shardSidewallsLoaded,
+     shardSidewallTriangles:window.__goalAstronautTelemetry.sceneState.shardSidewallTriangles,
+     vortexGlassVisible:window.__goalAstronautTelemetry.sceneState.vortexGlassVisible,
+     vortexGlassLayers:window.__goalAstronautTelemetry.sceneState.vortexGlassLayers,
+     vortexGlassEdges:window.__goalAstronautTelemetry.sceneState.vortexGlassEdges,
      trussLoaded:window.__goalAstronautTelemetry.sceneState.trussLoaded,
      shardsLoaded:window.__goalAstronautTelemetry.sceneState.shardsLoaded,
      webglError:document.querySelector('#home-goal canvas').getContext('webgl2').getError(),
@@ -208,11 +213,17 @@ try {
  assert.equal(vortexState.shardCount,946,'the captured fracture retains all 946 glass pieces');
  assert.ok(vortexState.shardFrames >= 15,'glass fragments retain the authored 15-frame rigid-body motion sequence');
  assert.ok(vortexState.vortexIntensity > 0.18,'the exposed metal-truss vortex and spiral core are energized');
+ assert.equal(vortexState.vortexGlassVisible,true,'transparent projected 4D glass cages surround the vortex');
+ assert.equal(vortexState.vortexGlassLayers,width<813?3:4,'responsive nested glass-hypercube layers are present');
+ assert.equal(vortexState.vortexGlassEdges,(width<813?3:4)*32,'each projected hypercube has 32 tesseract edges');
+ assert.equal(vortexState.shardSidewallsLoaded,true,'captured glass shards have volumetric sidewalls');
+ assert.ok(vortexState.shardSidewallTriangles>0,'the sidewall pass creates reflective glass edge faces');
  assert.equal(vortexState.shardSpread,1.14,'the captured breakup uses a wider art-directed shard envelope');
  assert.equal(vortexState.webglError,0,'vortex frame has no WebGL error');
  const vortexPeakY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.73));
  const vortexPeakState = await seekScenePhase('vortex-peak',vortexPeakY,'tunnelProgress',0.73);
  assert.ok(vortexPeakState.vortexIntensity>0.82,'the spiral vortex core reaches its peak without a white overlay');
+ assert.equal(vortexPeakState.vortexGlassVisible,true,'the transparent glass lattice remains visible at the vortex peak');
  assert.equal(vortexPeakState.webglError,0,'vortex peak has no WebGL error');
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
  const blueState = await seekScenePhase('blue-corridor',blueY,'tunnelProgress',0.90);
@@ -221,11 +232,13 @@ try {
  const impactApproachY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.16));
  const impactApproach = await seekScenePhase('glass-approach',impactApproachY,'shatterProgress',0.16);
  assert.equal(await page.locator('#home-goal-monitor-cracks').count(),0,'no artificial glass crack layer exists before impact');
- const shatterY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.36));
- const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.36);
+ const shatterY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.285));
+ const shatterState = await seekScenePhase('glass-shatter',shatterY,'shatterProgress',0.285);
  assert.ok(shatterState.glassOpacity>0.72,'plate-glass fragments separate on the compressed impact beat');
  assert.equal(shatterState.glassRefractionReady,true,'moving glass samples the live scene behind each fragment');
  assert.equal(shatterState.shardDepthWrite,true,'nearer glass facets depth-occlude more distant facets');
+ assert.equal(shatterState.shardSidewallsLoaded,true,'fragment sidewalls use the same captured rigid-body transforms');
+ assert.ok(shatterState.shardSidewallTriangles>0,'thick glass edges are rendered as actual side faces');
  assert.ok(shatterState.shardSpread>1.1,'captured fragment positions are spread beyond their rest envelope');
  assert.equal(shatterState.webglError,0);
  const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.90));
