@@ -203,7 +203,7 @@ export class HomeConnectorPhysics {
 
             // Small per-contact positional correction; several passes converge without
             // introducing the artificial visible gaps from over-sized sphere colliders.
-            const correction=Math.max(penetration-0.003,0)*0.24/(invMassA+invMassB);
+            const correction=Math.max(penetration-0.001,0)*0.72/(invMassA+invMassB);
             if(correction>0) {
               const moveA=correction*invMassA, moveB=correction*invMassB;
               this.positions[i].addScaledVector(this.normal,-moveA);
