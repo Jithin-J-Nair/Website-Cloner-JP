@@ -31,6 +31,10 @@ assert.deepEqual(source.routes.filter(route => route.type === "project-detail").
 assert.equal(new Set(projects.map(project => project.id)).size, projects.length, "archive IDs are unique");
 assert.equal(source.home.featured.count, 10, "live Home Featured Work displays 10 items");
 assert.deepEqual(source.home.featured.projects.map(project => project.id), expectedFeaturedIds, "Home Featured Work matches current Lusion order");
+const unavailableLaunchDestinations = details
+  .filter(project => !project.launchCta?.href?.trim() && !project.launchCta?.isVimeoOverlay)
+  .map(project => project.id);
+assert.deepEqual(unavailableLaunchDestinations, ["soda_experience", "maxmara_bearings_gifts"], "only the two live labels without exposed destinations stay non-navigating");
 
 const byId = new Map(details.map(project => [project.id, project]));
 for (const project of projects) {
@@ -67,6 +71,8 @@ assert.match(card, /onFocus=\{\(\) => setHovered\(true\)\}/, "keyboard focus has
 assert.match(card, /project\.thumbnail/, "cards use the source project thumbnail");
 
 assert.match(detail, /project\.media\.slice\(1\)/);
+assert.match(detail, /if \(!project\.launchCta\.href\?\.trim\(\) && !project\.launchCta\.isVimeoOverlay\)/, "empty launch URLs must not become self-links");
+assert.match(detail, /data-launch-unavailable="true"/, "missing launch destinations remain visible without a fake link");
 assert.match(detail, /onError=\{\(\) => setVideoFailed\(true\)\}/, "video failure has a media fallback");
 assert.match(detail, /<source media="\(max-width: 812px\)"/);
 assert.match(detail, /project\.nextProject\.href/, "detail navigation leads to the next canonical case study");
