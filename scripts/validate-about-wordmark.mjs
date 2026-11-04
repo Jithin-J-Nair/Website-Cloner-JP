@@ -198,10 +198,10 @@ try {
       for (let index = 0; index < awardPositions.length; index++) {
         await seekY(Math.max(0, awardPositions[index] - height * .58));
         await page.waitForFunction(i => document.querySelectorAll('#about-award [data-award-reveal]')[i]?.classList.contains('is-in-view'), index, { timeout: 5000 });
-        if (index === 0) {
+        if (index === awardPositions.length - 1) {
           await page.waitForFunction(() => {
-            const track = document.querySelector('#about-clients .about-client-marquee-track');
-            return track && getComputedStyle(track).animationPlayState === 'paused';
+            const tracks = [...document.querySelectorAll('#about-clients .about-client-marquee-track')];
+            return tracks.length === 3 && tracks.every(track => getComputedStyle(track).animationPlayState === 'paused');
           }, null, { timeout: 5000 });
         }
       }
