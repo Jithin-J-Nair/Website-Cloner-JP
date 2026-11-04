@@ -475,3 +475,82 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .about-service-card { transition: none; transform: none !important; }
 }
+
+
+/* About client mark field: three independent, reversible logo currents.
+   Reduced-motion users receive one static row copy; no content is motion-only. */
+.about-client-marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 3.5%, #000 96.5%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 3.5%, #000 96.5%, transparent);
+}
+.about-client-marquee-track {
+  display: flex;
+  width: 200%;
+  transform: translate3d(0, 0, 0);
+  animation: about-client-marquee var(--marquee-duration, 38s) linear infinite;
+  will-change: transform;
+}
+.about-client-marquee[data-direction="reverse"] .about-client-marquee-track {
+  animation-direction: reverse;
+}
+.about-client-marquee-set {
+  display: flex;
+  flex: 0 0 50%;
+  width: 50%;
+  min-width: 0;
+  align-items: center;
+}
+.about-client-logo-tile {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.about-client-logo-mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+}
+@keyframes about-client-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@media (min-width: 813px) {
+  .about-client-logo-tile { height: 6.5rem; }
+  .about-client-logo-mark {
+    width: min(180px, 100%);
+    height: 180px;
+    transform: translate3d(0, -42px, 0);
+    transition: opacity 500ms ease-out, transform 500ms ease-out;
+  }
+  .about-client-marquee:hover .about-client-logo-mark {
+    opacity: 1;
+    transform: translate3d(0, -42px, 0) scale(1.04);
+  }
+}
+@media (max-width: 812px) {
+  .about-client-logo-tile { height: 5.5rem; }
+  .about-client-marquee-stack { gap: 1rem; }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .about-client-marquee:hover .about-client-marquee-track {
+    animation-play-state: paused;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-client-marquee { -webkit-mask-image: none; mask-image: none; }
+  .about-client-marquee-track {
+    width: 100%;
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+  .about-client-marquee-set { width: 100%; flex-basis: 100%; }
+  .about-client-marquee-set[aria-hidden="true"] { display: none; }
+  .about-client-logo-mark { transition: none !important; transform: none !important; }
+}
