@@ -75,6 +75,8 @@ try {
     'the full-screen radial RGB glitch/dispersion pass is removed');
   assert.ok(goalSource.includes('const float iorR = 1.516;') && goalSource.includes('const float iorG = 1.520;') && goalSource.includes('const float iorB = 1.526;'),
     'glass refraction uses wavelength-dependent Snell IOR rather than an arbitrary RGB offset');
+  assert.ok(goalSource.includes('uniform mat4 uCameraWorldMatrix;') && goalSource.includes('mat3(uCameraWorldMatrix) * vNormalV'),
+    'glass reflections use correctly transformed world-space facet normals');
   assert.ok(goalSource.includes('float distribution = alpha2 / max(PI * dDenom * dDenom') && goalSource.includes('float fres = fresnelSchlick(facing, f0);'),
     'glass facets use GGX microfacet highlights and Schlick Fresnel reflection');
   assert.ok(downstreamSource.includes('theta * 4.0 - r * 22.0') && downstreamSource.includes('float eventHorizon'),
