@@ -28,8 +28,8 @@ export const HERO_ACCENT_PALETTE = [
 ] as const;
 
 // Linear input calibrated so post-ACESFilmic + OutputPass sRGB equals ~#13151d (matching reference dark slate!)
-const STUDIO_SCENE_BG_HEX = "#1f222d";
-const STUDIO_CONTAINER_BG_HEX = "#13151d";
+const STUDIO_SCENE_BG_HEX = "#101114";
+const STUDIO_CONTAINER_BG_HEX = "#101114";
 const NEAR_BLACK_HEX = "#040407";
 const OFF_WHITE_HEX = "#e6e7ef";
 // Use stage aspect, not viewport width: tablet stages are too narrow for the
@@ -551,9 +551,9 @@ export function HeroCrossesStage() {
         Math.sin(meshes.length * 0.93) * 0.07
       ));
       angularVelocities.push(new THREE.Vector3(
-        0.22 + (meshes.length % 4) * 0.085,
-        -0.18 - (meshes.length % 5) * 0.07,
-        0.16 + (meshes.length % 3) * 0.11
+        0.48 + (meshes.length % 4) * 0.14,
+        -0.42 - (meshes.length % 5) * 0.11,
+        0.36 + (meshes.length % 3) * 0.12
       ));
       mesh.castShadow = true;
       mesh.receiveShadow = true;
