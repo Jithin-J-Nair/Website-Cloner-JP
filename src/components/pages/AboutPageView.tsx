@@ -492,6 +492,10 @@ function AboutWhoExperience({
           varying float vShade;
           void main() {
             vec3 p = position;
+            // Pointer repulsion bends only nearby grains; the silhouette remains readable.
+            vec2 pointerDelta = p.xy - uPointerNDC * vec2(.82, 1.34);
+            float pointerInfluence = exp(-dot(pointerDelta, pointerDelta) * 5.2);
+            p.xy += normalize(pointerDelta + vec2(.0001)) * pointerInfluence * .032;
             // Subtle holographic scan shimmer remains procedural and non-identifying.
             p.x += sin(p.y * 8.0 + uTime * 2.1) * 0.012;
             p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
@@ -720,6 +724,11 @@ function AboutWhoExperience({
         portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
+        // The hologram follows the cursor with a restrained, damped whole-form tilt
+        // while the shader gives nearby grains a small local deflection.
+        const portraitTilt = reducedMotion ? 0 : 1;
+        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, pointerNDC.x * .045 * portraitTilt, .12);
+        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, -pointerNDC.y * .028 * portraitTilt, .12);
         portraitPoints.position.set(
           camera.position.x + (isMobile ? -0.10 : -0.15),
           camera.position.y - (isMobile ? 2.65 : 2.55),
