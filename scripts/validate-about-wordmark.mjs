@@ -151,19 +151,26 @@ try {
       const clients = page.locator('#about-clients');
       const clientsTop = await clients.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       await seekY(clientsTop);
-      await page.waitForFunction(() => {
-        const firstSets = [...document.querySelectorAll('#about-clients .about-client-marquee-set:not([aria-hidden="true"])')];
-        const images = firstSets.flatMap(set => [...set.querySelectorAll('img')]);
-        return images.length === 16 && images.every(image => image.complete && image.naturalWidth > 0);
-      }, null, { timeout: 20000 });
-      const logoState = await clients.evaluate(section => {
+      const logoState = await clients.evaluate(async section => {
         const firstSets = [...section.querySelectorAll('.about-client-marquee-set:not([aria-hidden="true"])')];
         const images = firstSets.flatMap(set => [...set.querySelectorAll('img')]);
+        // Wait for the browser's actual SVG decoder rather than sampling the image
+        // element immediately after a scroll/DOM commit.
+        await Promise.all(images.map(image => image.decode().catch(() => undefined)));
+        const broken = await Promise.all(images.filter(image => image.naturalWidth === 0).map(async image => {
+          try {
+            const response = await fetch(image.currentSrc || image.src);
+            return { src: image.currentSrc || image.src, status: response.status, type: response.headers.get('content-type') };
+          } catch (error) {
+            return { src: image.currentSrc || image.src, error: String(error) };
+          }
+        }));
         const track = section.querySelector('.about-client-marquee-track');
         return {
           count: images.length,
           altCount: images.filter(image => image.alt.trim().length > 0).length,
           loaded: images.filter(image => image.complete && image.naturalWidth > 0).length,
+          broken,
           animation: track ? getComputedStyle(track).animationName : 'missing',
           playState: track ? getComputedStyle(track).animationPlayState : 'missing',
           rows: section.querySelectorAll('.about-client-marquee').length,
@@ -172,7 +179,7 @@ try {
       assert.equal(logoState.rows, 3, 'client brands retain three flowing rows');
       assert.equal(logoState.count, 16, 'all three source rows retain their 16 logo placements');
       assert.equal(logoState.altCount, 16, 'every brand mark has useful alternative text');
-      assert.equal(logoState.loaded, 16, 'all first-copy SVG logo assets load successfully');
+      assert.equal(logoState.loaded, 16, `all first-copy SVG logo assets load successfully: ${JSON.stringify(logoState.broken)}`);
       assert.equal(logoState.animation, 'about-client-marquee');
       assert.equal(logoState.playState, 'running', 'visible client marquees animate only while in view');
       if (width !== 390) {
