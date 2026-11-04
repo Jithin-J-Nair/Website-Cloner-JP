@@ -97,6 +97,8 @@ jobs:
           if-no-files-found: ignore
 
       - name: Validate About wordmark in production browser
+        # Run the About route independently even when an earlier Home browser gate fails.
+        if: always() && !cancelled()
         env:
           CHROMIUM_MULTIPROCESS: '1'
         run: node scripts/validate-about-wordmark.mjs
