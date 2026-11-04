@@ -960,11 +960,16 @@ export function buildArchitecturalTrussTunnel(
           vec3 base = mix(vec3(0.19), texture2D(uBase, vUv).rgb * 1.55, vDetail);
           float roughness = mix(0.32, clamp(arm.g * 0.45, 0.16, 0.40), vDetail);
           float metal = mix(0.85, max(arm.b, 0.72), vDetail);
+          // Lusion's captured shaft has three distinct lighting acts:
+          // cool cyan/steel entry, warm red frames, then emerald before the pink/blue vortex.
           float warm = smoothstep(0.24, 0.36, uPhase);
-          float pink = smoothstep(0.49, 0.59, uPhase);
+          float emerald = smoothstep(0.39, 0.55, uPhase);
+          float pink = smoothstep(0.65, 0.80, uPhase);
           vec3 primary = mix(vec3(0.72, 0.9, 1.0), vec3(1.0, 0.10, 0.055), warm);
+          primary = mix(primary, vec3(0.42, 1.0, 0.12), emerald);
           primary = mix(primary, vec3(0.94, 0.13, 0.62), pink);
-          vec3 secondary = mix(vec3(0.14, 0.85, 1.0), vec3(0.18, 0.72, 1.0), pink);
+          vec3 secondary = mix(vec3(0.14, 0.85, 1.0), vec3(0.30, 1.0, 0.26), emerald);
+          secondary = mix(secondary, vec3(0.18, 0.72, 1.0), pink);
           // Shaft-mounted strips: lighting follows depth, never random per-frame glint flashes.
           vec3 L1 = normalize(vec3(-2.0, 2.1, 2.5) - vWorldPos * vec3(1.0, 1.0, 0.18));
           vec3 L2 = normalize(vec3(2.2, -1.5, 0.0) - vWorldPos * vec3(1.0, 1.0, 0.12));
@@ -973,7 +978,8 @@ export function buildArchitecturalTrussTunnel(
           vec3 reflected = textureCube(uEnvironment, reflect(-V, N)).rgb;
           float luminance = dot(reflected, vec3(0.2126,0.7152,0.0722));
           float fresnel = pow(1.0 - max(dot(N,V),0.0),5.0);
-          col += (vec3(luminance)*0.75 + reflected*0.25) * mix(vec3(0.82,0.92,1.0),primary,pink*0.65) * (0.025+fresnel*0.22);
+          float reflectionTint = max(emerald, pink * 0.65);
+          col += (vec3(luminance)*0.75 + reflected*0.25) * mix(vec3(0.82,0.92,1.0),primary,reflectionTint) * (0.025+fresnel*0.22);
           col += base * 0.025;
           col *= mix(0.16,1.0,vDetail);
           col *= mix(0.28,1.0,clamp(vAo * mix(1.0,arm.r,vDetail),0.0,1.0));
