@@ -149,11 +149,10 @@ export class HomeConnectorPhysics {
       for(let i=0;i<this.meshes.length;i++) {
         const mesh=this.meshes[i];
         for(let k=0;k<3;k++) {
-          const axis=this.starts[i][k];
-          axis.copy(this.basis[k]).applyQuaternion(mesh.quaternion).normalize();
+          this.axis.copy(this.basis[k]).applyQuaternion(mesh.quaternion).normalize();
           const half=0.665*mesh.scale.x;
-          this.starts[i][k].copy(this.positions[i]).addScaledVector(axis,-half);
-          this.ends[i][k].copy(this.positions[i]).addScaledVector(axis,half);
+          this.starts[i][k].copy(this.positions[i]).addScaledVector(this.axis,-half);
+          this.ends[i][k].copy(this.positions[i]).addScaledVector(this.axis,half);
         }
       }
 
