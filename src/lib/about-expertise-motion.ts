@@ -17,13 +17,16 @@ export function expertiseCardPose(progress: number, index: number) {
   const lift = ease(.08 + i * .012, .54 + i * .016, p);
   const flip = ease(.32 + i * .035, .72 + i * .035, p);
 
+  const remaining = 1 - release;
+  const settled = (value: number) => value * remaining || 0;
+
   return {
-    xVw: (1.5 - i) * 23 * (1 - release),
+    xVw: settled((1.5 - i) * 23),
     dropVh: 36 * (1 - lift),
-    z: -i * 4.5 * (1 - release),
-    roll: (i - 1.5) * 2.6 * (1 - release),
-    yaw: (1.5 - i) * 9 * (1 - release),
-    pitch: -5 * (1 - release),
+    z: settled(-i * 4.5),
+    roll: settled((i - 1.5) * 2.6),
+    yaw: settled((1.5 - i) * 9),
+    pitch: settled(-5),
     scale: .94 + .06 * release,
     flip: 180 * (1 - flip),
     opacity: i === 0 ? 1 : ease(.1, .3, p),
