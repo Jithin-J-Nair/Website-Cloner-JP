@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CinematicContactField } from "@/components/sections/CinematicContactField";
 import { SurfaceSection } from "@/components/studio/SurfaceSection";
 import { soundEngine } from "@/lib/audio";
