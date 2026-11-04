@@ -1468,9 +1468,11 @@ export function AboutPageView() {
               {LUSION_ABOUT.recognition.awardGroups.map((group) => (
                 <div
                   key={group.organization}
-                  className="border-t border-white/20 py-5"
+                  className="about-award-group border-t border-white/20 py-5"
+                  data-award-reveal
+                  style={{ "--reveal-index": group.totalCount % 5 } as React.CSSProperties}
                 >
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="about-award-group-heading flex items-center justify-between border-b border-white/10 pb-3">
                     <h3 className="font-sans text-lg font-medium text-white">
                       {group.organization}
                     </h3>
@@ -1482,7 +1484,7 @@ export function AboutPageView() {
                     {group.honors.map((honor) => (
                       <li
                         key={`${group.organization}-${honor.recognition}`}
-                        className="flex items-center justify-between py-2.5 text-sm"
+                        className="about-award-honor flex items-center justify-between py-2.5 text-sm"
                       >
                         <span className="text-white/85">{honor.recognition}</span>
                         <span className="font-mono text-xs text-white/65">
@@ -1498,7 +1500,7 @@ export function AboutPageView() {
 
           {/* 03 Articles + 5 Talks */}
           <div className="mt-16 grid grid-cols-6 gap-10 border-t border-white/10 pt-14 min-[813px]:grid-cols-12">
-            <div className="col-span-6 min-[813px]:col-span-6">
+            <div className="about-recognition-column col-span-6 min-[813px]:col-span-6" data-award-reveal style={{ "--reveal-index": 1 } as React.CSSProperties}>
               <div className="flex items-start gap-3">
                 <h3 className="font-sans text-4xl font-normal tracking-[-0.02em] text-white">
                   {LUSION_ABOUT.recognition.articlesHeading}
@@ -1514,7 +1516,7 @@ export function AboutPageView() {
                       href={article.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between py-4 text-base text-white transition-colors hover:text-[#6e85ff]"
+                      className="about-recognition-link group flex items-center justify-between py-4 text-base text-white transition-colors hover:text-[#6e85ff]"
                     >
                       <span>{article.title}</span>
                       <span
@@ -1529,7 +1531,7 @@ export function AboutPageView() {
               </ul>
             </div>
 
-            <div className="col-span-6 min-[813px]:col-span-6">
+            <div className="about-recognition-column col-span-6 min-[813px]:col-span-6" data-award-reveal style={{ "--reveal-index": 2 } as React.CSSProperties}>
               <div className="flex items-start gap-3">
                 <h3 className="font-sans text-4xl font-normal tracking-[-0.02em] text-white">
                   {LUSION_ABOUT.recognition.talksHeading}
@@ -1542,7 +1544,7 @@ export function AboutPageView() {
                 {LUSION_ABOUT.recognition.talks.map((talk) => (
                   <li
                     key={`${talk.event}-${talk.dateAndLocation}`}
-                    className="flex items-center justify-between py-4 text-base"
+                    className="about-talk-row flex items-center justify-between py-4 text-base"
                   >
                     <span className="font-medium text-white">{talk.event}</span>
                     <span className="font-mono text-xs text-white/70">{talk.dateAndLocation}</span>
