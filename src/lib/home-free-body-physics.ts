@@ -115,12 +115,12 @@ export class HomeConnectorPhysics {
       for(let i=0;i<this.meshes.length;i++) {
         const p=this.positions[i],v=this.linear[i],w=this.angular[i];
         const radius=p.length();
-        const outside=THREE.MathUtils.clamp((radius-1.9)/1.6,0,1);
+        const outside=THREE.MathUtils.clamp((radius-1.75)/1.25,0,1);
         const smoothOutside=outside*outside*(3-2*outside);
-        const returnK=0.18+smoothOutside*0.78;
+        const returnK=0.30+smoothOutside*1.05;
         const phase=time*0.31+i*2.399963;
         v.x+=(-p.x*returnK+Math.sin(phase*1.17)*0.11)*h;
-        v.y+=(-p.y*returnK-0.035+Math.cos(phase*0.83)*0.085)*h;
+        v.y+=(-p.y*returnK-0.022+Math.cos(phase*0.83)*0.085)*h;
         v.z+=(-p.z*returnK+Math.sin(phase*0.69+0.8)*0.085)*h;
         v.multiplyScalar(Math.exp(-0.55*h));
 
