@@ -58,28 +58,40 @@ try {
   const box=await hero.boundingBox();
   // Hit an outer connector in the new overlapping cluster; verify displacement and magnetic return.
   await page.mouse.move(box.x+box.width*.84,box.y+box.height*.65);
-  await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)>.16 && Number(document.querySelector('#home-hero-visual-container').dataset.pointerInfluencedPieces)>=2,null,{timeout:30000});
+  await page.waitForFunction((startTravel)=> {
+    const el=document.querySelector('#home-hero-visual-container');
+    return Number(el.dataset.offsetEnergy)>.16 &&
+      Number(el.dataset.pointerInfluencedPieces)>=2 &&
+      Number(el.dataset.maxTravel)>startTravel+0.30;
+  }, Number(initial.maxTravel), {timeout:30000});
   const hovered=await hero.evaluate(el=>({...el.dataset}));
   assert.ok(Number(hovered.pointerInteractions)>Number(initial.pointerInteractions),
-    'hover must reach and physically displace the centered connector field');
+    'hover must reach and physically displace the connector cloud');
   assert.ok(Number(hovered.pointerInfluencedPieces)>=2,
-    'a pointer pass moves multiple nearby connectors, not just one isolated object');
+    'a pointer pass must affect multiple nearby connectors');
+  assert.ok(Number(hovered.maxTravel)>Number(initial.maxTravel)+0.30,
+    'cursor force must visibly throw at least one free connector away from its spawn pose');
   await page.screenshot({path:out+'/hero-hover.png',timeout:90000});
   await page.mouse.move(2,2);
   await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container').dataset.motionState==='settled'&&Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)===0,null,{timeout:90000});
   const settled=await hero.evaluate(el=>({...el.dataset}));
   assert.equal(Number(settled.offsetEnergy),0);
-  assert.equal(settled.motionState,'settled','the hero springs back to its default pose after pointer leave');
+  assert.equal(settled.motionState,'settled','pointer energy decays after the cursor leaves');
+  await page.waitForFunction((hoverRadius)=>Number(document.querySelector('#home-hero-visual-container').dataset.meanRadius)<hoverRadius-0.02,
+    Number(hovered.meanRadius), {timeout:30000});
+  const returned=await hero.evaluate(el=>({...el.dataset}));
+  assert.ok(Number(returned.meanRadius)<Number(hovered.meanRadius),
+    'the shared soft-centre field must gather thrown pieces back toward the cluster');
   await page.waitForTimeout(650);
-  const idleFrames = Number(await hero.getAttribute('data-render-count')) - Number(settled.renderCount);
-  assert.ok(idleFrames >= 2 && idleFrames <= 52, `autonomous connector motion must keep rendering after pointer release (frames=${idleFrames})`);
-  assert.equal(settled.physicsActive,'true','the connector pile remains physically animated at rest');
-  assert.equal(Number(settled.clusterPieces),23,'the home stage renders the full layered connector cluster');
-  // Rapid direction changes followed by cancellation must not leave a displaced connector.
+  const idleFrames = Number(await hero.getAttribute('data-render-count')) - Number(returned.renderCount);
+  assert.ok(idleFrames >= 2 && idleFrames <= 52, `free connectors must keep moving after pointer release (frames=${idleFrames})`);
+  assert.equal(returned.physicsActive,'true','the connector cloud remains physically animated at rest');
+  assert.equal(Number(returned.clusterPieces),23,'the home stage renders the full layered connector cluster');
+  // Rapid direction changes followed by cancellation must still release pointer energy.
   for (const x of [.2,.8,.3,.7,.49]) await page.mouse.move(box.x+box.width*x,box.y+box.height*.56);
   await hero.dispatchEvent('pointercancel',{pointerType:'mouse'});
   await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)===0,null,{timeout:90000});
-  report.hero={initial,hovered,settled,rapidCancel:true,idleFrames};
+  report.hero={initial,hovered,settled,returned,rapidCancel:true,idleFrames};
  }else {
   report.hero={initial};
   if(touch){
