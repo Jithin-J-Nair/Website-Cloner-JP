@@ -35,9 +35,9 @@ try {
     const vertexShader = a.group.children[0].material.vertexShader;
     assert.match(vertexShader, /uPointer/);
     assert.match(vertexShader, /fallWidth/, 'incoming stream must occupy a broad, gathering footprint');
-    assert.match(vertexShader, /step\(aSeed\.z,\s*-.28\)/, 'the emitter must use a broad particle population, not a narrow minority');
-    assert.match(vertexShader, /mix\(\.82,\s*\.48,\s*gather\)/, 'the incoming sheet must stay broad as it gathers into the mound');
-    assert.match(vertexShader, /pow\(1\.\s*-\s*h,\s*\.88\)/, 'the upper cloud must retain lateral width near the title');
+    assert.match(vertexShader, /step\(aSeed\.z,\s*-.70\)/, 'the title-side particle feed must remain narrow');
+    assert.match(vertexShader, /mix\(\.04,\s*\.62,\s*gather\)/, 'the feed must expand into a broad lower mound');
+    assert.match(vertexShader, /pow\(1\.\s*-\s*h,\s*1\.25\)/, 'the upper stream must retain its fine reference silhouette');
     assert.match(vertexShader, /depthFlow/, 'falling grains must occupy real depth, not a flat ribbon');
     assert.match(vertexShader, /radial \* influence \* \.72/, 'pointer response must deflect the field in 3D');
     assert.match(vertexShader, /tangent \* influence \* \.26/, 'pointer response must impart a tangential sweep');
