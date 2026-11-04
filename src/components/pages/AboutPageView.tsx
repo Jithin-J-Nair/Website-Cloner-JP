@@ -747,22 +747,20 @@ function AboutWhoExperience({
         portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
-        // The hologram follows the cursor with a restrained, damped whole-form tilt
-        // while the shader gives nearby grains a small local deflection.
+        // One damped whole-form target combines cursor tilt and subtle idle drift.
+        // Do not follow this with a direct rotation.set(): it would overwrite the easing.
         const portraitTilt = reducedMotion ? 0 : 1;
-        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, pointerNDC.x * .045 * portraitTilt, .12);
-        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, -pointerNDC.y * .028 * portraitTilt, .12);
+        const targetPitch = pointerNDC.y * -0.10 * portraitTilt;
+        const targetYaw = pointerNDC.x * 0.14 * portraitTilt + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05);
+        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, .12);
+        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, .12);
+        portraitPoints.rotation.z = 0;
         portraitPoints.position.set(
           camera.position.x + (isMobile ? -0.10 : -0.15),
           camera.position.y - (isMobile ? 2.65 : 2.55),
           camera.position.z - 5.8
         );
         portraitLightField.position.copy(portraitPoints.position);
-        portraitPoints.rotation.set(
-          pointerNDC.y * -0.10,
-          pointerNDC.x * 0.14 + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05),
-          0
-        );
       }
 
       // -----------------------------------------------------------------------
