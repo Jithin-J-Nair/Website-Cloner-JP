@@ -6,6 +6,8 @@ import ts from 'typescript';
 const aboutView = fs.readFileSync('src/components/pages/AboutPageView.tsx', 'utf8');
 assert.match(aboutView, /pointerDelta = p\.xy - uPointerNDC/, 'team hologram grains respond locally to the cursor');
 assert.match(aboutView, /portraitPoints\.rotation\.y = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form yaw response');
+const portraitFrame = aboutView.slice(aboutView.indexOf("// One damped whole-form target"), aboutView.indexOf("// Synchronized DOM HUD"));
+assert.doesNotMatch(portraitFrame, /portraitPoints\.rotation\.set\(/, 'a later direct rotation write must not overwrite the damped target');
 assert.match(aboutView, /portraitPoints\.rotation\.x = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form pitch response');
 assert.match(aboutView, /reducedMotion \? 0 : 1/, 'team hologram pointer tilt respects reduced motion');
 assert.match(aboutView, /attribute vec3 aMorphFrom/, 'team points use a dedicated previous-position buffer');
