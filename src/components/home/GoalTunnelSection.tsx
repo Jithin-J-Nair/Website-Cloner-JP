@@ -612,7 +612,10 @@ export function GoalTunnelSection() {
                "  col += vec3(0.72, 0.87, 1.0) * edge * 0.28;",
                "  col += vec3(1.0, 0.995, 0.985) * ggxSpec * 4.2;",
               "  col += vec3(0.48, 0.70, 1.0) * wideSpec * 0.56;",
-               "  float alpha = clamp(0.08 + fres * 0.62 + edge * 0.16 + ggxSpec * 0.11, 0.08, 0.94) * uOpacity;",
+               "  // col already contains the transmitted live-scene sample and reflected contribution.",
+               "  // Use the fragment surface's real coverage once; a second low-alpha blend",
+               "  // would composite the background twice and make broken glass disappear.",
+               "  float alpha = uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
             ].join("\n"),
@@ -1518,7 +1521,7 @@ export function GoalTunnelSection() {
           ? smoothstep(0.42, 0.76, tTunnel) * 0.23
           : smoothstep(0.40, 0.58, tTunnel) * 0.18 + smoothstep(0.60, 0.76, tTunnel) * 0.34;
         const vortexPinch = smoothstep(0.56, 0.75, tTunnel);
-        const vortexStructureFade = 1 - 0.36 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
+        const vortexStructureFade = 1 - 0.54 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
         trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis * vortexStructureFade;
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
         trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;

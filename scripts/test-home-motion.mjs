@@ -91,9 +91,11 @@ try {
     'glass optical path is derived from the actual world-scaled shard plate thickness');
   assert.ok(goalSource.includes('mix(envReflection, screenReflection, 0.92)'),
     'moving glass reflects the live corridor/astronaut scene rather than relying on a static environment alone');
-  assert.ok(goalSource.includes('1 - 0.36 * smoothstep(0.54, 0.70, tTunnel)') && downstreamSource.includes('vec3(0.94, 0.13, 0.62)') && downstreamSource.includes('primary*mix(3.5,2.6,pink)'),
+  assert.ok(goalSource.includes('float alpha = uOpacity;'),
+    'the refracted/reflected composite is not blended a second time over the source scene');
+  assert.ok(goalSource.includes('1 - 0.54 * smoothstep(0.54, 0.70, tTunnel)') && downstreamSource.includes('vec3(0.94, 0.13, 0.62)') && downstreamSource.includes('primary*mix(3.5,2.6,pink)'),
     'the vortex peak gives the transparent glass lattice visual priority over the metallic truss');
-  assert.ok(downstreamSource.includes('const tubeRadius = 0.0155') && downstreamSource.includes('scale.setScalar(0.034') && downstreamSource.includes('material.opacity = 0.22 + glow * 0.48') && downstreamSource.includes('envMapIntensity: 2.45'),
+  assert.ok(downstreamSource.includes('const tubeRadius = 0.020') && downstreamSource.includes('scale.setScalar(0.043') && downstreamSource.includes('material.opacity = 0.34 + glow * 0.54') && downstreamSource.includes('envMapIntensity: 2.85'),
     'the 4D glass lattice has legible crystal edges and stronger environmental reflections');
   assert.ok(goalSource.includes('(tShatter - 0.205) / 0.145'),
     'the 946-piece glass breakup is compressed to a short impact beat');

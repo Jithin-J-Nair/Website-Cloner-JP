@@ -694,13 +694,13 @@ export function buildVortexHypercubeLattice(
   const layers = isMobile ? 3 : 4;
   const edgesPerLayer = 32;
   const nodesPerLayer = 16;
-  const cylinder = track(new THREE.CylinderGeometry(1, 1, 1, 6, 1, false));
+  const cylinder = track(new THREE.CylinderGeometry(1, 1, 1, 8, 1, false));
   const nodeGeometry = track(new THREE.IcosahedronGeometry(1, 1));
   const material = track(new THREE.MeshPhysicalMaterial({
     color: new THREE.Color("#a4dfff"),
     metalness: 0.035,
     roughness: 0.052,
-    transmission: 0.94,
+    transmission: 0.91,
     thickness: 0.42,
     ior: 1.47,
     attenuationColor: new THREE.Color("#9bcfff"),
@@ -711,10 +711,10 @@ export function buildVortexHypercubeLattice(
     iridescenceIOR: 1.31,
     iridescenceThicknessRange: [170, 430],
     envMap: environment,
-    envMapIntensity: 2.45,
+    envMapIntensity: 2.85,
     vertexColors: true,
     transparent: true,
-     opacity: 0.54,
+     opacity: 0.62,
     depthWrite: false,
     side: THREE.DoubleSide,
   }));
@@ -779,8 +779,8 @@ export function buildVortexHypercubeLattice(
       const p = THREE.MathUtils.clamp(progress, 0, 1);
       const glow = THREE.MathUtils.clamp(intensity, 0, 1);
       group.visible = glow > 0.012 && p > 0.34 && p < 0.855;
-      material.opacity = 0.22 + glow * 0.48;
-      material.roughness = 0.045 + (1 - glow) * 0.028;
+      material.opacity = 0.34 + glow * 0.54;
+      material.roughness = 0.034 + (1 - glow) * 0.035;
 
       const orbit = (p - 0.40) / 0.40;
       const d4 = 3.55;
@@ -805,7 +805,7 @@ export function buildVortexHypercubeLattice(
           const y = four[1] * perspective * radius;
           const z = zCenter + four[2] * perspective * radius * 0.86;
           projected[vertex].set(x, y, z);
-          scale.setScalar(0.034 * (1 - layerT * 0.16));
+          scale.setScalar(0.043 * (1 - layerT * 0.16));
           matrix.compose(projected[vertex], identity, scale);
           nodeMesh.setMatrixAt(layer * nodesPerLayer + vertex, matrix);
         }
@@ -819,7 +819,7 @@ export function buildVortexHypercubeLattice(
           direction.multiplyScalar(1 / length);
           midpoint.addVectors(start, end).multiplyScalar(0.5);
           quaternion.setFromUnitVectors(axisY, direction);
-          const tubeRadius = 0.0155 * (1 - layerT * 0.17);
+          const tubeRadius = 0.020 * (1 - layerT * 0.17);
           scale.set(tubeRadius, length, tubeRadius);
           matrix.compose(midpoint, quaternion, scale);
           edgeMesh.setMatrixAt(layer * edgesPerLayer + edge, matrix);
