@@ -61,7 +61,7 @@ interface HeroPieceSpec {
  */
 // Compact desktop envelope: keep the mass gathered around the blue focal piece,
  // with white/black parts overlapping as a suspended pile rather than edge-to-edge scatter.
-const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
+const HERO_CORE_PIECES: ReadonlyArray<HeroPieceSpec> = [
   {
     id: "hero-blue-center",
     kind: "blue",
@@ -206,6 +206,33 @@ const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
     roughness: 0.38,
     clearcoatRoughness: 0.022,
   },
+];
+
+// The reference stage carries a loose pile of connectors, not eleven isolated hero props.
+// Add deterministic secondary pieces so the sculpture has the same layered density on every load.
+const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
+  ...HERO_CORE_PIECES,
+  ...Array.from({ length: 12 }, (_, index): HeroPieceSpec => {
+    const angle = (index + 0.35) * 2.399963229728653;
+    const ring = 0.76 + (index % 4) * 0.22;
+    const x = Math.cos(angle) * ring * 2.15;
+    const y = Math.sin(angle) * ring * 1.18;
+    const z = ((index % 5) - 2) * 0.34;
+    const kind: PieceKind = index % 3 === 0 ? "blue" : index % 3 === 1 ? "white" : "black";
+    return {
+      id: `floating-${index}`,
+      kind,
+      scale: 0.72 + (index % 4) * 0.055,
+      anchorDesktop: [x, y, z],
+      anchorMobile: [Math.cos(angle) * (0.55 + (index % 3) * 0.18), Math.sin(angle) * (1.15 + (index % 4) * 0.16), z * 0.7],
+      euler: [Math.sin(angle) * 0.82, Math.cos(angle * 0.73) * 0.9, angle * 0.41],
+      driftPhase: angle,
+      driftAmp: [0.035, 0.04, 0.025],
+      rotAmp: [0.025, 0.03, 0.024],
+      roughness: kind === "white" ? 0.34 : 0.38,
+      clearcoatRoughness: 0.028,
+    };
+  }),
 ];
 
 /**
@@ -485,6 +512,9 @@ export function HeroCrossesStage() {
 
     const meshes: THREE.Mesh[] = [];
     const impulseStates: Array<{ pos: THREE.Vector3; rot: THREE.Vector3 }> = [];
+    const livePositions: THREE.Vector3[] = [];
+    const linearVelocities: THREE.Vector3[] = [];
+    const angularVelocities: THREE.Vector3[] = [];
     let heroMesh: THREE.Mesh | null = null;
 
     const initAspect = initialW / Math.max(1, initialH);
@@ -514,6 +544,17 @@ export function HeroCrossesStage() {
       mesh.position.set(anchor[0], anchor[1], anchor[2]);
       mesh.rotation.set(spec.euler[0], spec.euler[1], spec.euler[2]);
       mesh.scale.setScalar(initAspect < PORTRAIT_STAGE_ASPECT ? spec.scale * 0.72 : spec.scale);
+      livePositions.push(mesh.position.clone());
+      linearVelocities.push(new THREE.Vector3(
+        Math.sin(meshes.length * 2.17) * 0.12,
+        Math.cos(meshes.length * 1.71) * 0.10,
+        Math.sin(meshes.length * 0.93) * 0.07
+      ));
+      angularVelocities.push(new THREE.Vector3(
+        0.22 + (meshes.length % 4) * 0.085,
+        -0.18 - (meshes.length % 5) * 0.07,
+        0.16 + (meshes.length % 3) * 0.11
+      ));
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       scene.add(mesh);
@@ -644,6 +685,8 @@ export function HeroCrossesStage() {
         const spec = HERO_PIECES[idx];
         const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
         m.position.set(anchor[0], anchor[1], anchor[2]);
+        livePositions[idx].set(anchor[0], anchor[1], anchor[2]);
+        linearVelocities[idx].set(0, 0, 0);
         m.scale.setScalar(isPortrait ? spec.scale * 0.72 : spec.scale);
       });
       needsRender = true;
@@ -747,6 +790,59 @@ export function HeroCrossesStage() {
         camera.getWorldDirection(planeNormal);
       }
 
+      // Autonomous, frame-rate-independent rigid-body-lite motion. Each piece is gently
+      // attracted to its art-directed envelope, while pairwise sphere contacts exchange
+      // velocity and keep the pile lively without allowing pieces to drift out of frame.
+      let collisionCount = 0;
+      if (!isReduced) {
+        for (let i = 0; i < livePositions.length; i++) {
+          const spec = HERO_PIECES[i];
+          const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
+          const pos = livePositions[i];
+          const velocity = linearVelocities[i];
+          const phase = now * 0.00055 + spec.driftPhase;
+          velocity.x += ((anchor[0] - pos.x) * 0.48 + Math.sin(phase * 1.13) * 0.075) * dt;
+          velocity.y += ((anchor[1] - pos.y) * 0.48 + Math.cos(phase * 0.91) * 0.085 - 0.018) * dt;
+          velocity.z += ((anchor[2] - pos.z) * 0.42 + Math.sin(phase * 0.77) * 0.05) * dt;
+          velocity.multiplyScalar(Math.exp(-0.34 * dt));
+          pos.addScaledVector(velocity, dt);
+          const bounds = isPortrait ? [1.75, 2.85, 1.45] : [3.65, 2.25, 1.55];
+          for (let axis = 0; axis < 3; axis++) {
+            const limit = bounds[axis];
+            if (pos.getComponent(axis) > limit) {
+              pos.setComponent(axis, limit);
+              velocity.setComponent(axis, -Math.abs(velocity.getComponent(axis)) * 0.72);
+            } else if (pos.getComponent(axis) < -limit) {
+              pos.setComponent(axis, -limit);
+              velocity.setComponent(axis, Math.abs(velocity.getComponent(axis)) * 0.72);
+            }
+          }
+        }
+        for (let i = 0; i < livePositions.length; i++) {
+          for (let j = i + 1; j < livePositions.length; j++) {
+            const a = livePositions[i], b = livePositions[j];
+            const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+            const distanceSq = dx * dx + dy * dy + dz * dz;
+            const minDistance = (0.76 + 0.12 * (HERO_PIECES[i].scale + HERO_PIECES[j].scale));
+            if (distanceSq < minDistance * minDistance && distanceSq > 1e-8) {
+              const distance = Math.sqrt(distanceSq);
+              const nx = dx / distance, ny = dy / distance, nz = dz / distance;
+              const overlap = (minDistance - distance) * 0.5;
+              a.x -= nx * overlap; a.y -= ny * overlap; a.z -= nz * overlap;
+              b.x += nx * overlap; b.y += ny * overlap; b.z += nz * overlap;
+              const va = linearVelocities[i], vb = linearVelocities[j];
+              const closing = (vb.x - va.x) * nx + (vb.y - va.y) * ny + (vb.z - va.z) * nz;
+              if (closing < 0) {
+                const impulse = -closing * 0.58;
+                va.x -= nx * impulse; va.y -= ny * impulse; va.z -= nz * impulse;
+                vb.x += nx * impulse; vb.y += ny * impulse; vb.z += nz * impulse;
+              }
+              collisionCount++;
+            }
+          }
+        }
+      }
+
       for (let i = 0; i < meshes.length; i++) {
         const spec = HERO_PIECES[i];
         const mesh = meshes[i];
@@ -795,22 +891,25 @@ export function HeroCrossesStage() {
 
         // Subtle phase-offset drift makes the anchored group feel suspended between pointer moves.
         const idlePhase = now * 0.00042 + spec.driftPhase;
-        const idleWeight = ptr.active && !isReduced ? 1 : 0;
+        const idleWeight = !isReduced ? 1 : 0;
         const idleX = Math.sin(idlePhase) * spec.driftAmp[0] * idleWeight;
         const idleY = Math.cos(idlePhase * 0.91) * spec.driftAmp[1] * idleWeight;
         const idleZ = Math.sin(idlePhase * 0.72 + 1.1) * spec.driftAmp[2] * idleWeight;
         const idleRX = Math.sin(idlePhase * 0.68) * spec.rotAmp[0] * idleWeight;
         const idleRY = Math.cos(idlePhase * 0.76) * spec.rotAmp[1] * idleWeight;
         const idleRZ = Math.sin(idlePhase * 0.58 + 0.6) * spec.rotAmp[2] * idleWeight;
+        const live = livePositions[i];
         targetPos.set(
-          anchor[0]+springs[0].value+imp.pos.x+idleX,
-          anchor[1]+springs[1].value+imp.pos.y+idleY,
-          anchor[2]+springs[2].value+imp.pos.z+idleZ
+          live.x+springs[0].value+imp.pos.x+idleX,
+          live.y+springs[1].value+imp.pos.y+idleY,
+          live.z+springs[2].value+imp.pos.z+idleZ
         );
+        const spin = angularVelocities[i];
+        const spinTime = now * 0.001;
         targetEuler.set(
-          spec.euler[0]+springs[3].value+imp.rot.x+idleRX,
-          spec.euler[1]+springs[4].value+imp.rot.y+idleRY,
-          spec.euler[2]+springs[5].value+imp.rot.z+idleRZ
+          spec.euler[0]+spin.x*spinTime+springs[3].value+imp.rot.x+idleRX,
+          spec.euler[1]+spin.y*spinTime+springs[4].value+imp.rot.y+idleRY,
+          spec.euler[2]+spin.z*spinTime+springs[5].value+imp.rot.z+idleRZ
         );
         targetQuat.setFromEuler(targetEuler);
 
@@ -847,6 +946,9 @@ export function HeroCrossesStage() {
       container.dataset.renderPixels = `${renderer.domElement.width}x${renderer.domElement.height}`;
       container.dataset.offsetEnergy = pointerSprings.reduce((sum,axes) => sum+axes.reduce((total,axis) => total+Math.abs(axis.value),0),0).toFixed(5);
       container.dataset.pointerInfluencedPieces = String(pointerInfluencedPieces);
+      container.dataset.clusterPieces = String(meshes.length);
+      container.dataset.physicsCollisions = String(collisionCount);
+      container.dataset.physicsActive = String(!isReduced);
       const elapsedFrameMs = performance.now() - frameStart;
       container.dataset.renderCount = String(++renderCount);
       container.dataset.frameCpuMs = elapsedFrameMs.toFixed(2);
