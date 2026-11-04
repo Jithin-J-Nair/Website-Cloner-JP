@@ -1001,6 +1001,13 @@ export function HeroCrossesStage() {
       onKeyDown={handleKeyDown}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
+      onPointerOut={(e) => {
+        const rect=containerRef.current?.getBoundingClientRect();
+        if(rect && (e.clientX<rect.left || e.clientX>rect.right || e.clientY<rect.top || e.clientY>rect.bottom)) {
+          handlePointerLeave();
+        }
+      }}
+      onMouseLeave={handlePointerLeave}
       onPointerCancel={handlePointerLeave}
       className="relative h-full w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#13151d] select-none focus-visible:outline-2 focus-visible:outline-[#1a2ffb]"
     >
