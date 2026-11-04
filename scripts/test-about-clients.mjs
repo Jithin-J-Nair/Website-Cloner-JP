@@ -6,6 +6,8 @@ const groundTruth = JSON.parse(fs.readFileSync("src/data/reference/lusion-ground
 const about = groundTruth.about;
 const page = fs.readFileSync("src/components/pages/AboutPageView.tsx", "utf8");
 const css = fs.readFileSync("src/app/globals.css", "utf8");
+const bundleIndex = JSON.parse(fs.readFileSync("media-bundle/BUNDLE_INDEX.json", "utf8"));
+const bundledPaths = new Set(bundleIndex.files.map(entry => entry.rel));
 
 assert.equal(about.clients.carouselRows.length, 3, "About client wall keeps its three source rows");
 assert.equal(about.clients.uniqueLogoCount, 15, "About client wall keeps the verified 15-brand set");
@@ -19,6 +21,7 @@ for (const logo of about.clients.logos) {
   const relative = logo.src.replace(/^\/assets\//, "");
   const diskPath = path.join("media-bundle", relative);
   assert.ok(fs.existsSync(diskPath), `bundled SVG exists for ${logo.name}`);
+  assert.ok(bundledPaths.has(relative), `approved asset manifest includes ${logo.name}`);
   const svg = fs.readFileSync(diskPath, "utf8");
   assert.match(svg, /^<svg[\s>]/, `valid SVG document for ${logo.name}`);
   assert.match(svg, /viewBox=/, `logo viewBox exists for ${logo.name}`);
