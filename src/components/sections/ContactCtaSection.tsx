@@ -24,15 +24,25 @@ export function ContactCtaSection({
   theme?: ContactCtaTheme;
 } = {}) {
   const [copiedNotice, setCopiedNotice] = useState(false);
+  const copyTimerRef = useRef<number | null>(null);
 
-  const handleEmailTrigger = () => {
+  useEffect(() => () => {
+    if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
+  }, []);
+
+  const handleEmailTrigger = async () => {
     soundEngine.playClick();
     try {
-      navigator.clipboard?.writeText(LUSION_GLOBAL_CHROME.footer.businessEmail);
+      if (!navigator.clipboard?.writeText) return;
+      await navigator.clipboard.writeText(LUSION_GLOBAL_CHROME.footer.businessEmail);
       setCopiedNotice(true);
-      window.setTimeout(() => setCopiedNotice(false), 2600);
+      if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = window.setTimeout(() => {
+        copyTimerRef.current = null;
+        setCopiedNotice(false);
+      }, 2600);
     } catch {
-      // Clipboard optional
+      // The mailto link remains the fallback when clipboard access is unavailable.
     }
   };
 
