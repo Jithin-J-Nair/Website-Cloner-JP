@@ -1343,6 +1343,19 @@ export function AboutPageView() {
   useEffect(() => {
     const award = document.getElementById("about-award");
     const word = award?.querySelector<HTMLElement>("[data-awards-word]");
+    const revealTargets = award ? [...award.querySelectorAll<HTMLElement>("[data-award-reveal]")] : [];
+    let revealObserver: IntersectionObserver | null = null;
+    if (award && !reducedMotion && "IntersectionObserver" in window && revealTargets.length) {
+      award.dataset.awardsMotionReady = "true";
+      revealObserver = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).classList.add("is-in-view");
+          revealObserver?.unobserve(entry.target);
+        }
+      }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
+      revealTargets.forEach(target => revealObserver?.observe(target));
+    }
     let raf = 0, dirty = true, disposed = false, awardTop = 0;
     const measure = (el: HTMLElement | null) => el ? el.getBoundingClientRect().top + window.scrollY : 0;
     const render = () => {
@@ -1363,7 +1376,8 @@ export function AboutPageView() {
     window.addEventListener("resize", reflow, { passive: true });
     document.addEventListener("visibilitychange", reflow);
     return () => {
-      disposed = true; cancelAnimationFrame(raf); ro.disconnect();
+      disposed = true; cancelAnimationFrame(raf); ro.disconnect(); revealObserver?.disconnect();
+      if (award) delete award.dataset.awardsMotionReady;
       window.removeEventListener("scroll", schedule); window.removeEventListener("resize", reflow);
       document.removeEventListener("visibilitychange", reflow);
     };
@@ -1453,7 +1467,7 @@ export function AboutPageView() {
         >
           <div aria-hidden="true" className="about-awards-monument"><span data-awards-word>AWARDS</span></div>
           <div className="relative grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">
-            <div className="col-span-6 min-[813px]:col-span-4">
+            <div className="col-span-6 min-[813px]:col-span-4" data-award-reveal style={{ "--reveal-index": 0 } as React.CSSProperties}>
               <div className="flex items-start gap-3">
                 <h2 className="font-sans text-5xl font-normal tracking-[-0.025em] text-white md:text-6xl">
                   {LUSION_ABOUT.recognition.awardsHeading}
@@ -1465,12 +1479,12 @@ export function AboutPageView() {
             </div>
 
             <div className="col-span-6 grid gap-5 md:grid-cols-2 min-[813px]:col-span-8">
-              {LUSION_ABOUT.recognition.awardGroups.map((group) => (
+              {LUSION_ABOUT.recognition.awardGroups.map((group, groupIdx) => (
                 <div
                   key={group.organization}
                   className="about-award-group border-t border-white/20 py-5"
                   data-award-reveal
-                  style={{ "--reveal-index": group.totalCount % 5 } as React.CSSProperties}
+                  style={{ "--reveal-index": groupIdx + 1 } as React.CSSProperties}
                 >
                   <div className="about-award-group-heading flex items-center justify-between border-b border-white/10 pb-3">
                     <h3 className="font-sans text-lg font-medium text-white">
