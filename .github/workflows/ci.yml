@@ -52,6 +52,9 @@ jobs:
       - name: About scene-motion tests
         run: node scripts/test-about-scene-motion.mjs
 
+      - name: About CTA particle-field tests
+        run: node scripts/test-contact-field.mjs
+
       - name: Build
         run: npm run build
 
