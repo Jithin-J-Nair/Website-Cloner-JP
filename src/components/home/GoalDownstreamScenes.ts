@@ -700,32 +700,57 @@ export function buildArchitecturalTrussTunnel(
         uIntensity: { value: 0.0 }
       },
       vertexShader: [
+        "uniform float uMode;",
         "varying vec2 vUv;",
-        "void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }"
+        "varying vec3 vLocalPosition;",
+        "void main() {",
+        "  vUv = uv;",
+        "  vLocalPosition = position;",
+        "  vec3 p = position;",
+        "  float radius = length(position.xy);",
+        "  float twist = uMode * 0.68 * smoothstep(0.0, 3.7, radius) + radius * 0.045;",
+        "  float cs = cos(twist);",
+        "  float sn = sin(twist);",
+        "  p.xy = mat2(cs, -sn, sn, cs) * p.xy;",
+        "  p.z -= exp(-radius * 0.72) * (0.42 + uMode * 0.62);",
+        "  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);",
+        "}"
       ].join("\n"),
       fragmentShader: [
         "varying vec2 vUv;",
+        "varying vec3 vLocalPosition;",
         "uniform float uMode;",
         "uniform float uIntensity;",
         "void main() {",
         "  vec2 p = vUv * 2.0 - 1.0;",
         "  float r = length(p);",
         "  float theta = atan(p.y, p.x);",
-        "  float spiralWave = 0.5 + 0.5 * cos(theta * 3.0 - r * 18.0 - uMode * 5.2);",
-        "  float filaments = pow(spiralWave, 7.0) * exp(-r * 2.1);",
-        "  float sheath = exp(-pow((r - 0.54) / 0.13, 2.0));",
-        "  float core = exp(-r * 5.2) * 1.05 + exp(-r * 16.0) * 1.45;",
-        "  vec3 cE = vec3(0.22, 0.78, 1.0);",
-        "  vec3 cP = vec3(1.0, 0.30, 0.72);",
-        "  vec3 col = mix(cE, cP, clamp(uMode + spiralWave * 0.16, 0.0, 1.0));",
-        "  col *= core + filaments * 0.72 + sheath * 0.16;",
-        "  gl_FragColor = vec4(col * uIntensity, clamp((core + filaments * 0.35) * uIntensity, 0.0, 1.0));",
+        "  float phaseA = theta * 4.0 - r * 22.0 - uMode * 7.2;",
+        "  float phaseB = theta * 8.0 + r * 31.0 + uMode * 11.0;",
+        "  float spiralA = 0.5 + 0.5 * cos(phaseA);",
+        "  float spiralB = 0.5 + 0.5 * cos(phaseB);",
+        "  float arms = pow(spiralA, 9.0) * exp(-r * 1.55);",
+        "  float filaments = pow(spiralB, 17.0) * exp(-r * 2.15) * 0.42;",
+        "  float ringRadius = 0.50 + 0.028 * sin(theta * 4.0 - uMode * 5.0);",
+        "  float accretion = exp(-pow((r - ringRadius) / 0.075, 2.0));",
+        "  float photonRing = exp(-pow((r - 0.235) / 0.034, 2.0));",
+        "  float sheath = exp(-pow((r - 0.70) / 0.16, 2.0));",
+        "  float core = exp(-r * 4.1) * 0.68 + exp(-r * 14.0) * 1.08;",
+        "  float eventHorizon = 1.0 - smoothstep(0.075, 0.20, r);",
+        "  vec3 cCyan = vec3(0.16, 0.76, 1.0);",
+        "  vec3 cPink = vec3(1.0, 0.22, 0.66);",
+        "  float spectralShift = clamp(uMode + 0.12 * sin(phaseA + phaseB * 0.08), 0.0, 1.0);",
+        "  vec3 col = mix(cCyan, cPink, spectralShift);",
+        "  float energy = core + arms * 0.78 + filaments + accretion * 0.46 + photonRing * 0.30 + sheath * 0.13;",
+        "  col *= energy * (1.0 - eventHorizon * 0.46);",
+        "  col += vec3(0.38, 0.72, 1.0) * accretion * 0.24;",
+        "  gl_FragColor = vec4(col * uIntensity, clamp((core + arms * 0.34 + accretion * 0.42 + photonRing * 0.22) * uIntensity, 0.0, 1.0));",
         "}"
       ].join("\n")
     })
   );
 
-  const corePlane = new THREE.Mesh(track(new THREE.PlaneGeometry(8, 8)), vortexCoreMat);
+  const corePlane = new THREE.Mesh(track(new THREE.PlaneGeometry(9.2, 9.2, 64, 64)), vortexCoreMat);
   corePlane.position.z = -12.0;
   corePlane.renderOrder = 2;
   group.add(corePlane);

@@ -477,7 +477,6 @@ export function GoalTunnelSection() {
               uSceneColor: { value: glassRefractionTarget?.texture ?? null },
               uRefractionSize: { value: new THREE.Vector2(1, 1) },
               uRefractionStrength: { value: 1.24 },
-              uDispersion: { value: 0.0027 },
               uFrameData: { value: null },
               uOrientData: { value: null },
             },
@@ -518,51 +517,85 @@ export function GoalTunnelSection() {
               "varying vec4 vClipPosition;",
               "uniform float uOpacity;",
               "uniform float uRefractionStrength;",
-              "uniform float uDispersion;",
               "uniform samplerCube uEnvironment;",
               "uniform sampler2D uSceneColor;",
               "uniform vec2 uRefractionSize;",
+              "const float PI = 3.14159265359;",
+              "vec3 safeRefraction(vec3 I, vec3 N, float eta) {",
+              "  vec3 ray = refract(I, N, eta);",
+              "  return dot(ray, ray) < 0.0001 ? reflect(I, N) : ray;",
+              "}",
+              "float fresnelSchlick(float cosine, float f0) {",
+              "  return f0 + (1.0 - f0) * pow(1.0 - clamp(cosine, 0.0, 1.0), 5.0);",
+              "}",
               "void main() {",
               "  vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);",
               "  vec3 Nv = normalize(vNormalV) * (gl_FrontFacing ? 1.0 : -1.0);",
               "  vec3 V = normalize(cameraPosition - vWorldPos);",
-              "  float facing = max(abs(dot(N, V)), 0.0);",
-              "  float fres = 0.04 + 0.96 * pow(1.0 - facing, 5.0);",
+              "  float facing = clamp(abs(dot(N, V)), 0.0, 1.0);",
+              "  const float iorR = 1.516;",
+              "  const float iorG = 1.520;",
+              "  const float iorB = 1.526;",
+              "  const float f0 = 0.0426;",
+              "  float fres = fresnelSchlick(facing, f0);",
               "  vec2 screenUv = vClipPosition.xy / max(0.0001, vClipPosition.w) * 0.5 + 0.5;",
               "  float pixelScale = min(1.65, 900.0 / max(1.0, min(uRefractionSize.x, uRefractionSize.y)));",
-              "  float edge = pow(1.0 - facing, 1.45);",
-              "  float opticalPath = 0.86 + edge * 0.78;",
+              "  float edge = pow(1.0 - facing, 1.38);",
+              "  float opticalPath = 0.92 + edge * 1.05;",
               "  vec3 incident = normalize(vPosV);",
-              "  float eta = gl_FrontFacing ? (1.0 / 1.46) : 1.46;",
-              "  vec3 refractedRay = refract(incident, Nv, eta);",
-              "  if (dot(refractedRay, refractedRay) < 0.0001) refractedRay = reflect(incident, Nv);",
+              "  float etaR = gl_FrontFacing ? (1.0 / iorR) : iorR;",
+              "  float etaG = gl_FrontFacing ? (1.0 / iorG) : iorG;",
+              "  float etaB = gl_FrontFacing ? (1.0 / iorB) : iorB;",
+              "  vec3 rayR = safeRefraction(incident, Nv, etaR);",
+              "  vec3 rayG = safeRefraction(incident, Nv, etaG);",
+              "  vec3 rayB = safeRefraction(incident, Nv, etaB);",
               "  vec2 incidentSlope = incident.xy / max(0.12, abs(incident.z));",
-              "  vec2 refractedSlope = refractedRay.xy / max(0.12, abs(refractedRay.z));",
-              "  vec2 bend = (refractedSlope - incidentSlope) * (0.016 + (1.0 - facing) * 0.024) * opticalPath * uRefractionStrength * pixelScale;",
-              "  vec2 chroma = vec2(uDispersion, uDispersion * 0.62) * (0.55 + fres * 0.90);",
-              "  vec2 uvR = clamp(screenUv + bend + chroma, vec2(0.001), vec2(0.999));",
-              "  vec2 uvG = clamp(screenUv + bend, vec2(0.001), vec2(0.999));",
-              "  vec2 uvB = clamp(screenUv + bend - chroma, vec2(0.001), vec2(0.999));",
+              "  vec2 slopeR = rayR.xy / max(0.12, abs(rayR.z));",
+              "  vec2 slopeG = rayG.xy / max(0.12, abs(rayG.z));",
+              "  vec2 slopeB = rayB.xy / max(0.12, abs(rayB.z));",
+              "  float bendScale = (0.014 + edge * 0.031) * opticalPath * uRefractionStrength * pixelScale;",
+              "  vec2 uvR = clamp(screenUv + (slopeR - incidentSlope) * bendScale, vec2(0.001), vec2(0.999));",
+              "  vec2 uvG = clamp(screenUv + (slopeG - incidentSlope) * bendScale, vec2(0.001), vec2(0.999));",
+              "  vec2 uvB = clamp(screenUv + (slopeB - incidentSlope) * bendScale, vec2(0.001), vec2(0.999));",
               "  vec3 transmitted = vec3(texture2D(uSceneColor, uvR).r, texture2D(uSceneColor, uvG).g, texture2D(uSceneColor, uvB).b);",
-              "  vec3 envTransmission = textureCube(uEnvironment, refract(-V, N, 1.0 / 1.46)).rgb;",
-              "  transmitted = mix(transmitted, envTransmission, 0.10);",
+              "  vec3 envTransmission = textureCube(uEnvironment, rayG).rgb;",
+              "  transmitted = mix(transmitted, envTransmission, 0.075);",
               "  vec3 envReflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
-              "  vec2 reflectedUv = clamp(screenUv + reflect(incident, Nv).xy * 0.028, vec2(0.001), vec2(0.999));",
+              "  vec3 reflectedRay = reflect(incident, Nv);",
+              "  vec2 reflectedUv = clamp(screenUv + reflectedRay.xy * (0.026 + edge * 0.020) * pixelScale, vec2(0.001), vec2(0.999));",
               "  vec3 screenReflection = texture2D(uSceneColor, reflectedUv).rgb;",
-              "  vec3 reflection = mix(envReflection, screenReflection, 0.72);",
-              "  vec3 reflectedLight = reflect(-normalize(vec3(-0.45, 0.72, 0.55)), N);",
-              "  float spec = pow(max(dot(reflectedLight, V), 0.0), 76.0);",
-              "  float broadSpec = pow(max(dot(reflectedLight, V), 0.0), 22.0);",
-              "  vec3 glassTint = mix(vec3(0.965, 0.99, 1.0), vec3(0.78, 0.90, 1.0), edge * 0.72);",
-              "  float reflectance = clamp(0.08 + fres * 0.82 + edge * 0.16, 0.10, 0.98);",
-              "  vec3 col = mix(transmitted * glassTint, reflection, reflectance);",
-              "  col += vec3(0.76, 0.90, 1.0) * edge * 0.55;",
-              "  col += vec3(1.0, 0.995, 0.98) * spec * 2.0;",
-              "  col += vec3(0.48, 0.70, 1.0) * broadSpec * 0.48;",
-              "  float alpha = clamp(0.22 + fres * 0.60 + edge * 0.22 + spec * 0.10 + broadSpec * 0.07, 0.26, 0.99) * uOpacity;",
+              "  vec3 reflection = mix(envReflection, screenReflection, 0.80);",
+              "  float reflectance = clamp(fres + edge * 0.075, 0.04, 0.97);",
+              "  vec3 keyLight = normalize(vec3(-0.45, 0.72, 0.55));",
+              "  float nDotV = max(dot(N, V), 0.001);",
+              "  float nDotL = max(dot(N, keyLight), 0.0);",
+              "  vec3 H = normalize(V + keyLight);",
+              "  float nDotH = max(dot(N, H), 0.0);",
+              "  float vDotH = max(dot(V, H), 0.0);",
+              "  float roughness = 0.062 + edge * 0.018;",
+              "  float alphaRough = roughness * roughness;",
+              "  float alpha2 = alphaRough * alphaRough;",
+              "  float dDenom = nDotH * nDotH * (alpha2 - 1.0) + 1.0;",
+              "  float distribution = alpha2 / max(PI * dDenom * dDenom, 0.00001);",
+              "  float geometryK = pow(roughness + 1.0, 2.0) * 0.125;",
+              "  float geometryV = nDotV / (nDotV * (1.0 - geometryK) + geometryK);",
+              "  float geometryL = nDotL / (nDotL * (1.0 - geometryK) + geometryK);",
+              "  float specFres = f0 + (1.0 - f0) * pow(1.0 - vDotH, 5.0);",
+              "  float ggxSpec = distribution * geometryV * geometryL * specFres / max(4.0 * nDotV * nDotL, 0.001) * nDotL;",
+              "  float wideRough = 0.18;",
+              "  float wideA = wideRough * wideRough;",
+              "  float wideA2 = wideA * wideA;",
+              "  float wideDenom = nDotH * nDotH * (wideA2 - 1.0) + 1.0;",
+              "  float wideSpec = wideA2 / max(PI * wideDenom * wideDenom, 0.00001) * geometryV * geometryL * specFres / max(4.0 * nDotV * nDotL, 0.001) * nDotL;",
+              "  vec3 absorption = exp(-vec3(0.010, 0.005, 0.0025) * opticalPath);",
+              "  vec3 col = mix(transmitted * absorption, reflection, reflectance);",
+              "  col += vec3(0.72, 0.87, 1.0) * edge * 0.34;",
+              "  col += vec3(1.0, 0.995, 0.985) * ggxSpec * 4.4;",
+              "  col += vec3(0.48, 0.70, 1.0) * wideSpec * 0.56;",
+              "  float alpha = clamp(0.095 + fres * 0.64 + edge * 0.15 + ggxSpec * 0.12, 0.10, 0.92) * uOpacity;",
               "  gl_FragColor = vec4(col, alpha);",
               "}",
-            ].join("\n"),
+            ].join(\"\\n\"),
           })
         );
         
@@ -1197,13 +1230,18 @@ export function GoalTunnelSection() {
           ? lerp(-0.44, 0.0, smoothstep(0.05, 0.68, tOutPull)) *
             smoothstep(0.81, 0.85, tTunnel) * (reducedMotion ? 0.35 : 1.0)
           : -smoothstep(0.36,0.60,tTunnel) * 0.72 * (1-smoothstep(0.75,0.81,tTunnel)) * (reducedMotion ? 0.15 : 1.0);
+        const vortexEnvelope = smoothstep(0.43, 0.55, tTunnel) * (1 - smoothstep(0.76, 0.84, tTunnel));
+        const vortexOrbit = Math.sin(((tTunnel - 0.43) / 0.34) * Math.PI * 2.0) * 0.052 * vortexEnvelope;
         const vortexFovBoost = smoothstep(0.68, 0.80, tTunnel) * (1 - smoothstep(0.81, 0.85, tTunnel)) * 10;
+        const vortexDive = smoothstep(0.62, 0.77, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
+        const cameraRoll = bankRoll + (reducedMotion ? 0 : vortexOrbit);
         camera.fov = (m.isMobile ? 54 : 45) + vortexFovBoost;
         camera.aspect = W / H;
-        camera.up.set(Math.sin(bankRoll), Math.cos(bankRoll), 0);
+        camera.up.set(Math.sin(cameraRoll), Math.cos(cameraRoll), 0);
         camera.position.set(
-          pxParallax * lerp(0.08, 0.06, smoothstep(0, 0.08, tTunnel)),
-          pyParallax * lerp(0.06, 0.05, smoothstep(0, 0.08, tTunnel)), 5.2
+          pxParallax * lerp(0.08, 0.06, smoothstep(0, 0.08, tTunnel)) + Math.sin(tTunnel * Math.PI * 2.0) * 0.035 * vortexEnvelope,
+          pyParallax * lerp(0.06, 0.05, smoothstep(0, 0.08, tTunnel)) + Math.cos(tTunnel * Math.PI * 2.0) * 0.024 * vortexEnvelope,
+          5.2 - (reducedMotion ? 0 : vortexDive * 0.14)
         );
         camera.lookAt(0, 0, 0);
         camera.updateProjectionMatrix();
@@ -1438,8 +1476,8 @@ export function GoalTunnelSection() {
         const uPhase = clamp01((tTunnel - 0.10) / 0.68);
         const twistAmt = reducedMotion
           ? smoothstep(0.42, 0.76, tTunnel) * 0.23
-          : smoothstep(0.40, 0.58, tTunnel) * 0.18 + smoothstep(0.60, 0.76, tTunnel) * 0.30;
-        const vortexPinch = smoothstep(0.61, 0.75, tTunnel);
+          : smoothstep(0.40, 0.58, tTunnel) * 0.18 + smoothstep(0.60, 0.76, tTunnel) * 0.34;
+        const vortexPinch = smoothstep(0.56, 0.75, tTunnel);
         const vortexStructureFade = 1 - 0.13 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
         trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis * vortexStructureFade;
         trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
@@ -1509,7 +1547,6 @@ export function GoalTunnelSection() {
           const mat = shardsMesh.material as THREE.ShaderMaterial;
           mat.uniforms.uOpacity.value = shardVis;
           mat.uniforms.uRefractionStrength.value = 1.35 + shardVis * 0.65;
-          mat.uniforms.uDispersion.value = 0.0018 + shardVis * 0.0018;
 
           // Compress the captured rigid-body trajectory into a fast impact beat,
           // retaining continuous position interpolation and quaternion slerp.

@@ -26,8 +26,9 @@ try {
   assert.equal(advanceCinematicProgress(.2,NaN),.2);
   assert.equal(advanceCinematicProgress(0,100),1);
   assert.equal(acceleratedFall(-1),0); assert.equal(acceleratedFall(2),1);
-  assert.ok(acceleratedFall(0.25)>0.14,'astronaut has a more decisive early descent');
-  assert.ok(acceleratedFall(0.5)>0.34,'astronaut reaches a faster mid-fall position');
+  assert.ok(acceleratedFall(0.25)>0.155,'astronaut reaches a stronger early descent than the previous curve');
+  assert.ok(acceleratedFall(0.5)>0.365,'astronaut carries more speed through the middle of the fall');
+  assert.ok(Math.abs(acceleratedFall(1)-1)<1e-12,'faster fall retains its exact endpoint');
   let lastVelocity = -Infinity;
   for(let i=1;i<1000;i++) {
     const t=i/1000, epsilon=1e-5;
@@ -72,6 +73,12 @@ try {
     'the synthetic crack overlay is completely removed');
   assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),
     'the full-screen radial RGB glitch/dispersion pass is removed');
+  assert.ok(goalSource.includes('const float iorR = 1.516;') && goalSource.includes('const float iorG = 1.520;') && goalSource.includes('const float iorB = 1.526;'),
+    'glass refraction uses wavelength-dependent Snell IOR rather than an arbitrary RGB offset');
+  assert.ok(goalSource.includes('float distribution = alpha2 / max(PI * dDenom * dDenom') && goalSource.includes('float fres = fresnelSchlick(facing, f0);'),
+    'glass facets use GGX microfacet highlights and Schlick Fresnel reflection');
+  assert.ok(downstreamSource.includes('theta * 4.0 - r * 22.0') && downstreamSource.includes('float eventHorizon'),
+    'vortex core uses a deformed four-fold spiral, accretion ring and dark central horizon');
   assert.ok(!downstreamSource.includes('GlassTesseractVortex') && !downstreamSource.includes('TesseractGlass'),
     'the white tesseract object is completely removed from the tunnel scene');
   assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
