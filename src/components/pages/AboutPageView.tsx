@@ -850,7 +850,10 @@ function AboutWhoExperience({
     };
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
-      state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x, count, frameTimes: [...frameTimes],
+      state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x,
+      teamYaw: portraitPoints.rotation.y, teamPitch: portraitPoints.rotation.x,
+      teamMember: teamOverlayRef.current?.querySelector("#about-who-team-name")?.textContent?.trim() ?? null,
+      count, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
       memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height, camera: camera.position.toArray() });
     if (window.__enableAboutProbe) window.__aboutProbe = probe;
