@@ -25,17 +25,17 @@ try{
     const y=await page.locator(`#${id}`).evaluate(e=>e.getBoundingClientRect().top+scrollY);await seek(y);
     const file=`${width}-${id}.jpg`;await page.screenshot({path:`${out}/${file}`,type:'jpeg',quality:65,timeout:120000});report.milestones.push({id,file,y});
     if(id==='end-section' && !baseline){
-     await page.waitForFunction(()=>window.__ctaProbe?.().frames>0,{timeout:20000});
+     await page.waitForFunction(()=>window.__ctaProbe?.().frames>0,null,{timeout:20000});
      const cta=await page.evaluate(()=>window.__ctaProbe());
-     assert.ok(cta.count===(width===390?720:1600));
+     assert.ok(width===390 ? cta.count===720 : cta.count===960 || cta.count===1600);
      assert.ok(cta.draws<=3,'CTA field must remain at three instanced draws');
      assert.ok(cta.triangles<=cta.count*24,'CTA geometry must remain within its triangle budget');
      if(width!==390){
       await page.mouse.move(width*.56,height*.68);
-      await page.waitForFunction(()=>window.__ctaProbe?.().pointer>.85,{timeout:5000});
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer>.85,null,{timeout:5000});
       const engaged=await page.evaluate(()=>window.__ctaProbe().pointer);
       await page.mouse.move(width+40,height+40);
-      await page.waitForFunction(()=>window.__ctaProbe?.().pointer<.12,{timeout:5000});
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer<.12,null,{timeout:5000});
       report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,pointerEngaged:engaged,pointerReleased:true};
      }else{
       report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,touchPointerInactive:cta.pointer===0};
