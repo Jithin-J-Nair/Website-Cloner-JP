@@ -91,7 +91,7 @@ try {
     'glass optical path is derived from the actual world-scaled shard plate thickness');
   assert.ok(goalSource.includes('mix(envReflection, screenReflection, 0.92)'),
     'moving glass reflects the live corridor/astronaut scene rather than relying on a static environment alone');
-  assert.ok(downstreamSource.includes('const tubeRadius = 0.0150') && downstreamSource.includes('envMapIntensity: 2.45'),
+  assert.ok(downstreamSource.includes('const tubeRadius = 0.0155') && downstreamSource.includes('envMapIntensity: 2.45'),
     'the 4D glass lattice has legible crystal edges and stronger environmental reflections');
   assert.ok(goalSource.includes('(tShatter - 0.205) / 0.145'),
     'the 946-piece glass breakup is compressed to a short impact beat');

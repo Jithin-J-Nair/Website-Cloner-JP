@@ -819,7 +819,7 @@ export function buildVortexHypercubeLattice(
           direction.multiplyScalar(1 / length);
           midpoint.addVectors(start, end).multiplyScalar(0.5);
           quaternion.setFromUnitVectors(axisY, direction);
-          const tubeRadius = 0.0130 * (1 - layerT * 0.17);
+          const tubeRadius = 0.0155 * (1 - layerT * 0.17);
           scale.set(tubeRadius, length, tubeRadius);
           matrix.compose(midpoint, quaternion, scale);
           edgeMesh.setMatrixAt(layer * edgesPerLayer + edge, matrix);
