@@ -64,11 +64,16 @@ try {
   assert.ok(blueFlightDistance(1,.5)>blueFlightDistance(1,0),'corridor keeps moving during glass approach');
 
   const homePageSource = fs.readFileSync('src/components/home/HomePageView.tsx','utf8');
+  const heroSource = fs.readFileSync('src/components/home/HeroCrossesStage.tsx','utf8');
   const goalSource = fs.readFileSync('src/components/home/GoalTunnelSection.tsx','utf8');
   const downstreamSource = fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8');
   const smoothSource = fs.readFileSync('src/components/foundation/SmoothScrollProvider.tsx','utf8');
   assert.ok(!homePageSource.includes('skewY(') && !homePageSource.includes('targetSkew'),
     'project cards do not shear or glitch with scroll velocity');
+  assert.ok(heroSource.includes('idleEnabled && isSoftwareRenderer && !ptr.active && !transientMoving'),
+    'software idle throttling is disabled while the pointer is actively throwing connectors');
+  assert.ok(heroSource.includes('frameCostMs > 40 && idleOnly'),
+    'slow software frames use the long yield only when the hero is genuinely idle');
   assert.ok(!goalSource.includes('home-goal-monitor-cracks') && !goalSource.includes('crackProgress'),
     'the synthetic crack overlay is completely removed');
   assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),
