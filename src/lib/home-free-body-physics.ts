@@ -105,7 +105,6 @@ export class HomeConnectorPhysics {
       const h=this.stepSize;
       const time=timeSeconds+(steps*h);
       this.interactionEnergy*=Math.exp(-2.4*h);
-      this.interactionEnergy=Math.min(1,this.interactionEnergy+influence*h*2.8);
       // Free flight, light gravity and a shared soft attractor. The restoring force
       // grows only after a body leaves the loose cluster; it never targets a slot.
       for(let i=0;i<this.meshes.length;i++) {
@@ -132,13 +131,18 @@ export class HomeConnectorPhysics {
             // Hovering repels continuously; pointer travel adds a swipe impulse.
             v.addScaledVector(this.normal,175*influence*h);
             v.addScaledVector(pointerSweep,2.8*influence*h);
-            w.addScaledVector(this.normal.cross(this.axis.set(0,0,1)).normalize(),pointerSweep.length()*0.12*influence*h);
+            this.tangent.crossVectors(this.normal,this.axis.set(0,0,1));
+            if(this.tangent.lengthSq()>1e-6) {
+              this.tangent.normalize();
+              w.addScaledVector(this.tangent,pointerSweep.length()*0.12*influence*h);
+            }
             this.interactionEnergy=Math.min(1,this.interactionEnergy+influence*h*3.2);
             this.touched[i]=true;
           }
         }
 
-        const maxSpeed=12.5;\n        if(v.length()>maxSpeed) v.setLength(maxSpeed);\n        p.addScaledVector(v,h);
+        const maxSpeed=12.5;
+        if(v.length()>maxSpeed) v.setLength(maxSpeed);\n        p.addScaledVector(v,h);
         const speed=w.length();
         if(speed>1e-5) {
           this.axis.copy(w).multiplyScalar(1/speed);
