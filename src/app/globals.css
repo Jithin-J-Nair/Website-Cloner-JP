@@ -554,3 +554,88 @@ body {
   .about-client-marquee-set[aria-hidden="true"] { display: none; }
   .about-client-logo-mark { transition: none !important; transform: none !important; }
 }
+
+
+/* Recognition ledger: reveal the record in editorial groups, never as app cards. */
+#about-award[data-awards-motion-ready="true"] [data-award-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 720ms cubic-bezier(.22, 1, .36, 1),
+    transform 900ms cubic-bezier(.22, 1, .36, 1);
+  transition-delay: calc(var(--reveal-index, 0) * 55ms);
+}
+#about-award[data-awards-motion-ready="true"] [data-award-reveal].is-in-view {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.about-award-group-heading {
+  min-height: 2.75rem;
+  transition: border-color 280ms ease-out;
+}
+.about-award-group-heading h3 {
+  letter-spacing: -.025em;
+}
+.about-award-honor {
+  min-height: 2.75rem;
+  padding-inline: .35rem;
+  border-bottom: 1px solid rgb(255 255 255 / .055);
+  transition:
+    color 240ms ease-out,
+    background-color 240ms ease-out,
+    padding-left 320ms cubic-bezier(.22, 1, .36, 1);
+}
+.about-award-honor:last-child { border-bottom: 0; }
+.about-award-honor > span:first-child { min-width: 0; }
+.about-award-honor > span:last-child {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.about-recognition-link {
+  min-height: 3.25rem;
+  gap: 1rem;
+  border-radius: 2px;
+  transition:
+    color 240ms ease-out,
+    padding-inline 360ms cubic-bezier(.22, 1, .36, 1),
+    background-color 240ms ease-out;
+}
+.about-talk-row {
+  min-height: 3.25rem;
+  gap: 1rem;
+  padding-inline: .35rem;
+  border-bottom: 1px solid rgb(255 255 255 / .06);
+  transition:
+    color 240ms ease-out,
+    padding-inline 360ms cubic-bezier(.22, 1, .36, 1),
+    background-color 240ms ease-out;
+}
+.about-talk-row:last-child { border-bottom: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .about-award-honor:hover,
+  .about-talk-row:hover {
+    padding-left: .8rem;
+    color: #fff;
+    background-color: rgb(255 255 255 / .045);
+  }
+  .about-recognition-link:hover {
+    padding-inline: .75rem;
+    background-color: rgb(255 255 255 / .035);
+  }
+  .about-award-group:hover .about-award-group-heading {
+    border-color: rgb(255 255 255 / .38);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #about-award[data-awards-motion-ready="true"] [data-award-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .about-award-group-heading,
+  .about-award-honor,
+  .about-recognition-link,
+  .about-talk-row {
+    transition: none;
+  }
+}
