@@ -61,6 +61,9 @@ jobs:
       - name: About client-logo wall tests
         run: node scripts/test-about-clients.mjs
 
+      - name: About recognition-ledger tests
+        run: node scripts/test-about-recognition.mjs
+
       - name: Build
         run: npm run build
 
