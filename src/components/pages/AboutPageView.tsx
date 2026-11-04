@@ -1252,11 +1252,22 @@ function AboutWhoExperience({
   );
 }
 
-/** Brand names retain verified content without reusing captured trademark SVGs. */
-function ClientLogoTile({ name }: { name: string }) {
+/** The logo files are part of the repository's approved media bundle.
+ * The alt text remains the brand name; the second marquee copy is hidden from AT.
+ */
+function ClientLogoTile({ name, src }: { name: string; src: string }) {
   return (
-    <div className="flex h-20 items-center justify-center px-3 opacity-85 transition-opacity duration-300 hover:opacity-100 md:h-24 md:px-5">
-      <span className="text-center font-sans text-base font-medium tracking-[-0.02em] text-white/90 md:text-xl">{name}</span>
+    <div className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
+      <img
+        src={src}
+        alt={name}
+        width={240}
+        height={240}
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+        className="about-client-logo-mark h-[180px] w-[180px] max-w-none shrink-0 object-contain opacity-75 transition-[opacity,transform] duration-500 ease-out group-hover:opacity-100 group-hover:scale-[1.04]"
+      />
     </div>
   );
 }
@@ -1402,18 +1413,32 @@ export function AboutPageView() {
             </div>
           </div>
 
-          <div className="mt-16 flex flex-col gap-8 md:mt-20 md:gap-10">
+          <div className="about-client-marquee-stack mt-16 flex flex-col gap-6 md:mt-20 md:gap-8">
             {LUSION_ABOUT.clients.carouselRows.map((row, rowIdx) => (
               <div
                 key={rowIdx}
-                className="grid grid-cols-3 items-center gap-4 sm:grid-cols-4 md:grid-cols-6"
+                className="about-client-marquee group"
+                data-direction={rowIdx === 1 ? "reverse" : "forward"}
+                style={{ "--marquee-duration": `${34 + rowIdx * 7}s` } as React.CSSProperties}
+                aria-label={`Client brands row ${rowIdx + 1}`}
               >
-                {row.map((client, cIdx) => (
-                  <ClientLogoTile
-                    key={`${client.id}-${cIdx}`}
-                    name={client.name}
-                  />
-                ))}
+                <div className="about-client-marquee-track">
+                  {[0, 1].map(copy => (
+                    <div
+                      key={copy}
+                      className="about-client-marquee-set"
+                      aria-hidden={copy === 1 ? true : undefined}
+                    >
+                      {row.map((client, cIdx) => (
+                        <ClientLogoTile
+                          key={`${copy}-${client.id}-${cIdx}`}
+                          name={client.name}
+                          src={client.src}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
