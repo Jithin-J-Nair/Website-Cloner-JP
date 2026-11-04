@@ -12,6 +12,9 @@ try {
     compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
   }).outputText);
   const { terrainHeightAt, createAboutTerrainMaterial } = await import(pathToFileURL(`${dir}/terrain.mjs`));
+  assert.match(source, /ridgeC \* \.32/, 'flank mesh keeps high-frequency fractured relief');
+  assert.match(source, /micro = .*\.17 \* flankMask/, 'microrelief remains visible on the crater flanks');
+  assert.match(source, /amplitude = \.036/, 'screen-space rock relief has enough amplitude to read at desktop scale');
   let min = Infinity, max = -Infinity;
   for (let z = -48; z <= 48; z += .5) {
     for (let x = -48; x <= 48; x += .5) {
