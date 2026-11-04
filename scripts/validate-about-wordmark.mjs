@@ -165,6 +165,7 @@ try {
           altCount: images.filter(image => image.alt.trim().length > 0).length,
           loaded: images.filter(image => image.complete && image.naturalWidth > 0).length,
           animation: track ? getComputedStyle(track).animationName : 'missing',
+          playState: track ? getComputedStyle(track).animationPlayState : 'missing',
           rows: section.querySelectorAll('.about-client-marquee').length,
         };
       });
@@ -173,6 +174,7 @@ try {
       assert.equal(logoState.altCount, 16, 'every brand mark has useful alternative text');
       assert.equal(logoState.loaded, 16, 'all first-copy SVG logo assets load successfully');
       assert.equal(logoState.animation, 'about-client-marquee');
+      assert.equal(logoState.playState, 'running', 'visible client marquees animate only while in view');
       if (width !== 390) {
         await clients.locator('.about-client-marquee').first().hover();
         assert.equal(await clients.locator('.about-client-marquee-track').first().evaluate(el => getComputedStyle(el).animationPlayState), 'paused', 'hover pauses the marquee without stopping other rows');
@@ -189,6 +191,12 @@ try {
       for (let index = 0; index < awardPositions.length; index++) {
         await seekY(Math.max(0, awardPositions[index] - height * .58));
         await page.waitForFunction(i => document.querySelectorAll('#about-award [data-award-reveal]')[i]?.classList.contains('is-in-view'), index, { timeout: 5000 });
+        if (index === 0) {
+          await page.waitForFunction(() => {
+            const track = document.querySelector('#about-clients .about-client-marquee-track');
+            return track && getComputedStyle(track).animationPlayState === 'paused';
+          }, null, { timeout: 5000 });
+        }
       }
       const awardState = await page.evaluate(() => ({
         visible: [...document.querySelectorAll('#about-award [data-award-reveal]')].filter(el => el.classList.contains('is-in-view')).length,
