@@ -132,22 +132,34 @@ function AboutWhoExperience({
 
   const [sceneGeneration, setSceneGeneration] = useState(0);
   const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
+  const portraitMorphStartRef = useRef<number | null>(null);
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
 
-  // Original, non-likeness sculptural study. The repository also contains
-  // captured reference point buffers, but no redistribution permission is established;
-  // keep the procedural portrait rather than silently shipping captured team likenesses.
+  // Original, non-likeness portrait study. A member change interpolates from
+  // the currently visible point positions, so rapid selections remain interruptible.
   useEffect(() => {
     memberRef.current = activeMemberIdx;
     const geo = portraitGeoRef.current;
     if (!geo) return;
     const position = geo.getAttribute("position") as THREE.BufferAttribute;
+    const from = geo.getAttribute("aMorphFrom") as THREE.BufferAttribute | undefined;
+    if (!from) return;
+    const currentMorph = portraitMatRef.current?.uniforms.uMorph.value ?? 1;
+    for (let i = 0; i < position.array.length; i++) {
+      from.array[i] = from.array[i] * (1 - currentMorph) + position.array[i] * currentMorph;
+    }
+    from.needsUpdate = true;
     position.array.set(buildSculpturalPortraitPositions(activeMemberIdx));
     position.needsUpdate = true;
     geo.computeBoundingSphere();
-  }, [activeMemberIdx]);
+    portraitMorphStartRef.current = -1;
+    if (reducedMotion && portraitMatRef.current) {
+      portraitMatRef.current.uniforms.uMorph.value = 1;
+      portraitMorphStartRef.current = null;
+    }
+  }, [activeMemberIdx, reducedMotion]);
 
   useEffect(() => {
     const sectionEl = sectionRef.current;
@@ -466,10 +478,9 @@ function AboutWhoExperience({
     // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
     // -------------------------------------------------------------------------
     const portraitGeo = track(new THREE.BufferGeometry());
-    portraitGeo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(buildSculpturalPortraitPositions(memberRef.current, 8192), 3)
-    );
+    const initialPortrait = buildSculpturalPortraitPositions(memberRef.current, 8192);
+    portraitGeo.setAttribute("position", new THREE.BufferAttribute(initialPortrait, 3));
+    portraitGeo.setAttribute("aMorphFrom", new THREE.BufferAttribute(initialPortrait.slice(), 3));
     portraitGeoRef.current = portraitGeo;
     sectionEl.dataset.teamPortraitSource = "procedural-study";
 
@@ -481,17 +492,20 @@ function AboutWhoExperience({
         uniforms: {
           uOpacity: { value: 0 },
           uTime: { value: 0 },
+          uMorph: { value: 1 },
           uPixelRatio: { value: 1 },
           uPointerNDC: { value: new THREE.Vector2(0, 0) },
         },
         vertexShader: `
           uniform float uTime;
           uniform float uPixelRatio;
+          uniform float uMorph;
           uniform vec2 uPointerNDC;
+          attribute vec3 aMorphFrom;
           varying float vDepth;
           varying float vShade;
           void main() {
-            vec3 p = position;
+            vec3 p = mix(aMorphFrom, position, clamp(uMorph, 0.0, 1.0));
             // Pointer repulsion bends only nearby grains; the silhouette remains readable.
             vec2 pointerDelta = p.xy - uPointerNDC * vec2(.82, 1.34);
             float pointerInfluence = exp(-dot(pointerDelta, pointerDelta) * 5.2);
@@ -721,6 +735,15 @@ function AboutWhoExperience({
       portraitPoints.visible = tTeamPhase > 0.02;
       portraitLightField.visible = portraitPoints.visible;
       if (portraitPoints.visible) {
+        if (reducedMotion) {
+          portraitMat.uniforms.uMorph.value = 1;
+          portraitMorphStartRef.current = null;
+        } else if (portraitMorphStartRef.current !== null) {
+          if (portraitMorphStartRef.current < 0) portraitMorphStartRef.current = elapsedSec;
+          const morphT = Math.max(0, Math.min(1, (elapsedSec - portraitMorphStartRef.current) / .58));
+          portraitMat.uniforms.uMorph.value = 1 - Math.pow(1 - morphT, 3);
+          if (morphT >= 1) portraitMorphStartRef.current = null;
+        }
         portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
