@@ -350,19 +350,6 @@ function StaticSculpturalFallback({ accentHex }: { accentHex: string }) {
 }
 
 
-function closestArmContact(p1:THREE.Vector3,q1:THREE.Vector3,p2:THREE.Vector3,q2:THREE.Vector3,out1:THREE.Vector3,out2:THREE.Vector3):number {
- const d1x=q1.x-p1.x,d1y=q1.y-p1.y,d1z=q1.z-p1.z,d2x=q2.x-p2.x,d2y=q2.y-p2.y,d2z=q2.z-p2.z;
- const rx=p1.x-p2.x,ry=p1.y-p2.y,rz=p1.z-p2.z,a=d1x*d1x+d1y*d1y+d1z*d1z,e=d2x*d2x+d2y*d2y+d2z*d2z;
- const f=d2x*rx+d2y*ry+d2z*rz,c=d1x*rx+d1y*ry+d1z*rz,b=d1x*d2x+d1y*d2y+d1z*d2z;
- let u=0,v=0;
- if(a<1e-8) v=THREE.MathUtils.clamp(f/e,0,1);
- else if(e<1e-8) u=THREE.MathUtils.clamp(-c/a,0,1);
- else { const den=a*e-b*b; if(den>1e-8) u=THREE.MathUtils.clamp((b*f-c*e)/den,0,1); v=(b*u+f)/e;
- if(v<0){v=0;u=THREE.MathUtils.clamp(-c/a,0,1);} else if(v>1){v=1;u=THREE.MathUtils.clamp((b-c)/a,0,1);} }
- out1.set(p1.x+d1x*u,p1.y+d1y*u,p1.z+d1z*u); out2.set(p2.x+d2x*v,p2.y+d2y*v,p2.z+d2z*v);
- return out1.distanceToSquared(out2);
-}
-
 export function HeroCrossesStage() {
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const preloaderDone = useStudioStore((s) => s.preloaderDone);
@@ -800,7 +787,6 @@ export function HeroCrossesStage() {
 
       const isReduced = reducedMotionRef.current;
 
-      const decay = Math.exp(-2.6 * dt);
       const ptr = pointerNdcRef.current;
       if(ptr.active && !isReduced) {
         pointerNdc.set(ptr.x,ptr.y);
