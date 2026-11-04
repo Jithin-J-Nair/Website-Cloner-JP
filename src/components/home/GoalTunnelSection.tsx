@@ -1710,8 +1710,8 @@ export function GoalTunnelSection() {
           // Flight-axis gravity adds increasing descent/depth through the shaft, then blends
           // into the authored blue-flight pose; never introduce another playhead.
           const descent = acceleratedFall(clamp01((tTunnel - 0.06) / 0.64)) * (1 - inBlueDive);
-          ay -= descent * 0.34;
-          az -= descent * 1.42;
+          ay -= descent * 0.42;
+          az -= descent * 1.72;
           const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
           const trussRz = intoCurl * (-1.15 - tTunnel * 3.1);
           const vortexSpiral = smoothstep(0.42, 0.78, tTunnel) * (1 - inBlueDive);
