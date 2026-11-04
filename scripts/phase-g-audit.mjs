@@ -46,7 +46,7 @@ export const VIEWPORTS = [
 export const INTERMEDIATE_VIEWPORT = { name: "1024x768", width: 1024, height: 768, isMobile: false };
 
 /**
- * Complete 36-state specification covering ALL 22 canonical routes + full scroll & interactive states:
+ * Complete 37-state specification covering ALL 20 current canonical routes + full scroll & interactive states:
  *   - 11 Homepage states (`/`, top -> reel -> featured -> goal intro -> astronaut closeup -> mid shatter -> astronaut float -> end CTA -> footer portal -> menu -> modal)
  *   - 4 About states (`/about`, hero 3D terrain -> team 8192-particle portrait -> clients & awards -> area of expertise)
  *   - 2 Projects archive states (`/projects`, top header + cards -> mid-archive scroll)
