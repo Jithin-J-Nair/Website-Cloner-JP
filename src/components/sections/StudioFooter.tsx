@@ -193,7 +193,7 @@ export function StudioFooter({
       <footer
         id="footer-section"
         ref={footerRef}
-        className="relative z-[32] flex min-h-[728px] flex-col justify-between bg-[#ffffff] px-[var(--base-padding-x)] pt-32 pb-8 text-[clamp(0.875rem,1vw,1.1rem)] text-[#000000] md:min-h-[472px] md:pt-28 md:pb-8"
+        className="relative z-[32] flex min-h-[728px] flex-col justify-between bg-[#ffffff] px-[var(--base-padding-x)] pt-32 pb-8 text-[clamp(0.875rem,1vw,1.1rem)] text-[#000000] md:min-h-[472px] md:pt-40 md:pb-8"
       >
         {/* Subtle Curved Top Edge Crest (`#footer-bg`) */}
         <div
