@@ -151,6 +151,11 @@ try {
       const clients = page.locator('#about-clients');
       const clientsTop = await clients.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       await seekY(clientsTop);
+      await page.waitForFunction(() => {
+        const firstSets = [...document.querySelectorAll('#about-clients .about-client-marquee-set:not([aria-hidden="true"])')];
+        const images = firstSets.flatMap(set => [...set.querySelectorAll('img')]);
+        return images.length === 16 && images.every(image => image.complete && image.naturalWidth > 0);
+      }, null, { timeout: 20000 });
       const logoState = await clients.evaluate(section => {
         const firstSets = [...section.querySelectorAll('.about-client-marquee-set:not([aria-hidden="true"])')];
         const images = firstSets.flatMap(set => [...set.querySelectorAll('img')]);
