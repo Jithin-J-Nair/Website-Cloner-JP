@@ -828,6 +828,7 @@ export function HeroCrossesStage() {
           }
           const min=0.342*(meshes[i].scale.x+meshes[j].scale.x);
           if(best>=min*min) continue;
+          closestArmContact(starts[i][ia],ends[i][ia],starts[j][ib],ends[j][ib],cpA,cpB);
           const dist=Math.sqrt(Math.max(best,1e-10)),depth=min-dist;
           if(depth<=0) continue;
           normal.subVectors(cpB,cpA);
