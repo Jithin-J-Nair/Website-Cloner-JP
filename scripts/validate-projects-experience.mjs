@@ -78,11 +78,12 @@ try {
       await main.waitFor({ state: "attached" });
       await page.waitForTimeout(90);
 
-      const state = await main.evaluate(element => {
+      const state = await main.evaluate((element, expectedLaunchLabel) => {
         const heading = element.querySelector("h1");
         const next = element.querySelector("#project-next a");
+        const launchLabel = expectedLaunchLabel;
         const launch = [...element.querySelectorAll("a,button,[data-launch-unavailable]")]
-          .find(node => node.textContent?.trim().toLowerCase().includes("launch project"));
+          .find(node => node.textContent?.trim().toLowerCase().includes(launchLabel.toLowerCase()));
         const firstStage = element.querySelector(":scope > section");
         const stickyColumn = firstStage?.querySelector(":scope > div:first-child");
         const media = [...element.querySelectorAll("figure, video, div[role='button'] > img")];
@@ -102,7 +103,7 @@ try {
           hasFooter: !!element.querySelector("#footer-section"),
           overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
         };
-      });
+      }, project.launchCta?.label || "Launch Project");
 
       assert.ok(state.title, `project heading is present: ${project.id}`);
       assert.equal(state.nextHref, project.nextProject.href, `next-project chain matches live order: ${project.id}`);
