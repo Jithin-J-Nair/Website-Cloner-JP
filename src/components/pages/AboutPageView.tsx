@@ -1235,13 +1235,11 @@ function AboutWhoExperience({
               type="button"
               onClick={() => onStepMember(1)}
               aria-label="Next team member"
-              className="pointer-events-auto flex h-36 w-36 cursor-pointer items-center justify-center rounded-full bg-[#223aff] text-center font-sans text-xs font-medium uppercase tracking-[0.06em] text-white shadow-[0_14px_44px_rgba(34,58,255,0.5)] transition-transform duration-300 hover:scale-105 min-[820px]:h-[154px] min-[820px]:w-[154px]"
+              title="Next team member"
+              className="pointer-events-auto flex h-[4.75rem] w-[4.75rem] cursor-pointer items-center justify-center rounded-full border border-white/25 bg-[#223aff]/90 text-center font-sans text-xs font-medium uppercase tracking-[0.06em] text-white shadow-[0_8px_28px_rgba(34,58,255,0.34)] backdrop-blur-sm transition-[transform,background-color,box-shadow] duration-300 ease-out hover:scale-105 hover:bg-[#3049ff] hover:shadow-[0_12px_34px_rgba(34,58,255,0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white min-[820px]:h-[5.25rem] min-[820px]:w-[5.25rem]"
             >
-              <span className="hidden text-3xl font-light leading-none min-[820px]:inline">
+              <span className="text-2xl font-light leading-none" aria-hidden="true">
                 &rarr;
-              </span>
-              <span className="px-3 leading-snug min-[820px]:hidden">
-                {LUSION_ABOUT.who.mobileSwipeHint}
               </span>
             </button>
           </div>
