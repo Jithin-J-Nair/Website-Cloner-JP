@@ -146,8 +146,8 @@ try {
       const clientsTop = await clients.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       await seekY(clientsTop);
       const logoState = await clients.evaluate(section => {
-        const firstSet = section.querySelector('.about-client-marquee-set:not([aria-hidden="true"])');
-        const images = firstSet ? [...firstSet.querySelectorAll('img')] : [];
+        const firstSets = [...section.querySelectorAll('.about-client-marquee-set:not([aria-hidden="true"])')];
+        const images = firstSets.flatMap(set => [...set.querySelectorAll('img')]);
         const track = section.querySelector('.about-client-marquee-track');
         return {
           count: images.length,
