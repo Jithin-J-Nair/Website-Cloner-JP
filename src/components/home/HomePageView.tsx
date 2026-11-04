@@ -676,7 +676,7 @@ export function HomePageView() {
       </section>
 
       {/* =====================================================================
-          3. FEATURED WORK SECTION (`#home-featured` — 12 Verified Projects)
+          3. FEATURED WORK SECTION (`#home-featured` — 10 Current Projects)
          ===================================================================== */}
       <section
         id="home-featured"
