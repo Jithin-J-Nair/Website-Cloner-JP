@@ -795,7 +795,7 @@ export function HeroCrossesStage() {
         pointerUp.setFromMatrixColumn(camera.matrixWorld,1).normalize();
         // Pointer velocity is in normalized screen units/second. Convert it into
         // camera-plane world velocity before feeding it to the local body impulse.
-        const halfHeight=Math.tan(THREE.MathUtils.degToRad(camera.fov*0.5))*camera.position.distanceTo(new THREE.Vector3(0,0,0));
+        const halfHeight=Math.tan(THREE.MathUtils.degToRad(camera.fov*0.5))*camera.position.length();
         const halfWidth=halfHeight*camera.aspect;
         pointerSweep.copy(pointerRight).multiplyScalar(ptr.vx*halfWidth*0.82)
           .addScaledVector(pointerUp,ptr.vy*halfHeight*0.82);
