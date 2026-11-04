@@ -26,7 +26,7 @@ export function ProjectsArchiveView() {
 
   return (
     <main id="projects" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
-      <section className="px-[var(--base-padding-x)] pt-28 pb-20 min-[813px]:pt-[29vh] min-[813px]:pb-28">
+      <section className="px-[var(--base-padding-x)] pt-28 pb-20 min-[813px]:pt-[28vh] min-[813px]:pb-28">
         {/* Monumental `PROJECTS` Header Band with `19` Count + `↘` Arrow */}
         <div className="flex items-stretch justify-between gap-4">
           <h1
