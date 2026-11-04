@@ -706,7 +706,7 @@ export function HomePageView() {
           </p>
         </div>
 
-        {/* 12 Verified Lusion Featured Projects Grid (`.project-list`) */}
+        {/* 10 Current Lusion Featured Projects Grid (`.project-list`) */}
         <div className="project-list relative col-span-6 grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:col-span-12 min-[813px]:mt-[calc(var(--vh,1vh)*8)] min-[813px]:grid-cols-12">
           {LUSION_HOME.featured.projects.map((project, idx) => (
             <FeaturedProjectCard key={project.id} project={project} index={idx} />
