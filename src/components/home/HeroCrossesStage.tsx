@@ -817,7 +817,7 @@ export function HeroCrossesStage() {
         angularVelocities.forEach(v=>v.set(0,0,0));
       }
       const physicsFrame = isReduced
-        ? {collisions:0,influencedPieces:0,interactionEnergy:0,kineticEnergy:0,maxTravel:0}
+        ? {collisions:0,influencedPieces:0,interactionEnergy:0,kineticEnergy:0,maxTravel:0,meanRadius:0}
         : physics.step(dt,now*0.001,ptr.active?pointerRay.ray:null,pointerSweep);
       ptr.vx*=Math.exp(-4.5*dt);
       ptr.vy*=Math.exp(-4.5*dt);
@@ -853,6 +853,7 @@ export function HeroCrossesStage() {
       container.dataset.physicsActive = String(!isReduced);
       container.dataset.kineticEnergy = physicsFrame.kineticEnergy.toFixed(5);
       container.dataset.maxTravel = physicsFrame.maxTravel.toFixed(4);
+      container.dataset.meanRadius = physicsFrame.meanRadius.toFixed(4);
       const elapsedFrameMs = performance.now() - frameStart;
       container.dataset.renderCount = String(++renderCount);
       container.dataset.frameCpuMs = elapsedFrameMs.toFixed(2);
