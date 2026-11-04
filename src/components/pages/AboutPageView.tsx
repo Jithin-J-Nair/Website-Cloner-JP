@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
 import { aboutScenePose, aboutWordmarkSweepPose } from "@/lib/about-scene-motion";
+import { buildSculpturalPortraitPositions } from "@/lib/about-portrait-geometry";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
@@ -28,78 +29,6 @@ const smoothstep = (e0: number, e1: number, x: number) => {
   const t = clamp01((x - e0) / Math.max(1e-5, e1 - e0));
   return t * t * (3 - 2 * t);
 };
-
-/** Original deterministic generic portrait study; not the likeness of a named
- * team member and not decoded from captured/restricted models. */
-function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Float32Array {
-  const out = new Float32Array(count * 3);
-  let seed = (memberIndex * 2654435761 + 1013904223) >>> 0;
-  const rnd = () => {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 4294967296;
-  };
-
-  const yawTurn = ((memberIndex % 3) - 1) * 0.18;
-  const jawWidth = 0.98 + (memberIndex % 4) * 0.045;
-  const hairCrown = 1.02 + (memberIndex % 3) * 0.045;
-
-  let written = 0;
-  let guard = 0;
-  while (written < count && guard < count * 18) {
-    guard++;
-    const u = rnd() * 2 - 1;
-    const v = rnd() * 2 - 1;
-
-    // Cranium + jawline + neck & shoulders silhouette
-    const inHead =
-      Math.hypot(u / (0.56 * jawWidth * (1 - Math.max(0, -v - 0.05) * 0.34)), (v - 0.18) / (0.68 * hairCrown)) <=
-      1.0;
-    const inNeck = Math.abs(u) < 0.22 && v > -0.58 && v < -0.25;
-    const inShoulders =
-      v <= -0.44 &&
-      v >= -1.0 &&
-      Math.abs(u) < 0.24 + smoothstep(-0.44, -0.95, v) * 0.78;
-
-    if (!inHead && !inNeck && !inShoulders) continue;
-
-    let z = 0;
-    if (inHead) {
-      const hu = u / (0.56 * jawWidth);
-      const hv = (v - 0.18) / (0.68 * hairCrown);
-      const sphereZ = Math.sqrt(Math.max(0, 1 - hu * hu - hv * hv)) * 0.56;
-      // Brow ridge, nose bridge, orbital hollows & cheekbones
-      const nose =
-        Math.exp(-Math.pow(u / 0.085, 2) - Math.pow((v - 0.14) / 0.22, 2)) * 0.16;
-      const eyes =
-        -Math.exp(-Math.pow((Math.abs(u) - 0.17) / 0.09, 2) - Math.pow((v - 0.24) / 0.065, 2)) *
-        0.075;
-      const lips =
-        Math.exp(-Math.pow(u / 0.14, 2) - Math.pow((v + 0.08) / 0.045, 2)) * 0.045;
-      z = sphereZ + nose + eyes + lips;
-    } else if (inNeck) {
-      z = Math.sqrt(Math.max(0, 0.062 - u * u)) * 1.1;
-    } else {
-      z = Math.cos(u * 1.35) * 0.34 + 0.04;
-    }
-
-    // Apply slight 3/4 portrait turn
-    // The previous study read as a narrow vertical plume behind the change orb.
-    // Widen the cranial/shoulder envelope and lower its height so the portrait reads
-    // as a human-scale bust with visible lateral volume around the central control.
-    const px = u * 1.92;
-    const py = v * 1.40;
-    const pz = z * 1.48;
-    const rx = px * Math.cos(yawTurn) + pz * Math.sin(yawTurn);
-    const rz = -px * Math.sin(yawTurn) + pz * Math.cos(yawTurn);
-
-    out[written * 3] = rx;
-    out[written * 3 + 1] = py;
-    out[written * 3 + 2] = rz;
-    written++;
-  }
-
-  return out;
-}
 
 /** Native Three.js sticky world. Retains local legacy scroll coordinates for
  * camera/DOM choreography; original shader filament flow and sculptural studies.
@@ -759,7 +688,7 @@ function AboutWhoExperience({
         portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, .12);
         portraitPoints.rotation.z = 0;
         portraitPoints.position.set(
-          camera.position.x + (isMobile ? -0.10 : -0.15),
+          camera.position.x + (isMobile ? -0.12 : -0.48),
           camera.position.y - (isMobile ? 2.65 : 2.55),
           camera.position.z - 5.8
         );
@@ -1198,21 +1127,28 @@ function AboutWhoExperience({
                       aria-label={`Select ${member.name}`}
                       aria-pressed={idx === activeMemberIdx}
                       onClick={() => onSelectMember(idx)}
-                      className={`h-2 w-2 rounded-full transition-transform ${
-                        idx === activeMemberIdx
-                          ? "scale-125 bg-white"
-                          : "bg-white/40 hover:bg-white/80"
-                      }`}
-                    />
+                      className="grid h-6 w-6 place-items-center rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-0 focus-visible:outline-white"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`block h-2 w-2 rounded-full transition-transform ${
+                          idx === activeMemberIdx
+                            ? "scale-125 bg-white"
+                            : "bg-white/40 hover:bg-white/80"
+                        }`}
+                      />
+                    </button>
                   ))}
                   {team.map((member, idx) => (
                     <span
                       key={`${member.id}-row2`}
                       aria-hidden="true"
-                      className={`h-1.5 w-1.5 rounded-full ${
+                      className="grid h-6 w-6 place-items-center"
+                    >
+                      <span className={`h-1.5 w-1.5 rounded-full ${
                         idx === activeMemberIdx ? "bg-white/90" : "bg-white/30"
-                      }`}
-                    />
+                      }`} />
+                    </span>
                   ))}
                 </div>
 
@@ -1227,21 +1163,6 @@ function AboutWhoExperience({
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Dead-Center Royal-Blue `#223aff` Interactive Specialist Advance Orb (`→` / `SWIPE TO CHANGE`) */}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <button
-              type="button"
-              onClick={() => onStepMember(1)}
-              aria-label="Next team member"
-              title="Next team member"
-              className="pointer-events-auto flex h-[4.75rem] w-[4.75rem] cursor-pointer items-center justify-center rounded-full border border-white/25 bg-[#223aff]/90 text-center font-sans text-xs font-medium uppercase tracking-[0.06em] text-white shadow-[0_8px_28px_rgba(34,58,255,0.34)] backdrop-blur-sm transition-[transform,background-color,box-shadow] duration-300 ease-out hover:scale-105 hover:bg-[#3049ff] hover:shadow-[0_12px_34px_rgba(34,58,255,0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white min-[820px]:h-[5.25rem] min-[820px]:w-[5.25rem]"
-            >
-              <span className="text-2xl font-light leading-none" aria-hidden="true">
-                &rarr;
-              </span>
-            </button>
           </div>
 
           {/* Bottom Specialist Bio Left + Translucent Specialist Monogram + Studio Copy Right */}

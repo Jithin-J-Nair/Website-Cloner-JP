@@ -135,16 +135,18 @@ try {
         return probe && probe.u > 7 && document.querySelector('#about-who-team-name');
       }, null, { timeout: 15000 });
       const originalMember = (await page.locator('#about-who-team-name').textContent())?.trim();
-      const advanceControl = await page.getByRole('button', { name: 'Next team member' }).evaluate(button => {
+      const memberSelector = page.getByRole('button', { name: 'Select Ffion Morgan' });
+      const selectorControl = await memberSelector.evaluate(button => {
         const rect = button.getBoundingClientRect();
-        return { width: rect.width, height: rect.height, visible: getComputedStyle(button).visibility !== 'hidden' };
+        return { width: rect.width, height: rect.height, visible: button.getClientRects().length > 0 };
       });
-      assert.ok(advanceControl.visible);
-      assert.ok(advanceControl.width <= 90 && advanceControl.height <= 90, 'team navigation must not cover the point-cloud portrait');
-      await page.getByRole('button', { name: 'Select Ffion Morgan' }).click();
+      assert.ok(selectorControl.visible);
+      assert.ok(selectorControl.width >= 24 && selectorControl.height >= 24, 'each visible team selector must have a usable 24px hit target');
+      assert.equal(await page.getByRole('button', { name: 'Next team member' }).count(), 0, 'the reference scene has no central next-member orb over the portrait');
+      await memberSelector.click();
       await page.waitForFunction(() => document.querySelector('#about-who-team-name')?.textContent?.trim() === 'Ffion Morgan', null, { timeout: 5000 });
       assert.notEqual(originalMember, 'Ffion Morgan', 'team selector changes the active member');
-      let teamInteraction = { originalMember, selectedMember: 'Ffion Morgan', advanceControl };
+      let teamInteraction = { originalMember, selectedMember: 'Ffion Morgan', selectorControl, centeredAdvanceOrb: false };
       if (width !== 390) {
         await page.mouse.move(width * .95, height * .46);
         await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 0) > .07, null, { timeout: 5000 });
