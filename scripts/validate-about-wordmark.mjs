@@ -74,6 +74,11 @@ try {
       await seek(0);
       await page.screenshot({ path: `${out}/${width}-opening.png`, fullPage: false, timeout: 120000 });
       await seek(width === 390 ? 2.8 : 1.6);
+      const atValley = await inspect();
+      if (width !== 390) {
+        assert.ok(atValley.opacity < 0.005, 'desktop sweep clears before the settled two-sided valley manifesto');
+        assert.equal(atValley.visibility, 'hidden');
+      }
       await page.screenshot({ path: `${out}/${width}-basin.png`, fullPage: false, timeout: 120000 });
       await seek(peak);
       const atPeak = await inspect();
@@ -317,7 +322,7 @@ try {
 
       assert.deepEqual(errors, [], 'no uncaught browser errors');
       fs.writeFileSync(`${out}/${width}.json`, JSON.stringify({
-        width, height, peak, end, atPeak, atExit, onReverse, probeAtPeak, probeOnReverse,
+        width, height, peak, end, atValley, atPeak, atExit, onReverse, probeAtPeak, probeOnReverse,
         cardFrames, cta: { count: ctaBase.count, draws: ctaBase.draws, triangles: ctaBase.triangles, ...ctaInteraction }, errors,
       }, null, 2));
       console.log(`PASS About production checks at ${width}x${height}: wordmark, expertise deck, CTA budget/pointer and no browser errors.`);
