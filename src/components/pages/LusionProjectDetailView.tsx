@@ -253,6 +253,22 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
 
   const renderLaunchCta = () => {
     if (!project.launchCta) return null;
+    if (!project.launchCta.href?.trim() && !project.launchCta.isVimeoOverlay) {
+      // The current reference capture exposes this CTA label but no destination.
+      // Preserve the visible pill without turning an empty href into a self-link.
+      return (
+        <span
+          role="note"
+          aria-label={`${project.launchCta.label} — destination unavailable in the reference data`}
+          data-launch-unavailable="true"
+          className="inline-flex h-12 items-center gap-3.5 rounded-full px-7 font-sans text-xs font-medium tracking-[0.05em] uppercase shadow-[0_10px_28px_rgba(0,0,0,0.08)]"
+          style={{ backgroundColor: pillBg, color: pillText }}
+        >
+          <span className="h-2 w-2 rounded-full bg-current" />
+          <span>{project.launchCta.label}</span>
+        </span>
+      );
+    }
     if (project.launchCta.isVimeoOverlay) {
       return (
         <button
