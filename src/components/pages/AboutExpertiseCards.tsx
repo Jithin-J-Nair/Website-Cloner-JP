@@ -87,7 +87,9 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
       cards.forEach((_, i) => {
         const pose = expertiseCardPose(p, i), slot = slotRefs.current[i], flip = flipRefs.current[i];
         if (slot) {
-          slot.style.transform = cinematic ? `translate3d(${pose.xVw}vw,calc(-50% + ${pose.dropVh}vh),${pose.z}px) rotateZ(${pose.roll}deg)` : "";
+          slot.style.transform = cinematic
+            ? `translate3d(${pose.xVw}vw,calc(-50% + ${pose.dropVh}vh),${pose.z}px) rotateZ(${pose.roll}deg) rotateY(${pose.yaw}deg) rotateX(${pose.pitch}deg) scale(${pose.scale})`
+            : "";
           slot.style.opacity = String(pose.opacity);
         }
         if (flip) flip.style.transform = `rotateY(${pose.flip}deg)`;
