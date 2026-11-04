@@ -10,13 +10,22 @@ const ease = (start: number, end: number, value: number) => {
 export function expertiseCardPose(progress: number, index: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
   const i = Number.isFinite(index) ? Math.max(0, Math.min(3, Math.round(index))) : 0;
-  const spread = ease(.16, .64, p);
+
+  // Each card peels away from the shared deck on its own short scroll interval.
+  // This makes the first view read as one object, then resolves into four faces.
+  const release = ease(.12 + i * .024, .62 + i * .018, p);
+  const lift = ease(.08 + i * .012, .54 + i * .016, p);
+  const flip = ease(.32 + i * .035, .72 + i * .035, p);
+
   return {
-    xVw: spread === 1 ? 0 : (1.5 - i) * 23 * (1 - spread),
-    dropVh: 32 * (1 - ease(.08, .55, p)),
-    z: spread === 1 || i === 0 ? 0 : -i * 3 * (1 - spread),
-    roll: spread === 1 ? 0 : (i - 1.5) * 1.2 * (1 - spread),
-    flip: 180 * (1 - ease(.32 + i * .035, .72 + i * .035, p)),
+    xVw: (1.5 - i) * 23 * (1 - release),
+    dropVh: 36 * (1 - lift),
+    z: -i * 4.5 * (1 - release),
+    roll: (i - 1.5) * 2.6 * (1 - release),
+    yaw: (1.5 - i) * 9 * (1 - release),
+    pitch: -5 * (1 - release),
+    scale: .94 + .06 * release,
+    flip: 180 * (1 - flip),
     opacity: i === 0 ? 1 : ease(.1, .3, p),
   };
 }
