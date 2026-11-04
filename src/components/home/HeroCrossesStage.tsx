@@ -780,6 +780,11 @@ export function HeroCrossesStage() {
       const rawDt = Math.max(0.0005, (now - prevTime) * 0.001);
       prevTime = now;
       const dt = Math.min(rawDt, 0.05);
+      // Lenis transforms the page; confirm actual viewport intersection from the live
+      // client rect so the free-body clock doesn't accidentally sleep while the hero is visible.
+      const liveRect=container.getBoundingClientRect();
+      inView=liveRect.bottom>0 && liveRect.top<window.innerHeight &&
+        liveRect.right>0 && liveRect.left<window.innerWidth;
 
       // Pause RAF completely when scrolled off-screen after preloader settles (0% off-screen CPU/GPU!)
       if (!inView && preloaderDoneRef.current && staticRendered && !needsRender) {
@@ -812,7 +817,7 @@ export function HeroCrossesStage() {
         angularVelocities.forEach(v=>v.set(0,0,0));
       }
       const physicsFrame = isReduced
-        ? {collisions:0,influencedPieces:0,interactionEnergy:0}
+        ? {collisions:0,influencedPieces:0,interactionEnergy:0,kineticEnergy:0,maxTravel:0}
         : physics.step(dt,now*0.001,ptr.active?pointerRay.ray:null,pointerSweep);
       ptr.vx*=Math.exp(-4.5*dt);
       ptr.vy*=Math.exp(-4.5*dt);
@@ -846,6 +851,8 @@ export function HeroCrossesStage() {
       container.dataset.clusterPieces = String(meshes.length);
       container.dataset.physicsCollisions = String(collisionCount);
       container.dataset.physicsActive = String(!isReduced);
+      container.dataset.kineticEnergy = physicsFrame.kineticEnergy.toFixed(5);
+      container.dataset.maxTravel = physicsFrame.maxTravel.toFixed(4);
       const elapsedFrameMs = performance.now() - frameStart;
       container.dataset.renderCount = String(++renderCount);
       container.dataset.frameCpuMs = elapsedFrameMs.toFixed(2);
