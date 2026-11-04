@@ -399,7 +399,7 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
                 isHeroDesktop={true}
                 onOpenModal={openMediaModal}
               />
-              {/* Bottom-Right `SCROLL TO EXPLORE >>` Indicator matching `12-01..12-19` desktop captures */}
+              {/* Bottom-Right `SCROLL TO EXPLORE >>` Indicator matching `12-01..12-17` desktop captures */}
               <div className="mt-5 flex justify-end max-[812px]:hidden min-[813px]:pr-[var(--base-padding-x)]">
                 <span
                   style={{ color: highlight }}
