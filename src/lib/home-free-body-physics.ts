@@ -104,6 +104,7 @@ export class HomeConnectorPhysics {
     while(this.accumulator>=this.stepSize && steps<6) {
       const h=this.stepSize;
       const time=timeSeconds+(steps*h);
+      this.interactionEnergy*=Math.exp(-0.9*h);
       // Free flight, light gravity and a shared soft attractor. The restoring force
       // grows only after a body leaves the loose cluster; it never targets a slot.
       for(let i=0;i<this.meshes.length;i++) {
@@ -240,7 +241,6 @@ export class HomeConnectorPhysics {
       steps++;
     }
 
-    if(!pointerRay) this.interactionEnergy*=Math.exp(-2.2*frameDt);
     if(this.interactionEnergy<0.00001) this.interactionEnergy=0;
     for(let i=0;i<this.meshes.length;i++) this.meshes[i].position.copy(this.positions[i]);
     return {
