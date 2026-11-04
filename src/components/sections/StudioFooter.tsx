@@ -166,12 +166,17 @@ export function StudioFooter({
     };
   }, [navigateNextChapter, pathname, reducedMotion]);
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim() || !email.includes("@")) {
+    const input = e.currentTarget.elements.namedItem("EMAIL");
+    if (!(input instanceof HTMLInputElement) || !input.checkValidity()) {
       setStatus("error");
+      input instanceof HTMLInputElement && input.focus();
       return;
     }
+    // The reference page's newsletter endpoint is not available in this clean-room
+    // reconstruction. Keep the local acknowledgement explicit; never imply a
+    // remote subscription was stored.
     soundEngine.playClick();
     setStatus("saved");
     setEmail("");
@@ -308,6 +313,11 @@ export function StudioFooter({
                 <input
                   id="footer-newsletter-input-field"
                   type="email"
+                  name="EMAIL"
+                  required
+                  autoComplete="email"
+                  aria-invalid={status === "error"}
+                  aria-describedby={status !== "idle" ? "footer-newsletter-feedback-message" : undefined}
                   name="EMAIL"
                   value={email}
                   onChange={(e) => {
