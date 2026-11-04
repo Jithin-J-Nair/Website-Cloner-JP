@@ -10,10 +10,27 @@ const page = fs.readFileSync("src/components/pages/ProjectsArchiveView.tsx", "ut
 const card = fs.readFileSync("src/components/home/FeaturedProjectCard.tsx", "utf8");
 const detail = fs.readFileSync("src/components/pages/LusionProjectDetailView.tsx", "utf8");
 
+const expectedArchiveIds = [
+  "oryzo_ai", "of_the_oak", "devin_ai", "porsche_dream_machine", "synthetic_human",
+  "ddd_2024", "spaace", "choo_choo_world", "zero_tech", "spatial_fusion",
+  "worldcoin", "lusion_labs", "my_little_story_book", "soda_experience",
+  "infinite_passerella", "the_turn_of_the_screw", "maxmara_bearings_gifts",
+];
+const expectedFeaturedIds = [
+  "oryzo_ai", "of_the_oak", "devin_ai", "porsche_dream_machine", "synthetic_human",
+  "spatial_fusion", "spaace", "ddd_2024", "choo_choo_world", "soda_experience",
+];
+
 assert.equal(archive.heading, "PROJECTS");
-assert.equal(Number(archive.displayedCount), projects.length, "archive count matches its rendered project entries");
-assert.equal(details.length, projects.length, "every archive entry has a detail route");
+assert.equal(Number(archive.displayedCount), 17, "live archive displays 17 projects");
+assert.equal(archive.count, 17);
+assert.deepEqual(projects.map(project => project.id), expectedArchiveIds, "archive order matches current Lusion");
+assert.equal(details.length, projects.length, "every current archive entry has a detail route");
+assert.equal(source.routeCount, 20);
+assert.deepEqual(source.routes.filter(route => route.type === "project-detail").map(route => route.projectId), expectedArchiveIds);
 assert.equal(new Set(projects.map(project => project.id)).size, projects.length, "archive IDs are unique");
+assert.equal(source.home.featured.count, 10, "live Home Featured Work displays 10 items");
+assert.deepEqual(source.home.featured.projects.map(project => project.id), expectedFeaturedIds, "Home Featured Work matches current Lusion order");
 
 const byId = new Map(details.map(project => [project.id, project]));
 for (const project of projects) {
