@@ -142,7 +142,8 @@ export class HomeConnectorPhysics {
         }
 
         const maxSpeed=12.5;
-        if(v.length()>maxSpeed) v.setLength(maxSpeed);\n        p.addScaledVector(v,h);
+        if(v.length()>maxSpeed) v.setLength(maxSpeed);
+        p.addScaledVector(v,h);
         const speed=w.length();
         if(speed>1e-5) {
           this.axis.copy(w).multiplyScalar(1/speed);
