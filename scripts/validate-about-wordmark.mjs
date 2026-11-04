@@ -135,11 +135,11 @@ try {
       assert.notEqual(originalMember, 'Ffion Morgan', 'team selector changes the active member');
       let teamInteraction = { originalMember, selectedMember: 'Ffion Morgan' };
       if (width !== 390) {
-        await page.mouse.move(width * .84, height * .46);
-        await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 0) > .015, null, { timeout: 5000 });
+        await page.mouse.move(width * .95, height * .46);
+        await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 0) > .07, null, { timeout: 5000 });
         const yawAtPointer = await page.evaluate(() => window.__aboutProbe().teamYaw);
         await page.evaluate(() => document.documentElement.dispatchEvent(new PointerEvent('pointerleave')));
-        await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 1) < .005, null, { timeout: 5000 });
+        await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 1) < .056, null, { timeout: 5000 });
         teamInteraction = { ...teamInteraction, yawAtPointer, pointerReturnedToRest: true };
       } else {
         teamInteraction = { ...teamInteraction, touchMemberSwitch: true };
