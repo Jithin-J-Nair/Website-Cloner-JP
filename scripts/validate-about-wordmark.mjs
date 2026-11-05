@@ -32,6 +32,8 @@ try {
       const unit = width === 390 ? height : width;
       const peak = width === 390 ? 2.45 : 1.25;
       const end = width === 390 ? 3.45 : 2.35;
+      const who = page.locator('#about-who');
+      const whoTop = await who.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       const mark = page.locator('[data-about-wordmark-sweep]');
       assert.equal(await mark.count(), 1, 'one semantic-hidden curved wordmark layer must be mounted');
 
@@ -39,7 +41,7 @@ try {
         await page.evaluate(y => {
           window.__lenis?.scrollTo(y, { immediate: true });
           window.scrollTo({ top: y, behavior: 'instant' });
-        }, unit * progress);
+        }, whoTop + unit * progress);
         await page.waitForTimeout(500);
       };
       // Absolute document-Y navigation is separate from the normalized wordmark
@@ -83,7 +85,10 @@ try {
       await page.screenshot({ path: `${out}/${width}-basin.png`, fullPage: false, timeout: 120000 });
       await seek(peak);
       const atPeak = await inspect();
-      assert.ok(atPeak.opacity > 0.99, 'wordmark must reach full opacity at the valley beat');
+      const probeAtPeak = await page.evaluate(() => window.__aboutProbe?.());
+      assert.ok(Math.abs((probeAtPeak?.u ?? -10) - peak) < 0.025,
+        `wordmark peak seek must land at About playhead u=${peak}; observed ${probeAtPeak?.u}`);
+      assert.ok(atPeak.opacity > 0.99, `wordmark must reach full opacity at u=${peak}; observed ${atPeak.opacity}`);
       if (width === 390) {
         const handoff = await page.evaluate(() => {
           const opening = document.querySelector('[data-about-opening-wordmark]');
@@ -109,7 +114,6 @@ try {
       assert.ok(atPeak.pathLength > 1000, 'the active sweep path must be a genuine long curve');
       assert.ok(width === 390 ? atPeak.fontSize <= 240 : atPeak.fontSize >= 380, 'responsive mark uses the correct glyph scale');
       assert.ok(atPeak.stage.width <= width + 1 && atPeak.stage.height <= height, 'responsive sweep remains within the viewport stage');
-      const probeAtPeak = await page.evaluate(() => window.__aboutProbe?.());
       await page.screenshot({ path: `${out}/${width}-peak.png`, fullPage: false, timeout: 120000 });
 
       await seek(end);
@@ -128,8 +132,6 @@ try {
 
       // Team hologram: select a different member and prove the pointer-driven portrait
       // responds, then returns to centre when the pointer leaves the viewport.
-      const who = page.locator('#about-who');
-      const whoTop = await who.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       await seekY(whoTop + unit * 7.2);
       await page.waitForFunction(() => {
         const probe = window.__aboutProbe?.();
