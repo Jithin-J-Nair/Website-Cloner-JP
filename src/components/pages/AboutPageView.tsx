@@ -58,8 +58,6 @@ function AboutWhoExperience({
   const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
   const portraitCountRef = useRef(8192);
-  const onStepMemberRef = useRef(onStepMember);
-  onStepMemberRef.current = onStepMember;
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
@@ -102,7 +100,7 @@ function AboutWhoExperience({
         timeoutId = window.setTimeout(() => {
           timeoutId = 0;
           if (!document.hidden && teamOverlayRef.current?.dataset.teamActive === "true") {
-            onStepMemberRef.current(1);
+            onStepMember(1);
           }
         }, 4800);
       }
@@ -119,7 +117,7 @@ function AboutWhoExperience({
       document.removeEventListener("visibilitychange", onVisibility);
       clearAdvance();
     };
-  }, [activeMemberIdx, reducedMotion]);
+  }, [activeMemberIdx, onStepMember, reducedMotion]);
 
   // Original, non-likeness portrait study. A member change interpolates from
   // the currently visible point positions, so rapid selections remain interruptible.
