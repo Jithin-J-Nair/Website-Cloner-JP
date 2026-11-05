@@ -572,7 +572,7 @@ body {
 /* About: observed playing-card composition, not an unrelated diagram gallery.
    CSS 3D keeps service text selectable and needs no second WebGL renderer. */
 .about-playing-expertise {
-  --about-expertise-blue: #3833e8;
+  --about-expertise-blue: #353DEF;
   position: relative;
   color: #fafafa;
   background: var(--about-expertise-blue);

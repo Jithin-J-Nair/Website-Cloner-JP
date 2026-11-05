@@ -21,13 +21,15 @@ export function expertiseCardPose(progress: number, index: number) {
   const settled = (value: number) => value * remaining || 0;
 
   return {
-    xVw: settled((1.5 - i) * 23),
-    dropVh: 36 * (1 - lift),
-    z: settled(-i * 4.5),
-    roll: settled((i - 1.5) * 2.6),
-    yaw: settled((1.5 - i) * 9),
-    pitch: settled(-5),
-    scale: .94 + .06 * release,
+    // The backs begin as one readable fan around centre, then settle into
+    // their four authored columns as the scroll playhead approaches the fronts.
+    xVw: settled((1.5 - i) * 8),
+    dropVh: 22 * (1 - lift),
+    z: settled(-i * 2.4),
+    roll: settled((i - 1.5) * 8),
+    yaw: settled((1.5 - i) * 6),
+    pitch: settled(-3),
+    scale: .92 + .08 * release,
     flip: 180 * (1 - flip),
     opacity: i === 0 ? 1 : ease(.1, .3, p),
   };
@@ -35,5 +37,5 @@ export function expertiseCardPose(progress: number, index: number) {
 
 export function expertiseHeadingPose(progress: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
-  return { opacity: 1 - ease(.12, .36, p), yVh: -38 * ease(.1, .42, p) };
+  return { opacity: 1 - ease(.82, .98, p), yVh: -16 * ease(.82, 1, p) };
 }

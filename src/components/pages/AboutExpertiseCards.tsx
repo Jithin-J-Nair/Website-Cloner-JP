@@ -81,7 +81,7 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
         headingRef.current.querySelectorAll("button").forEach(button => { button.tabIndex = cinematic && heading.opacity < .01 ? -1 : 0; });
       }
       if (flourishRef.current) {
-        flourishRef.current.style.opacity = cinematic ? String(Math.max(0, (p - .4) / .6)) : ".8";
+        flourishRef.current.style.opacity = cinematic ? String(.38 + .42 * p) : ".8";
         flourishRef.current.style.transform = `translate3d(${(1 - p) * 10}%,0,0)`;
       }
       cards.forEach((_, i) => {
@@ -137,7 +137,7 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
     <section id="about-capability" ref={sectionRef} className="about-playing-expertise" data-reduced={reducedMotion} aria-labelledby="about-expertise-heading">
       <div className="about-expertise-stage">
         <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" fill="none" aria-hidden="true">
-          <path d="M1520-220C1310 12 980 210 978 456c-2 158 226 192 296 294M1300-180c-226 293-304 431-219 588M1526-80c-125 225-145 311-269 442" stroke="currentColor" strokeWidth="23" strokeLinecap="round" />
+          <path d="M-84 824C224 650 420 574 620 382S1020 48 1518-172" stroke="currentColor" strokeWidth="26" strokeLinecap="round" />
         </svg>
         <div ref={headingRef} className="about-expertise-heading">
           <h2 id="about-expertise-heading"><span>AREA OF</span><span>EXPERTISE</span></h2>
