@@ -177,30 +177,46 @@ try {
         const titleRect = title.getBoundingClientRect();
         return { headerBottom: headerRect.bottom, titleTop: titleRect.top, gap: titleRect.top - headerRect.bottom };
       });
-      assert.ok(teamHudClearance && teamHudClearance.gap >= 8, "team HUD title must clear the fixed global header");
+      const teamDebugPath = `${out}/${width}-team-debug.json`;
+      const teamDebug = { viewport: { width, height }, teamHudClearance };
+      fs.writeFileSync(teamDebugPath, JSON.stringify(teamDebug, null, 2));
+      assert.ok(teamHudClearance && teamHudClearance.gap >= 8,
+        `team HUD title must clear the fixed global header; measured ${JSON.stringify(teamHudClearance)}`);
       report.teamHudClearance = teamHudClearance;
       const originalMember = (await page.locator('#about-who-team-name').textContent())?.trim();
+      teamDebug.originalMember = originalMember;
+      fs.writeFileSync(teamDebugPath, JSON.stringify(teamDebug, null, 2));
       const memberSelector = page.getByRole('button', { name: 'Select Ffion Morgan' });
       const selectorControl = await memberSelector.evaluate(button => {
         const rect = button.getBoundingClientRect();
         return { width: rect.width, height: rect.height, visible: button.getClientRects().length > 0 };
       });
-      assert.ok(selectorControl.visible);
-      assert.ok(selectorControl.width >= 24 && selectorControl.height >= 24, 'each visible team selector must have a usable 24px hit target');
+      teamDebug.selectorControl = selectorControl;
+      fs.writeFileSync(teamDebugPath, JSON.stringify(teamDebug, null, 2));
+      assert.ok(selectorControl.visible, `Ffion selector must be visible: ${JSON.stringify(selectorControl)}`);
+      assert.ok(selectorControl.width >= 24 && selectorControl.height >= 24,
+        `team selector must have a 24px hit target: ${JSON.stringify(selectorControl)}`);
       if (width === 390) {
         assert.equal(await page.getByText('Swipe to change', { exact: true }).isVisible(), true, 'mobile team panel exposes its swipe affordance');
       }
       assert.equal(await page.getByRole('button', { name: 'Next team member' }).count(), 0, 'the reference scene has no central next-member orb over the portrait');
       await memberSelector.click();
       await page.waitForFunction(() => document.querySelector('#about-who-team-name')?.textContent?.trim() === 'Ffion Morgan', null, { timeout: 5000 });
-      assert.notEqual(originalMember, 'Ffion Morgan', 'team selector changes the active member');
+      teamDebug.memberAfterClick = (await page.locator('#about-who-team-name').textContent())?.trim();
+      fs.writeFileSync(teamDebugPath, JSON.stringify(teamDebug, null, 2));
+      assert.notEqual(originalMember, 'Ffion Morgan', `team selector must switch away from ${originalMember}`);
       let teamInteraction = { originalMember, selectedMember: 'Ffion Morgan', selectorControl, centeredAdvanceOrb: false };
       if (width !== 390) {
         await page.mouse.move(width * .95, height * .46);
+        await page.mouse.move(width * .95, height * .46);
         await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 0) > .07, null, { timeout: 5000 });
         const yawAtPointer = await page.evaluate(() => window.__aboutProbe().teamYaw);
+        teamDebug.yawAtPointer = yawAtPointer;
+        fs.writeFileSync(teamDebugPath, JSON.stringify(teamDebug, null, 2));
         await page.evaluate(() => document.documentElement.dispatchEvent(new PointerEvent('pointerleave')));
         await page.waitForFunction(() => Math.abs(window.__aboutProbe?.().teamYaw ?? 1) < .056, null, { timeout: 5000 });
+        teamDebug.yawAfterRelease = await page.evaluate(() => window.__aboutProbe().teamYaw);
+        fs.writeFileSync(teamDebugPath, JSON.stringify(teamDebug, null, 2));
         teamInteraction = { ...teamInteraction, yawAtPointer, pointerReturnedToRest: true };
       } else {
         teamInteraction = { ...teamInteraction, touchMemberSwitch: true };
