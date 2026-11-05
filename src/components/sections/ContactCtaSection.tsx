@@ -13,7 +13,7 @@ function SplitLetters({ text }: { text: string }) {
     <span aria-hidden="true">
       {Array.from(text).map((character, index) =>
         character === " " ? " " : (
-          <span key={index} data-cta-letter className="inline-block">
+          <span key={index} data-cta-letter className="about-cta-letter inline-block">
             {character}
           </span>
         )

@@ -1593,7 +1593,7 @@ export function AboutPageView() {
               </div>
             </nav>
 
-            <div className="about-recognition-window min-[813px]:col-span-8" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
+            <div id="about-recognition-window" className="about-recognition-window min-[813px]:col-span-8" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
               <section className="about-recognition-record" aria-labelledby="about-awards-record-title">
                 <div className="about-recognition-record-heading">
                   <h3 id="about-awards-record-title">AWARDS</h3>
