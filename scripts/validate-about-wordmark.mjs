@@ -142,6 +142,9 @@ try {
       });
       assert.ok(selectorControl.visible);
       assert.ok(selectorControl.width >= 24 && selectorControl.height >= 24, 'each visible team selector must have a usable 24px hit target');
+      if (width === 390) {
+        assert.equal(await page.getByText('Swipe to change', { exact: true }).isVisible(), true, 'mobile team panel exposes its swipe affordance');
+      }
       assert.equal(await page.getByRole('button', { name: 'Next team member' }).count(), 0, 'the reference scene has no central next-member orb over the portrait');
       await memberSelector.click();
       await page.waitForFunction(() => document.querySelector('#about-who-team-name')?.textContent?.trim() === 'Ffion Morgan', null, { timeout: 5000 });

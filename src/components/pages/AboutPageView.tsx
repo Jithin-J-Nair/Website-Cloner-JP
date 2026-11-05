@@ -1183,6 +1183,9 @@ function AboutWhoExperience({
                   </span>
                 ))}
               </p>
+              <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-white/55 min-[820px]:hidden">
+                {LUSION_ABOUT.who.mobileSwipeHint}
+              </p>
               <div className="mt-3 h-[1px] w-40 bg-white/35" />
               <p className="mt-2 max-w-[28ch] font-sans text-xs leading-relaxed text-white/80">Abstract visualization — not a likeness of {activeMember.name}.</p>
             </div>
