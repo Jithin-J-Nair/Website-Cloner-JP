@@ -23,6 +23,7 @@ try {
     });
     const page = await context.newPage();
     const errors = [];
+    const report = { width, height, teamHudClearance: null, brandWall: null, ctaLayout: null, ctaMotion: null };
     page.on('pageerror', error => errors.push(error.message));
     try {
       const response = await page.goto(base + '/about', { waitUntil: 'networkidle', timeout: 120000 });
@@ -400,7 +401,8 @@ try {
       assert.deepEqual(errors, [], 'no uncaught browser errors');
       fs.writeFileSync(`${out}/${width}.json`, JSON.stringify({
         width, height, peak, end, atValley, atPeak, atExit, onReverse, probeAtPeak, probeOnReverse,
-        cardFrames, cta: { count: ctaBase.count, draws: ctaBase.draws, triangles: ctaBase.triangles, ...ctaInteraction }, errors,
+        cardFrames, cta: { count: ctaBase.count, draws: ctaBase.draws, triangles: ctaBase.triangles, ...ctaInteraction },
+        browserReport: report, errors,
       }, null, 2));
       console.log(`PASS About production checks at ${width}x${height}: wordmark, expertise deck, CTA budget/pointer and no browser errors.`);
     } finally {
