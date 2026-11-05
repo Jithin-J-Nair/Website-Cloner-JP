@@ -294,6 +294,21 @@ try {
       assert.ok(Math.abs(topCrosses[0].x / width - .206) < .035, 'left CTA cross is near 20.6vw');
       assert.ok(Math.abs(topCrosses[1].x / width - .794) < .035, 'right CTA cross is near 79.4vw');
       report.ctaLayout = ctaLayout;
+
+      // The arm and broad particle mound enter as the CTA scroll playhead moves.
+      await seekY(ctaTop + height * .5);
+      const ctaMotion = await page.evaluate(() => {
+        const arm = document.querySelector("#end-section .about-cta-arm");
+        return {
+          progress: window.__ctaProbe?.().progress ?? 0,
+          armOpacity: arm ? Number.parseFloat(getComputedStyle(arm).opacity) : 0,
+          armTransform: arm ? getComputedStyle(arm).transform : "missing",
+        };
+      });
+      assert.ok(ctaMotion.progress > .5 && ctaMotion.progress < .8, "CTA screenshot is inside the animated sticky interval");
+      assert.ok(ctaMotion.armOpacity > .65, "original upper-left arm silhouette enters during the CTA scroll beat");
+      report.ctaMotion = ctaMotion;
+
       let ctaInteraction;
       if (width === 390) {
         assert.equal(ctaBase.pointer, 0, 'touch viewport must not enable mouse repulsion');
