@@ -21,12 +21,30 @@ export function buildSculpturalPortraitPositions(memberIndex: number, count = 81
   };
 
   const facing = safeIndex % 2 === 0 ? 1 : -1;
-  const headCenterX = -0.055 + (safeIndex % 3) * 0.015;
-  const headCenterY = 0.18;
-  const headRadiusX = 0.52 + (safeIndex % 4) * 0.014;
-  const headRadiusY = 0.69 + (safeIndex % 3) * 0.012;
-  const noseProjection = 0.115 + (safeIndex % 3) * 0.012;
+  const profileCenterX = -0.03 + (safeIndex % 3) * 0.015;
+  const noseProjection = 0.66 + (safeIndex % 3) * 0.015;
   const yawTurn = ((safeIndex % 3) - 1) * 0.12;
+  // Side-view landmarks run from the chin, over the lips and nose, to the brow
+  // and forehead. Smooth interpolation prevents a polygonal, icon-like edge.
+  const profileFront: Array<[number, number]> = [
+    [-0.58, 0.18], [-0.48, 0.28], [-0.34, 0.39], [-0.22, 0.45],
+    [-0.16, 0.51], [-0.10, 0.55], [-0.04, 0.49], [0.02, 0.46],
+    [0.08, 0.52], [0.14, noseProjection], [0.20, 0.55], [0.28, 0.43],
+    [0.42, 0.38], [0.58, 0.32], [0.76, 0.15], [0.92, -0.06],
+  ];
+  const frontEdge = (y: number) => {
+    if (y <= profileFront[0][0]) return profileFront[0][1];
+    for (let i = 1; i < profileFront.length; i++) {
+      const [y1, x1] = profileFront[i];
+      const [y0, x0] = profileFront[i - 1];
+      if (y <= y1) {
+        const t = (y - y0) / (y1 - y0);
+        const eased = t * t * (3 - 2 * t);
+        return x0 + (x1 - x0) * eased;
+      }
+    }
+    return profileFront[profileFront.length - 1][1];
+  };
 
   let written = 0;
   let guard = 0;
@@ -34,18 +52,14 @@ export function buildSculpturalPortraitPositions(memberIndex: number, count = 81
     guard++;
     const u = random() * 2 - 1;
     const v = random() * 2 - 1;
-    // Rounded cranial envelope; the shallow Gaussian at the front creates
-    // the nose bridge without turning the profile into a rectangular volume.
-    const headLevel = (v - headCenterY) / headRadiusY;
-    const headHalfWidth = Math.abs(headLevel) <= 1
-      ? headRadiusX * Math.sqrt(Math.max(0, 1 - headLevel * headLevel))
-      : 0;
-    const back = headCenterX - headHalfWidth;
-    const nose = Math.exp(-Math.pow((v - 0.13) / 0.075, 2)) * noseProjection;
-    const front = headCenterX + headHalfWidth + nose;
+    // A smooth elliptical occipital curve meets an authored facial contour.
+    // The back stays rounded while the front carries forehead, nose, lips and chin.
+    const backLevel = (v - 0.18) / 0.76;
+    const backHalfWidth = 0.48 * Math.sqrt(Math.max(0, 1 - backLevel * backLevel));
+    const back = profileCenterX - backHalfWidth;
+    const front = frontEdge(v);
 
-    // Human-scale side silhouette: rounded skull, brow, projecting nose, chin.
-    const inHead = v > -0.58 && v < 0.9 && headHalfWidth > 0 && u > back && u < front;
+    const inHead = v > -0.58 && v < 0.92 && front > back && u > back && u < front;
     const inNeck = v > -0.95 && v <= -0.43 && u > -0.2 && u < 0.18;
     const shoulderReach = 0.52 + smoothstep(-0.72, -1, v) * 0.22;
     const inShoulders = v <= -0.72 && v >= -1 && Math.abs(u + 0.03) < shoulderReach;
@@ -54,7 +68,9 @@ export function buildSculpturalPortraitPositions(memberIndex: number, count = 81
 
     let depth = 0;
     if (inHead) {
-      const across = (u - headCenterX) / Math.max(0.001, headHalfWidth);
+      const center = (back + front) * 0.5;
+      const radius = Math.max(0.001, (front - back) * 0.5);
+      const across = (u - center) / radius;
       const cranialDepth = Math.sqrt(Math.max(0, 1 - across * across)) * 0.34;
 
       // Small relief cues make the edge read as a profile without reconstructing
