@@ -723,7 +723,7 @@ function AboutWhoExperience({
         sweepWordmarkRef.current.style.opacity = String(sweep.opacity);
         sweepWordmarkRef.current.style.visibility = sweep.opacity > 0.005 ? "visible" : "hidden";
         sweepWordmarkRef.current.style.transform =
-          `translate3d(${sweep.xVw}vw,${sweep.yVh}vh,0) rotate(${sweep.rotation}deg) scale(${sweep.scale})`;
+          `translate3d(${sweep.xVw}vw,${sweep.yVh}vh,0) skewX(${sweep.skewX}deg) rotate(${sweep.rotation}deg) scaleX(${sweep.stretchX}) scale(${sweep.scale})`;
       }
 
       // B. 'WE ARE A CREATIVE PRODUCTION STUDIO' Manifesto Band ('u = 2.05 .. 4.35')

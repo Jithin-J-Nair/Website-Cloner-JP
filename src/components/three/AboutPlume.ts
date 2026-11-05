@@ -19,7 +19,7 @@ vec3 plume(vec4 seed) {
   p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .24) * .07;
   // Only sparse outliers leave the coherent core. Their distribution is shared
   // by both physical grains and depth-aware fine scatter.
-  float fringe = smoothstep(.82, .995, seed.w);
+  float fringe = smoothstep(.965, .998, seed.w);
   p += vec3(cos(seed.y) * 3.8, sin(seed.y * 2.) * 1.85, sin(seed.y) * 2.55) * fringe;
   // The source frame spreads the silver cloud laterally around the wordmark;
   // keep the core dense but release more fine outliers into the surrounding air.
@@ -65,10 +65,12 @@ export function createAboutPlume(count: number) {
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 ${flow}
 void main() {
-  // A meaningful population of mid-sized metal grains supplies a surface;
-  // a near-zero radius on most instances previously left only fine dust visible.
-  float outlier = smoothstep(.93, 1., aSeed.w);
-  vRadius = .042 * mix(.38, 1.72, pow(aSeed.w, 3.)) * mix(1., .62, outlier);
+  // Most beads stay small and pearl-like; only the far-tail seeds become
+  // foreground bokeh, and the same tail is displaced beyond the coherent cloud.
+  float bokeh = smoothstep(.997, .9998, aSeed.w);
+  float pearlRadius = .012 + .022 * pow(aSeed.w, 3.2);
+  float bokehRadius = .17 + .16 * pow(aSeed.x, 1.6);
+  vRadius = mix(pearlRadius, bokehRadius, bokeh);
   vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
   vDisc = position.xy;
   vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);
@@ -92,7 +94,7 @@ void main() {
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
-  vec3 color = vec3(.035, .04, .043) + vec3(.25, .28, .29) * diffuse + specular * .7 + fresnel * .10;
+  vec3 color = vec3(.105, .112, .118) + vec3(.47, .49, .50) * diffuse + specular * 1.05 + fresnel * .13;
   color = mix(color, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   color *= mix(.82, 1.35, uCompact) * mix(1., .65, smoothstep(8., 90., vDepth));
   gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed) * (1. - smoothstep(.82, 1., r2)));
@@ -140,7 +142,7 @@ void main() {
   vec3 light = normalize(vec3(-.3, .8, .7));
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + vec3(0., 0., 1.)))), 20.);
-  vec3 silver = vec3(.035) + vec3(.23, .27, .28) * diffuse + specular * .55;
+  vec3 silver = vec3(.10, .11, .12) + vec3(.43, .46, .48) * diffuse + specular * .82;
   silver = mix(silver, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   float edge = 1. - smoothstep(mix(.62, .05, vBlur), 1., r2);
   gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed) * mix(.85, 1.6, uCompact), edge * vFade);

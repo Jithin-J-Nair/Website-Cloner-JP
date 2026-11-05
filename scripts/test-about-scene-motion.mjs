@@ -12,6 +12,7 @@ assert.match(aboutView, /portraitPoints\.rotation\.x = THREE\.MathUtils\.lerp/, 
 assert.match(aboutView, /reducedMotion \? 0 : 1/, 'team hologram pointer tilt respects reduced motion');
 const portraitGeometry = fs.readFileSync('src/lib/about-portrait-geometry.ts', 'utf8');
 assert.match(aboutView, /from "@\/lib\/about-portrait-geometry"/, 'the team scene uses the independently testable clean-room portrait generator');
+assert.match(aboutView, /skewX\(\$\{sweep\.skewX\}deg\).*scaleX\(\$\{sweep\.stretchX\}\)/, 'wordmark applies scroll-owned planar skew and stretch without 3D rotation');
 assert.match(portraitGeometry, /const px = \(u \+ 0\.1\) \* facing \* 2\.25/, 'abstract portrait retains a broad side-profile silhouette with a stable center offset');
 assert.match(portraitGeometry, /const py = v \* 1\.6/, 'abstract portrait maintains full head-to-shoulder height');
 assert.match(portraitGeometry, /const pz = \(depth \+ \(random\(\) - 0\.5\) \* 0\.012\) \* 1\.45/, 'abstract profile retains real depth for dimensional shading');
@@ -50,6 +51,8 @@ try {
    assert.ok(Object.values(p).every(Number.isFinite));
    assert.ok(p.opacity>=0&&p.opacity<=1);
    assert.ok(p.scale>=.96&&p.scale<=1.045);
+   assert.ok(p.stretchX>=1 && p.stretchX <= (mobile ? 1.075 : 1.34), 'wordmark stretch stays in its authored planar range');
+   assert.ok(Math.abs(p.skewX) <= (mobile ? 5 : 13), 'wordmark skew stays bounded');
    assert.ok(mobile ? p.rotation>=-.8&&p.rotation<=.6 : p.rotation>=-4&&p.rotation<=2);
    if(samples.length){
     const q=samples.at(-1).pose;

@@ -23,11 +23,15 @@ export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
   const enter = ease(start, peak, u);
   const exit = 1 - ease(holdEnd, end, u);
   const travel = ease(start, end, u);
+  const flourish = enter * exit;
   return {
-    opacity: enter * exit,
+    opacity: flourish,
     xVw: mobile ? mix(0, -2, travel) : mix(4, -7, travel),
     yVh: mobile ? mix(0, -0.8, travel) : mix(2, -1, travel),
-    rotation: mobile ? mix(-0.8, 0.6, travel) : mix(-4, 2, travel),
+    // A shallow planar sweep: no 3D rotation or tumbling geometry.
+    rotation: mobile ? mix(-0.8, 0.6, travel) : mix(-2.4, 0.8, travel),
+    stretchX: 1 + (mobile ? 0.075 : 0.34) * flourish,
+    skewX: (mobile ? -5 : -13) * flourish,
     scale: mobile ? mix(1, 1.025, travel) : mix(0.96, 1.045, travel),
   };
 }
