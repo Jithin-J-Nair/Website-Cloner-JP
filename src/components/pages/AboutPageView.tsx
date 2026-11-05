@@ -820,14 +820,15 @@ function AboutWhoExperience({
           `translate3d(${sweep.xVw}vw,${sweep.yVh}vh,0) skewX(${sweep.skewX}deg) rotate(${sweep.rotation}deg) scaleX(${sweep.stretchX}) scale(${sweep.scale})`;
       }
 
-      // B. 'WE ARE A CREATIVE PRODUCTION STUDIO' Manifesto Band ('u = 2.05 .. 4.35')
+      // B. The two-sided studio statement arrives after the first wordmark
+      // distortion and remains alongside the valley shot until the later narrative.
       if (manifestoOverlayRef.current) {
-        const manIn = smoothstep(isMobile ? 1.95 : 1.1, isMobile ? 2.45 : 1.6, u);
-        const manOut = 1 - smoothstep(3.65, 4.35, u);
+        const manIn = smoothstep(isMobile ? 1.95 : 2.02, isMobile ? 2.45 : 2.48, u);
+        const manOut = 1 - smoothstep(isMobile ? 5.72 : 5.78, isMobile ? 6.28 : 6.34, u);
         const manVis = manIn * manOut;
         manifestoOverlayRef.current.style.opacity = String(manVis);
         manifestoOverlayRef.current.style.visibility = manVis > 0.005 ? "visible" : "hidden";
-        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(1.1, 1.6, u))}vw, 0, 0)`;
+        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(2.02, 2.48, u))}vw, 0, 0)`;
       }
 
       // C. Studio Narrative HUD: each word owns a deterministic scroll window.
