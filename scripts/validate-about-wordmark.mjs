@@ -350,6 +350,7 @@ try {
           next: Boolean(document.querySelector('#scroll-nav-next')),
           nextHref: document.querySelector('#scroll-nav-next')?.getAttribute('data-next-href') ?? null,
           nextLabel: document.querySelector('#scroll-nav-next')?.getAttribute('data-next-label') ?? null,
+          nextText: document.querySelector('#scroll-nav-next-text')?.textContent?.trim() ?? null,
           mastheadBottom: logo?.bottom ?? 0,
           addressTop: address?.top ?? 0,
         };
@@ -360,7 +361,8 @@ try {
       assert.ok(contactLinks.socials.length >= 3 && contactLinks.socials.every(href => /^https:\/\//.test(href)), 'social destinations must be real HTTPS links');
       assert.ok(contactLinks.next, 'next-page portal remains in the footer');
       assert.equal(contactLinks.nextHref, '/projects', 'About next-page portal points to Projects');
-      assert.equal(contactLinks.nextLabel, 'Projects', 'About next-page portal chapter is Projects');
+      assert.equal(contactLinks.nextLabel, 'Our Projects', 'About next-page destination label remains Our Projects');
+      assert.equal(contactLinks.nextText, 'Next Page', 'About footer portal keeps the visible Next Page label');
 
       const newsletter = page.locator('#footer-newsletter-input-field');
       await newsletter.fill('not-an-email');
