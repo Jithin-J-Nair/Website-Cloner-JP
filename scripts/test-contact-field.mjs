@@ -48,7 +48,13 @@ try {
     assert.doesNotMatch(vertexShader, /sin\(aSeed\.x \* 7\..*\) \* \.12/, 'the former near-zero-width emitter must not return');
     assert.match(a.group.children[0].material.fragmentShader, /vNormal/);
     assert.match(fs.readFileSync("src/components/three/ContactParticleField.ts", "utf8"), /const bases = \[circle, square, triangle, plus\]/, "CTA uses circle, square/diamond, triangle and plus/X geometry families");
-    a.setTime(2); assert.equal(a.uniforms.uTime.value, 2); a.setTime(NaN); assert.equal(a.uniforms.uTime.value, 0);
+    a.setTime(2);
+    assert.equal(a.uniforms.uTime.value, 2);
+    const spin = a.uniforms.uSpin.value.elements;
+    assert.ok(Math.abs(spin[2]) < 1e-7 && Math.abs(spin[5]) < 1e-7, "particle spin never pitches/rolls flat glyphs edge-on");
+    assert.ok(Math.abs(spin[8] - 1) < 1e-7, "particle spin preserves the camera-facing plane");
+    a.setTime(NaN);
+    assert.equal(a.uniforms.uTime.value, 0);
     a.dispose(); a.dispose(); assert.equal(disposals, 4, 'idempotent geometry ownership'); b.dispose();
   }
   for (const [input, expected] of [[Infinity, 960], [-1, 120], [9000, 5600]]) { const field = createContactParticleField(input); assert.equal(field.count, expected); field.dispose(); }

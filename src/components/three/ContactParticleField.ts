@@ -145,7 +145,8 @@ export function createContactParticleField(requestedCount = 960) {
     setTime(time: number) {
       const t = Number.isFinite(time) ? time : 0;
       uniforms.uTime.value = t;
-      uniforms.uSpin.value.setFromMatrix4(spinMatrix.makeRotationFromEuler(spinAngles.set(t * .16, -t * .12, t * .1)));
+      // Rotate the flat paper-like glyphs in-plane only; X/Y spin would turn them edge-on.
+      uniforms.uSpin.value.setFromMatrix4(spinMatrix.makeRotationFromEuler(spinAngles.set(0, 0, t * .08)));
     },
     dispose() {
     if (disposed) return;
