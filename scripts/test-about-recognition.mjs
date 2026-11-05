@@ -15,6 +15,7 @@ for (const article of recognition.articles) assert.match(article.href, /^https:\
 assert.match(page, /about-recognition-section/);
 assert.match(page, /about-recognition-index/);
 assert.match(page, /about-recognition-window/);
+assert.match(page, /role="region" aria-label="Awards, articles and talks" tabIndex=\{0\}/, "clipped recognition ledger is a keyboard-focusable named region");
 assert.match(page, /about-recognition-award-row/);
 assert.match(page, /about-recognition-count-cell/);
 assert.match(page, /about-recognition-talk-table/);

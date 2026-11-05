@@ -494,6 +494,8 @@ export function StudioFooter({
             <button
               type="button"
               id="scroll-nav-next"
+              data-next-href={resolvedPortal.targetPath}
+              data-next-label={resolvedPortal.label}
               onClick={navigateNextChapter}
               aria-label={`Next page: ${resolvedPortal.label}`}
               className="flex min-w-[210px] cursor-pointer items-center gap-3 text-[0.85em] leading-none uppercase min-[813px]:w-[22%]"

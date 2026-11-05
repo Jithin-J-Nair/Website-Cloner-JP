@@ -19,7 +19,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 declare global {
   interface Window {
     __enableAboutProbe?: boolean;
-    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; portraitPoints: number; streakCount: number; qualityTier: string; reducedMotion: boolean; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
   }
 }
 
@@ -882,7 +882,9 @@ function AboutWhoExperience({
       state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x,
       teamYaw: portraitPoints.rotation.y, teamPitch: portraitPoints.rotation.x,
       teamMember: teamOverlayRef.current?.querySelector("#about-who-team-name")?.textContent?.trim() ?? null,
-      count, frameTimes: [...frameTimes],
+      count,
+      portraitPoints: (portraitGeoRef.current?.getAttribute("position") as THREE.BufferAttribute | undefined)?.count ?? 0,
+      streakCount, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
       memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height, camera: camera.position.toArray() });
     if (window.__enableAboutProbe) window.__aboutProbe = probe;
@@ -1565,7 +1567,7 @@ export function AboutPageView() {
               </div>
             </nav>
 
-            <div className="about-recognition-window min-[813px]:col-span-8" aria-label="Awards, articles and talks">
+            <div className="about-recognition-window min-[813px]:col-span-8" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
               <section className="about-recognition-record" aria-labelledby="about-awards-record-title">
                 <div className="about-recognition-record-heading">
                   <h3 id="about-awards-record-title">AWARDS</h3>

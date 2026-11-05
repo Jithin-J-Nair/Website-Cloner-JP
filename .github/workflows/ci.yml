@@ -11,7 +11,7 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -171,6 +171,54 @@ jobs:
         with:
           name: about-wordmark-render-evidence
           path: temp/about-wordmark-validation/
+          if-no-files-found: ignore
+
+      - name: Validate About accessibility and reduced motion
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          ABOUT_A11Y_BASE: http://127.0.0.1:3004
+        run: |
+          PORT=3004 npm run start > /tmp/website-cloner-jp-a11y.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3004/about > /dev/null; then
+              node scripts/validate-about-accessibility.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-a11y.log
+          exit 1
+
+      - name: Capture About rendering and particle budgets
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          ABOUT_BUDGET_BASE: http://127.0.0.1:3005
+        run: |
+          PORT=3005 npm run start > /tmp/website-cloner-jp-budget.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3005/about > /dev/null; then
+              node scripts/capture-about-budget.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-budget.log
+          exit 1
+
+      - name: Upload About accessibility and performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: about-accessibility-performance
+          path: |
+            temp/about-accessibility/
+            temp/about-audit/budget/
           if-no-files-found: ignore
 
       - name: Validate current Projects experience in production browser

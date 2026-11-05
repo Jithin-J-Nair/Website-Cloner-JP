@@ -321,6 +321,8 @@ try {
           business: document.querySelector('#footer-business-link')?.getAttribute('href') ?? null,
           socials: [...document.querySelectorAll('#footer-contact-socials a')].map(link => link.href),
           next: Boolean(document.querySelector('#scroll-nav-next')),
+          nextHref: document.querySelector('#scroll-nav-next')?.getAttribute('data-next-href') ?? null,
+          nextLabel: document.querySelector('#scroll-nav-next')?.getAttribute('data-next-label') ?? null,
           mastheadBottom: logo?.bottom ?? 0,
           addressTop: address?.top ?? 0,
         };
@@ -331,7 +333,7 @@ try {
       assert.ok(contactLinks.socials.length >= 3 && contactLinks.socials.every(href => /^https:\/\//.test(href)), 'social destinations must be real HTTPS links');
       assert.ok(contactLinks.next, 'next-page portal remains in the footer');
       assert.equal(contactLinks.nextHref, '/projects', 'About next-page portal points to Projects');
-      assert.equal(contactLinks.nextLabel, 'Next Page', 'About next-page portal retains the Next Page label');
+      assert.equal(contactLinks.nextLabel, 'Projects', 'About next-page portal chapter is Projects');
 
       const newsletter = page.locator('#footer-newsletter-input-field');
       await newsletter.fill('not-an-email');
@@ -360,6 +362,11 @@ try {
       await page.locator('#footer-bottom-up').click();
       await page.waitForFunction(() => window.scrollY < 80, null, { timeout: 15000 });
       await page.screenshot({ path: `${out}/${width}-footer-return.png`, fullPage: false, timeout: 120000 });
+      await page.locator('#scroll-nav-next').scrollIntoViewIfNeeded();
+      await page.locator('#scroll-nav-next').click();
+      await page.waitForURL(url => url.pathname === '/projects', { timeout: 20000 });
+      assert.equal(new URL(page.url()).pathname, '/projects', 'Next Page router button navigates to Projects');
+
 
       assert.deepEqual(errors, [], 'no uncaught browser errors');
       fs.writeFileSync(`${out}/${width}.json`, JSON.stringify({
