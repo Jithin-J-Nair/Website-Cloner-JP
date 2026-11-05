@@ -706,7 +706,7 @@ function AboutWhoExperience({
       // astronaut and god-ray beat: the world should not begin as a floating
       // particle-only void. The full landscape, explorer and shaft still arrive
       // on the later pullback cue.
-      const terrainReveal = mix(.24, 1, smoothstep(.12, .92, u));
+      const terrainReveal = lerp(.24, 1, smoothstep(.12, .92, u));
       // Team mode returns to black to preserve portrait contrast.
       const narrativeGround = (1 - tTeamPhase) * .22;
       const terrainVis = terrainReveal * Math.max(darkHudFade, narrativeGround);
