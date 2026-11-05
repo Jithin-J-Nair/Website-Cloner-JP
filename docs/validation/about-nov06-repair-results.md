@@ -6,6 +6,12 @@
 
 Studied and integrated `arena/95a11883-website-cloner-jp` at `8be3318bbcb46dc3e7d296da9160ceb1735462b9` with a fast-forward on the Arena session branch. The updated baseline included 12 commits and substantial Home/About work. It was not reset or replaced with the previous implementation. All new work belongs to **`arena/53eb1ea0-website-cloner-jp`**, not the inspected source branch. No production deployment or PR merge is authorized by this repair.
 
+## Concurrent source update — integration decision required
+
+At the final remote check, the user-owned source branch had advanced independently to **`e1a9d23f3d62ced63ab1c1b89dd751d140e8e3d6`** through `a130e51`, `0b5a9c4`, `197f2f7`, `e1a9d23`. These commits replace `AboutPlume.ts` with a keyed video plane, upload/rename a clip, then remove the invalid clip. The latest source still points at `/videos/about-plume.mp4`, which is absent from its final tree.
+
+**The tests/evidence in this report certify repair commit `1d8a55a` built on `8be3318`, not a merge with those newer video commits.** Draft [PR #16](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/16) now conflicts in `AboutPlume.ts`. No merge, resolution or video activation was attempted: the user's intended video-versus-procedural direction needs confirmation. The source branch was never pushed by this session. The working repair is preserved and can be reviewed independently.
+
 ## Evidence, including its limits
 
 - Personally reviewed the three supplied 1568×832 stills: silver suspended opening; close basin/large astronaut; distant basin/small astronaut/overhead emitter. The source stills are reused from the existing review artifacts, not installed as application textures.
@@ -123,4 +129,4 @@ The packaging script requires the four successful recorded exit statuses before 
 
 Read repository/installed Next guidance and the clone skill; applied Three.js performance/resource ownership and Scroll Craft depth principles: real instanced depth, semantic lettering, one scroll authority, bounded reversible transforms and rendered comparison rather than build-only acceptance. No claim of a personal 20-year career or selectable model tier is made.
 
-Changes and reproducible review evidence are delivered on `arena/53eb1ea0-website-cloner-jp`. The source branch `arena/95a11883-website-cloner-jp` remains at the inspected `8be3318` baseline. Any review PR is deliberately draft because exact-clone acceptance is still open. No merge or production publication was performed. The delivery message records the commit and PR URL.
+Changes and reproducible review evidence are delivered on `arena/53eb1ea0-website-cloner-jp`. The source branch was never pushed by this session; its concurrent advance from the inspected `8be3318` baseline is disclosed above. Any review PR is deliberately draft because exact-clone acceptance is still open. No merge or production publication was performed. The delivery message records the commit and PR URL.
