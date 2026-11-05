@@ -40,11 +40,15 @@ try {
       const seek = async progress => {
         const target = whoTop + unit * progress;
         await page.evaluate(y => {
+          const scrollManager = window.__lusionInspector?.scrollManager;
+          if (scrollManager?.scrollToPixel) {
+            scrollManager.scrollToPixel(y);
+            return;
+          }
           window.__lenis?.scrollTo(y, { immediate: true });
           window.scrollTo({ top: y, behavior: 'instant' });
         }, target);
-        // The native About scene smooths its own playhead. Wait for that
-        // authoritative renderer value rather than assuming a fixed sleep.
+        // The About inspector synchronizes both native and scene scroll targets.
         await page.waitForFunction(value => {
           const probe = window.__aboutProbe?.();
           return probe && Math.abs(probe.u - value) < 0.02;
@@ -55,10 +59,15 @@ try {
       // multiply it by the viewport dimension and clamp at the page bottom.
       const seekY = async y => {
         await page.evaluate(top => {
+          const scrollManager = window.__lusionInspector?.scrollManager;
+          if (scrollManager?.scrollToPixel) {
+            scrollManager.scrollToPixel(top);
+            return;
+          }
           window.__lenis?.scrollTo(top, { immediate: true });
           window.scrollTo({ top, behavior: 'instant' });
         }, y);
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(250);
       };
       const inspect = () => mark.evaluate((element, mobile) => {
         const text = element.querySelector(mobile ? '[data-about-wordmark-mobile]' : '[data-about-wordmark-desktop]');
@@ -92,6 +101,17 @@ try {
       await seek(peak);
       const atPeak = await inspect();
       const probeAtPeak = await page.evaluate(() => window.__aboutProbe?.());
+      const peakDebug = {
+        viewport: { width, height },
+        requestedProgress: peak,
+        expectedScrollY: whoTop + unit * peak,
+        actualScrollY: await page.evaluate(() => window.scrollY),
+        whoTop,
+        unit,
+        probeAtPeak,
+        atPeak,
+      };
+      fs.writeFileSync(`${out}/${width}-peak-debug.json`, JSON.stringify(peakDebug, null, 2));
       assert.ok(Math.abs((probeAtPeak?.u ?? -10) - peak) < 0.025,
         `wordmark peak seek must land at About playhead u=${peak}; observed ${probeAtPeak?.u}`);
       assert.ok(atPeak.opacity > 0.99, `wordmark must reach full opacity at u=${peak}; observed ${atPeak.opacity}`);
