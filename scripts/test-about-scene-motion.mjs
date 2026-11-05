@@ -12,7 +12,7 @@ assert.match(aboutView, /portraitPoints\.rotation\.x = THREE\.MathUtils\.lerp/, 
 assert.match(aboutView, /reducedMotion \? 0 : 1/, 'team hologram pointer tilt respects reduced motion');
 const portraitGeometry = fs.readFileSync('src/lib/about-portrait-geometry.ts', 'utf8');
 assert.match(aboutView, /from "@\/lib\/about-portrait-geometry"/, 'the team scene uses the independently testable clean-room portrait generator');
-assert.match(portraitGeometry, /const px = u \* facing \* 2\.25/, 'abstract portrait retains a broad side-profile silhouette');
+assert.match(portraitGeometry, /const px = \(u \+ 0\.1\) \* facing \* 2\.25/, 'abstract portrait retains a broad side-profile silhouette with a stable center offset');
 assert.match(portraitGeometry, /const py = v \* 1\.6/, 'abstract portrait maintains full head-to-shoulder height');
 assert.match(portraitGeometry, /const pz = \(depth \+ \(random\(\) - 0\.5\) \* 0\.012\) \* 1\.45/, 'abstract profile retains real depth for dimensional shading');
 assert.match(aboutView, /attribute vec3 aMorphFrom/, 'team points use a dedicated previous-position buffer');
