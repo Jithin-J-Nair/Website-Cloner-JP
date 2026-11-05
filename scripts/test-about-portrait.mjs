@@ -53,6 +53,9 @@ try {
   const page = fs.readFileSync("src/components/pages/AboutPageView.tsx", "utf8");
   assert.match(page, /tier === "medium" \? 16384 : 24576/, "desktop medium/high portrait tiers are 16K/24K");
   assert.match(page, /portraitCountRef\.current = reducedMotion \|\| software \|\| window\.innerWidth < 820 \|\| tier === "low"/, "mobile, low and reduced-motion tiers cap at 8K");
+  assert.match(page, /function PixelGlyph\(/, "team HUD includes a procedural pixel-font initial");
+  assert.match(page, /shapeRendering="crispEdges"/, "team initial uses crisp block pixels");
+  assert.match(page, /<PixelGlyph[\s\S]*?char=\{activeMember\.name\[0\]\}/, "glyph follows the active team member");
 
   console.log("PASS About portrait geometry: deterministic, bounded, finite 3D side-profile silhouettes; distinct mirrored variants; exact point counts and safe input fallbacks.");
 } finally {
