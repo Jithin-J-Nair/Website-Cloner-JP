@@ -15,12 +15,14 @@ const output = path.resolve(process.env.ABOUT_CONTACT_SHEET_OUT || "/tmp/about-c
 const manifestPath = path.join(captureDir, "manifest.json");
 if (!fs.existsSync(manifestPath)) throw new Error(`Missing capture manifest: ${manifestPath}. Run scripts/about-capture.mjs first.`);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-const entries = fs.readdirSync(referenceDir, { withFileTypes: true })
-  .filter(entry => entry.isFile() && /^ref_\d{3}\.png$/i.test(entry.name))
-  .map(entry => {
-    const match = entry.name.match(/(\d+)/);
-    return { name: entry.name, seconds: Number(match?.[1] ?? 1) - 1, path: path.join(referenceDir, entry.name) };
-  });
+const entries = fs.existsSync(referenceDir)
+  ? fs.readdirSync(referenceDir, { withFileTypes: true })
+      .filter(entry => entry.isFile() && /^ref_\d{3}\.png$/i.test(entry.name))
+      .map(entry => {
+        const match = entry.name.match(/(\d+)/);
+        return { name: entry.name, seconds: Number(match?.[1] ?? 1) - 1, path: path.join(referenceDir, entry.name) };
+      })
+  : [];
 const width = 1280, panelWidth = 624, imageHeight = 390, labelHeight = 44, gap = 32, rowHeight = imageHeight + labelHeight + 28;
 const height = rowHeight * manifest.captures.length + 32;
 const composites = [];
