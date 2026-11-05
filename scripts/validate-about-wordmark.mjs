@@ -172,40 +172,31 @@ try {
       }
       await page.screenshot({ path: `${out}/${width}-team.png`, fullPage: false, timeout: 120000 });
 
-      // Brand wall: every first-copy logo must load from the approved bundled SVG,
-      // and the marquee must animate (or present its static reduced-motion fallback).
+      // Brand wall: source names remain accessible as text wordmarks.
+      // Captured SVG artwork is deliberately not requested by this clean-room pass.
       const clients = page.locator('#about-clients');
       const clientsTop = await clients.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
       await seekY(clientsTop);
-      const logoState = await clients.evaluate(async section => {
+      const logoState = await clients.evaluate(section => {
         const firstSets = [...section.querySelectorAll('.about-client-marquee-set:not([aria-hidden="true"])')];
-        const images = firstSets.flatMap(set => [...set.querySelectorAll('img')]);
-        // Wait for the browser's actual SVG decoder rather than sampling the image
-        // element immediately after a scroll/DOM commit.
-        await Promise.all(images.map(image => image.decode().catch(() => undefined)));
-        const broken = await Promise.all(images.filter(image => image.naturalWidth === 0).map(async image => {
-          try {
-            const response = await fetch(image.currentSrc || image.src);
-            return { src: image.currentSrc || image.src, status: response.status, type: response.headers.get('content-type') };
-          } catch (error) {
-            return { src: image.currentSrc || image.src, error: String(error) };
-          }
-        }));
-        const track = section.querySelector('.about-client-marquee-track');
+        const wordmarks = firstSets.flatMap(set => [...set.querySelectorAll('.about-client-wordmark')]);
+        const tracks = [...section.querySelectorAll('.about-client-marquee-track')];
         return {
-          count: images.length,
-          altCount: images.filter(image => image.alt.trim().length > 0).length,
-          loaded: images.filter(image => image.complete && image.naturalWidth > 0).length,
-          broken,
-          animation: track ? getComputedStyle(track).animationName : 'missing',
-          playState: track ? getComputedStyle(track).animationPlayState : 'missing',
+          count: wordmarks.length,
+          labels: wordmarks.filter(mark => (mark.getAttribute('aria-label') || '').trim().length > 0).length,
+          named: wordmarks.filter(mark => (mark.textContent || '').trim().length > 0).length,
+          names: wordmarks.map(mark => (mark.textContent || '').trim()),
+          imageRequests: section.querySelectorAll('img').length,
+          animation: tracks[0] ? getComputedStyle(tracks[0]).animationName : 'missing',
+          playState: tracks[0] ? getComputedStyle(tracks[0]).animationPlayState : 'missing',
           rows: section.querySelectorAll('.about-client-marquee').length,
         };
       });
       assert.equal(logoState.rows, 3, 'client brands retain three flowing rows');
-      assert.equal(logoState.count, 16, 'all three source rows retain their 16 logo placements');
-      assert.equal(logoState.altCount, 16, 'every brand mark has useful alternative text');
-      assert.equal(logoState.loaded, 16, `all first-copy SVG logo assets load successfully: ${JSON.stringify(logoState.broken)}`);
+      assert.equal(logoState.count, 16, 'all 16 source placements remain represented across the three rows');
+      assert.equal(logoState.labels, 16, 'every text wordmark has an accessible brand label');
+      assert.equal(logoState.named, 16, 'every text wordmark renders a visible brand name');
+      assert.equal(logoState.imageRequests, 0, 'brand wall does not request captured SVG/logo image assets');
       assert.equal(logoState.animation, 'about-client-marquee');
       assert.equal(logoState.playState, 'running', 'visible client marquees animate only while in view');
       if (width !== 390) {
@@ -213,6 +204,7 @@ try {
         assert.equal(await clients.locator('.about-client-marquee-track').first().evaluate(el => getComputedStyle(el).animationPlayState), 'paused', 'hover pauses the marquee without stopping other rows');
         await page.mouse.move(width - 2, height - 2);
       }
+      report.brandWall = logoState;
       await page.screenshot({ path: `${out}/${width}-clients.png`, fullPage: false, timeout: 120000 });
 
       // Recognition ledger: visit every reveal target in turn so the observer is
@@ -237,7 +229,7 @@ try {
         headline: document.querySelector('#about-award .about-awards-monument')?.textContent?.trim(),
       }));
       assert.equal(awardState.visible, awardState.total, 'all recognition groups reveal as they enter the viewport');
-      assert.equal(awardState.headline, 'AWARDS');
+      assert.ok(awardState.headline.includes('AWARD') && awardState.headline.includes('WINNING') && awardState.headline.includes('STUDIO'), 'recognition background retains its six-word outline stack');
       await page.screenshot({ path: `${out}/${width}-recognition.png`, fullPage: false, timeout: 120000 });
 
       assert.deepEqual(errors, [], 'no uncaught browser errors');
