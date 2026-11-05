@@ -52,6 +52,7 @@ function AboutWhoExperience({
   const heroWordmarkRef = useRef<HTMLDivElement | null>(null);
   const sweepWordmarkRef = useRef<HTMLDivElement | null>(null);
   const scrollPromptRef = useRef<HTMLDivElement | null>(null);
+  const chromaticRingRef = useRef<HTMLDivElement | null>(null);
   const manifestoOverlayRef = useRef<HTMLDivElement | null>(null);
   const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
@@ -123,7 +124,7 @@ function AboutWhoExperience({
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
-    glRenderer.setClearColor(0x0c0e11, 1);
+    glRenderer.setClearColor(0x0d0c0f, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.05;
@@ -139,7 +140,7 @@ function AboutWhoExperience({
     };
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.016);
+    scene.fog = new THREE.FogExp2(0x0d0c0f, 0.016);
 
     const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);
 
@@ -362,7 +363,7 @@ function AboutWhoExperience({
     // -------------------------------------------------------------------------
     // 5. One instanced draw: 48 suspended stones and 272 grounded grains.
     // -------------------------------------------------------------------------
-    const ROCK_COUNT = 320, FLOATING_ROCK_COUNT = 48;
+    const ROCK_COUNT = 224, FLOATING_ROCK_COUNT = 16;
     const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
     const rockMat = track(
       new THREE.MeshStandardMaterial({
@@ -380,7 +381,7 @@ function AboutWhoExperience({
       const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
       const rx = Math.cos(ang) * rad;
       const rz = 3.5 + Math.sin(ang) * rad * 0.72;
-      const scale = floating ? 0.2 + ((i * 19) % 10) * .075 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
+      const scale = floating ? 0.12 + ((i * 19) % 10) * .028 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
       // Half-embed small clasts instead of lifting every size eight centimetres
       // above the floor. Concentrate the same population on the visible basin.
       const ry = floating
@@ -714,6 +715,12 @@ function AboutWhoExperience({
       if (scrollPromptRef.current) {
         const promptVis = 1 - smoothstep(0.08, 0.55, u);
         scrollPromptRef.current.style.opacity = String(promptVis);
+         // Faint chromatic edge ring belongs only to the pullback/wide-shot beat.
+         // It is a CSS overlay over the original scene, never a copied post-process.
+         if (chromaticRingRef.current) {
+           const wideShot = smoothstep(1.35, 1.68, u) * (1 - smoothstep(2.38, 2.82, u));
+           chromaticRingRef.current.style.opacity = String(wideShot * 0.42);
+         }
       }
 
       // A2. Short curved logotype sweep across the first grounded valley beat.
@@ -915,17 +922,18 @@ function AboutWhoExperience({
           if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5 && Number(teamOverlayRef.current?.style.opacity) > .45) onStepMember(dx < 0 ? 1 : -1);
         }}
         onTouchCancel={() => { touchStartXRef.current = null; touchStartYRef.current = null; }}
-        className="sticky top-0 h-screen w-full overflow-hidden bg-[#000000]"
+        className="sticky top-0 h-screen w-full overflow-hidden bg-[#0d0c0f]"
       >
         {/* Full-Bleed WebGL Canvas Host */}
         <div ref={canvasHostRef} className="absolute inset-0 h-full w-full" />
+        <div ref={chromaticRingRef} aria-hidden="true" className="about-wide-chromatic-ring" />
 
         {/* Graceful Non-WebGL Atmospheric Fallback */}
         <div
           ref={fallbackPosterRef}
           style={{ display: "none" }}
           role="status"
-          className="relative z-40 min-h-svh flex-col items-start justify-center gap-6 bg-[#080a0e] px-[var(--base-padding-x)] py-32"
+          className="relative z-40 min-h-svh flex-col items-start justify-center gap-6 bg-[#0d0c0f] px-[var(--base-padding-x)] py-32"
         >
           <h2 className="max-w-3xl text-5xl">We are a creative production studio.</h2>
           <p className="max-w-xl text-xl">A worldwide team of specialists in design, motion, 3D, and technology working together to turn ambitious ideas into immersive digital experiences.</p>
@@ -1377,9 +1385,9 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="suspended-volume-dual-basin-v2" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
+    <main id="about" data-scene-version="suspended-volume-dual-basin-v2" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
-      <div ref={darkUpperRef} className="bg-[#000000] text-white">
+      <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
         {/* =====================================================================
             1. 3D SPHERE VORTEX + CRATER LANDSCAPE + TOPOGRAPHIC HUD + TEAM (`#about-who`)
            ===================================================================== */}
@@ -1395,7 +1403,7 @@ export function AboutPageView() {
            ===================================================================== */}
         <section
           id="about-clients"
-          className="border-t border-white/10 bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+          className="border-t border-white/10 bg-[#0d0c0f] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
         >
           <div className="grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:grid-cols-12">
             <div className="col-span-6 min-[813px]:col-span-5">
@@ -1448,7 +1456,7 @@ export function AboutPageView() {
            ===================================================================== */}
         <section
           id="about-award"
-          className="relative overflow-hidden bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+          className="relative overflow-hidden bg-[#0d0c0f] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
         >
           <div aria-hidden="true" className="about-awards-monument"><span data-awards-word>AWARDS</span></div>
           <div className="relative grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">

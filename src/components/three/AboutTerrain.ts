@@ -119,8 +119,11 @@ export function createAboutTerrainMaterial() {
         float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 64.);
         float fractures = noise(surfaceUV * 1.8) * .55 + noise(surfaceUV * 6.3) * .3 + noise(p * 16.) * .15;
         float crevice = mix(.94, clamp(.15 + fractures * 1.45 + grain * 2., .24, 1.), smoothstep(4., 8., abs(p.x)));
-        vec3 rock = vec3(.003, .004, .005) + vec3(.034, .039, .042) * diffuse * crevice;
-        vec3 sand = vec3(.26, .30, .31) * (.48 + diffuse * .52) * crevice;
+        float flankExposure = mix(1., p.x < 0. ? 1.22 : .78, smoothstep(4., 8., abs(p.x)));
+        vec3 rock = vec3(.003, .004, .005) + vec3(.034, .039, .042) * diffuse * crevice * flankExposure;
+        // Linear-space pale regolith target; after ACES + sRGB output this is
+        // tuned toward the measured 201/208/210 centre-floor sample.
+        vec3 sand = vec3(.53, .56, .57) * (.48 + diffuse * .52) * crevice;
         // Pale regolith belongs to the low, shallow floor, not every slope
         // inside the light pool. This keeps the flanks dark and dimensional.
         float sandCoverage = pool * smoothstep(.55, .94, slope) * (1. - smoothstep(-.2, 2., vWorldPos.y));
