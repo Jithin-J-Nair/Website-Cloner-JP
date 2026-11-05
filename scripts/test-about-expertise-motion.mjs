@@ -34,7 +34,7 @@ try {
  assert.equal(heading(0).opacity,1);assert.equal(heading(1).opacity,0);
  const styles = fs.readFileSync("src/app/globals.css", "utf8");
  const cardsSource = fs.readFileSync("src/components/pages/AboutExpertiseCards.tsx", "utf8");
- assert.match(styles, /--about-expertise-blue:\\s*#353DEF/i, "About expertise blue is the specified royal blue");
+ assert.match(styles, /--about-expertise-blue:\s*#353DEF/i, "About expertise blue is the specified royal blue");
  assert.match(cardsSource, /M-84 824C224 650 420 574 620 382S1020 48 1518-172/, "the expertise flourish is one original diagonal stroke");
  assert.match(cardsSource, /about-card-back-art/, "the card backs retain authored line art");
  assert.match(cardsSource, /M120 99 189 168 120 237 51 168Z/, "card back keeps the original central L/diamond mark");
