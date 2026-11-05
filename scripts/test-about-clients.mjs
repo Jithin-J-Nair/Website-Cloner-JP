@@ -16,6 +16,8 @@ assert.match(page, /about-client-marquee-track/);
 assert.match(page, /new IntersectionObserver/, "marquee work is observed on entry and exit");
 assert.match(page, /classList\.toggle\("is-in-view", entry\.isIntersecting\)/, "visibility controls play state");
 assert.match(css, /animation-play-state:\s*paused/);
+assert.match(css, /\.about-client-wordmark/, "text fallback has a dedicated wordmark treatment");
+assert.doesNotMatch(css, /\.about-client-logo-mark/, "no stale image-mark styling remains");
 assert.match(css, /\.about-client-marquee\.is-in-view \.about-client-marquee-track\s*\{\s*animation-play-state:\s*running;/);
 assert.match(page, /role="list"/, "each marquee row is exposed as a semantic list");
 assert.match(page, /role="listitem"/, "each brand has a list-item relationship");

@@ -425,7 +425,9 @@ body {
 .about-awards-monument span:nth-child(even) { margin-left: 12vw; }
 .about-recognition-layout { align-items: start; }
 .about-recognition-index {
-  position: relative;
+  position: sticky;
+  top: 12vh;
+  align-self: start;
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -548,7 +550,7 @@ body {
 }
 @media (max-width: 812px) {
   .about-recognition-section { min-height: auto; }
-  .about-recognition-index { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .55rem; }
+  .about-recognition-index { position: static; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .55rem; }
   .about-recognition-index-item { align-items: flex-start; flex-direction: column; gap: .55rem; padding-block: .6rem; }
   .about-recognition-index-item h2 { font-size: clamp(1.1rem, 5.2vw, 1.45rem); }
   .about-recognition-count { gap: .35rem; font-size: .95rem; }
@@ -667,13 +669,26 @@ body {
   flex: 1 1 0;
   min-width: 0;
 }
-.about-client-logo-mark {
+.about-client-wordmark {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  user-select: none;
+  max-width: 100%;
+  color: rgb(255 255 255 / .82);
+  font-family: var(--font-space-grotesk, ui-sans-serif), sans-serif;
+  font-size: clamp(10px, 1.12vw, 17px);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  transition: opacity 420ms ease-out, transform 420ms ease-out;
+  opacity: .78;
+}
+@media (hover: hover) and (pointer: fine) {
+  .about-client-marquee:hover .about-client-wordmark {
+    opacity: 1;
+    transform: scale(1.035);
+  }
 }
 @keyframes about-client-marquee {
   from { transform: translate3d(0, 0, 0); }
@@ -681,16 +696,7 @@ body {
 }
 @media (min-width: 813px) {
   .about-client-logo-tile { height: 6.5rem; }
-  .about-client-logo-mark {
-    width: min(180px, 100%);
-    height: 180px;
-    transform: translate3d(0, -42px, 0);
-    transition: opacity 500ms ease-out, transform 500ms ease-out;
-  }
-  .about-client-marquee:hover .about-client-logo-mark {
-    opacity: 1;
-    transform: translate3d(0, -42px, 0) scale(1.04);
-  }
+  .about-client-wordmark { font-size: clamp(13px, 1.15vw, 18px); }
 }
 @media (max-width: 812px) {
   .about-client-logo-tile { height: 5.5rem; }
@@ -711,7 +717,7 @@ body {
   }
   .about-client-marquee-set { width: 100%; flex-basis: 100%; }
   .about-client-marquee-set[aria-hidden="true"] { display: none; }
-  .about-client-logo-mark { transition: none !important; transform: none !important; }
+  .about-client-wordmark { transition: none !important; transform: none !important; }
 }
 
 
