@@ -12,7 +12,7 @@ try {
   const { createContactParticleField } = await import(pathToFileURL(file));
   for (const count of [720, 960, 1600, 2400]) {
     const a = createContactParticleField(count), b = createContactParticleField(count);
-    assert.equal(a.group.children.length, 3);
+    assert.equal(a.group.children.length, 4);
     assert.equal(a.group.children.reduce((n, m) => n + m.geometry.instanceCount, 0), count);
     let triangles = 0, disposals = 0;
     for (const [i, mesh] of a.group.children.entries()) {
@@ -29,7 +29,7 @@ try {
       triangles += mesh.geometry.index.count / 3 * mesh.geometry.instanceCount;
       mesh.geometry.addEventListener('dispose', () => disposals++);
     }
-    assert.ok(triangles <= count * 24, 'bounded real extruded geometry');
+    assert.ok(triangles <= count * 24, 'bounded flat geometry across the four shape families');
     assert.match(a.group.children[0].material.vertexShader, /uProgress/);
     assert.match(a.group.children[0].material.vertexShader, /uTextBottom/);
     const vertexShader = a.group.children[0].material.vertexShader;
@@ -43,9 +43,10 @@ try {
     assert.match(vertexShader, /tangent \* influence \* \.26/, 'pointer response must impart a tangential sweep');
     assert.doesNotMatch(vertexShader, /sin\(aSeed\.x \* 7\..*\) \* \.12/, 'the former near-zero-width emitter must not return');
     assert.match(a.group.children[0].material.fragmentShader, /vNormal/);
+    assert.match(fs.readFileSync("src/components/three/ContactParticleField.ts", "utf8"), /const bases = \[circle, square, triangle, plus\]/, "CTA uses circle, square/diamond, triangle and plus/X geometry families");
     a.setTime(2); assert.equal(a.uniforms.uTime.value, 2); a.setTime(NaN); assert.equal(a.uniforms.uTime.value, 0);
     a.dispose(); a.dispose(); assert.equal(disposals, 3, 'idempotent geometry ownership'); b.dispose();
   }
   for (const [input, expected] of [[Infinity, 960], [-1, 120]]) { const field = createContactParticleField(input); assert.equal(field.count, expected); field.dispose(); }
-  console.log('PASS contact field: all quality counts, deterministic finite typed seeds/positions/normals, three instanced meshes, bounded triangles, shared progress/pointer/type contour packet and idempotent disposal. Browser compilation checked separately.');
+  console.log('PASS contact field: all quality counts, deterministic finite typed seeds/positions/normals, four instanced shape families, bounded triangles, shared progress/pointer/type contour packet and idempotent disposal. Browser compilation checked separately.');
 } finally { fs.rmSync(dir, { recursive: true, force: true }); }

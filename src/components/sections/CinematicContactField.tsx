@@ -23,6 +23,7 @@ export function CinematicContactField() {
     const stage = host?.closest<HTMLElement>("#end-section-outer");
     const section = host?.closest<HTMLElement>("section");
     if (!host || !stage || !section) return;
+    const arm = stage.querySelector<HTMLElement>(".about-cta-arm");
     // A disposed/lost context must never be rebound to the same React-owned canvas
     // during preference changes or Strict Mode effect replay.
     const canvas = document.createElement("canvas");
@@ -50,7 +51,7 @@ export function CinematicContactField() {
     field.uniforms.uReduced.value = reducedMotion ? 1 : 0;
     const targetPointer = new THREE.Vector3();
     let width = 1, height = 1, start = 0, length = 1;
-    let rafId = 0, frames = 0, previous = 0, time = .5, progress = 0;
+    let rafId = 0, frames = 0, previous = 0, time = .5, progress = 0, previousArmProgress = -1;
     let visible = false, lost = false, needsStill = true;
     const frameTimes: number[] = [];
     const blocked = () => { const s = useStudioStore.getState(); return s.menuOpen || s.reelOpen; };
@@ -63,6 +64,15 @@ export function CinematicContactField() {
       if (!reducedMotion) time += Math.min(.08, elapsed);
       if (window.__enableCtaProbe) { frameTimes.push(elapsed * 1000); if (frameTimes.length > 120) frameTimes.shift(); }
       progress = Math.max(0, Math.min(1, (window.scrollY - start) / length));
+      if (arm) {
+        const revealInput = reducedMotion ? 1 : Math.max(0, Math.min(1, (progress - .08) / .62));
+        if (Math.abs(revealInput - previousArmProgress) > .004) {
+          const reveal = revealInput * revealInput * (3 - 2 * revealInput);
+          arm.style.opacity = String(reducedMotion ? .18 : reveal * .86);
+          arm.style.transform = reducedMotion ? "none" : `translate3d(${(1 - reveal) * -14}vw,${(1 - reveal) * -8}vh,0) rotate(${(1 - reveal) * -8}deg)`;
+          previousArmProgress = revealInput;
+        }
+      }
       field.setTime(reducedMotion ? 0 : time);
       field.uniforms.uProgress.value = reducedMotion ? .5 : progress;
       field.uniforms.uPointer.value.lerp(targetPointer, 1 - Math.exp(-12 * elapsed));

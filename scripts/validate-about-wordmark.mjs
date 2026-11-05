@@ -271,8 +271,29 @@ try {
       await page.waitForFunction(() => window.__ctaProbe?.().frames > 0, null, { timeout: 30000 });
       const ctaBase = await page.evaluate(() => window.__ctaProbe());
       assert.ok(width === 390 ? ctaBase.count === 720 : ctaBase.count === 960 || ctaBase.count === 1600);
-      assert.ok(ctaBase.draws <= 3, 'CTA field must keep its three instanced draws');
+      assert.ok(ctaBase.draws <= 4, 'CTA field must keep its four instanced shape-family draws');
       assert.ok(ctaBase.triangles <= ctaBase.count * 24, 'CTA geometry must remain within its triangle budget');
+      assert.equal(await page.locator('#end-section .about-cta-arm').count(), 1, 'About CTA includes its original procedural arm silhouette');
+      const ctaLayout = await page.evaluate(() => {
+        const rect = node => { const r = node.getBoundingClientRect(); return { x:r.x, y:r.y, width:r.width, height:r.height }; };
+        const stage = document.querySelector('#end-section-outer');
+        return {
+          stage: rect(stage),
+          subtitle: rect(document.querySelector('#end-section-subtitle-text')),
+          title: rect(document.querySelector('#end-section-title-link')),
+          pill: rect(document.querySelector('#end-bottom')),
+          crosses: [...document.querySelectorAll('#end-section-content-crosses .lusion-plus-cross')].map(rect),
+        };
+      });
+      assert.equal(ctaLayout.crosses.length, 4, 'four CTA registration crosses remain');
+      assert.ok(Math.abs(ctaLayout.subtitle.y / height - .21) < .06, 'CTA subtitle remains near 21vh');
+      assert.ok(Math.abs(ctaLayout.title.y / height - .30) < .10, 'CTA heading starts near 30vh');
+      assert.ok(Math.abs(ctaLayout.pill.height - 54) <= 1, 'CTA scroll pill is 54px high');
+      assert.ok(Math.abs(ctaLayout.pill.y - (height - 56 - 54)) <= 8, 'CTA scroll pill is 56px above the bottom');
+      const topCrosses = ctaLayout.crosses.slice(0,2);
+      assert.ok(Math.abs(topCrosses[0].x / width - .206) < .035, 'left CTA cross is near 20.6vw');
+      assert.ok(Math.abs(topCrosses[1].x / width - .794) < .035, 'right CTA cross is near 79.4vw');
+      report.ctaLayout = ctaLayout;
       let ctaInteraction;
       if (width === 390) {
         assert.equal(ctaBase.pointer, 0, 'touch viewport must not enable mouse repulsion');
@@ -309,6 +330,8 @@ try {
       assert.match(contactLinks.business ?? '', /^mailto:/, 'new business must remain a mailto link');
       assert.ok(contactLinks.socials.length >= 3 && contactLinks.socials.every(href => /^https:\/\//.test(href)), 'social destinations must be real HTTPS links');
       assert.ok(contactLinks.next, 'next-page portal remains in the footer');
+      assert.equal(contactLinks.nextHref, '/projects', 'About next-page portal points to Projects');
+      assert.equal(contactLinks.nextLabel, 'Next Page', 'About next-page portal retains the Next Page label');
 
       const newsletter = page.locator('#footer-newsletter-input-field');
       await newsletter.fill('not-an-email');

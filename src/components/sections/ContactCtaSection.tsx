@@ -8,6 +8,22 @@ import { LUSION_GLOBAL_CHROME } from "@/data/reference";
 
 export type ContactCtaTheme = "blue-flip" | "home-dark";
 
+function AboutCtaLetterLine({ text, offset }: { text: string; offset: number }) {
+  return (
+    <span aria-hidden="true" className="about-cta-letter-line">
+      {Array.from(text).map((character, index) => (
+        <span
+          key={index}
+          className="about-cta-letter"
+          style={{ "--about-cta-letter-index": offset + index } as React.CSSProperties}
+        >
+          {character === " " ? "\u00a0" : character}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /**
  * Shared Lusion End-Section CTA (`#end-section`)
  * - `theme="blue-flip"`: Royal-blue `#1736ff` full-bleed sticky stage with 4 quadrant `+` crosshairs,
@@ -180,18 +196,18 @@ export function ContactCtaSection({
       id={sectionId}
       surface="cobalt"
       webglMode="contact-beacon"
-      className="relative z-10 w-full !bg-[#1736ff] py-0 text-[#ffffff]"
+      className="relative z-10 w-full !bg-[#353DEF] py-0 text-[#ffffff]"
     >
-      <div style={{ minHeight: "180vh" }} className="relative w-full bg-[#1736ff]">
+      <div style={{ minHeight: "180vh" }} className="relative w-full bg-[#353DEF]">
         <div
           id="end-section-outer"
-          className="sticky top-0 flex h-[100svh] w-full flex-col items-center justify-center overflow-hidden bg-[#1736ff] px-[var(--base-padding-x)] text-white"
+          className="sticky top-0 flex h-[100svh] w-full flex-col items-center justify-center overflow-hidden bg-[#353DEF] px-[var(--base-padding-x)] text-white"
         >
           {/* Quadrant '+' Crosshairs matching real `lusion.co/about/` `#end-section` */}
           <div
             id="end-section-content-crosses"
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[6.8%] top-[27%] bottom-[24%] z-20"
+            className="pointer-events-none absolute inset-x-[17.3%] top-[21%] bottom-[23%] z-20"
           >
             <span className="lusion-plus-cross absolute left-0 top-0 text-white" />
             <span className="lusion-plus-cross absolute right-0 top-0 text-white" />
@@ -200,27 +216,28 @@ export function ContactCtaSection({
           </div>
 
           {/* Center Editorial CTA (`#end-section-content`) */}
-          <div id="end-section-content" className="relative z-10 -mt-[10vh] w-full text-center">
+          <div id="end-section-content" className="absolute inset-x-0 top-[21vh] z-10 w-full text-center">
             <div id="end-section-subtitle" className="overflow-hidden">
               <p
                 id="end-section-subtitle-text"
-                className="mx-auto max-w-[18ch] font-sans text-[clamp(0.75rem,0.98vw,0.95rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white/95"
+                className="mx-auto max-w-[32ch] font-sans text-[clamp(0.72rem,0.85vw,0.9rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white/95 sm:max-w-none sm:whitespace-nowrap"
               >
                 {LUSION_GLOBAL_CHROME.endSection.subtitle}
               </p>
             </div>
 
-            <div id="end-section-title" className="group relative mx-auto mt-4 w-fit">
+            <div id="end-section-title" className="group relative mx-auto mt-[6.2vh] w-fit">
               <a
                 id="end-section-title-link"
                 href={`mailto:${LUSION_GLOBAL_CHROME.footer.businessEmail}`}
                 onClick={handleEmailTrigger}
                 onMouseEnter={() => soundEngine.playHover()}
-                className="block font-sans text-[17.5vw] font-normal leading-[0.98] tracking-[-0.03em] text-white sm:text-[8.6vw] min-[1800px]:text-[9.5rem]"
+                aria-label="Let's work together!"
+                className="about-cta-title block font-sans text-[17.5vw] font-normal leading-[0.95] tracking-[-0.035em] text-white sm:text-[10vw] min-[1800px]:text-[9.5rem]"
               >
-                Let&apos;s work
+                <AboutCtaLetterLine text="Let's work" offset={0} />
                 <br />
-                together!
+                <AboutCtaLetterLine text="together!" offset={10} />
               </a>
               <span id="end-section-title-top-decoration" aria-hidden="true" className="sr-only" />
               <span id="end-section-title-bottom-left-decoration" aria-hidden="true" className="sr-only" />
@@ -237,6 +254,15 @@ export function ContactCtaSection({
             )}
           </div>
 
+          <div className="about-cta-arm" aria-hidden="true">
+            <svg viewBox="0 0 620 430" width="620" height="430" fill="none">
+              <path
+                d="M-48 4C25 10 76 35 125 82l95 91 56-50c23-21 59-20 80 3 20 22 18 55-4 76l-53 52 105 93c22 19 24 53 5 75-19 22-53 24-75 5L224 311l-56 75c-18 25-52 31-77 13-25-19-31-53-13-78l64-88-78-74C18 195-22 177-67 173Z"
+                fill="white"
+              />
+              <path d="M277 123l45-48 44 42-44 46Z" fill="white"/>
+            </svg>
+          </div>
           {/* Depth-lit GPU geometric stream/mound; intentional lower-title overlap */}
           <div className="pointer-events-none absolute inset-0 z-20">
             <CinematicContactField />
@@ -251,7 +277,7 @@ export function ContactCtaSection({
               soundEngine.playClick();
               document.getElementById("footer-section")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
             }}
-            className="pointer-events-auto absolute bottom-7 left-1/2 z-30 inline-flex h-[3.1rem] min-w-[238px] -translate-x-1/2 items-center justify-between gap-4 rounded-full bg-white px-6 !text-black shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-transform duration-300 hover:scale-[1.03]"
+            className="pointer-events-auto absolute bottom-[56px] left-1/2 z-30 inline-flex h-[54px] min-w-[238px] -translate-x-1/2 items-center justify-between gap-4 rounded-full bg-white px-6 !text-black shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-transform duration-300 hover:scale-[1.03]"
           >
             <span aria-hidden="true" className="text-xs leading-none text-black/80">
               ↓

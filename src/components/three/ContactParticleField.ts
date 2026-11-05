@@ -96,31 +96,34 @@ export function createContactParticleField(requestedCount = 960) {
         vec3 light = normalize(vec3(-.4, .7, 1.));
         float diffuse = abs(dot(n, light));
         float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 18.);
-        vec3 white = vec3(.65, .72, .94) + vec3(.42) * diffuse + specular * .22;
+        vec3 white = vec3(.92, .94, .99) * (.96 + diffuse * .04);
         gl_FragColor = vec4(white, vLife);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
   });
-  const box = new THREE.BoxGeometry(1, 1, .22);
-  const arm1 = new THREE.BoxGeometry(1.25, .36, .22);
-  const arm2 = new THREE.BoxGeometry(.36, 1.25, .22);
-  const cross = mergeGeometries([arm1, arm2]);
+  // Flat original geometric vocabulary: circle, square/diamond, triangle, plus/X.
+  // Square and plus instances use their per-instance quaternion for the rotated variants.
+  const circle = new THREE.CircleGeometry(.54, 12);
+  const square = new THREE.BoxGeometry(1, 1, .12);
+  const triangle = new THREE.CircleGeometry(.62, 3);
+  const arm1 = new THREE.BoxGeometry(1.2, .34, .12);
+  const arm2 = new THREE.BoxGeometry(.34, 1.2, .12);
+  const plus = mergeGeometries([arm1, arm2]);
   arm1.dispose(); arm2.dispose();
-  const diamond = box.clone(); diamond.rotateZ(Math.PI / 4);
-  const bases = [box, cross, diamond];
+  const bases = [circle, square, triangle, plus];
   let seed = 20261031;
   const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   const geometries: THREE.InstancedBufferGeometry[] = [];
   const angles = new THREE.Euler(), orientation = new THREE.Quaternion();
   const spinAngles = new THREE.Euler(), spinMatrix = new THREE.Matrix4();
-  for (let kind = 0; kind < 3; kind++) {
+  for (let kind = 0; kind < 4; kind++) {
     const base = bases[kind];
     const geometry = new THREE.InstancedBufferGeometry();
     geometry.index = base.index;
     geometry.setAttribute("position", base.attributes.position);
     geometry.setAttribute("normal", base.attributes.normal);
-    const population = Math.floor(count / 3) + (kind < count % 3 ? 1 : 0);
+    const population = Math.floor(count / 4) + (kind < count % 4 ? 1 : 0);
     const data = new Float32Array(population * 4);
     const orientations = new Float32Array(population * 4);
     for (let i = 0; i < population; i++) {
