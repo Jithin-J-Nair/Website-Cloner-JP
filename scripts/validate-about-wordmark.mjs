@@ -38,11 +38,17 @@ try {
       assert.equal(await mark.count(), 1, 'one semantic-hidden curved wordmark layer must be mounted');
 
       const seek = async progress => {
+        const target = whoTop + unit * progress;
         await page.evaluate(y => {
           window.__lenis?.scrollTo(y, { immediate: true });
           window.scrollTo({ top: y, behavior: 'instant' });
-        }, whoTop + unit * progress);
-        await page.waitForTimeout(500);
+        }, target);
+        // The native About scene smooths its own playhead. Wait for that
+        // authoritative renderer value rather than assuming a fixed sleep.
+        await page.waitForFunction(value => {
+          const probe = window.__aboutProbe?.();
+          return probe && Math.abs(probe.u - value) < 0.02;
+        }, progress, { timeout: 10000 });
       };
       // Absolute document-Y navigation is separate from the normalized wordmark
       // timeline helper above. Passing a document coordinate to seek() would
