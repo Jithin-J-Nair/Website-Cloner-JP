@@ -134,6 +134,16 @@ try {
         const probe = window.__aboutProbe?.();
         return probe && probe.u > 7 && document.querySelector('#about-who-team-name');
       }, null, { timeout: 15000 });
+      const teamHudClearance = await page.evaluate(() => {
+        const header = document.querySelector("#header");
+        const title = document.querySelector("#about-who [data-team-hud-title]");
+        if (!header || !title) return null;
+        const headerRect = header.getBoundingClientRect();
+        const titleRect = title.getBoundingClientRect();
+        return { headerBottom: headerRect.bottom, titleTop: titleRect.top, gap: titleRect.top - headerRect.bottom };
+      });
+      assert.ok(teamHudClearance && teamHudClearance.gap >= 8, "team HUD title must clear the fixed global header");
+      report.teamHudClearance = teamHudClearance;
       const originalMember = (await page.locator('#about-who-team-name').textContent())?.trim();
       const memberSelector = page.getByRole('button', { name: 'Select Ffion Morgan' });
       const selectorControl = await memberSelector.evaluate(button => {

@@ -1201,14 +1201,14 @@ function AboutWhoExperience({
           style={{ opacity: 0, visibility: "hidden" }}
           data-team-active="false"
           data-reduced={reducedMotion}
-          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-16 pb-8 min-[820px]:pt-28"
+          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-28 pb-8 min-[820px]:pt-36"
         >
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
             {/* Mobile full-width spaced `T E A M` above index row (`390x844/about-04`) */}
             <div
               aria-hidden="true"
-              className="mb-3 flex w-full items-center justify-between font-sans text-[19vw] font-normal uppercase leading-none text-white min-[820px]:hidden"
+              data-team-hud-title className="mb-3 flex w-full items-center justify-between font-sans text-[19vw] font-normal uppercase leading-none text-white min-[820px]:hidden"
             >
               <span>T</span>
               <span>E</span>
@@ -1269,7 +1269,7 @@ function AboutWhoExperience({
 
                 <div
                   aria-hidden="true"
-                  className="hidden items-center gap-6 font-sans text-[5.4vw] font-normal uppercase leading-[0.88] tracking-[0.06em] text-white min-[820px]:flex"
+                  data-team-hud-title className="hidden items-center gap-6 font-sans text-[5.4vw] font-normal uppercase leading-[0.88] tracking-[0.06em] text-white min-[820px]:flex"
                 >
                   <span>T</span>
                   <span>E</span>
