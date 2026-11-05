@@ -5,26 +5,26 @@ import * as THREE from "three";
  */
 const flow = `
 vec3 plume(vec4 seed) {
-  // Densely sampled lobes connected by a narrow neck. The previous uniform
-  // cylindrical scatter read as a sparse ribbon rather than suspended matter.
-  float h = (seed.z / 3.14159265 - .5) * mix(4.05, 4.95, uCompact);
-  float phase = h * 1.62 + uTime * .13;
-  float lobe = exp(-pow((h + .6) * 1.2, 2.)) + exp(-pow((h - 1.3) * 1.6, 2.)) * .48;
-  float taper = (.38 + 1.68 * lobe) * (1. - .18 * smoothstep(1.2, 2.6, abs(h)));
-  float radius = pow(seed.x, .78) * taper;
-  float orbit = seed.y + uTime * (.12 + .18 * (1. - seed.x));
-  vec3 p = vec3(sin(phase) * .48 + cos(orbit) * radius,
-                h + sin(orbit * 2. + h + uTime * .15) * .10,
-                cos(phase * .83) * .38 + sin(orbit) * radius);
-  p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .24) * .07;
-  // Only sparse outliers leave the coherent core. Their distribution is shared
-  // by both physical grains and depth-aware fine scatter.
-  float fringe = smoothstep(.965, .998, seed.w);
-  p += vec3(cos(seed.y) * 3.8, sin(seed.y * 2.) * 1.85, sin(seed.y) * 2.55) * fringe;
-  // The source frame spreads the silver cloud laterally around the wordmark;
-  // keep the core dense but release more fine outliers into the surrounding air.
-  p.xz *= mix(1.76, 2.24, uCompact);
-  p.y *= mix(.82, 1.02, uCompact);
+  // A continuous, multi-strand spiral volume: broad and turbulent at the opening,
+  // tightening into the vertical suspended column as the camera retreats.
+  float h = (seed.z / 3.14159265 - .5) * mix(5.15, 5.65, uCompact);
+  float phase = seed.y + h * 1.82 + uTime * (.24 + .12 * (1. - seed.x));
+  float envelope = .72 + .52 * cos(h * 1.12 + .35) + .18 * sin(h * 2.4 - uTime * .2);
+  float radius = pow(seed.x, .72) * max(.22, envelope);
+  float arm = sin(phase * 2.0 + h * .55 + uTime * .12);
+  float x = cos(phase) * radius * 1.42 + sin(phase * .47 + h) * .34 + arm * .16;
+  float z = sin(phase) * radius * 1.12 + cos(phase * .62 - h) * .28;
+  float turbulence = sin(phase * 3. + h * 2.1 + uTime * .32) * .12;
+  vec3 p = vec3(x, h + turbulence, z);
+  p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .34) * .065;
+  // Sparse pearl/bokeh outliers break the silhouette into suspended particles.
+  float fringe = smoothstep(.958, .999, seed.w);
+  p += vec3(cos(seed.y * 1.3) * 4.2, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.9) * fringe;
+  // Opening cloud has a lateral, comet-like spread; the later wide shot reads as
+  // a narrower overhead shaft against the valley.
+  p.x *= mix(1.9, 1.42, uCompact);
+  p.z *= mix(1.7, 1.28, uCompact);
+  p.y *= mix(.92, 1.08, uCompact);
   p += vec3(-.35, 8.4, 0.);
   vec3 away = p - uPointer;
   float distanceToPointer = length(away);
