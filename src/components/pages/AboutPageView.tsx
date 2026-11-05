@@ -34,6 +34,34 @@ const smoothstep = (e0: number, e1: number, x: number) => {
  * camera/DOM choreography; original shader filament flow and sculptural studies.
  * Historical captures support the layout; current live fidelity is unverified.
  */
+/** Original 4×5 block-pixel initials for the seven-member studio roster. */
+const PIXEL_FONT: Record<string, string[]> = {
+  A: [".##.", "#..#", "####", "#..#", "#..#"],
+  E: ["####", "#...", "###.", "#...", "####"],
+  F: ["####", "#...", "###.", "#...", "#..."],
+  P: ["###.", "#..#", "###.", "#...", "#..."],
+  S: [".###", "#...", ".##.", "...#", "###."],
+  Y: ["#..#", "#..#", ".##.", ".##.", ".##."],
+};
+
+function PixelGlyph({ char, className }: { char: string; className?: string }) {
+  const rows = PIXEL_FONT[(char || "A").toUpperCase()] ?? PIXEL_FONT.A;
+  return (
+    <svg
+      viewBox="0 0 4 5"
+      aria-hidden="true"
+      shapeRendering="crispEdges"
+      className={className}
+    >
+      {rows.flatMap((row, y) =>
+        row.split("").map((cell, x) =>
+          cell === "#" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#fff" /> : null
+        )
+      )}
+    </svg>
+  );
+}
+
 interface AboutWhoStageProps {
   activeMemberIdx: number;
   onStepMember: (delta: number) => void;
@@ -84,33 +112,7 @@ function AboutWhoExperience({
       </React.Fragment>
     ));
   
-  /** Original 4×5 block-pixel initials for the seven-member studio roster. */
-  const PIXEL_FONT: Record<string, string[]> = {
-    A: [".##.", "#..#", "####", "#..#", "#..#"],
-    E: ["####", "#...", "###.", "#...", "####"],
-    F: ["####", "#...", "###.", "#...", "#..."],
-    P: ["###.", "#..#", "###.", "#...", "#..."],
-    S: [".###", "#...", ".##.", "...#", "###."],
-    Y: ["#..#", "#..#", ".##.", ".##.", ".##."],
-  };
 
-  function PixelGlyph({ char, className }: { char: string; className?: string }) {
-    const rows = PIXEL_FONT[(char || "A").toUpperCase()] ?? PIXEL_FONT.A;
-    return (
-      <svg
-        viewBox="0 0 4 5"
-        aria-hidden="true"
-        shapeRendering="crispEdges"
-        className={className}
-      >
-        {rows.flatMap((row, y) =>
-          row.split("").map((cell, x) =>
-            cell === "#" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#fff" /> : null
-          )
-        )}
-      </svg>
-    );
-  }
 
   useEffect(() => {
     if (reducedMotion) return;
