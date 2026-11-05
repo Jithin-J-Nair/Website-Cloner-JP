@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
-/** Original GPU-authored stream/heap, not a FLIP solver or a captured simulation.
- * Three meshes regardless of count; seeds upload once, all flow/lighting is shader-side.
+/** Original GPU-authored geometric dune, not a FLIP solver or a captured simulation.
+ * Four instanced draws regardless of count; seeds upload once, flow/lighting is shader-side.
  */
 export function createContactParticleField(requestedCount = 960) {
-  const count = Math.min(2400, Math.max(120, Math.floor(Number.isFinite(requestedCount) ? requestedCount : 960)));
+  const count = Math.min(5600, Math.max(120, Math.floor(Number.isFinite(requestedCount) ? requestedCount : 960)));
   const group = new THREE.Group();
   const uniforms = {
     uSpin: { value: new THREE.Matrix3() },
@@ -128,7 +128,9 @@ export function createContactParticleField(requestedCount = 960) {
     const orientations = new Float32Array(population * 4);
     for (let i = 0; i < population; i++) {
       data.set([random() * 2 - 1, random(), random() * 2 - 1, kind + random() * .999], i * 4);
-      orientation.setFromEuler(angles.set(data[i * 4 + 1] * 6, data[i * 4] * 5, data[i * 4 + 2] * 7));
+      // Keep these symbols genuinely flat and camera-facing. Their Z rotation
+      // creates squares/diamonds and pluses/Xs; no random X/Y tilt edge-on.
+      orientation.setFromEuler(angles.set(0, 0, data[i * 4 + 2] * Math.PI));
       orientation.toArray(orientations, i * 4);
     }
     geometry.setAttribute("aOrientation", new THREE.InstancedBufferAttribute(orientations, 4));

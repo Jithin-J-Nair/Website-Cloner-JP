@@ -875,21 +875,7 @@ body {
 }
 
 
-/* About CTA: measured blue, typographic micro-motion and procedural arm silhouette. */
-#end-section .about-cta-letter-line { display: inline-block; white-space: nowrap; }
-#end-section .about-cta-letter {
-  display: inline-block;
-  transform: translate3d(0,0,0);
-  animation: about-cta-letter-hop 2.65s ease-in-out infinite;
-  animation-delay: calc(var(--about-cta-letter-index, 0) * 24ms);
-  will-change: transform;
-}
-@keyframes about-cta-letter-hop {
-  0%, 82%, 100% { transform: translate3d(0,0,0); }
-  85% { transform: translate3d(0,-.105em,0); }
-  88% { transform: translate3d(0,.025em,0); }
-  91% { transform: translate3d(0,0,0); }
-}
+/* About CTA: original arm silhouette; letter hops are visibility-aware Web Animations. */
 #end-section .about-cta-arm {
   position: absolute;
   z-index: 21;
@@ -905,6 +891,5 @@ body {
 }
 #end-section .about-cta-arm svg { display: block; width: 100%; height: 100%; overflow: visible; }
 @media (prefers-reduced-motion: reduce) {
-  #end-section .about-cta-letter { animation: none !important; transform: none !important; will-change: auto; }
   #end-section .about-cta-arm { opacity: .18 !important; transform: none !important; will-change: auto; }
 }

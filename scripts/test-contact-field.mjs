@@ -10,7 +10,7 @@ try {
   const file = `${dir}/field.mjs`;
   fs.writeFileSync(file, ts.transpileModule(fs.readFileSync('src/components/three/ContactParticleField.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText);
   const { createContactParticleField } = await import(pathToFileURL(file));
-  for (const count of [720, 960, 1600, 2400]) {
+  for (const count of [720, 960, 1600, 2400, 2600, 3600, 5600]) {
     const a = createContactParticleField(count), b = createContactParticleField(count);
     assert.equal(a.group.children.length, 4);
     assert.equal(a.group.children.reduce((n, m) => n + m.geometry.instanceCount, 0), count);
@@ -22,6 +22,10 @@ try {
       const orientations = mesh.geometry.attributes.aOrientation.array;
       assert.deepEqual(orientations, other.geometry.attributes.aOrientation.array);
       for (let j = 0; j < orientations.length; j += 4) assert.ok(Math.abs(Math.hypot(...orientations.slice(j, j + 4)) - 1) < 1e-6);
+      for (let j = 0; j < orientations.length; j += 4) {
+        assert.ok(Math.abs(orientations[j]) < 1e-7, "flat shapes have no X-axis tilt");
+        assert.ok(Math.abs(orientations[j + 1]) < 1e-7, "flat shapes have no Y-axis tilt");
+      }
       assert.ok(mesh.geometry.attributes.position.array.every(Number.isFinite));
       assert.ok(mesh.geometry.attributes.normal.array.every(Number.isFinite));
       assert.equal(mesh.material.uniforms, a.uniforms);
@@ -47,6 +51,6 @@ try {
     a.setTime(2); assert.equal(a.uniforms.uTime.value, 2); a.setTime(NaN); assert.equal(a.uniforms.uTime.value, 0);
     a.dispose(); a.dispose(); assert.equal(disposals, 4, 'idempotent geometry ownership'); b.dispose();
   }
-  for (const [input, expected] of [[Infinity, 960], [-1, 120]]) { const field = createContactParticleField(input); assert.equal(field.count, expected); field.dispose(); }
-  console.log('PASS contact field: all quality counts, deterministic finite typed seeds/positions/normals, four instanced shape families, bounded triangles, shared progress/pointer/type contour packet and idempotent disposal. Browser compilation checked separately.');
+  for (const [input, expected] of [[Infinity, 960], [-1, 120], [9000, 5600]]) { const field = createContactParticleField(input); assert.equal(field.count, expected); field.dispose(); }
+  console.log('PASS contact field: all quality counts through 5.6K, face-on shape orientation, deterministic finite typed seeds/positions/normals, four instanced shape families, bounded triangles, shared progress/pointer/type contour packet and idempotent disposal. Browser compilation checked separately.');
 } finally { fs.rmSync(dir, { recursive: true, force: true }); }

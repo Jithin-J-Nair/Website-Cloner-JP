@@ -8,18 +8,16 @@ import { LUSION_GLOBAL_CHROME } from "@/data/reference";
 
 export type ContactCtaTheme = "blue-flip" | "home-dark";
 
-function AboutCtaLetterLine({ text, offset }: { text: string; offset: number }) {
+function SplitLetters({ text }: { text: string }) {
   return (
-    <span aria-hidden="true" className="about-cta-letter-line">
-      {Array.from(text).map((character, index) => (
-        <span
-          key={index}
-          className="about-cta-letter"
-          style={{ "--about-cta-letter-index": offset + index } as React.CSSProperties}
-        >
-          {character === " " ? "\u00a0" : character}
-        </span>
-      ))}
+    <span aria-hidden="true">
+      {Array.from(text).map((character, index) =>
+        character === " " ? " " : (
+          <span key={index} data-cta-letter className="inline-block">
+            {character}
+          </span>
+        )
+      )}
     </span>
   );
 }
@@ -41,10 +39,73 @@ export function ContactCtaSection({
 } = {}) {
   const [copiedNotice, setCopiedNotice] = useState(false);
   const copyTimerRef = useRef<number | null>(null);
+  const titleRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => () => {
     if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
   }, []);
+
+  useEffect(() => {
+    if (theme !== "blue-flip") return;
+    const root = titleRef.current;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!root || media.matches) return;
+
+    const letters = Array.from(root.querySelectorAll<HTMLElement>("[data-cta-letter]"));
+    if (!letters.length) return;
+    let visible = false;
+    let disposed = false;
+    let timer = 0;
+    const activeAnimations = new Set<Animation>();
+    const stop = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = 0;
+      activeAnimations.forEach(animation => animation.cancel());
+      activeAnimations.clear();
+    };
+    const schedule = () => {
+      if (disposed || !visible || document.hidden || media.matches || timer) return;
+      timer = window.setTimeout(() => {
+        timer = 0;
+        if (!visible || document.hidden || media.matches) return schedule();
+        for (let n = 0; n < 2; n++) {
+          const element = letters[Math.floor(Math.random() * letters.length)];
+          const dy = (Math.random() < .5 ? -1 : 1) * (.14 + Math.random() * .16);
+          const animation = element.animate(
+            [{ transform: "translateY(0)" }, { transform: `translateY(${dy}em)`, offset: .35 }, { transform: "translateY(0)" }],
+            { duration: 720, easing: "cubic-bezier(.22,.9,.3,1)" }
+          );
+          activeAnimations.add(animation);
+          animation.onfinish = () => activeAnimations.delete(animation);
+          animation.oncancel = () => activeAnimations.delete(animation);
+        }
+        schedule();
+      }, 900 + Math.random() * 1800);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) schedule();
+      else stop();
+    }, { threshold: .3 });
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else schedule();
+    };
+    const onMotionChange = () => {
+      if (media.matches) stop();
+      else schedule();
+    };
+    observer.observe(root);
+    document.addEventListener("visibilitychange", onVisibility);
+    media.addEventListener("change", onMotionChange);
+    return () => {
+      disposed = true;
+      stop();
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      media.removeEventListener("change", onMotionChange);
+    };
+  }, [theme]);
 
   const handleEmailTrigger = async () => {
     soundEngine.playClick();
@@ -207,7 +268,7 @@ export function ContactCtaSection({
           <div
             id="end-section-content-crosses"
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[17.3%] top-[21%] bottom-[23%] z-20"
+            className="pointer-events-none absolute inset-x-[20.6%] top-[21vh] bottom-[23.1vh] z-20"
           >
             <span className="lusion-plus-cross absolute left-0 top-0 text-white" />
             <span className="lusion-plus-cross absolute right-0 top-0 text-white" />
@@ -216,17 +277,17 @@ export function ContactCtaSection({
           </div>
 
           {/* Center Editorial CTA (`#end-section-content`) */}
-          <div id="end-section-content" className="absolute inset-x-0 top-[21vh] z-10 w-full text-center">
+          <div id="end-section-content" className="absolute inset-x-0 top-[20.5vh] z-10 w-full text-center">
             <div id="end-section-subtitle" className="overflow-hidden">
               <p
                 id="end-section-subtitle-text"
-                className="mx-auto max-w-[32ch] font-sans text-[clamp(0.72rem,0.85vw,0.9rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white/95 sm:max-w-none sm:whitespace-nowrap"
+                className="mx-auto max-w-[18ch] font-sans text-[clamp(0.72rem,0.85vw,0.9rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white/95 sm:max-w-none sm:whitespace-nowrap"
               >
                 {LUSION_GLOBAL_CHROME.endSection.subtitle}
               </p>
             </div>
 
-            <div id="end-section-title" className="group relative mx-auto mt-[6.2vh] w-fit">
+            <div id="end-section-title" ref={titleRef} className="group relative mx-auto mt-[5.1vh] w-fit">
               <a
                 id="end-section-title-link"
                 href={`mailto:${LUSION_GLOBAL_CHROME.footer.businessEmail}`}
@@ -235,9 +296,9 @@ export function ContactCtaSection({
                 aria-label="Let's work together!"
                 className="about-cta-title block font-sans text-[17.5vw] font-normal leading-[0.95] tracking-[-0.035em] text-white sm:text-[10vw] min-[1800px]:text-[9.5rem]"
               >
-                <AboutCtaLetterLine text="Let's work" offset={0} />
+                <SplitLetters text="Let's work" />
                 <br />
-                <AboutCtaLetterLine text="together!" offset={10} />
+                <SplitLetters text="together!" />
               </a>
               <span id="end-section-title-top-decoration" aria-hidden="true" className="sr-only" />
               <span id="end-section-title-bottom-left-decoration" aria-hidden="true" className="sr-only" />

@@ -270,7 +270,7 @@ try {
       await seekY(ctaTop);
       await page.waitForFunction(() => window.__ctaProbe?.().frames > 0, null, { timeout: 30000 });
       const ctaBase = await page.evaluate(() => window.__ctaProbe());
-      assert.ok(width === 390 ? ctaBase.count === 720 : ctaBase.count === 960 || ctaBase.count === 1600);
+      assert.ok(width === 390 ? ctaBase.count === 2600 : ctaBase.count === 3600 || ctaBase.count === 5600);
       assert.ok(ctaBase.draws <= 4, 'CTA field must keep its four instanced shape-family draws');
       assert.ok(ctaBase.triangles <= ctaBase.count * 24, 'CTA geometry must remain within its triangle budget');
       assert.equal(await page.locator('#end-section .about-cta-arm').count(), 1, 'About CTA includes its original procedural arm silhouette');

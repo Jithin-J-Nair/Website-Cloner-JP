@@ -42,7 +42,7 @@ export function CinematicContactField() {
     const gl = renderer.getContext();
     const debug = gl.getExtension("WEBGL_debug_renderer_info");
     const software = /swiftshader|llvmpipe|software/i.test(debug ? String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)) : "");
-    const count = window.innerWidth < 640 ? 720 : software ? 960 : 1600;
+    const count = window.innerWidth < 640 ? 2600 : software ? 3600 : 5600;
     const field = createContactParticleField(count);
     const scene = new THREE.Scene(); scene.add(field.group);
     const camera = new THREE.PerspectiveCamera(48, 1, .1, 40); camera.position.z = 10;
