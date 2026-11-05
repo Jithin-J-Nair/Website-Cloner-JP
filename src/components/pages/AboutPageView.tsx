@@ -1304,7 +1304,7 @@ function AboutWhoExperience({
               <div className="about-team-progress mt-3" aria-hidden="true">
                 <span key={activeMemberIdx} className="about-team-progress-fill" />
               </div>
-              <p className="mt-2 max-w-[28ch] font-sans text-xs leading-relaxed text-white/80">Abstract visualization — not a likeness of {activeMember.name}.</p>
+              <p className="sr-only">Abstract procedural visualization; not a likeness of {activeMember.name}.</p>
             </div>
 
             <div className="flex items-end gap-6">

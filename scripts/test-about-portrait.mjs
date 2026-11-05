@@ -56,6 +56,7 @@ try {
   assert.match(page, /function PixelGlyph\(/, "team HUD includes a procedural pixel-font initial");
   assert.match(page, /shapeRendering="crispEdges"/, "team initial uses crisp block pixels");
   assert.match(page, /<PixelGlyph[\s\S]*?char=\{activeMember\.name\[0\]\}/, "glyph follows the active team member");
+  assert.match(page, /className="sr-only">Abstract procedural visualization; not a likeness/, "procedural/non-likeness clarification stays available to assistive technology without adding visible HUD copy");
 
   console.log("PASS About portrait geometry: deterministic, bounded, finite 3D side-profile silhouettes; distinct mirrored variants; exact point counts and safe input fallbacks.");
 } finally {
