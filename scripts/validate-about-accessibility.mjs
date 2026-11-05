@@ -92,7 +92,7 @@ try {
       const unit = width === 390 ? height : width;
       const whoTop = await who.evaluate(el => el.getBoundingClientRect().top + window.scrollY);
       await page.evaluate(({ top, delta }) => window.scrollTo({ top: top + delta, behavior: "instant" }),
-        { top: whoTop, delta: unit * 6.75 });
+        { top: whoTop, delta: unit * 7.1 });
       await page.waitForFunction(() => {
         return document.querySelector(".about-who-team-overlay")?.dataset.teamActive === "true";
       }, null, { timeout: 20000 });
