@@ -14,25 +14,25 @@ const ease = (a: number, b: number, u: number) => {
  */
 export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
   const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
-  const start = mobile ? 1.95 : 0.65;
-  const peak = mobile ? 2.45 : 1.25;
-  // The desktop sweep is a brief transition between the opening wordmark and
-  // the settled valley. It must clear before the two-sided manifesto is read.
-  const holdEnd = mobile ? 2.9 : 1.32;
-  const end = mobile ? 3.45 : 1.58;
+  // In the reference recording the monumental wordmark holds first. A single
+  // oversized elastic sweep crosses it during the first valley reveal, then
+  // clears so the straight baseline mark can remain readable.
+  const start = mobile ? 1.9 : 1.92;
+  const peak = mobile ? 2.32 : 2.34;
+  const holdEnd = mobile ? 2.56 : 2.62;
+  const end = mobile ? 2.98 : 3.02;
   const enter = ease(start, peak, u);
   const exit = 1 - ease(holdEnd, end, u);
-  const travel = ease(start, end, u);
   const flourish = enter * exit;
+  const travel = ease(start, end, u);
   return {
     opacity: flourish,
-    xVw: mobile ? mix(0, -2, travel) : mix(4, -7, travel),
-    yVh: mobile ? mix(0, -0.8, travel) : mix(2, -1, travel),
-    // A shallow planar sweep: no 3D rotation or tumbling geometry.
-    rotation: mobile ? mix(-0.8, 0.6, travel) : mix(-2.4, 0.8, travel),
-    stretchX: 1 + (mobile ? 0.075 : 0.34) * flourish,
-    skewX: (mobile ? -5 : -13) * flourish,
-    scale: mobile ? mix(1, 1.025, travel) : mix(0.96, 1.045, travel),
+    xVw: mobile ? mix(-1, -3, travel) : mix(0, -2, travel),
+    yVh: mobile ? mix(1, -2, travel) : mix(1, -3, travel),
+    rotation: mobile ? mix(-1, 1, travel) : mix(-1.2, 1.2, travel),
+    stretchX: 1 + (mobile ? 0.28 : 0.72) * flourish,
+    skewX: (mobile ? -18 : -28) * flourish,
+    scale: mobile ? mix(1.05, 1.12, flourish) : mix(1.18, 1.42, flourish),
   };
 }
 
