@@ -170,7 +170,8 @@ try {
       }, null, { timeout: 15000 });
       const teamHudClearance = await page.evaluate(() => {
         const header = document.querySelector("#header");
-        const title = document.querySelector("#about-who [data-team-hud-title]");
+        const title = [...document.querySelectorAll("#about-who [data-team-hud-title]")]
+          .find(element => element.getClientRects().length > 0);
         if (!header || !title) return null;
         const headerRect = header.getBoundingClientRect();
         const titleRect = title.getBoundingClientRect();
