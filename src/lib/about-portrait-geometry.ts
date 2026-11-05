@@ -22,15 +22,17 @@ export function buildSculpturalPortraitPositions(memberIndex: number, count = 81
 
   const facing = safeIndex % 2 === 0 ? 1 : -1;
   const profileCenterX = -0.03 + (safeIndex % 3) * 0.015;
-  const noseProjection = 0.66 + (safeIndex % 3) * 0.015;
+  const noseProjection = 0.86 + (safeIndex % 3) * 0.015;
   const yawTurn = ((safeIndex % 3) - 1) * 0.12;
   // Side-view landmarks run from the chin, over the lips and nose, to the brow
   // and forehead. Smooth interpolation prevents a polygonal, icon-like edge.
   const profileFront: Array<[number, number]> = [
-    [-0.58, 0.18], [-0.48, 0.28], [-0.34, 0.39], [-0.22, 0.45],
-    [-0.16, 0.51], [-0.10, 0.55], [-0.04, 0.49], [0.02, 0.46],
-    [0.08, 0.52], [0.14, noseProjection], [0.20, 0.55], [0.28, 0.43],
-    [0.42, 0.38], [0.58, 0.32], [0.76, 0.15], [0.92, -0.06],
+    // chin and jaw rise into a separated upper/lower lip line,
+    // then a deliberately projecting nose tip, brow and sloped forehead.
+    [-0.58, 0.12], [-0.48, 0.25], [-0.36, 0.37], [-0.24, 0.49],
+    [-0.16, 0.58], [-0.10, 0.66], [-0.045, 0.62], [0.015, 0.60],
+    [0.075, 0.69], [0.14, noseProjection], [0.20, 0.69], [0.28, 0.53],
+    [0.42, 0.43], [0.58, 0.35], [0.76, 0.16], [0.92, -0.06],
   ];
   const frontEdge = (y: number) => {
     if (y <= profileFront[0][0]) return profileFront[0][1];
@@ -75,10 +77,10 @@ export function buildSculpturalPortraitPositions(memberIndex: number, count = 81
 
       // Small relief cues make the edge read as a profile without reconstructing
       // identifiable facial detail: a soft brow, nose bridge, cheek and mouth line.
-      const nose = Math.exp(-Math.pow((u - front + 0.075) / 0.06, 2) - Math.pow((v - 0.13) / 0.16, 2)) * 0.075;
+      const nose = Math.exp(-Math.pow((u - front + 0.045) / 0.052, 2) - Math.pow((v - 0.14) / 0.14, 2)) * 0.115;
       const brow = Math.exp(-Math.pow((u - front + 0.17) / 0.07, 2) - Math.pow((v - 0.32) / 0.045, 2)) * 0.025;
       const cheek = Math.exp(-Math.pow((u - front + 0.2) / 0.14, 2) - Math.pow((v + 0.015) / 0.19, 2)) * 0.055;
-      const mouth = Math.exp(-Math.pow((u - front + 0.06) / 0.055, 2) - Math.pow((v + 0.12) / 0.035, 2)) * 0.025;
+      const mouth = Math.exp(-Math.pow((u - front + 0.065) / 0.048, 2) - Math.pow((v + 0.10) / 0.032, 2)) * 0.045;
       depth = cranialDepth + nose + cheek - brow + mouth;
     } else if (inNeck) {
       depth = Math.sqrt(Math.max(0, 0.052 - Math.pow(u - 0.01, 2))) * 0.9;

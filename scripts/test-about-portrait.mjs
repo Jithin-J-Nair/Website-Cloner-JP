@@ -39,6 +39,13 @@ try {
   const deterministic = build(0, 8192);
   assert.deepEqual(baseline, deterministic, "the same member seed produces the same point cloud");
   const metrics = inspect(baseline);
+  let noseBandMaxX = -Infinity, foreheadBandMaxX = -Infinity;
+  for (let i = 0; i < baseline.length; i += 3) {
+    const x = baseline[i], y = baseline[i + 1];
+    if (y >= 0.10 && y <= 0.27) noseBandMaxX = Math.max(noseBandMaxX, x);
+    if (y >= 0.48 && y <= 0.82) foreheadBandMaxX = Math.max(foreheadBandMaxX, x);
+  }
+  assert.ok(noseBandMaxX > foreheadBandMaxX + 0.8, "side-profile nose projects distinctly beyond the forehead contour");
   assert.ok(metrics.maxX - metrics.minX > 3, "profile and shoulder silhouette occupy a human-scale horizontal span");
   assert.ok(metrics.maxY > 1.3 && metrics.minY < -1.5, "portrait has a full head-to-shoulder vertical extent");
   assert.ok(metrics.maxZ - metrics.minZ > 0.25, "the portrait retains actual 3D depth");
