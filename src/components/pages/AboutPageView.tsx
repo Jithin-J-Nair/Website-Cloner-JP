@@ -261,6 +261,8 @@ function AboutWhoExperience({
         uniforms: {
           uOpacity: { value: 0 },
           uCyanCore: { value: 0.25 },
+          uOpening: { value: 1 },
+          uWide: { value: 0 },
         },
         vertexShader: `
           varying vec2 vUv;
@@ -273,21 +275,29 @@ function AboutWhoExperience({
           varying vec2 vUv;
           uniform float uOpacity;
           uniform float uCyanCore;
+          uniform float uOpening;
+          uniform float uWide;
           void main() {
             // A finite overhead emitter and widening cone, not a laser joining
             // the cloud to the ground. Its top naturally enters the wide shot.
             float x = (vUv.x - .5) * 38.;
-            float y = vUv.y * 32. - 2.5;
-            float coneWidth = mix(2.4, .30, smoothstep(8., 22.3, y));
+            float y = vUv.y * 56. - 2.5;
+            float coneWidth = mix(3., .30, smoothstep(8., 23.2, y));
             float beam = exp(-pow(x / coneWidth, 2.)) * smoothstep(6., 10., y)
-              * (1. - smoothstep(22.4, 23.5, y));
-            float emitter = exp(-pow(x / .42, 2.) - pow((y - 22.3) / .42, 2.));
-            float halo = exp(-pow(x / 2.2, 2.) - pow((y - 22.3) / 2.6, 2.));
+              * (1. - smoothstep(23.3, 24.4, y));
+            float emitter = exp(-pow(x / .42, 2.) - pow((y - 23.2) / .42, 2.));
+            float halo = exp(-pow(x / mix(1.6, 3.6, uWide), 2.)
+              - pow((y - 23.2) / mix(2.6, 6.8, uWide), 2.));
             float cloudHaze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
-            float wideHaze = exp(-pow(x / 9., 2.)) * .022;
-            float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(25., 29.5, y));
+            float wideHaze = exp(-pow(x / 9., 2.)) * mix(.014, .035, uWide);
+            float beamVeil = exp(-pow(x / (coneWidth * 2.4), 2.))
+              * smoothstep(4., 11., y) * (1. - smoothstep(23.3, 25., y));
+            float atmosphere = exp(-pow(x / 7., 2.) - pow((y - 19.) / 11., 2.));
+            float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(42., 53.5, y));
             vec3 col = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore)
-              * (beam * .32 + emitter * 4. + halo * .40 + cloudHaze * .09 + wideHaze);
+              * ((beam * .22 + beamVeil * .075 + emitter * 4. + halo * .30
+                + atmosphere * .055 * uWide + wideHaze) * (1. - uOpening)
+                + cloudHaze * mix(.15, .09, 1. - uOpening));
             gl_FragColor = vec4(col, uOpacity * vertFade);
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
@@ -295,8 +305,8 @@ function AboutWhoExperience({
         `,
       })
     );
-    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 32.0)), godRayMat);
-    godRayPlane.position.set(-.35, 13.5, -2.5);
+    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 56.0)), godRayMat);
+    godRayPlane.position.set(-.35, 25.5, -2.5);
     godRayPlane.renderOrder = -1;
     scene.add(godRayPlane);
 
@@ -450,8 +460,8 @@ function AboutWhoExperience({
     const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
     const rockMat = track(
       new THREE.MeshStandardMaterial({
-        color: 0x2a2f38,
-        roughness: 0.78,
+        color: 0x747d85,
+        roughness: 0.86,
         metalness: 0.12,
         flatShading: true,
       })
@@ -464,7 +474,7 @@ function AboutWhoExperience({
       const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
       const rx = Math.cos(ang) * rad;
       const rz = 3.5 + Math.sin(ang) * rad * 0.72;
-      const scale = floating ? 0.12 + ((i * 19) % 10) * .028 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
+      const scale = floating ? .38 + ((i * 19) % 10) * .078 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
       // Half-embed small clasts instead of lifting every size eight centimetres
       // above the floor. Concentrate the same population on the visible basin.
       const ry = floating
@@ -486,6 +496,7 @@ function AboutWhoExperience({
       rockDummy.rotation.set(rs.phase, rs.phase * 1.4, 0);
       rockDummy.scale.setScalar(rs.scale * .58);
       rockDummy.updateMatrix(); rocksMesh.setMatrixAt(i, rockDummy.matrix);
+      rocksMesh.setColorAt(i, new THREE.Color(rs.floating ? 0xb3bdc4 : 0x4e5458));
     }
     rocksMesh.instanceMatrix.needsUpdate = true;
     scene.add(rocksMesh);
@@ -700,8 +711,11 @@ function AboutWhoExperience({
       // 2. Vertical volumetric God-Ray column & Valley Terrain & Explorer & Floating Rocks ('about-02')
       const landscapeVis = smoothstep(0.30, 1.05, u);
       const darkHudFade = 1 - smoothstep(3.45, 4.55, u);
-      godRayPlane.visible = landscapeVis * stormVis > 0.01;
-      godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
+      const atmosphereVis = Math.max(landscapeVis, (1 - landscapeVis) * .34) * stormVis;
+      godRayPlane.visible = atmosphereVis > 0.01;
+      godRayMat.uniforms.uOpacity.value = atmosphereVis * 0.85;
+      godRayMat.uniforms.uOpening.value = 1 - landscapeVis;
+      godRayMat.uniforms.uWide.value = smoothstep(30, 65, camZ);
       godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : 0;
 
       // The reference opening already has a readable, near-black basin rim behind
@@ -709,11 +723,13 @@ function AboutWhoExperience({
       // astronaut and god-ray beat: the world should not begin as a floating
       // particle-only void. The full landscape, explorer and shaft still arrive
       // on the later pullback cue.
-      const terrainReveal = lerp(.24, 1, smoothstep(.12, .92, u));
+      const terrainReveal = lerp(.04, 1, smoothstep(.12, .92, u));
       // Team mode returns to black to preserve portrait contrast.
       const narrativeGround = (1 - tTeamPhase) * .22;
       const terrainVis = terrainReveal * Math.max(darkHudFade, narrativeGround);
-      terrainMesh.visible = terrainVis > .01;
+      // Do not shade a full terrain pass at four-percent opacity behind the
+      // opening lettering. It enters with the existing pullback reveal.
+      terrainMesh.visible = terrainVis > .05;
       terrainMat.uniforms.uOpacity.value = terrainVis;
       terrainMat.uniforms.uValleyBrightness.value = lerp(.16, 1, darkHudFade);
 

@@ -18,7 +18,7 @@ vec3 plume(vec4 seed) {
   float envelope = .72 + .52 * cos(h * 1.12 + .35) + .18 * sin(h * 2.4 - uTime * .2);
   float radius = mix(.35, 1., pow(seed.x, .45)) * max(.22, envelope);
   // A small interior population fills the folds without washing out their form.
-  float interior = 1. - smoothstep(.12, .2, seed.w);
+  float interior = 1. - smoothstep(.28, .45, seed.w);
   phase = mix(phase, seed.y + uTime * .1, interior);
   radius = mix(radius, pow(seed.x, 1.4) * max(.22, envelope), interior);
   float arm = sin(phase * 2.0 + h * .55 + uTime * .12);
@@ -32,7 +32,7 @@ vec3 plume(vec4 seed) {
   p += vec3(cos(seed.y * 1.3) * 4.2, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.9) * fringe;
   // Opening cloud has a lateral, comet-like spread; the later wide shot reads as
   // a narrower overhead shaft against the valley.
-  p.x *= mix(1.05, 1.60, uCompact);
+  p.x *= mix(1.22, 1.60, uCompact);
   p.z *= mix(1.05, 1.28, uCompact);
   p.y *= mix(.92, 1.08, uCompact);
   p.z = min(p.z, 4.);
@@ -91,7 +91,7 @@ void main() {
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
 }`,
-    fragmentShader: `uniform float uOpacity, uCyanBoost, uCompact;
+    fragmentShader: `uniform float uOpacity, uCyanBoost, uCompact, uFocusDistance;
 uniform mat4 projectionMatrix;
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 void main() {
@@ -109,6 +109,9 @@ void main() {
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
   vec3 color = vec3(.07, .08, .09) + vec3(.40, .43, .45) * diffuse + specular * 1.05 + fresnel * .13;
   color = mix(color, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
+  // Near/far grains share directional light but not identical exposure: the
+  // back of the suspended volume is occluded, not a flat sheet of white beads.
+  color *= mix(.58, 1., smoothstep(-2.5, 2.5, vCenterEye.z + uFocusDistance));
   color *= mix(.82, 1.35, uCompact) * mix(1., .65, smoothstep(8., 90., vDepth));
   gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed) * (1. - smoothstep(.82, 1., r2)));
   #include <tonemapping_fragment>
