@@ -701,10 +701,15 @@ function AboutWhoExperience({
       godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
       godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : 0;
 
-      // Keep a faint real rock surface beneath the narrative/contours, as in the historical still.
+      // The reference opening already has a readable, near-black basin rim behind
+      // the silver plume. Reveal the terrain silhouette independently from the
+      // astronaut and god-ray beat: the world should not begin as a floating
+      // particle-only void. The full landscape, explorer and shaft still arrive
+      // on the later pullback cue.
+      const terrainReveal = mix(.24, 1, smoothstep(.12, .92, u));
       // Team mode returns to black to preserve portrait contrast.
       const narrativeGround = (1 - tTeamPhase) * .22;
-      const terrainVis = landscapeVis * Math.max(darkHudFade, narrativeGround);
+      const terrainVis = terrainReveal * Math.max(darkHudFade, narrativeGround);
       terrainMesh.visible = terrainVis > .01;
       terrainMat.uniforms.uOpacity.value = terrainVis;
       terrainMat.uniforms.uValleyBrightness.value = lerp(.16, 1, darkHudFade);
