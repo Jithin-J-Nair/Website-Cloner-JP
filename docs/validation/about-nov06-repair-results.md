@@ -6,11 +6,13 @@
 
 Studied and integrated `arena/95a11883-website-cloner-jp` at `8be3318bbcb46dc3e7d296da9160ceb1735462b9` with a fast-forward on the Arena session branch. The updated baseline included 12 commits and substantial Home/About work. It was not reset or replaced with the previous implementation. All new work belongs to **`arena/53eb1ea0-website-cloner-jp`**, not the inspected source branch. No production deployment or PR merge is authorized by this repair.
 
-## Concurrent source update — integration decision required
+## Concurrent source update — resolved with the user’s choice
 
 At the final remote check, the user-owned source branch had advanced independently to **`e1a9d23f3d62ced63ab1c1b89dd751d140e8e3d6`** through `a130e51`, `0b5a9c4`, `197f2f7`, `e1a9d23`. These commits replace `AboutPlume.ts` with a keyed video plane, upload/rename a clip, then remove the invalid clip. The latest source still points at `/videos/about-plume.mp4`, which is absent from its final tree.
 
-**The tests/evidence in this report certify repair commit `1d8a55a` built on `8be3318`, not a merge with those newer video commits.** Draft [PR #16](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/16) now conflicts in `AboutPlume.ts`. No merge, resolution or video activation was attempted: the user's intended video-versus-procedural direction needs confirmation. The source branch was never pushed by this session. The working repair is preserved and can be reviewed independently.
+The resulting `AboutPlume.ts` conflict was disclosed before resolution. The user explicitly chose **“Keep the real 3D plume”**: integrate the newer source history without enabling the missing-video replacement. The newer source history is now integrated on the session branch, with only that conflict resolved in favor of the tested procedural field. No source-branch push, PR merge or video activation was performed.
+
+**The integrated application and test files are byte-for-byte identical to verified repair `1d8a55a`** (`git diff --exit-code 1d8a55a -- src scripts`); before the documentation update, the entire resolved tree was identical to the pre-merge tree. Consequently, the browser artifacts still describe the integrated code rather than an untested combination of implementations. A post-resolution typecheck, plume/camera/terrain suites and production HTTP check are also recorded. Draft [PR #16](https://github.com/Jithin-J-Nair/Website-Cloner-JP/pull/16) remains draft for source-fidelity limits, not an unresolved integration conflict.
 
 ## Evidence, including its limits
 
