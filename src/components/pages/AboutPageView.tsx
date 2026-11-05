@@ -1302,19 +1302,12 @@ function AboutWhoExperience({
 /** The logo files are part of the repository's approved media bundle.
  * The alt text remains the brand name; the second marquee copy is hidden from AT.
  */
-function ClientLogoTile({ name, src }: { name: string; src: string }) {
+function ClientLogoTile({ name }: { name: string }) {
   return (
     <div role="listitem" className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
-      <img
-        src={src}
-        alt={name}
-        width={240}
-        height={240}
-        loading="eager"
-        decoding="async"
-        draggable={false}
-        className="about-client-logo-mark opacity-75"
-      />
+      <span className="about-client-wordmark" aria-label={name}>
+        {name}
+      </span>
     </div>
   );
 }
@@ -1519,7 +1512,6 @@ export function AboutPageView() {
                         <ClientLogoTile
                           key={`${copy}-${client.id}-${cIdx}`}
                           name={client.name}
-                          src={client.src}
                         />
                       ))}
                     </div>
@@ -1531,112 +1523,110 @@ export function AboutPageView() {
         </section>
 
         {/* =====================================================================
-            3. RECOGNITION LEDGER (`#about-award`: `58` Awards, `03` Articles, `5` Talks)
+            3. RECOGNITION LEDGER — pinned category index, internally scrolling record
            ===================================================================== */}
         <section
           id="about-award"
-          className="relative overflow-hidden bg-[#0d0c0f] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+          onPointerMove={event => {
+            const bounds = event.currentTarget.getBoundingClientRect();
+            event.currentTarget.style.setProperty("--award-pointer-x", `${((event.clientX - bounds.left) / Math.max(1, bounds.width)) * 100}%`);
+            event.currentTarget.style.setProperty("--award-pointer-y", `${((event.clientY - bounds.top) / Math.max(1, bounds.height)) * 100}%`);
+          }}
+          className="about-recognition-section relative isolate overflow-hidden bg-[#0d0c0f] px-[var(--base-padding-x)] py-20 text-white min-[813px]:py-24"
         >
-          <div aria-hidden="true" className="about-awards-monument"><span data-awards-word>AWARDS</span></div>
-          <div className="relative grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">
-            <div className="col-span-6 min-[813px]:col-span-4" data-award-reveal style={{ "--reveal-index": 0 } as React.CSSProperties}>
-              <div className="flex items-start gap-3">
-                <h2 className="font-sans text-5xl font-normal tracking-[-0.025em] text-white md:text-6xl">
-                  {LUSION_ABOUT.recognition.awardsHeading}
-                </h2>
-                <span className="mt-1 rounded-full bg-[#1a2ffb] px-3 py-1 font-mono text-xs font-medium text-white">
-                  {LUSION_ABOUT.recognition.awardsDisplayedTotal}
-                </span>
-              </div>
-            </div>
-
-            <div className="col-span-6 grid gap-5 md:grid-cols-2 min-[813px]:col-span-8">
-              {LUSION_ABOUT.recognition.awardGroups.map((group, groupIdx) => (
-                <div
-                  key={group.organization}
-                  className="about-award-group border-t border-white/20 py-5"
-                  data-award-reveal
-                  style={{ "--reveal-index": groupIdx + 1 } as React.CSSProperties}
-                >
-                  <div className="about-award-group-heading flex items-center justify-between border-b border-white/10 pb-3">
-                    <h3 className="font-sans text-lg font-medium text-white">
-                      {group.organization}
-                    </h3>
-                    <span className="font-mono text-xs text-white/60">
-                      {String(group.totalCount).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <ul className="mt-3 divide-y divide-white/8">
-                    {group.honors.map((honor) => (
-                      <li
-                        key={`${group.organization}-${honor.recognition}`}
-                        className="about-award-honor flex items-center justify-between py-2.5 text-sm"
-                      >
-                        <span className="text-white/85">{honor.recognition}</span>
-                        <span className="font-mono text-xs text-white/65">
-                          {honor.countFormatted}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+          <div className="about-awards-monument" aria-hidden="true">
+            {["AWARD", "WINNING", "MULTI", "DISCIPLINARY", "CREATIVE", "STUDIO"].map(word => (
+              <span key={word}>{word}</span>
+            ))}
           </div>
 
-          {/* 03 Articles + 5 Talks */}
-          <div className="mt-16 grid grid-cols-6 gap-10 border-t border-white/10 pt-14 min-[813px]:grid-cols-12">
-            <div className="about-recognition-column col-span-6 min-[813px]:col-span-6" data-award-reveal style={{ "--reveal-index": 1 } as React.CSSProperties}>
-              <div className="flex items-start gap-3">
-                <h3 className="font-sans text-4xl font-normal tracking-[-0.02em] text-white">
-                  {LUSION_ABOUT.recognition.articlesHeading}
-                </h3>
-                <span className="mt-1 rounded-full bg-white/12 px-3 py-0.5 font-mono text-xs text-white">
-                  {LUSION_ABOUT.recognition.articlesDisplayedTotal}
+          <div className="about-recognition-layout relative z-10 grid grid-cols-1 gap-10 min-[813px]:grid-cols-12 min-[813px]:gap-8">
+            <nav className="about-recognition-index min-[813px]:col-span-4" aria-label="Recognition categories">
+              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 0 } as React.CSSProperties}>
+                <h2>AWARDS</h2>
+                <span className="about-recognition-count">
+                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
+                  <span>{LUSION_ABOUT.recognition.awardsDisplayedTotal}</span>
                 </span>
               </div>
-              <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                {LUSION_ABOUT.recognition.articles.map((article) => (
-                  <li key={article.href}>
-                    <a
-                      href={article.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="about-recognition-link group flex items-center justify-between py-4 text-base text-white transition-colors hover:text-[#6e85ff]"
-                    >
-                      <span>{article.title}</span>
-                      <span
-                        aria-hidden="true"
-                        className="font-mono text-xs transition-transform group-hover:translate-x-1"
-                      >
-                        &#8599;
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 1 } as React.CSSProperties}>
+                <h2>ARTICLES</h2>
+                <span className="about-recognition-count">
+                  <span className="about-recognition-count-icon" aria-hidden="true">↗</span>
+                  <span>{LUSION_ABOUT.recognition.articlesDisplayedTotal}</span>
+                </span>
+              </div>
+              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 2 } as React.CSSProperties}>
+                <h2>TALKS</h2>
+                <span className="about-recognition-count">
+                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
+                  <span>{LUSION_ABOUT.recognition.talksDisplayedTotal}</span>
+                </span>
+              </div>
+            </nav>
 
-            <div className="about-recognition-column col-span-6 min-[813px]:col-span-6" data-award-reveal style={{ "--reveal-index": 2 } as React.CSSProperties}>
-              <div className="flex items-start gap-3">
-                <h3 className="font-sans text-4xl font-normal tracking-[-0.02em] text-white">
-                  {LUSION_ABOUT.recognition.talksHeading}
-                </h3>
-                <span className="mt-1 rounded-full bg-white/12 px-3 py-0.5 font-mono text-xs text-white">
-                  {LUSION_ABOUT.recognition.talksDisplayedTotal}
-                </span>
-              </div>
-              <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                {LUSION_ABOUT.recognition.talks.map((talk) => (
-                  <li
-                    key={`${talk.event}-${talk.dateAndLocation}`}
-                    className="about-talk-row flex items-center justify-between py-4 text-base"
-                  >
-                    <span className="font-medium text-white">{talk.event}</span>
-                    <span className="font-mono text-xs text-white/70">{talk.dateAndLocation}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="about-recognition-window min-[813px]:col-span-8" aria-label="Awards, articles and talks">
+              <section className="about-recognition-record" aria-labelledby="about-awards-record-title">
+                <div className="about-recognition-record-heading">
+                  <h3 id="about-awards-record-title">AWARDS</h3>
+                  <span className="font-mono text-xs text-white/55">58 HONORS</span>
+                </div>
+                <div className="about-recognition-award-header" aria-hidden="true">
+                  <span>ORGANIZATION</span><span>COUNT</span><span>RECOGNITION</span>
+                </div>
+                <ul className="about-recognition-award-table">
+                  {LUSION_ABOUT.recognition.awardGroups.flatMap(group =>
+                    group.honors.map(honor => (
+                      <li
+                        key={`${group.organization}-${honor.recognition}`}
+                        className="about-recognition-award-row"
+                        data-award-reveal
+                      >
+                        <span className="about-recognition-org">{group.organization}</span>
+                        <span className="about-recognition-count-cell">{honor.countFormatted}</span>
+                        <span className="about-recognition-label">{honor.recognition}</span>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </section>
+
+              <section className="about-recognition-record" aria-labelledby="about-articles-record-title">
+                <div className="about-recognition-record-heading">
+                  <h3 id="about-articles-record-title">ARTICLES</h3>
+                  <span className="font-mono text-xs text-white/55">03 FEATURES</span>
+                </div>
+                <ul className="about-recognition-link-list">
+                  {LUSION_ABOUT.recognition.articles.map(article => (
+                    <li key={article.href}>
+                      <a
+                        href={article.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="about-recognition-link"
+                      >
+                        <span>{article.title}</span>
+                        <span aria-hidden="true" className="font-mono text-xs">↗</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="about-recognition-record" aria-labelledby="about-talks-record-title">
+                <div className="about-recognition-record-heading">
+                  <h3 id="about-talks-record-title">TALKS</h3>
+                  <span className="font-mono text-xs text-white/55">05 EVENTS</span>
+                </div>
+                <ul className="about-recognition-talk-table">
+                  {LUSION_ABOUT.recognition.talks.map(talk => (
+                    <li key={`${talk.event}-${talk.dateAndLocation}`} className="about-talk-row">
+                      <span>{talk.event}</span>
+                      <span>{talk.dateAndLocation}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             </div>
           </div>
         </section>

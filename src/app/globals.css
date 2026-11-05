@@ -385,28 +385,183 @@ body {
   opacity: 1;
 }
 
-/* About's recognition is a typographic act, not another UI-card section. */
-.about-awards-monument {
-  position: relative;
-  margin-inline: calc(var(--base-padding-x) * -1);
-  margin-bottom: clamp(2rem, 5vw, 6rem);
-  overflow: hidden;
-  line-height: .9;
-  letter-spacing: -.055em;
-  font-size: 23vw;
-  color: transparent;
-  -webkit-text-stroke: 1px rgb(255 255 255 / .5);
-  user-select: none;
+/* About recognition: pinned index, clipped ledger, outlined type and pointer glint. */
+.about-recognition-section {
+  min-height: 100svh;
+  --award-pointer-x: 70%;
+  --award-pointer-y: 32%;
 }
-.about-awards-monument span { display: block; width: max-content; }
-.about-expertise-diagram { contain: layout; }
+.about-recognition-section::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(460px circle at var(--award-pointer-x) var(--award-pointer-y), rgb(255 112 58 / .15), transparent 58%),
+    radial-gradient(560px circle at var(--award-pointer-x) var(--award-pointer-y), rgb(49 91 255 / .12), transparent 72%);
+  mix-blend-mode: screen;
+}
+.about-awards-monument {
+  position: absolute;
+  z-index: 0;
+  inset: 1.5rem 0 auto;
+  overflow: hidden;
+  line-height: .76;
+  letter-spacing: -.065em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(255 255 255 / .21);
+  user-select: none;
+  pointer-events: none;
+  opacity: .54;
+}
+.about-awards-monument span {
+  display: block;
+  width: max-content;
+  font-size: clamp(4.5rem, 13.4vw, 12.4rem);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.about-awards-monument span:nth-child(even) { margin-left: 12vw; }
+.about-recognition-layout { align-items: start; }
+.about-recognition-index {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.2vh, 2.2rem);
+}
+.about-recognition-index-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: .9rem;
+  border-bottom: 1px solid rgb(255 255 255 / .22);
+}
+.about-recognition-index-item h2 {
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  line-height: .96;
+  font-weight: 400;
+  letter-spacing: -.045em;
+}
+.about-recognition-count {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: .65rem;
+  font-family: var(--font-jetbrains-mono, ui-monospace), monospace;
+  font-size: clamp(1rem, 1.55vw, 1.45rem);
+  font-variant-numeric: tabular-nums;
+}
+.about-recognition-count-icon { color: rgb(255 255 255 / .72); font-size: .8em; }
+.about-recognition-window {
+  position: relative;
+  z-index: 2;
+  height: min(72svh, 48rem);
+  min-height: 32rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  padding: .5rem clamp(.75rem, 2.4vw, 2.25rem) 2rem 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 92%, transparent 100%);
+}
+.about-recognition-window::-webkit-scrollbar { display: none; }
+.about-recognition-record { padding-block: 1.5rem 3rem; }
+.about-recognition-record + .about-recognition-record { border-top: 1px solid rgb(255 255 255 / .23); }
+.about-recognition-record-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+.about-recognition-record-heading h3 {
+  font-size: clamp(1.35rem, 2.2vw, 2.05rem);
+  font-weight: 400;
+  letter-spacing: -.035em;
+}
+.about-recognition-award-header,
+.about-recognition-award-row {
+  display: grid;
+  grid-template-columns: minmax(7.2rem, 1.25fr) minmax(3.2rem, .42fr) minmax(10rem, 1.75fr);
+  column-gap: clamp(.6rem, 1.4vw, 1.35rem);
+  align-items: baseline;
+}
+.about-recognition-award-header {
+  padding-block: .8rem;
+  border-bottom: 1px solid rgb(255 255 255 / .28);
+  color: rgb(255 255 255 / .48);
+  font: 9px/1.2 var(--font-jetbrains-mono, ui-monospace), monospace;
+  letter-spacing: .12em;
+}
+.about-recognition-award-row {
+  min-height: 3.15rem;
+  padding-block: .9rem;
+  border-bottom: 1px solid rgb(255 255 255 / .095);
+  font-size: clamp(.82rem, 1vw, .96rem);
+}
+.about-recognition-org { color: rgb(255 255 255 / .56); }
+.about-recognition-count-cell {
+  color: rgb(255 255 255 / .86);
+  font: 11px/1.2 var(--font-jetbrains-mono, ui-monospace), monospace;
+  font-variant-numeric: tabular-nums;
+}
+.about-recognition-label { color: rgb(255 255 255 / .9); }
+.about-recognition-link-list,
+.about-recognition-talk-table { border-top: 1px solid rgb(255 255 255 / .22); }
+.about-recognition-link {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid rgb(255 255 255 / .12);
+  color: white;
+  text-decoration: none;
+  transition: color .22s ease, padding-inline .32s cubic-bezier(.22,1,.36,1), background-color .22s ease;
+}
+.about-talk-row {
+  display: flex;
+  min-height: 3.7rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: .9rem;
+  border-bottom: 1px solid rgb(255 255 255 / .12);
+  font-size: clamp(.82rem, 1vw, .96rem);
+}
+.about-talk-row span:last-child {
+  flex: none;
+  color: rgb(255 255 255 / .58);
+  font: 10px/1.2 var(--font-jetbrains-mono, ui-monospace), monospace;
+}
 @media (hover: hover) and (pointer: fine) {
-  .about-expertise-column:hover { border-color: white; }
+  .about-recognition-link:hover {
+    padding-inline: .8rem;
+    color: #a9c2ff;
+    background: rgb(255 255 255 / .035);
+  }
+  .about-talk-row:hover { background: rgb(255 255 255 / .045); }
+}
+@media (max-width: 812px) {
+  .about-recognition-section { min-height: auto; }
+  .about-recognition-index { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .55rem; }
+  .about-recognition-index-item { align-items: flex-start; flex-direction: column; gap: .55rem; padding-block: .6rem; }
+  .about-recognition-index-item h2 { font-size: clamp(1.1rem, 5.2vw, 1.45rem); }
+  .about-recognition-count { gap: .35rem; font-size: .95rem; }
+  .about-recognition-window { height: 66svh; min-height: 28rem; padding-right: 0; }
+  .about-recognition-award-header,
+  .about-recognition-award-row { grid-template-columns: minmax(5.2rem,1fr) 2.6rem minmax(7.5rem,1.4fr); column-gap: .55rem; }
+  .about-recognition-award-header { font-size: 7px; }
+  .about-recognition-award-row { font-size: .78rem; }
+  .about-talk-row { align-items: flex-start; flex-direction: column; gap: .35rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .about-expertise-column { transform: none !important; }
+  .about-recognition-link { transition: none; }
 }
-
 /* Keep technical registration marks and accessible HTML; replace only the flat drawing. */
 #about-capability[data-expertise-webgl="ready"] .about-expertise-diagram [data-expertise-plane] {
   opacity: 0;
