@@ -279,10 +279,16 @@ try {
       const ledgerScrollTop = await recognitionWindow.evaluate(element => element.scrollTop);
       assert.ok(ledgerScrollTop > 0, 'recognition row traversal scrolls the internal record window');
       if (awardCount > 0) {
+        // Recognition's clipped scroller can move only its contents, leaving
+        // brands inside their deliberate 140px observer warm margin. Test the
+        // offscreen lifecycle at an explicitly separate document section.
+        const awardsTop = await page.locator('#about-award').evaluate(el => el.getBoundingClientRect().top + scrollY);
+        await seekY(await page.locator('#about-capability').evaluate(el => el.getBoundingClientRect().top + scrollY));
         await page.waitForFunction(() => {
           const tracks = [...document.querySelectorAll('#about-clients .about-client-marquee-track')];
           return tracks.length === 3 && tracks.every(track => getComputedStyle(track).animationPlayState === 'paused');
         }, null, { timeout: 5000 });
+        await seekY(awardsTop);
       }
       const awardState = await page.evaluate(() => ({
         visible: [...document.querySelectorAll('#about-award [data-award-reveal]')].filter(el => el.classList.contains('is-in-view')).length,
@@ -443,7 +449,17 @@ try {
       await page.waitForFunction(() => window.scrollY < 80, null, { timeout: 15000 });
       await page.screenshot({ path: `${out}/${width}-footer-return.png`, fullPage: false, timeout: 120000 });
       await page.locator('#scroll-nav-next').scrollIntoViewIfNeeded();
-      await page.locator('#scroll-nav-next').click();
+      const portalLayout = await page.locator('#scroll-nav-next').evaluate(button => {
+        const rect=button.getBoundingClientRect(), portal=document.querySelector('#scroll-nav-section').getBoundingClientRect();
+        return {top:rect.top,bottom:rect.bottom,portalTop:portal.top,portalBottom:portal.bottom,height:innerHeight,scrollHeight:button.closest('#scroll-nav-section').scrollHeight,clientHeight:button.closest('#scroll-nav-section').clientHeight};
+      });
+      assert.ok(portalLayout.top>=portalLayout.portalTop && portalLayout.bottom<=portalLayout.portalBottom,
+        'next-page action is visible inside its portal, not overflow-clipped before focus');
+      assert.ok(portalLayout.top>=0 && portalLayout.bottom<=height,'next-page action remains within the viewport');
+      if(width===390) assert.ok(portalLayout.scrollHeight<=portalLayout.clientHeight+1,'mobile About portal must not clip controls and expand during touch focus');
+      report.portalLayout=portalLayout;
+      if (width===390) await page.locator('#scroll-nav-next').tap();
+      else await page.locator('#scroll-nav-next').click();
       await page.waitForURL(url => url.pathname === '/projects', { timeout: 20000 });
       assert.equal(new URL(page.url()).pathname, '/projects', 'Next Page router button navigates to Projects');
 

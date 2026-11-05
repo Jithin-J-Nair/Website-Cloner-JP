@@ -463,12 +463,15 @@ export function StudioFooter({
         </div>
       </footer>
 
-      {/* 2. Bottom Overscroll Next-Page Portal (`#scroll-nav-section`, `#121416` slate) */}
+      {/* 2. Bottom Overscroll Next-Page Portal (`#scroll-nav-section`, `#121416` slate).
+          About's next action stays visible on touch: expanding a clipped portal
+          on focus moves the button between pointer-down/up and cancels activation.
+          Keep other routes' existing presentation unchanged. */}
       <div
         id="scroll-nav-section"
         ref={portalRef}
         data-path={resolvedPortal.targetPath}
-        className="relative z-[32] flex flex-col justify-between overflow-hidden bg-[#121416] px-[var(--base-padding-x)] py-7 text-[clamp(0.875rem,1vw,1.25rem)] text-white max-[812px]:max-h-[116px] max-[812px]:focus-within:max-h-[340px] md:min-h-[428px] md:py-11"
+        className={`relative z-[32] flex flex-col justify-between overflow-hidden bg-[#121416] px-[var(--base-padding-x)] py-7 text-[clamp(0.875rem,1vw,1.25rem)] text-white md:min-h-[428px] md:py-11 ${pathname === "/about" ? "" : "max-[812px]:max-h-[116px] max-[812px]:focus-within:max-h-[340px]"}`}
       >
         <div id="scroll-nav-content" className="uppercase">
           <div id="scroll-nav-subtitle" className="text-[0.85em] leading-[1.35] text-white/80">

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
-import { aboutScenePose, aboutWordmarkSweepPose } from "@/lib/about-scene-motion";
+import { aboutScenePose, aboutWordmarkSweepPose, aboutLetteringPose } from "@/lib/about-scene-motion";
 import { buildSculpturalPortraitPositions } from "@/lib/about-portrait-geometry";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
@@ -278,16 +278,16 @@ function AboutWhoExperience({
             // the cloud to the ground. Its top naturally enters the wide shot.
             float x = (vUv.x - .5) * 38.;
             float y = vUv.y * 32. - 2.5;
-            float coneWidth = mix(1.45, .16, smoothstep(8., 22.3, y));
+            float coneWidth = mix(2.4, .30, smoothstep(8., 22.3, y));
             float beam = exp(-pow(x / coneWidth, 2.)) * smoothstep(6., 10., y)
               * (1. - smoothstep(22.4, 23.5, y));
-            float emitter = exp(-pow(x / .25, 2.) - pow((y - 22.3) / .25, 2.));
-            float halo = exp(-pow(x / 1.1, 2.) - pow((y - 22.3) / 1.2, 2.));
+            float emitter = exp(-pow(x / .42, 2.) - pow((y - 22.3) / .42, 2.));
+            float halo = exp(-pow(x / 2.2, 2.) - pow((y - 22.3) / 2.6, 2.));
             float cloudHaze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
-            float wideHaze = exp(-pow(x / 9., 2.)) * .014;
+            float wideHaze = exp(-pow(x / 9., 2.)) * .022;
             float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(25., 29.5, y));
             vec3 col = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore)
-              * (beam * .20 + emitter * 4. + halo * .32 + cloudHaze * .035 + wideHaze);
+              * (beam * .32 + emitter * 4. + halo * .40 + cloudHaze * .09 + wideHaze);
             gl_FragColor = vec4(col, uOpacity * vertFade);
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
@@ -687,6 +687,9 @@ function AboutWhoExperience({
       if (sphereStorm.visible) {
         stormMat.uniforms.uTime.value = reducedMotion ? 0.5 : elapsedSec;
         stormMat.uniforms.uCompact.value = tPullback;
+        // Focus follows the existing camera, rather than leaving distant grains
+        // defocused and oversized as if the opening shot were still active.
+        stormMat.uniforms.uFocusDistance.value = Math.hypot(camX + .35, camY - 8.4, camZ);
         stormMat.uniforms.uMobile.value = isMobile ? 1.0 : 0.0;
         stormMat.uniforms.uPointer.value.copy(pointerWorld);
         stormMat.uniforms.uPointerStrength.value = pointerActive;
@@ -788,12 +791,12 @@ function AboutWhoExperience({
       // -----------------------------------------------------------------------
       // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
       // -----------------------------------------------------------------------
-      // A. The straight monumental wordmark holds through the first elastic
-      // lettering sweep, returns cleanly, then exits only as the studio statement
-      // settles. The previous early fade removed it before the reference's main beat.
+      // A. Exclusive lettering chapters: opening → flourish → manifesto.
+      // One pure packet owns visibility; no second playhead or delayed callbacks.
+      const lettering = aboutLetteringPose(u, isMobile);
       if (heroWordmarkRef.current) {
-        const wordOut = 1 - smoothstep(isMobile ? 4.55 : 4.72, isMobile ? 5.18 : 5.38, u);
-        const slideX = -smoothstep(isMobile ? 4.58 : 4.72, isMobile ? 5.18 : 5.38, u) * (isMobile ? 48 : 66);
+        const wordOut = lettering.opening;
+        const slideX = reducedMotion ? 0 : -lettering.openingTravel * (isMobile ? 24 : 36);
         heroWordmarkRef.current.style.opacity = String(wordOut);
         heroWordmarkRef.current.style.transform = `translate3d(${slideX}vw, 0, 0)`;
         heroWordmarkRef.current.style.visibility = wordOut > 0.005 ? "visible" : "hidden";
@@ -823,21 +826,17 @@ function AboutWhoExperience({
       // B. The two-sided studio statement arrives after the first wordmark
       // distortion and remains alongside the valley shot until the later narrative.
       if (manifestoOverlayRef.current) {
-        const manIn = smoothstep(isMobile ? 1.95 : 2.02, isMobile ? 2.45 : 2.48, u);
-        const manOut = 1 - smoothstep(isMobile ? 5.72 : 5.78, isMobile ? 6.28 : 6.34, u);
-        const manVis = manIn * manOut;
+        const manVis = lettering.manifesto;
         manifestoOverlayRef.current.style.opacity = String(manVis);
         manifestoOverlayRef.current.style.visibility = manVis > 0.005 ? "visible" : "hidden";
-        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(2.02, 2.48, u))}vw, 0, 0)`;
+        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(isMobile ? 1.95 : 1.1, isMobile ? 2.42 : 1.6, u))}vw, 0, 0)`;
       }
 
       // C. Studio Narrative HUD: each word owns a deterministic scroll window.
       // No React state or per-frame DOM queries; the same playhead drives reverse fade/slide.
       if (narrativeOverlayRef.current) {
-        const narIn = smoothstep(4.45, 4.82, u);
         const exit = smoothstep(5.82, 6.42, u);
-        const narOut = 1 - exit;
-        const narVis = narIn * narOut;
+        const narVis = lettering.narrative;
         narrativeOverlayRef.current.style.opacity = "1";
         narrativeOverlayRef.current.style.visibility = narVis > 0.005 ? "visible" : "hidden";
         narrativeOverlayRef.current.style.transform = `translate3d(${-7 * exit}vw,0,0)`;
@@ -1177,25 +1176,27 @@ function AboutWhoExperience({
         <div
           ref={narrativeOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[16vh] bottom-[6vh] z-20 flex flex-col justify-between"
+          data-about-narrative
+          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[14vh] bottom-[6vh] z-20 flex flex-col items-center justify-center text-center"
         >
           <p
             id="about-who-desc-top"
             aria-label="A worldwide team of specialists in design, motion, 3D, and technology"
-            className="font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
+            className="font-sans text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.12] tracking-[-0.02em] text-white"
           >
-            {narrativeWords(["A", "worldwide", "team"], 0, 3)}<br />
-            {narrativeWords(["of", "specialists", "in", "design,"], 3)}<br />
+            {narrativeWords(["A", "worldwide", "team", "of"], 0, 3)}<br />
+            {narrativeWords(["specialists", "in", "design,"], 4)}<br />
             {narrativeWords(["motion,", "3D,", "and", "technology"], 7)}
           </p>
           <p
             id="about-who-desc-bottom"
             aria-label="working together to turn ambitious ideas into immersive digital experiences."
-            className="self-end text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            className="font-sans text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.12] tracking-[-0.02em] text-white"
           >
             {narrativeWords(["working", "together", "to"], 11)}<br />
             {narrativeWords(["turn", "ambitious", "ideas", "into"], 14)}<br />
-            {narrativeWords(["immersive", "digital", "experiences."], 18)}
+            {narrativeWords(["immersive", "digital"], 18)}<br />
+            {narrativeWords(["experiences."], 20)}
           </p>
         </div>
 
@@ -1205,7 +1206,7 @@ function AboutWhoExperience({
           style={{ opacity: 0, visibility: "hidden" }}
           data-team-active="false"
           data-reduced={reducedMotion}
-          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-28 pb-8 min-[820px]:pt-36"
+          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pb-8"
         >
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
@@ -1489,7 +1490,7 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="suspended-volume-dual-basin-v2" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
+    <main id="about" data-scene-version="about-lettering-filaments-v3" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
         {/* =====================================================================

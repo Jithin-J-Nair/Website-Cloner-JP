@@ -1,0 +1,20 @@
+{
+  "viewport": {
+    "width": 1536,
+    "height": 810
+  },
+  "teamHudClearance": {
+    "headerBottom": 144.796875,
+    "titleTop": 160.796875,
+    "gap": 16
+  },
+  "originalMember": "Edan Kwan",
+  "selectorControl": {
+    "width": 24,
+    "height": 24,
+    "visible": true
+  },
+  "memberAfterClick": "Ffion Morgan",
+  "yawAtPointer": 0.07088716179980223,
+  "yawAfterRelease": 0.05515644168636141
+}

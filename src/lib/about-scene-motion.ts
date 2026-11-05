@@ -8,19 +8,18 @@ const ease = (a: number, b: number, u: number) => {
   return t * t * (3 - 2 * t);
 };
 /**
- * A brief, original curved wordmark sweep observed during the supplied About
- * recording. Values are authored scroll-space choreography, not recovered
+ * A brief, original curved wordmark sweep informed by the upstream review of
+ * the supplied About recording (secondary evidence, not personally viewed). Values are authored scroll-space choreography, not recovered
  * Lusion spline/timing constants. It shares the About world’s single playhead.
  */
 export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
   const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
-  // In the reference recording the monumental wordmark holds first. A single
-  // oversized elastic sweep crosses it during the first valley reveal, then
-  // clears so the straight baseline mark can remain readable.
-  const start = mobile ? 1.9 : 1.92;
-  const peak = mobile ? 2.32 : 2.34;
-  const holdEnd = mobile ? 2.56 : 2.62;
-  const end = mobile ? 2.98 : 3.02;
+  // Desktop hands off before the settled basin; touch uses its own later
+  // shallow curve. These authored windows are not source timing measurements.
+  const start = mobile ? 1.9 : .72;
+  const peak = mobile ? 2.32 : 1.10;
+  const holdEnd = mobile ? 2.56 : 1.30;
+  const end = mobile ? 2.98 : 1.58;
   const enter = ease(start, peak, u);
   const exit = 1 - ease(holdEnd, end, u);
   const flourish = enter * exit;
@@ -29,10 +28,10 @@ export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
     opacity: flourish,
     xVw: mobile ? mix(-1, -3, travel) : mix(0, -2, travel),
     yVh: mobile ? mix(1, -2, travel) : mix(1, -3, travel),
-    rotation: mobile ? mix(-1, 1, travel) : mix(-1.2, 1.2, travel),
-    stretchX: 1 + (mobile ? 0.28 : 0.72) * flourish,
-    skewX: (mobile ? -18 : -28) * flourish,
-    scale: mobile ? mix(1.05, 1.12, flourish) : mix(1.18, 1.42, flourish),
+    rotation: mobile ? mix(-.8, .6, travel) : mix(-4, 2, travel),
+    stretchX: 1 + (mobile ? .075 : .34) * flourish,
+    skewX: -(mobile ? 5 : 13) * flourish,
+    scale: mix(.98, 1.035, flourish),
   };
 }
 
@@ -51,5 +50,17 @@ export function aboutScenePose(progress: number, mobile: boolean) {
     y: mix(8.15, mix(valleyY, 6.6, editorial), pullback),
     z: mix(mobile ? 8.6 : 6.9, mix(valleyZ, mobile ? 21.5 : 18.2, editorial), pullback),
     lookY: mix(8.15, mix(valleyLook, mix(7.6, .85, team), editorial), pullback),
+  };
+}
+
+/** One lettering packet prevents HUD chapters from drifting independently.
+ * Pure/reversible: no timers, React updates, renderer or input ownership here. */
+export function aboutLetteringPose(progress: number, mobile: boolean) {
+  const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
+  return {
+    opening: 1 - ease(mobile ? 1.45 : .62, mobile ? 1.95 : 1.15, u),
+    openingTravel: ease(mobile ? 1.45 : .62, mobile ? 1.95 : 1.15, u),
+    manifesto: ease(mobile ? 1.95 : 1.1, mobile ? 2.42 : 1.6, u) * (1 - ease(3.65, 4.35, u)),
+    narrative: ease(4.45, 4.82, u) * (1 - ease(5.82, 6.42, u)),
   };
 }
