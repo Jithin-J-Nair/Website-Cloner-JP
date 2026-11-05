@@ -30,6 +30,11 @@ try {
     return { minX, maxX, minY, maxY, minZ, maxZ, forwardMeanX: forwardBandX / Math.max(1, forwardBandCount) };
   };
 
+  for (const count of [8192, 16384, 24576]) {
+    const tier = build(2, count);
+    assert.equal(tier.length, count * 3, `portrait quality tier allocates exactly ${count} 3D points`);
+    assert.ok(tier.every(Number.isFinite), `portrait quality tier ${count} remains finite`);
+  }
   const baseline = build(0, 8192);
   const deterministic = build(0, 8192);
   assert.deepEqual(baseline, deterministic, "the same member seed produces the same point cloud");
@@ -45,6 +50,9 @@ try {
   assert.equal(build(2, 512).length, 512 * 3, "small quality tiers keep an exact point count");
   assert.equal(build(2, 0).length, 3, "invalid zero count is clamped to one safe point");
   assert.equal(build(NaN, 128).length, 128 * 3, "invalid member index falls back to a stable seed");
+  const page = fs.readFileSync("src/components/pages/AboutPageView.tsx", "utf8");
+  assert.match(page, /tier === "medium" \? 16384 : 24576/, "desktop medium/high portrait tiers are 16K/24K");
+  assert.match(page, /portraitCountRef\.current = reducedMotion \|\| software \|\| window\.innerWidth < 820 \|\| tier === "low"/, "mobile, low and reduced-motion tiers cap at 8K");
 
   console.log("PASS About portrait geometry: deterministic, bounded, finite 3D side-profile silhouettes; distinct mirrored variants; exact point counts and safe input fallbacks.");
 } finally {

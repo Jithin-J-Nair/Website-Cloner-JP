@@ -55,7 +55,11 @@ function AboutWhoExperience({
   const chromaticRingRef = useRef<HTMLDivElement | null>(null);
   const manifestoOverlayRef = useRef<HTMLDivElement | null>(null);
   const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
+  const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
+  const portraitCountRef = useRef(8192);
+  const onStepMemberRef = useRef(onStepMember);
+  onStepMemberRef.current = onStepMember;
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
@@ -69,6 +73,41 @@ function AboutWhoExperience({
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    let timeoutId = 0;
+    const clearAdvance = () => {
+      if (timeoutId) window.clearTimeout(timeoutId);
+      timeoutId = 0;
+    };
+    const evaluateTeamStage = () => {
+      if (document.hidden || teamOverlayRef.current?.dataset.teamActive !== "true") {
+        clearAdvance();
+        return;
+      }
+      if (!timeoutId) {
+        timeoutId = window.setTimeout(() => {
+          timeoutId = 0;
+          if (!document.hidden && teamOverlayRef.current?.dataset.teamActive === "true") {
+            onStepMemberRef.current(1);
+          }
+        }, 4800);
+      }
+    };
+    const pollId = window.setInterval(evaluateTeamStage, 160);
+    const onVisibility = () => {
+      clearAdvance();
+      if (!document.hidden) evaluateTeamStage();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    evaluateTeamStage();
+    return () => {
+      window.clearInterval(pollId);
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearAdvance();
+    };
+  }, [activeMemberIdx, reducedMotion]);
 
   // Original, non-likeness portrait study. A member change interpolates from
   // the currently visible point positions, so rapid selections remain interruptible.
@@ -84,7 +123,7 @@ function AboutWhoExperience({
       from.array[i] = from.array[i] * (1 - currentMorph) + position.array[i] * currentMorph;
     }
     from.needsUpdate = true;
-    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx));
+    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx, portraitCountRef.current));
     position.needsUpdate = true;
     geo.computeBoundingSphere();
     portraitMorphStartRef.current = -1;
@@ -124,6 +163,10 @@ function AboutWhoExperience({
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
+    // Portrait quality stays bounded and independent from the plume's bead budget.
+    portraitCountRef.current = reducedMotion || software || window.innerWidth < 820 || tier === "low"
+      ? 8192
+      : tier === "medium" ? 16384 : 24576;
     glRenderer.setClearColor(0x0d0c0f, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -411,7 +454,7 @@ function AboutWhoExperience({
     // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
     // -------------------------------------------------------------------------
     const portraitGeo = track(new THREE.BufferGeometry());
-    const initialPortrait = buildSculpturalPortraitPositions(memberRef.current, 8192);
+    const initialPortrait = buildSculpturalPortraitPositions(memberRef.current, portraitCountRef.current);
     portraitGeo.setAttribute("position", new THREE.BufferAttribute(initialPortrait, 3));
     portraitGeo.setAttribute("aMorphFrom", new THREE.BufferAttribute(initialPortrait.slice(), 3));
     portraitGeoRef.current = portraitGeo;
@@ -450,7 +493,7 @@ function AboutWhoExperience({
             vDepth = -mv.z;
             vShade = clamp(p.z * 0.85 + 0.42, 0.12, 1.0);
             float dof = 1.0 + abs(p.z - 0.35) * 2.2;
-            gl_PointSize = (2.15 * dof) * uPixelRatio;
+            gl_PointSize = (2.45 * dof) * uPixelRatio;
             gl_Position = projectionMatrix * mv;
           }
         `,
@@ -476,12 +519,13 @@ function AboutWhoExperience({
 
     // Original depth-layered vertical light field, sharing the portrait clock.
     // These are abstract atmosphere, never a replacement claim for an employee likeness.
-    const lightPositions = new Float32Array(96 * 6);
-    for (let i = 0; i < 96; i++) {
-      const x = (i / 95 - .5) * 3.5;
-      const z = Math.sin(i * 17.31) * .7 - .3;
-      const bottom = -1.8 + Math.sin(i * 9.1) * .2;
-      const top = 1.7 + Math.cos(i * 4.7) * .65;
+    const streakCount = 384;
+    const lightPositions = new Float32Array(streakCount * 6);
+    for (let i = 0; i < streakCount; i++) {
+      const x = (i / (streakCount - 1) - .5) * 10.5;
+      const z = Math.sin(i * 17.31) * 1.2 - .6;
+      const bottom = -4.8 + Math.sin(i * 9.1) * .4;
+      const top = 4.5 + Math.cos(i * 4.7) * .75;
       lightPositions.set([x, bottom, z, x, top, z], i * 6);
     }
     const lightGeometry = track(new THREE.BufferGeometry());
@@ -743,13 +787,25 @@ function AboutWhoExperience({
         manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(1.1, 1.6, u))}vw, 0, 0)`;
       }
 
-      // C. Studio Narrative HUD ('about-03-details-hud', 'u = 4.45 .. 6.35')
+      // C. Studio Narrative HUD: each word owns a deterministic scroll window.
+      // No React state or per-frame DOM queries; the same playhead drives reverse fade/slide.
       if (narrativeOverlayRef.current) {
-        const narIn = smoothstep(4.45, 5.0, u);
-        const narOut = 1 - smoothstep(5.85, 6.45, u);
+        const narIn = smoothstep(4.45, 4.82, u);
+        const exit = smoothstep(5.82, 6.42, u);
+        const narOut = 1 - exit;
         const narVis = narIn * narOut;
-        narrativeOverlayRef.current.style.opacity = String(narVis);
+        narrativeOverlayRef.current.style.opacity = "1";
         narrativeOverlayRef.current.style.visibility = narVis > 0.005 ? "visible" : "hidden";
+        narrativeOverlayRef.current.style.transform = `translate3d(${-7 * exit}vw,0,0)`;
+        for (let i = 0; i < narrativeWordRefs.current.length; i++) {
+          const word = narrativeWordRefs.current[i];
+          if (!word) continue;
+          const stagger = i * 0.014;
+          const enter = smoothstep(4.45 + stagger, 4.69 + stagger, u);
+          const leave = 1 - smoothstep(5.82 + stagger * .65, 6.12 + stagger * .65, u);
+          word.style.opacity = String(enter * leave);
+          word.style.transform = `translate3d(${lerp(16, 0, enter) - 10 * exit}px,0,0)`;
+        }
       }
 
       // D. Full-Bleed Interactive 'T E A M' Hologram HUD ('about-04-team-hologram', 'u >= 6.45')
@@ -757,6 +813,7 @@ function AboutWhoExperience({
         teamOverlayRef.current.style.opacity = String(tTeamPhase);
         teamOverlayRef.current.style.visibility = tTeamPhase > 0.01 ? "visible" : "hidden";
         teamOverlayRef.current.style.pointerEvents = tTeamPhase > 0.45 ? "auto" : "none";
+        teamOverlayRef.current.dataset.teamActive = tTeamPhase > .985 ? "true" : "false";
       }
 
       glRenderer.render(scene, camera);
@@ -1078,15 +1135,93 @@ function AboutWhoExperience({
         >
           <p
             id="about-who-desc-top"
-            className="whitespace-pre-line font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
+            aria-label="A worldwide team of specialists in design, motion, 3D, and technology"
+            className="font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
           >
-            <em className="font-normal">A worldwide team</em>{" of\nspecialists in design,\nmotion, 3D, and technology"}
+            <React.Fragment key="0">{null}<span
+              ref={el => { narrativeWordRefs.current[0] = el; }}
+              className={`about-narrative-word${true ? " is-italic" : ""}`}
+            >A,true</span></React.Fragment><React.Fragment key="1">{" "}<span
+              ref={el => { narrativeWordRefs.current[1] = el; }}
+              className={`about-narrative-word${true ? " is-italic" : ""}`}
+            >worldwide,true</span></React.Fragment><React.Fragment key="2">{" "}<span
+              ref={el => { narrativeWordRefs.current[2] = el; }}
+              className={`about-narrative-word${true ? " is-italic" : ""}`}
+            >team,true</span></React.Fragment><React.Fragment key="3">{" "}<span
+              ref={el => { narrativeWordRefs.current[3] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >of,false</span></React.Fragment><React.Fragment key="4">{" "}<span
+              ref={el => { narrativeWordRefs.current[4] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >specialists,false</span></React.Fragment><React.Fragment key="5">{" "}<span
+              ref={el => { narrativeWordRefs.current[5] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >in,false</span></React.Fragment><React.Fragment key="6">{" "}<span
+              ref={el => { narrativeWordRefs.current[6] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >design,,false</span></React.Fragment><React.Fragment key="7">{" "}<span
+              ref={el => { narrativeWordRefs.current[7] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >motion,,false</span></React.Fragment><React.Fragment key="8">{" "}<span
+              ref={el => { narrativeWordRefs.current[8] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >3D,,false</span></React.Fragment><React.Fragment key="9">{" "}<span
+              ref={el => { narrativeWordRefs.current[9] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >and,false</span></React.Fragment><React.Fragment key="10">{" "}<span
+              ref={el => { narrativeWordRefs.current[10] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >technology,false</span></React.Fragment><br />
+            <React.Fragment key="7">{null}<span
+              ref={el => { narrativeWordRefs.current[7] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >motion,,false</span></React.Fragment><React.Fragment key="8">{" "}<span
+              ref={el => { narrativeWordRefs.current[8] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >3D,,false</span></React.Fragment><React.Fragment key="9">{" "}<span
+              ref={el => { narrativeWordRefs.current[9] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >and,false</span></React.Fragment><React.Fragment key="10">{" "}<span
+              ref={el => { narrativeWordRefs.current[10] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >technology,false</span></React.Fragment>
           </p>
           <p
             id="about-who-desc-bottom"
-            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            aria-label="working together to turn ambitious ideas into immersive digital experiences."
+            className="self-end text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
           >
-            {"working together to\nturn ambitious ideas into\nimmersive digital experiences."}
+            <React.Fragment key="11">{null}<span
+              ref={el => { narrativeWordRefs.current[11] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >working</span></React.Fragment> <React.Fragment key="12">{" "}<span
+              ref={el => { narrativeWordRefs.current[12] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >together</span></React.Fragment> <React.Fragment key="13">{" "}<span
+              ref={el => { narrativeWordRefs.current[13] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >to</span></React.Fragment> <React.Fragment key="14">{" "}<span
+              ref={el => { narrativeWordRefs.current[14] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >turn</span></React.Fragment> <React.Fragment key="15">{" "}<span
+              ref={el => { narrativeWordRefs.current[15] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >ambitious</span></React.Fragment> <React.Fragment key="16">{" "}<span
+              ref={el => { narrativeWordRefs.current[16] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >ideas</span></React.Fragment> <React.Fragment key="17">{" "}<span
+              ref={el => { narrativeWordRefs.current[17] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >into</span></React.Fragment> <React.Fragment key="18">{" "}<span
+              ref={el => { narrativeWordRefs.current[18] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >immersive</span></React.Fragment> <React.Fragment key="19">{" "}<span
+              ref={el => { narrativeWordRefs.current[19] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >digital</span></React.Fragment> <React.Fragment key="20">{" "}<span
+              ref={el => { narrativeWordRefs.current[20] = el; }}
+              className={`about-narrative-word${false ? " is-italic" : ""}`}
+            >experiences.</span></React.Fragment> 
           </p>
         </div>
 
@@ -1094,7 +1229,9 @@ function AboutWhoExperience({
         <div
           ref={teamOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-16 pb-8 min-[820px]:pt-28"
+          data-team-active="false"
+          data-reduced={reducedMotion}
+          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-16 pb-8 min-[820px]:pt-28"
         >
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
@@ -1194,14 +1331,16 @@ function AboutWhoExperience({
               <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-white/55 min-[820px]:hidden">
                 {LUSION_ABOUT.who.mobileSwipeHint}
               </p>
-              <div className="mt-3 h-[1px] w-40 bg-white/35" />
+              <div className="about-team-progress mt-3" aria-hidden="true">
+                <span key={activeMemberIdx} className="about-team-progress-fill" />
+              </div>
               <p className="mt-2 max-w-[28ch] font-sans text-xs leading-relaxed text-white/80">Abstract visualization — not a likeness of {activeMember.name}.</p>
             </div>
 
             <div className="flex items-end gap-6">
               <span
                 aria-hidden="true"
-                className="hidden select-none font-sans text-[112px] leading-[0.80] font-bold tracking-[-0.04em] text-white/55 min-[820px]:block"
+                className="hidden select-none font-mono text-[112px] leading-[0.80] font-black tracking-[-0.12em] text-white/65 min-[820px]:block"
               >
                 {activeMember.name[0]}
               </span>

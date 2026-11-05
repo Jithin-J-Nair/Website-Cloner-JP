@@ -672,3 +672,43 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .about-wide-chromatic-ring { display: none; }
 }
+
+
+/* Narrative words are individually seekable and reversible; no timer owns their state. */
+.about-narrative-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(16px,0,0);
+  will-change: opacity, transform;
+}
+.about-narrative-word.is-italic { font-style: italic; }
+@media (prefers-reduced-motion: reduce) {
+  .about-narrative-word { opacity: 1 !important; transform: none !important; will-change: auto; }
+}
+
+/* Team progress is started by the scroll-owned team-active data flag and restarts on member key. */
+.about-team-progress {
+  width: 10rem;
+  height: 2px;
+  overflow: hidden;
+  background: rgb(255 255 255 / .28);
+}
+.about-team-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: rgb(255 255 255 / .96);
+}
+.about-who-team-overlay[data-team-active="true"]:not([data-reduced="true"]) .about-team-progress-fill {
+  animation: about-team-member-progress 4.8s linear forwards;
+}
+.about-who-team-overlay[data-reduced="true"] .about-team-progress-fill {
+  width: 100%;
+}
+@keyframes about-team-member-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-team-progress-fill { width: 100%; animation: none !important; }
+}

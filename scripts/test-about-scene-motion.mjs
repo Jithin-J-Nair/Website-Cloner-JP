@@ -70,3 +70,12 @@ try {
  console.log('PASS wordmark sweep: deterministic, bounded, continuous, reversible and scroll-seek safe. Authored timing is not represented as measured source timing.');
  console.log('PASS 22,502 camera samples: finite, deterministic, reversible, bounded per-step travel, C1 joins, distinct near/wide framing and retained editorial/team endpoints. Original timing, not recovered source curves.');
 }finally{fs.rmSync(dir,{recursive:true,force:true});}
+
+const narrativeBlock = aboutView.slice(aboutView.indexOf("// C. Studio Narrative HUD"), aboutView.indexOf("// D. Full-Bleed Interactive"));
+assert.match(narrativeBlock, /narrativeWordRefs\.current\.length/, "narrative sequence updates individual words, not only the paragraph");
+assert.match(narrativeBlock, /i \* 0\.014/, "word fades are staggered from a stable order");
+assert.match(narrativeBlock, /-7 \* exit/, "narrative block slides left on exit");
+assert.match(aboutView, /setInterval\(evaluateTeamStage, 160\)/, "team auto-advance is polled only while the team stage is active");
+assert.match(aboutView, /\}, 4800\)/, "team member dwell is 4.8 seconds");
+assert.match(aboutView, /document\.hidden \|\| teamOverlayRef\.current\?\.dataset\.teamActive !== "true"/, "auto-advance pauses off-stage or in a hidden tab");
+assert.match(aboutView, /const streakCount = 384/, "team stage uses a dense full-frame light-streak field");
