@@ -73,6 +73,18 @@ function AboutWhoExperience({
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
+  const narrativeWords = (words: string[], offset: number, italicCount = 0) =>
+    words.map((word, index) => (
+      <React.Fragment key={offset + index}>
+        {index > 0 ? " " : null}
+        <span
+          ref={el => { narrativeWordRefs.current[offset + index] = el; }}
+          className={`about-narrative-word${index < italicCount ? " is-italic" : ""}`}
+        >
+          {word}
+        </span>
+      </React.Fragment>
+    ));
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -1138,90 +1150,18 @@ function AboutWhoExperience({
             aria-label="A worldwide team of specialists in design, motion, 3D, and technology"
             className="font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
           >
-            <React.Fragment key="0">{null}<span
-              ref={el => { narrativeWordRefs.current[0] = el; }}
-              className={`about-narrative-word${true ? " is-italic" : ""}`}
-            >A,true</span></React.Fragment><React.Fragment key="1">{" "}<span
-              ref={el => { narrativeWordRefs.current[1] = el; }}
-              className={`about-narrative-word${true ? " is-italic" : ""}`}
-            >worldwide,true</span></React.Fragment><React.Fragment key="2">{" "}<span
-              ref={el => { narrativeWordRefs.current[2] = el; }}
-              className={`about-narrative-word${true ? " is-italic" : ""}`}
-            >team,true</span></React.Fragment><React.Fragment key="3">{" "}<span
-              ref={el => { narrativeWordRefs.current[3] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >of,false</span></React.Fragment><React.Fragment key="4">{" "}<span
-              ref={el => { narrativeWordRefs.current[4] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >specialists,false</span></React.Fragment><React.Fragment key="5">{" "}<span
-              ref={el => { narrativeWordRefs.current[5] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >in,false</span></React.Fragment><React.Fragment key="6">{" "}<span
-              ref={el => { narrativeWordRefs.current[6] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >design,,false</span></React.Fragment><React.Fragment key="7">{" "}<span
-              ref={el => { narrativeWordRefs.current[7] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >motion,,false</span></React.Fragment><React.Fragment key="8">{" "}<span
-              ref={el => { narrativeWordRefs.current[8] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >3D,,false</span></React.Fragment><React.Fragment key="9">{" "}<span
-              ref={el => { narrativeWordRefs.current[9] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >and,false</span></React.Fragment><React.Fragment key="10">{" "}<span
-              ref={el => { narrativeWordRefs.current[10] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >technology,false</span></React.Fragment><br />
-            <React.Fragment key="7">{null}<span
-              ref={el => { narrativeWordRefs.current[7] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >motion,,false</span></React.Fragment><React.Fragment key="8">{" "}<span
-              ref={el => { narrativeWordRefs.current[8] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >3D,,false</span></React.Fragment><React.Fragment key="9">{" "}<span
-              ref={el => { narrativeWordRefs.current[9] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >and,false</span></React.Fragment><React.Fragment key="10">{" "}<span
-              ref={el => { narrativeWordRefs.current[10] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >technology,false</span></React.Fragment>
+            {narrativeWords(["A", "worldwide", "team"], 0, 3)}<br />
+            {narrativeWords(["of", "specialists", "in", "design,"], 3)}<br />
+            {narrativeWords(["motion,", "3D,", "and", "technology"], 7)}
           </p>
           <p
             id="about-who-desc-bottom"
             aria-label="working together to turn ambitious ideas into immersive digital experiences."
             className="self-end text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
           >
-            <React.Fragment key="11">{null}<span
-              ref={el => { narrativeWordRefs.current[11] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >working</span></React.Fragment> <React.Fragment key="12">{" "}<span
-              ref={el => { narrativeWordRefs.current[12] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >together</span></React.Fragment> <React.Fragment key="13">{" "}<span
-              ref={el => { narrativeWordRefs.current[13] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >to</span></React.Fragment> <React.Fragment key="14">{" "}<span
-              ref={el => { narrativeWordRefs.current[14] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >turn</span></React.Fragment> <React.Fragment key="15">{" "}<span
-              ref={el => { narrativeWordRefs.current[15] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >ambitious</span></React.Fragment> <React.Fragment key="16">{" "}<span
-              ref={el => { narrativeWordRefs.current[16] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >ideas</span></React.Fragment> <React.Fragment key="17">{" "}<span
-              ref={el => { narrativeWordRefs.current[17] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >into</span></React.Fragment> <React.Fragment key="18">{" "}<span
-              ref={el => { narrativeWordRefs.current[18] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >immersive</span></React.Fragment> <React.Fragment key="19">{" "}<span
-              ref={el => { narrativeWordRefs.current[19] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >digital</span></React.Fragment> <React.Fragment key="20">{" "}<span
-              ref={el => { narrativeWordRefs.current[20] = el; }}
-              className={`about-narrative-word${false ? " is-italic" : ""}`}
-            >experiences.</span></React.Fragment> 
+            {narrativeWords(["working", "together", "to"], 11)}<br />
+            {narrativeWords(["turn", "ambitious", "ideas", "into"], 14)}<br />
+            {narrativeWords(["immersive", "digital", "experiences."], 18)}
           </p>
         </div>
 
