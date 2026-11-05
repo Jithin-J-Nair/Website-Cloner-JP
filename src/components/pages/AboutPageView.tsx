@@ -83,6 +83,34 @@ function AboutWhoExperience({
         </span>
       </React.Fragment>
     ));
+  
+  /** Original 4×5 block-pixel initials for the seven-member studio roster. */
+  const PIXEL_FONT: Record<string, string[]> = {
+    A: [".##.", "#..#", "####", "#..#", "#..#"],
+    E: ["####", "#...", "###.", "#...", "####"],
+    F: ["####", "#...", "###.", "#...", "#..."],
+    P: ["###.", "#..#", "###.", "#...", "#..."],
+    S: [".###", "#...", ".##.", "...#", "###."],
+    Y: ["#..#", "#..#", ".##.", ".##.", ".##."],
+  };
+
+  function PixelGlyph({ char, className }: { char: string; className?: string }) {
+    const rows = PIXEL_FONT[(char || "A").toUpperCase()] ?? PIXEL_FONT.A;
+    return (
+      <svg
+        viewBox="0 0 4 5"
+        aria-hidden="true"
+        shapeRendering="crispEdges"
+        className={className}
+      >
+        {rows.flatMap((row, y) =>
+          row.split("").map((cell, x) =>
+            cell === "#" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#fff" /> : null
+          )
+        )}
+      </svg>
+    );
+  }
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -1278,12 +1306,10 @@ function AboutWhoExperience({
             </div>
 
             <div className="flex items-end gap-6">
-              <span
-                aria-hidden="true"
-                className="hidden select-none font-mono text-[112px] leading-[0.80] font-black tracking-[-0.12em] text-white/65 min-[820px]:block"
-              >
-                {activeMember.name[0]}
-              </span>
+              <PixelGlyph
+                char={activeMember.name[0]}
+                className="hidden h-[max(56px,5vw)] w-auto opacity-90 min-[820px]:block"
+              />
 
               <p
                 id="about-who-team-desc-text"
