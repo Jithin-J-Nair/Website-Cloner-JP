@@ -207,21 +207,31 @@ try {
       report.brandWall = logoState;
       await page.screenshot({ path: `${out}/${width}-clients.png`, fullPage: false, timeout: 120000 });
 
-      // Recognition ledger: visit every reveal target in turn so the observer is
-      // tested through the complete award/article/talk record, not one viewport.
+      // Recognition: exercise the internal clipped scroll window, not document scrolling.
+      const recognitionWindow = page.locator('#about-recognition-window');
+      await recognitionWindow.scrollIntoViewIfNeeded();
+      const windowMetrics = await recognitionWindow.evaluate(element => ({
+        clientHeight: element.clientHeight,
+        scrollHeight: element.scrollHeight,
+        overflowY: getComputedStyle(element).overflowY,
+      }));
+      assert.ok(windowMetrics.scrollHeight > windowMetrics.clientHeight, 'recognition record is an internally scrollable clipped window');
+      assert.equal(windowMetrics.overflowY, 'auto');
       const awardTargets = page.locator('#about-award [data-award-reveal]');
       const awardCount = await awardTargets.count();
-      assert.ok(awardCount >= 9, 'recognition exposes the summary, award groups, articles and talks');
-      const awardPositions = await awardTargets.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().top + window.scrollY));
-      for (let index = 0; index < awardPositions.length; index++) {
-        await seekY(Math.max(0, awardPositions[index] - height * .58));
+      assert.ok(awardCount >= 9, 'recognition exposes the pinned index and the award record rows');
+      for (let index = 0; index < awardCount; index++) {
+        const target = awardTargets.nth(index);
+        await target.scrollIntoViewIfNeeded();
         await page.waitForFunction(i => document.querySelectorAll('#about-award [data-award-reveal]')[i]?.classList.contains('is-in-view'), index, { timeout: 5000 });
-        if (index === awardPositions.length - 1) {
-          await page.waitForFunction(() => {
-            const tracks = [...document.querySelectorAll('#about-clients .about-client-marquee-track')];
-            return tracks.length === 3 && tracks.every(track => getComputedStyle(track).animationPlayState === 'paused');
-          }, null, { timeout: 5000 });
-        }
+      }
+      const ledgerScrollTop = await recognitionWindow.evaluate(element => element.scrollTop);
+      assert.ok(ledgerScrollTop > 0, 'recognition row traversal scrolls the internal record window');
+      if (awardCount > 0) {
+        await page.waitForFunction(() => {
+          const tracks = [...document.querySelectorAll('#about-clients .about-client-marquee-track')];
+          return tracks.length === 3 && tracks.every(track => getComputedStyle(track).animationPlayState === 'paused');
+        }, null, { timeout: 5000 });
       }
       const awardState = await page.evaluate(() => ({
         visible: [...document.querySelectorAll('#about-award [data-award-reveal]')].filter(el => el.classList.contains('is-in-view')).length,
