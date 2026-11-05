@@ -788,17 +788,15 @@ function AboutWhoExperience({
       // -----------------------------------------------------------------------
       // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
       // -----------------------------------------------------------------------
-      // A. Monumental Double-Stroke 'LUSION' Wordmark ('about-01' & 'about-02', sweeps left across '1.85..3.1')
+      // A. The straight monumental wordmark holds through the first elastic
+      // lettering sweep, returns cleanly, then exits only as the studio statement
+      // settles. The previous early fade removed it before the reference's main beat.
       if (heroWordmarkRef.current) {
-        const wordOut = 1 - smoothstep(isMobile ? 1.65 : .45, isMobile ? 2.15 : 1.1, u);
-        if (wordOut > 0.005) {
-          const slideX = -smoothstep(1.75, 3.15, u) * 65;
-          heroWordmarkRef.current.style.opacity = String(wordOut);
-          heroWordmarkRef.current.style.transform = `translate3d(${slideX}vw, 0, 0)`;
-          heroWordmarkRef.current.style.visibility = "visible";
-        } else {
-          heroWordmarkRef.current.style.visibility = "hidden";
-        }
+        const wordOut = 1 - smoothstep(isMobile ? 4.55 : 4.72, isMobile ? 5.18 : 5.38, u);
+        const slideX = -smoothstep(isMobile ? 4.58 : 4.72, isMobile ? 5.18 : 5.38, u) * (isMobile ? 48 : 66);
+        heroWordmarkRef.current.style.opacity = String(wordOut);
+        heroWordmarkRef.current.style.transform = `translate3d(${slideX}vw, 0, 0)`;
+        heroWordmarkRef.current.style.visibility = wordOut > 0.005 ? "visible" : "hidden";
       }
 
       if (scrollPromptRef.current) {
