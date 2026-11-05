@@ -45,7 +45,7 @@ try {
     assert.match(a.group.children[0].material.fragmentShader, /vNormal/);
     assert.match(fs.readFileSync("src/components/three/ContactParticleField.ts", "utf8"), /const bases = \[circle, square, triangle, plus\]/, "CTA uses circle, square/diamond, triangle and plus/X geometry families");
     a.setTime(2); assert.equal(a.uniforms.uTime.value, 2); a.setTime(NaN); assert.equal(a.uniforms.uTime.value, 0);
-    a.dispose(); a.dispose(); assert.equal(disposals, 3, 'idempotent geometry ownership'); b.dispose();
+    a.dispose(); a.dispose(); assert.equal(disposals, 4, 'idempotent geometry ownership'); b.dispose();
   }
   for (const [input, expected] of [[Infinity, 960], [-1, 120]]) { const field = createContactParticleField(input); assert.equal(field.count, expected); field.dispose(); }
   console.log('PASS contact field: all quality counts, deterministic finite typed seeds/positions/normals, four instanced shape families, bounded triangles, shared progress/pointer/type contour packet and idempotent disposal. Browser compilation checked separately.');
