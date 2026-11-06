@@ -184,7 +184,7 @@ export function createAboutTerrainMaterial() {
 }
 
 /** Original sediment patches, not a uniform polar disk or a tiled dot pattern.
- * One bounded population is baked at mount; no per-frame stone transforms.
+ * A bounded, seeded rest population; the flow shader transports it on the GPU.
  */
 export function createAboutGroundClasts(count: number) {
   let state = 492801;
@@ -207,4 +207,58 @@ export function createAboutGroundClasts(count: number) {
     stones.push({ x, y: y + size * aspect * .45, z, size, aspect, angle: random() * Math.PI * 2 });
   }
   return stones;
+}
+
+/** Aura-driven Lagrangian gravel paths: outward travel, lift, invisible reset.
+ * Eight baked ground samples per path keep the moving stones above the SAME
+ * terrain as the explorer. Only two uniforms change on the owner's clock. */
+export function attachAboutGroundFlow(
+  geometry: THREE.BufferGeometry,
+  material: THREE.MeshStandardMaterial,
+  stones: ReturnType<typeof createAboutGroundClasts>,
+  stationaryPrefix = 0,
+) {
+  const seeds = new Float32Array(stones.length * 4);
+  const floorsA = new Float32Array(stones.length * 4);
+  const floorsB = new Float32Array(stones.length * 4);
+  stones.forEach((stone, i) => {
+    const dx = stone.x + .35, dz = stone.z + 1.8;
+    const radius = Math.hypot(dx, dz);
+    const end = Math.min(24, radius + 4);
+    const nx = dx / radius, nz = dz / radius;
+    seeds.set([nx, nz, end, i < stationaryPrefix ? -1 : ((i * .61803398875) % 1)], i * 4);
+    for (let j = 0; j < 8; j++) {
+      const r = .92 + (end - .92) * j / 7;
+      const height = terrainHeightAt(-.35 + nx * r, -1.8 + nz * r) + stone.size * stone.aspect * .45;
+      (j < 4 ? floorsA : floorsB)[i * 4 + j % 4] = height;
+    }
+  });
+  geometry.setAttribute("aGroundFlow", new THREE.InstancedBufferAttribute(seeds, 4));
+  geometry.setAttribute("aGroundFloorA", new THREE.InstancedBufferAttribute(floorsA, 4));
+  geometry.setAttribute("aGroundFloorB", new THREE.InstancedBufferAttribute(floorsB, 4));
+  const uniforms = { uGroundTime: { value: 0 }, uGroundMotion: { value: 1 } };
+  material.onBeforeCompile = shader => {
+    Object.assign(shader.uniforms, uniforms);
+    shader.vertexShader = shader.vertexShader.replace("#include <common>", `#include <common>
+      attribute vec4 aGroundFlow,aGroundFloorA,aGroundFloorB;
+      uniform float uGroundTime,uGroundMotion;
+      float groundSample(int i){if(i<4)return aGroundFloorA[i];return aGroundFloorB[i-4];}
+    `).replace("#include <begin_vertex>", `#include <begin_vertex>
+      float motion=uGroundMotion*step(0.,aGroundFlow.w);
+      float age=fract(uGroundTime*.145+aGroundFlow.w);
+      float birth=smoothstep(0.,.06,age)*(1.-smoothstep(.84,1.,age));
+      transformed*=mix(1.,birth,motion);
+    `).replace("#include <project_vertex>", `#include <project_vertex>
+      float radius=mix(.92,aGroundFlow.z,age);
+      float sampleIndex=age*7.;int lo=min(6,int(floor(sampleIndex)));
+      float floorY=mix(groundSample(lo),groundSample(lo+1),fract(sampleIndex));
+      float lift=pow(age,1.65)*(.6+3.7*fract(aGroundFlow.w*17.31));
+      vec3 target=vec3(-.35+aGroundFlow.x*radius,floorY+lift,-1.8+aGroundFlow.y*radius);
+      vec3 rest=instanceMatrix[3].xyz;
+      mvPosition+=viewMatrix*vec4((target-rest)*motion,0.);
+      gl_Position=projectionMatrix*mvPosition;
+    `);
+  };
+  material.customProgramCacheKey = () => "about-aura-ground-flow-v1";
+  return uniforms;
 }

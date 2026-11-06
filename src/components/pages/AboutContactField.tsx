@@ -139,8 +139,8 @@ export function AboutContactField() {
     <div ref={hostRef} className="absolute inset-0" data-cta-field-state={state}>
       {state !== "ready" && <svg aria-hidden="true" viewBox="0 0 400 800" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
         {Array.from({ length: 96 }, (_, i) => {
-          const y = 420 + (i / 95) * 340;
-          const x = 200 + Math.sin(i * 127.1) * ((y - 400) * .34);
+          const y = 450 + Math.floor(i / 16) * 58;
+          const x = Number((8 + (i % 16) * 25 + Math.sin(i * 127.1) * 5).toFixed(3));
           return <rect key={i} x={x} y={y} width="3" height="3" fill="white" transform={`rotate(${i * 37} ${x} ${y})`} />;
         })}
       </svg>}

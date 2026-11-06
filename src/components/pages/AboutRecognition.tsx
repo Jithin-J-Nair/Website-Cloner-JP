@@ -1,19 +1,65 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { LUSION_ABOUT } from "@/data/reference";
+
+function paintFoil(section: HTMLElement, x: number, y: number) {
+  // Read before writing: the text-space highlight must follow the actual
+  // scrolling/italic glyph bounds, not glow behind the entire section.
+  const words = [...section.querySelectorAll<HTMLElement>("[data-foil-word]")];
+  const bounds = words.map(word => word.getBoundingClientRect());
+  words.forEach((word, i) => {
+    word.style.setProperty("--foil-x", `${x - bounds[i].left}px`);
+    word.style.setProperty("--foil-y", `${y - bounds[i].top}px`);
+    word.style.setProperty("--foil-angle", `${x * .12 + y * .08}deg`);
+    const reach = window.innerWidth * .14;
+    const near = y > bounds[i].top - reach && y < bounds[i].bottom + reach;
+    word.style.setProperty("--foil-play", near ? "running" : "paused");
+  });
+  section.style.setProperty("--foil-active", "1");
+}
 
 /** The recording shows three consecutive full-page rows, not a pinned category
  * sidebar beside an independently clipped table. PageDown follows page flow.
  */
 export function AboutRecognition() {
   const recognition = LUSION_ABOUT.recognition;
+  const root = useRef<HTMLElement>(null);
+  const pointer = useRef<[number, number] | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    const refresh = () => {
+      frame = 0;
+      if (root.current && pointer.current && !document.hidden) {
+        paintFoil(root.current, ...pointer.current);
+      }
+    };
+    const schedule = () => {
+      if (pointer.current && !frame && !document.hidden) frame = requestAnimationFrame(refresh);
+    };
+    // Reproject a stationary pointer after native scroll/resize; no idle loop.
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
   return (
-    <section id="about-award" className="about-source-recognition" onPointerMove={event => {
-      const rect = event.currentTarget.getBoundingClientRect();
-      event.currentTarget.style.setProperty("--award-pointer-x", `${(event.clientX - rect.left) / rect.width * 100}%`);
-      event.currentTarget.style.setProperty("--award-pointer-y", `${(event.clientY - rect.top) / rect.height * 100}%`);
+    <section ref={root} id="about-award" className="about-source-recognition" onPointerMove={event => {
+      pointer.current = [event.clientX, event.clientY];
+      paintFoil(event.currentTarget, event.clientX, event.clientY);
+    }} onPointerLeave={event => {
+      pointer.current = null;
+      event.currentTarget.style.setProperty("--foil-active", "0");
+      event.currentTarget.querySelectorAll<HTMLElement>("[data-foil-word]").forEach(word => {
+        word.style.setProperty("--foil-play", "paused");
+      });
     }}>
       <div className="about-source-monument" aria-hidden="true" data-awards-word>
         <div>{["AWARD", "WINNING", "MULTI", "DISCIPLINARY", "CREATIVE", "STUDIO"].map((word, i) =>
-          <span key={word} className={i % 2 ? "is-slanted" : ""}>{word}</span>)}</div>
+          <span key={word} data-foil-word data-word={word} className={i % 2 ? "is-slanted" : ""}>{word}</span>)}</div>
       </div>
       <div id="about-recognition-window" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
         <section className="about-source-record" aria-labelledby="about-awards-record-title">

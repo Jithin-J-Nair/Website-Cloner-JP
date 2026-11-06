@@ -10,13 +10,14 @@ import { loadAboutPhotoPortrait, sampleAboutPhotoPortrait, type AboutPhotoPortra
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
-import { createAboutTerrainMaterial, createAboutGroundClasts, terrainHeightAt } from "@/components/three/AboutTerrain";
+import { createAboutTerrainMaterial, createAboutGroundClasts, attachAboutGroundFlow, terrainHeightAt } from "@/components/three/AboutTerrain";
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
 import { AboutContactSection } from "@/components/pages/AboutContactSection";
 import { AboutRecognition } from "@/components/pages/AboutRecognition";
 import { AboutPageStyles } from "@/components/pages/AboutPageStyles";
+import { createAboutWordmarkSweep } from "@/components/three/AboutWordmarkSweep";
 import { createAboutBodyContours } from "@/components/three/AboutBodyContours";
 import { StudioFooter } from "@/components/sections/StudioFooter";
 
@@ -233,7 +234,7 @@ function AboutWhoExperience({
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
     // Portrait quality stays bounded and independent from the plume's bead budget.
     portraitCountRef.current = reducedMotion || tier === "low" || window.innerWidth < 820 ? 8192
-      : software || tier === "medium" ? 16384 : 24576;
+      : tier === "medium" ? 16384 : 32768;
     glRenderer.setClearColor(0x000302, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -528,7 +529,8 @@ function AboutWhoExperience({
         phase: i * 0.73,
       };
     });
-    // Bake grounded transforms once; the stones on the basin must not rotate.
+    // Seed rest transforms once. GPU flow transports the grounded population;
+    // only the sixteen freely suspended rocks need CPU pose updates.
     for (let i = 0; i < ROCK_COUNT; i++) {
       const rs = rockSeeds[i];
       rockDummy.position.set(rs.x, rs.y, rs.z);
@@ -541,10 +543,16 @@ function AboutWhoExperience({
     scene.add(rocksMesh);
 
     // Angular sediment is actual contact-anchored geometry, not black polka dots.
-    // Reuse the stone material and one static instanced draw at bounded tiers.
+    // One bounded GPU-advected instanced draw; the aura carries grains outward and upward.
     const sediment = createAboutGroundClasts(software ? 1100 : window.innerWidth < 820 ? 1600 : 3200);
     const sedimentGeo = track(new THREE.IcosahedronGeometry(1, 0));
-    const sedimentMesh = track(new THREE.InstancedMesh(sedimentGeo, rockMat, sediment.length));
+    const sedimentMaterial = track(rockMat.clone());
+    const groundFlow = attachAboutGroundFlow(sedimentGeo, sedimentMaterial, sediment);
+    const rockFlow = attachAboutGroundFlow(rockGeo, rockMat, rockSeeds.map(seed => ({
+      x: seed.x, y: seed.y, z: seed.z, size: seed.scale * .24, aspect: .3, angle: seed.phase,
+    })), FLOATING_ROCK_COUNT);
+    const sedimentMesh = track(new THREE.InstancedMesh(sedimentGeo, sedimentMaterial, sediment.length));
+    sedimentMesh.frustumCulled = false;
     for (let i = 0; i < sediment.length; i++) {
       const stone = sediment[i];
       rockDummy.position.set(stone.x, stone.y, stone.z);
@@ -555,6 +563,11 @@ function AboutWhoExperience({
     }
     sedimentMesh.instanceMatrix.needsUpdate = true;
     scene.add(sedimentMesh);
+    const wordmarkSweep = track(createAboutWordmarkSweep());
+    scene.add(wordmarkSweep.mesh);
+    document.fonts.ready.then(() => {
+      if (!disposed) { wordmarkSweep.repaint(); ensureLoop(); }
+    });
 
     // -------------------------------------------------------------------------
     // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
@@ -612,10 +625,10 @@ function AboutWhoExperience({
             p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
             vec4 mv = modelViewMatrix * vec4(p, 1.0);
             vDepth = -mv.z;
-            vec3 normal = normalize(vec3(p.x * .8, p.y * .2, 1.));
-            vec3 light = normalize(vec3(uPointerNDC.x * 1.4, .6 + uPointerNDC.y * .5, 1.));
-            float illumination = .6 + .4 * max(0., dot(normal, light));
-            vShade = mix(clamp(p.z * .85 + .42, .12, 1.), pow(aPhotoShade, 1.25) * illumination, uPhoto);
+            vec3 normal = normalize(vec3(p.x * 1.6, p.y * .55, .55));
+            vec3 light = normalize(vec3(.9 + uPointerNDC.x * 1.8, .3 + uPointerNDC.y * .8, .6));
+            float illumination = .35 + .65 * max(0., dot(normal, light));
+            vShade = mix(clamp(p.z * .85 + .42, .12, 1.), pow(aPhotoShade, 1.2) * illumination, uPhoto);
             vGlint = pow(max(0., dot(normal, normalize(light + vec3(0.,0.,1.)))), 38.) * .24 * aPhotoShade;
             vBirth = smoothstep(clamp((position.y + 1.55) / 3.1,0.,1.) - .18,
               clamp((position.y + 1.55) / 3.1,0.,1.) + .10, uReveal);
@@ -635,7 +648,7 @@ function AboutWhoExperience({
             if (r > 0.5) discard;
             float soft = smoothstep(0.5, 0.08, r);
             vec3 col = mix(vec3(.025,.035,.04), vec3(.72,.80,.83), vShade) + vGlint;
-            gl_FragColor = vec4(col, soft * uOpacity * (.2 + .8 * vShade) * vBirth);
+            gl_FragColor = vec4(col, soft * uOpacity * (.25 + .75 * vShade) * vBirth);
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
           }
@@ -675,7 +688,7 @@ function AboutWhoExperience({
 
     // Original depth-layered vertical light field, sharing the portrait clock.
     // These are abstract atmosphere, never a replacement claim for an employee likeness.
-    const streakCount = 384;
+    const streakCount = 144;
     const lightPositions = new Float32Array(streakCount * 6);
     for (let i = 0; i < streakCount; i++) {
       const x = (i / (streakCount - 1) - .5) * 10.5;
@@ -692,10 +705,10 @@ function AboutWhoExperience({
       vertexShader: `varying vec3 vLocal; void main() { vLocal = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
       fragmentShader: `uniform float uTime, uOpacity; varying vec3 vLocal;
         void main() {
-          float envelope = smoothstep(-1.9, -.9, vLocal.y) * (1. - smoothstep(.8, 2.35, vLocal.y));
+          float envelope = smoothstep(-2.4, -1.2, vLocal.y) * (1. - smoothstep(1.8, 3.3, vLocal.y));
           float scan = pow(.5 + .5 * sin(vLocal.y * 72. - uTime * .65 + vLocal.x * 17.), 18.);
           float edge = .25 + .75 * smoothstep(.3, 1.6, abs(vLocal.x));
-          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.006 + scan * .14) * uOpacity);
+          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.003 + scan * .11) * uOpacity);
         }`,
     }));
     const portraitLightField = new THREE.LineSegments(lightGeometry, lightMaterial);
@@ -852,6 +865,10 @@ function AboutWhoExperience({
 
       rocksMesh.visible = explorerVis > 0.02;
       sedimentMesh.visible = rocksMesh.visible;
+      groundFlow.uGroundTime.value = elapsedSec;
+      groundFlow.uGroundMotion.value = reducedMotion ? 0 : 1;
+      rockFlow.uGroundTime.value = elapsedSec;
+      rockFlow.uGroundMotion.value = reducedMotion ? 0 : 1;
       if (rocksMesh.visible) {
         for (let i = 0; i < FLOATING_ROCK_COUNT; i++) {
           const rs = rockSeeds[i];
@@ -912,16 +929,16 @@ function AboutWhoExperience({
         portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, portraitDamping);
         portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, portraitDamping);
         portraitPoints.rotation.z = 0;
-        portraitPoints.scale.setScalar(isMobile ? .76 : .9);
+        portraitPoints.scale.setScalar(isMobile ? .70 : .80);
         portraitPoints.position.set(
-          camera.position.x + (isMobile ? -0.12 : -0.48),
-          camera.position.y - (isMobile ? 2.25 : 2.0),
+          camera.position.x + (isMobile ? -0.12 : -1.0),
+          camera.position.y - (isMobile ? 2.10 : 1.92),
           camera.position.z - 5.8
         );
         portraitLightField.position.copy(portraitPoints.position);
         bodyContours.group.position.copy(portraitPoints.position);
         bodyContours.group.rotation.copy(portraitPoints.rotation);
-        bodyContours.group.scale.copy(portraitPoints.scale);
+        bodyContours.group.scale.copy(portraitPoints.scale).multiplyScalar(isMobile ? 1.05 : 1.32);
       }
 
       // -----------------------------------------------------------------------
@@ -956,14 +973,16 @@ function AboutWhoExperience({
          }
       }
 
-      // A2. Short curved logotype sweep across the first grounded valley beat.
-      // This uses the same native-scroll playhead and existing DOM transform path.
+      // A2. Continuous type surface, sharing this renderer and scroll authority.
+      const sweep = aboutWordmarkSweepPose(u, isMobile);
+      wordmarkSweep.mesh.visible = sweep.opacity > .005;
+      wordmarkSweep.uniforms.uOpacity.value = sweep.opacity;
+      wordmarkSweep.uniforms.uPhase.value = sweep.deformation;
+      wordmarkSweep.uniforms.uAspect.value = W / H;
       if (sweepWordmarkRef.current) {
-        const sweep = aboutWordmarkSweepPose(u, isMobile);
         sweepWordmarkRef.current.style.opacity = String(sweep.opacity);
-        sweepWordmarkRef.current.style.visibility = sweep.opacity > 0.005 ? "visible" : "hidden";
-        sweepWordmarkRef.current.style.transform =
-          `translate3d(${sweep.xVw}vw,${sweep.yVh}vh,0) skewX(${sweep.skewX}deg) rotate(${sweep.rotation}deg) scaleX(${sweep.stretchX}) scale(${sweep.scale})`;
+        sweepWordmarkRef.current.style.visibility = sweep.opacity > .005 ? "visible" : "hidden";
+        sweepWordmarkRef.current.dataset.deformation = sweep.deformation.toFixed(4);
       }
 
       // B. The two-sided studio statement arrives after the first wordmark
@@ -1252,56 +1271,11 @@ function AboutWhoExperience({
           </div>
         </div>
 
-        {/* Layer 1.5: source-observed curved logotype beat, rebuilt as original SVG text-on-path. */}
-        <div
-          ref={sweepWordmarkRef}
-          aria-hidden="true"
-          data-about-wordmark-sweep
-          style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[5vw] top-[32%] z-10 h-[34vh] overflow-visible will-change-transform max-[819px]:inset-x-[10vw] max-[819px]:top-[43%] max-[819px]:h-[25vh]"
-        >
-          <svg
-            viewBox="0 0 1900 620"
-            preserveAspectRatio="none"
-            className="h-full w-full overflow-visible"
-          >
-            <defs>
-              <path
-                id="about-wordmark-sweep-path"
-                d="M 80 480 C 240 250 500 190 760 345 C 980 470 1230 520 1450 380 C 1640 250 1830 210 1980 300"
-              /><path
-                id="about-wordmark-sweep-path-mobile"
-                d="M 90 390 C 360 330 640 325 900 355 C 1180 390 1480 395 1810 340"
-              />
-            </defs>
-            <text
-              data-about-wordmark-desktop
-              className="hidden min-[820px]:block"
-              fill="#ffffff"
-              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-              fontSize="390"
-              fontWeight="450"
-              letterSpacing="-12"
-              textLength="1720"
-              lengthAdjust="spacingAndGlyphs"
-            >
-              <textPath href="#about-wordmark-sweep-path" startOffset="0%">LUSION</textPath>
-            </text>
-            <text
-              data-about-wordmark-mobile
-              className="block min-[820px]:hidden"
-              fill="#ffffff"
-              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-              fontSize="230"
-              fontWeight="450"
-              letterSpacing="-7"
-              textLength="1480"
-              lengthAdjust="spacingAndGlyphs"
-            >
-              <textPath href="#about-wordmark-sweep-path-mobile" startOffset="0%">LUSION</textPath>
-            </text>
-          </svg>
-        </div>
+        {/* Accessible/inspectable phase marker; the continuous glyph mesh is
+            rendered by the existing world, not a second canvas or textPath. */}
+        <div ref={sweepWordmarkRef} aria-hidden="true" data-about-wordmark-sweep
+          data-wordmark-surface="continuous-mesh"
+          style={{ opacity: 0, visibility: "hidden" }} className="pointer-events-none absolute inset-0" />
 
         {/* Layer 2: Horizontal `WE ARE A CREATIVE PRODUCTION STUDIO` Reveal (`u = 2.05 .. 4.35`) */}
         <div
@@ -1400,7 +1374,7 @@ function AboutWhoExperience({
 
               {/* Interactive `2x7` / Dot-Matrix Specialist Selector + Desktop `T E A M` Title */}
               <div className="flex items-start gap-8">
-                <div className="grid grid-cols-7 gap-1.5 pt-1">
+                <div className="about-team-selector grid grid-cols-7 gap-1.5 pt-1">
                   {team.map((member, idx) => (
                     <button
                       key={member.id}
