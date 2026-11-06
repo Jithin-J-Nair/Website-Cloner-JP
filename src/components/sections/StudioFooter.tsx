@@ -381,7 +381,7 @@ export function StudioFooter({
             id="footer-bottom-copyright"
             className="col-span-6 text-[0.95em] max-[1000px]:order-3 min-[1001px]:col-span-6"
           >
-            {LUSION_GLOBAL_CHROME.footer.copyright}
+            {pathname === "/" ? "©2026 JITHIN" : LUSION_GLOBAL_CHROME.footer.copyright}
           </div>
 
           <a
@@ -402,7 +402,7 @@ export function StudioFooter({
             id="footer-bottom-tagline"
             className="col-span-6 inline-flex items-center gap-1.5 text-[0.95em] max-[1000px]:order-2 min-[1001px]:col-span-3"
           >
-            <span>Built by Lusion with</span>
+            <span>{pathname === "/" ? "Built by JITHIN with" : "Built by Lusion with"}</span>
             <span className="sr-only">❤️</span>
             <svg
               width="14"
