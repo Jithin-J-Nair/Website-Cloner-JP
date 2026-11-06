@@ -18,6 +18,7 @@ import { AboutContactSection } from "@/components/pages/AboutContactSection";
 import { AboutRecognition } from "@/components/pages/AboutRecognition";
 import { AboutPageStyles } from "@/components/pages/AboutPageStyles";
 import { createAboutWordmarkSweep } from "@/components/three/AboutWordmarkSweep";
+import { createAboutPortraitSurface } from "@/components/three/AboutPortraitSurface";
 import { createAboutBodyContours } from "@/components/three/AboutBodyContours";
 import { StudioFooter } from "@/components/sections/StudioFooter";
 
@@ -658,6 +659,7 @@ function AboutWhoExperience({
     portraitMatRef.current = portraitMat;
 
     let portraitLastTime = 0, teamAssemblyStart = -1, teamWasVisible = false;
+    let photoSurface: ReturnType<typeof createAboutPortraitSurface> | null = null;
     const portraitPoints = new THREE.Points(portraitGeo, portraitMat);
     portraitPoints.visible = false;
     scene.add(portraitPoints);
@@ -668,6 +670,9 @@ function AboutWhoExperience({
     Promise.resolve(photoDataRef.current ?? loadAboutPhotoPortrait(portraitRequest.signal)).then(data => {
       if (disposed) return;
       photoDataRef.current = data;
+      photoSurface = track(createAboutPortraitSurface(data));
+      photoSurface.mesh.visible = false; scene.add(photoSurface.mesh);
+      sectionEl.dataset.portraitSurface = "estimated-photo-relief";
       const sampled = sampleAboutPhotoPortrait(data, portraitCountRef.current, memberRef.current);
       const position = portraitGeo.getAttribute("position") as THREE.BufferAttribute;
       const from = portraitGeo.getAttribute("aMorphFrom") as THREE.BufferAttribute;
@@ -700,7 +705,7 @@ function AboutWhoExperience({
     const lightGeometry = track(new THREE.BufferGeometry());
     lightGeometry.setAttribute("position", new THREE.BufferAttribute(lightPositions, 3));
     const lightMaterial = track(new THREE.ShaderMaterial({
-      uniforms: portraitMat.uniforms, transparent: true, depthWrite: false,
+      uniforms: { ...portraitMat.uniforms, uOpacity: { value: 0 } }, transparent: true, depthWrite: false,
       blending: THREE.AdditiveBlending,
       vertexShader: `varying vec3 vLocal; void main() { vLocal = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
       fragmentShader: `uniform float uTime, uOpacity; varying vec3 vLocal;
@@ -708,7 +713,7 @@ function AboutWhoExperience({
           float envelope = smoothstep(-2.4, -1.2, vLocal.y) * (1. - smoothstep(1.8, 3.3, vLocal.y));
           float scan = pow(.5 + .5 * sin(vLocal.y * 72. - uTime * .65 + vLocal.x * 17.), 18.);
           float edge = .25 + .75 * smoothstep(.3, 1.6, abs(vLocal.x));
-          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.003 + scan * .11) * uOpacity);
+          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.006 + scan * .19) * uOpacity);
         }`,
     }));
     const portraitLightField = new THREE.LineSegments(lightGeometry, lightMaterial);
@@ -902,6 +907,8 @@ function AboutWhoExperience({
       bodyContours.group.visible = portraitPoints.visible;
       bodyContours.uniforms.uOpacity.value = tTeamPhase;
       bodyContours.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
+      bodyContours.uniforms.uPointer.value.copy(pointerNDC);
+      if (photoSurface) photoSurface.mesh.visible = portraitPoints.visible;
       if (portraitPoints.visible && !teamWasVisible) teamAssemblyStart = elapsedSec;
       teamWasVisible = portraitPoints.visible;
       portraitMat.uniforms.uReveal.value = reducedMotion || cachedPhoto ? 1.15
@@ -916,14 +923,15 @@ function AboutWhoExperience({
           portraitMat.uniforms.uMorph.value = 1 - Math.pow(1 - morphT, 3);
           if (morphT >= 1) portraitMorphStartRef.current = null;
         }
-        portraitMat.uniforms.uOpacity.value = tTeamPhase * .95;
+        portraitMat.uniforms.uOpacity.value = tTeamPhase * (photoSurface ? .12 : .95);
+        lightMaterial.uniforms.uOpacity.value = tTeamPhase * .95;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
         // One damped whole-form target combines cursor tilt and subtle idle drift.
         // Do not follow this with a direct rotation.set(): it would overwrite the easing.
         const portraitTilt = reducedMotion ? 0 : 1;
         const targetPitch = pointerNDC.y * -0.10 * portraitTilt;
-        const targetYaw = pointerNDC.x * 0.14 * portraitTilt + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05);
+        const targetYaw = pointerNDC.x * 0.24 * portraitTilt + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05);
         const portraitDamping = 1 - Math.exp(-12 * Math.min(.1, Math.max(0, elapsedSec - portraitLastTime)));
         portraitLastTime = elapsedSec;
         portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, portraitDamping);
@@ -936,6 +944,15 @@ function AboutWhoExperience({
           camera.position.z - 5.8
         );
         portraitLightField.position.copy(portraitPoints.position);
+        if (photoSurface) {
+          photoSurface.mesh.position.copy(portraitPoints.position);
+          photoSurface.mesh.rotation.copy(portraitPoints.rotation);
+          photoSurface.mesh.scale.copy(portraitPoints.scale);
+          photoSurface.uniforms.uOpacity.value = tTeamPhase;
+          photoSurface.uniforms.uReveal.value = portraitMat.uniforms.uReveal.value;
+          photoSurface.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
+          photoSurface.uniforms.uPointer.value.copy(pointerNDC);
+        }
         bodyContours.group.position.copy(portraitPoints.position);
         bodyContours.group.rotation.copy(portraitPoints.rotation);
         bodyContours.group.scale.copy(portraitPoints.scale).multiplyScalar(isMobile ? 1.05 : 1.32);
@@ -1001,7 +1018,7 @@ function AboutWhoExperience({
         const narVis = lettering.narrative;
         narrativeOverlayRef.current.style.opacity = "1";
         narrativeOverlayRef.current.style.visibility = narVis > 0.005 ? "visible" : "hidden";
-        narrativeOverlayRef.current.style.transform = `translate3d(${-7 * exit}vw,0,0)`;
+        narrativeOverlayRef.current.style.transform = `translate3d(${(1 - smoothstep(4.42, 4.9, u)) * 105 - 58 * exit}vw,0,0)`;
         for (let i = 0; i < narrativeWordRefs.current.length; i++) {
           const word = narrativeWordRefs.current[i];
           if (!word) continue;
@@ -1308,7 +1325,7 @@ function AboutWhoExperience({
           ref={narrativeOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
           data-about-narrative
-          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[14vh] bottom-[6vh] z-20 flex flex-col items-center justify-center text-center"
+          className="about-narrative-layout pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[14vh] bottom-[6vh] z-20"
         >
           <p
             id="about-who-desc-top"
@@ -1326,8 +1343,7 @@ function AboutWhoExperience({
           >
             {narrativeWords(["working", "together", "to"], 11)}<br />
             {narrativeWords(["turn", "ambitious", "ideas", "into"], 14)}<br />
-            {narrativeWords(["immersive", "digital"], 18)}<br />
-            {narrativeWords(["experiences."], 20)}
+            {narrativeWords(["immersive", "digital", "experiences."], 18)}
           </p>
         </div>
 
@@ -1507,7 +1523,7 @@ function AboutClientMarqueeLifecycle() {
 /** Historical-evidence reconstruction, not a claim of exact current live parity.
  * Sticky native Three world → brands → recognition → expertise → owned CTA/shared footer.
  * The supplied Jithin portrait and procedural geometry replace restricted capture data;
- * the About CTA uses an original analytical glyph wave, not a FLIP solver.
+ * the About CTA uses an original pressure-projected PIC/FLIP glyph liquid.
  */
 export function AboutPageView() {
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);

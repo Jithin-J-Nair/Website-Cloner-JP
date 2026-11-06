@@ -30,18 +30,24 @@ export function AboutRecognition() {
     let frame = 0;
     const refresh = () => {
       frame = 0;
-      if (root.current && pointer.current && !document.hidden) {
-        paintFoil(root.current, ...pointer.current);
-      }
+      if (!root.current || document.hidden) return;
+      if (pointer.current) paintFoil(root.current, ...pointer.current);
+      const bounds = root.current.getBoundingClientRect();
+      const recognitionProgress = Math.max(0, Math.min(1, (innerHeight - bounds.top) / (bounds.height + innerHeight)));
+      root.current.style.setProperty("--recognition-progress", String(recognitionProgress));
+
     };
     const schedule = () => {
-      if (pointer.current && !frame && !document.hidden) frame = requestAnimationFrame(refresh);
+      if (!frame && !document.hidden) frame = requestAnimationFrame(refresh);
     };
     // Reproject a stationary pointer after native scroll/resize; no idle loop.
+    schedule();
+    const observer = new ResizeObserver(schedule);
+    if (root.current) observer.observe(root.current);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
     return () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(frame); observer.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };

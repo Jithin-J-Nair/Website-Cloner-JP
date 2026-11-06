@@ -2,7 +2,9 @@
 export function AboutPageStyles() {
   return <style>{`
     #about { --about-blue: #3733e8; background: #000302; }
-    #about > div:first-of-type, #about #about-who, #about #about-who > .sticky,
+    #about > div:first-of-type, #about #about-who, #about #about-who > .sticky, #about #about-clients { background-color: #000302; }
+    #about .about-narrative-layout #about-who-desc-top { position: absolute; left: 0; top: 2vh; text-align: left; font-size: 3.85vw; }
+    #about .about-narrative-layout #about-who-desc-bottom { position: absolute; right: 0; bottom: 1vh; text-align: right; font-size: 3.85vw; }
     #about #about-clients { background-color: #000302; }
     #about #about-clients { border-top: 0; padding-top: 8vw; padding-bottom: 8vw; }
     #about #about-clients h2 { font-size: 3.55vw; letter-spacing: -.04em; line-height: 1; }
@@ -13,7 +15,7 @@ export function AboutPageStyles() {
     #about .about-client-wordmark[data-brand="Max Mara"], #about .about-client-wordmark[data-brand="AKQA"] { font-family: Georgia,serif; }
     #about .about-client-wordmark[data-brand="Porsche"] { text-transform: uppercase; letter-spacing: .15em; font-size: 1.25vw; }
     #about .about-client-wordmark[data-brand="Sony"], #about .about-client-wordmark[data-brand="NVIDIA"] { text-transform: uppercase; font-weight: 700; }
-    #about .about-source-recognition { position: relative; isolation: isolate; overflow: hidden; padding: 17vw 5vw 12vw; background: #000302; color: #f5f6f5; }
+    #about .about-source-recognition { position: relative; isolation: isolate; overflow: hidden; padding: 17vw 5vw 13vw; background: #000302; color: #f5f6f5; }
     #about .about-source-monument { pointer-events: none; position: absolute; inset: 0; z-index: -1; overflow: hidden; }
     #about .about-source-monument > div { transform: translateY(calc(var(--recognition-progress, 0) * -30vw)); }
     #about .about-source-monument span { position: relative; display: block; font-size: 25.8vw; line-height: .96; letter-spacing: -.055em; white-space: nowrap; color: transparent; -webkit-text-stroke: 1px #ffffff18; }
@@ -51,11 +53,12 @@ export function AboutPageStyles() {
     #about .about-source-articles a:hover > span, #about .about-source-articles a:focus-visible > span { opacity: 1; }
     #about .about-source-talks li { display: flex; justify-content: space-between; gap: 24px; padding-block: .2vw; }
     #about .about-playing-expertise { --about-expertise-blue: var(--about-blue); }
-    #about .about-expertise-studio { position: absolute; top: -16vw; left: 17vw; font-size: 26vw; line-height: 1; letter-spacing: -.055em; font-weight: 400; pointer-events: none; opacity: .9; }
     #about .about-expertise-stage { background: var(--about-blue); }
+    #about .about-expertise-studio { position: absolute; top: -16vw; left: 17vw; font-size: 26vw; line-height: 1; letter-spacing: -.055em; font-weight: 400; pointer-events: none; }
     #about .about-expertise-flourish { right: 0; width: 100%; }
     #about .about-expertise-heading h2 { font-size: 12vw; line-height: .92; }
     #about .about-expertise-caption { top: 0; }
+    #about .about-who-team-overlay { padding-top: max(7rem, calc(var(--base-padding-y) + clamp(1rem,1vw,1.5rem) * 2.8 + 2rem)); }
     #about .about-team-selector button > span { width: 2px; height: 5px; border-radius: 0; }
     #about .about-team-selector > span { display: none; }
     #about .about-team-cursor { position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 104px; height: 104px; border-radius: 50%; color: white; background: #4330f5; font-size: 43px; font-weight: 300; pointer-events: none; opacity: 0; will-change: transform; z-index: 40; }
@@ -78,7 +81,10 @@ export function AboutPageStyles() {
       #about #about-clients .about-client-logo-tile { height: 12vw; }
       #about .about-client-wordmark { font-size: 3.2vw; }
       #about .about-client-wordmark[data-brand="Porsche"] { font-size: 2.5vw; }
-      #about .about-source-recognition { padding: 20vw 5vw; }
+      #about .about-source-recognition { padding: 20vw 5vw 12vw; }
+      #about .about-narrative-layout #about-who-desc-top, #about .about-narrative-layout #about-who-desc-bottom { font-size: clamp(20px,4.6vw,35px); }
+      #about .about-narrative-layout #about-who-desc-top { top: 10vh; }
+      #about .about-narrative-layout #about-who-desc-bottom { bottom: 12vh; }
       #about .about-source-record { column-gap: 0; row-gap: 6vw; margin-bottom: 18vw; }
       #about .about-source-record h2 { font-size: 8vw; }
       #about .about-source-record-count { justify-content: flex-end; font-size: 4vw; gap: 3vw; }
@@ -96,10 +102,7 @@ export function AboutPageStyles() {
     @media (prefers-reduced-motion:reduce) {
       #about .about-source-monument > div { transform: none; }
       #about .about-source-monument span::after { animation: none; }
-      #about .about-team-selector button > span { width: 2px; height: 5px; border-radius: 0; }
-    #about .about-team-selector > span { display: none; }
-    #about .about-team-cursor { display: none; }
-      #about .about-expertise-studio { display: none; }
+      #about .about-team-cursor, #about .about-expertise-studio { display: none; }
     }
   `}</style>;
 }

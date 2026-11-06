@@ -63,9 +63,9 @@ export function AboutContactField() {
       if (!reducedMotion) time += elapsed;
       if (window.__enableCtaProbe) { frameTimes.push(elapsed * 1000); if (frameTimes.length > 120) frameTimes.shift(); }
       progress = Math.max(0, Math.min(1, (window.scrollY - start) / length));
-      field.setTime(reducedMotion ? 0 : time);
       field.uniforms.uProgress.value = reducedMotion ? .5 : progress;
       field.uniforms.uPointer.value.lerp(targetPointer, 1 - Math.exp(-12 * elapsed));
+      field.setTime(reducedMotion ? 0 : time);
       renderer.render(scene, camera);
       frames++; needsStill = false;
       if (frames === 1) { canvas.style.opacity = "1"; setState("ready"); }

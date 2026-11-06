@@ -80,14 +80,14 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
         studioRef.current.style.opacity = cinematic ? String(Math.max(0, 1 - p / .22)) : "0";
       }
       if (headingRef.current) {
-        headingRef.current.style.transform = cinematic ? `translate3d(0,${heading.yVh}vh,0)` : "";
+        headingRef.current.style.transform = cinematic ? `translate3d(0,${heading.yVh + 7 * (1 - Math.min(1, p / .22))}vh,0)` : "";
         headingRef.current.style.opacity = cinematic ? String(heading.opacity) : "1";
         headingRef.current.style.pointerEvents = cinematic && heading.opacity < .01 ? "none" : "";
         headingRef.current.querySelectorAll("button").forEach(button => { button.tabIndex = cinematic && heading.opacity < .01 ? -1 : 0; });
       }
       if (flourishRef.current) {
-        flourishRef.current.style.opacity = cinematic ? String(.38 + .42 * p) : ".8";
-        flourishRef.current.style.transform = `translate3d(${(1 - p) * 10}%,0,0)`;
+        flourishRef.current.style.opacity = String(.25 + .75 * Math.max(0, Math.min(1, (p - .12) / .24)));
+        flourishRef.current.style.transform = `rotate(${p * -105}deg) scale(1.07)`;
       }
       cards.forEach((_, i) => {
         const pose = expertiseCardPose(p, i), slot = slotRefs.current[i], flip = flipRefs.current[i];
@@ -141,9 +141,11 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   return (
     <section id="about-capability" ref={sectionRef} className="about-playing-expertise" data-reduced={reducedMotion} aria-labelledby="about-expertise-heading">
       <div className="about-expertise-stage">
+        {/* A clipped solid continuation at the blue boundary, distinct from
+            the outlined word behind the black recognition records. */}
         <span ref={studioRef} className="about-expertise-studio" aria-hidden="true">STUDIO</span>
         <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" fill="none" aria-hidden="true">
-          <path d="M280-80C740 70 1400-200 1220 240C1150 400 1100 470 1030 505" stroke="currentColor" strokeWidth="26" strokeLinecap="round" />
+          <path d="M-180-110C280 10 520 230 1040 130S1460 80 1365 330C1300 510 1240 570 1170 600" stroke="currentColor" strokeWidth="24" strokeLinecap="round" />
         </svg>
         {/* The overlapping editorial heading is not a hit target; keep the
             actual controls interactive without masking the cards underneath. */}
