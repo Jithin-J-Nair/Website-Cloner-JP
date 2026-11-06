@@ -23,7 +23,7 @@ export function expertiseCardPose(progress: number, index: number) {
   return {
     // The backs begin as one readable fan around centre, then settle into
     // their four authored columns as the scroll playhead approaches the fronts.
-    xVw: settled((1.5 - i) * 8),
+    xVw: settled((1.5 - i) * 23),
     dropVh: 22 * (1 - lift),
     z: settled(-i * 2.4),
     roll: settled((i - 1.5) * 8),
@@ -37,5 +37,5 @@ export function expertiseCardPose(progress: number, index: number) {
 
 export function expertiseHeadingPose(progress: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
-  return { opacity: 1 - ease(.82, .98, p), yVh: -16 * ease(.82, 1, p) };
+  return { opacity: 1 - ease(.28, .44, p), yVh: 38 - 125 * ease(0, .44, p) };
 }

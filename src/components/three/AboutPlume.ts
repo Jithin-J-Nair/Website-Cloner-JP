@@ -14,8 +14,8 @@ vec3 plume(vec4 seed) {
   float strand = floor(seed.y / 3.14159265);
   float across = fract(seed.y / 3.14159265) - .5;
   float phase = h * 1.62 + strand * 3.14159265 + across * 1.4
-    + uTime * (.12 + .025 * sin(seed.w * 6.28));
-  float envelope = .72 + .52 * cos(h * 1.12 + .35) + .18 * sin(h * 2.4 - uTime * .2);
+    + uTime * (.55 + .06 * sin(seed.w * 6.28));
+  float envelope = .72 + .52 * cos(h * 1.12 + .35) + .18 * sin(h * 2.4 - uTime * .7);
   float radius = mix(.35, 1., pow(seed.x, .45)) * max(.22, envelope);
   // A small interior population fills the folds without washing out their form.
   float interior = 1. - smoothstep(.28, .45, seed.w);
@@ -28,17 +28,21 @@ vec3 plume(vec4 seed) {
   vec3 p = vec3(x, h + turbulence, z);
   // Coherent low-frequency billows act on the whole volume, not independent
   // random per-grain jitter. Both populations evaluate the same GPU field.
-  vec3 billow = vec3(sin(p.y * 1.7 + uTime * .23) - cos(p.z * 1.4),
-    sin(p.z * 1.5 + uTime * .19) - cos(p.x * 1.8),
-    sin(p.x * 1.6 - uTime * .21) - cos(p.y * 1.3));
-  p += billow * .14;
+  vec3 billow = vec3(sin(p.y * 1.7 + uTime * .62) - cos(p.z * 1.4),
+    sin(p.z * 1.5 + uTime * .49) - cos(p.x * 1.8),
+    sin(p.x * 1.6 - uTime * .57) - cos(p.y * 1.3));
+  p += billow * mix(.34, .18, uCompact);
+  // Successive recording frames show broad folding/advection, not a slow
+  // rigid orbit. Correlated displacements preserve neighboring trajectories.
+  p.x += sin(h * 1.1 + uTime * .65) * mix(.72, .22, uCompact);
+  p.z += cos(h * .85 - uTime * .6) * mix(.45, .18, uCompact);
   p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .34) * .065;
   // Sparse pearl/bokeh outliers break the silhouette into suspended particles.
   float fringe = smoothstep(.965, .998, seed.w);
   p += vec3(cos(seed.y * 1.3) * 4.2, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.9) * fringe;
   // Opening cloud has a lateral, comet-like spread; the later wide shot reads as
   // a narrower overhead shaft against the valley.
-  p.x *= mix(1.22, 1.60, uCompact);
+  p.x *= mix(1.72, 1.60, uCompact);
   p.z *= mix(1.05, 1.28, uCompact);
   p.y *= mix(.92, 1.08, uCompact);
   p.z = min(p.z, 4.);

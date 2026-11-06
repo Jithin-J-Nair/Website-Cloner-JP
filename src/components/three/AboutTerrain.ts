@@ -58,8 +58,12 @@ export function terrainHeightAt(x: number, z: number): number {
   const channels = Math.pow(1 - Math.abs(noise(wx * .6, wz * .7) * 2 - 1), 3);
   const erosion = (channels - .38) * .38 * flankMask;
   const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .17 * flankMask;
+  // Nonperiodic rills run down the escarpments rather than puffing them into
+  // smooth dunes. All contact objects still evaluate this same surface.
+  const rills = Math.pow(1 - Math.abs(noise(wx * .24, wz * 1.45 + wx * .14) * 2 - 1), 4);
+  const incision = rills * .38 * flankMask;
   const edge = 1 - smoothstep(27, 43, Math.hypot(x, z * .8));
-  return (rimRise * .78 + (left + right) * nearRim + rearWall + foreground + escarpment * flankMask + erosion + micro + detail) * edge - 1.7;
+  return (rimRise * .78 + (left + right) * nearRim + rearWall + foreground + escarpment * flankMask + erosion + micro + detail - incision) * edge - 1.7;
 }
 
 /** Original rock microrelief, evaluated on the existing 3D basin. No sampled
@@ -110,7 +114,7 @@ export function createAboutTerrainMaterial() {
         // previously looked like crumpled paper rather than an eroded surface.
         // No atan seam: the former polar-UV derivative discontinuity made a
         // high-contrast checker/moire patch across the right mountain face.
-        vec2 channels = vec2(p.x * 1.35 + p.y * .26, p.y * 1.1 - p.x * .22);
+        vec2 channels = vec2(p.y * 1.65 + p.x * .25, p.x * .3 - p.y * .1);
         // Avoid long rubber-like grooves: cross-cut drainage with shorter
         // isotropic fractures while keeping the same mip-filtered noise tile.
         channels += vec2(noise(p * .38), noise(p * .38 + 13.)) * .24;
@@ -126,7 +130,7 @@ export function createAboutTerrainMaterial() {
           amplitude *= .42;
         }
         // Fine regolith remains quiet; fractured relief belongs to the flanks.
-        relief *= smoothstep(4., 8., abs(p.x)) * .28;
+        relief *= smoothstep(4., 8., abs(p.x)) * 1.05;
         // Screen-space surface gradient: no finite-difference resampling and no
         // additional normal texture. Work entirely in world space with the light.
         vec3 n = normalize(vNormalW);
@@ -140,7 +144,7 @@ export function createAboutTerrainMaterial() {
         float diffuse = max(0., dot(n, lightDir));
         float specular = pow(max(0., dot(n, normalize(lightDir + eye))), 24.);
         float slope = clamp(vNormalW.y, 0., 1.);
-        float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 64.);
+        float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 96.);
         float fractured = 1. - abs(noise(surfaceUV * 1.8) * 2. - 1.);
         float fractures = pow(fractured, 2.) * .55 + noise(surfaceUV * 6.3) * .3 + noise(p * 16.) * .15;
         // Fine mineral variation must not paint large black cavities onto

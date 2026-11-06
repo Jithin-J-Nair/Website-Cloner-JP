@@ -32,7 +32,7 @@ function CardBack() {
           {[34, 206].map(x => <g key={x}><path d={`M${x} 83v55`} />{[84, 103, 130].map(y => <circle key={y} cx={x} cy={y} r="2.7" fill="var(--about-expertise-blue)" />)}</g>)}
         </g>)}
         <path d="M120 99 189 168 120 237 51 168Z M120 108 180 168 120 228 60 168Z M120 116 172 168 120 220 68 168Z" />
-        <circle cx="120" cy="168" r="45" /><circle cx="120" cy="168" r="34" />
+        <path d="M120 126C129 119 139 123 144 134L154 144C165 149 169 159 162 168C169 177 165 187 154 192L144 202C139 213 129 217 120 210C111 217 101 213 96 202L86 192C75 187 71 177 78 168C71 159 75 149 86 144L96 134C101 123 111 119 120 126Z" fill="var(--about-expertise-blue)" strokeWidth="2" /><circle cx="120" cy="168" r="30" />
         {[0, 90, 180, 270].map(angle => <g key={angle} transform={`rotate(${angle} 120 168)`}><circle cx="120" cy="126" r="2.8" fill="var(--about-expertise-blue)" /><path d="m114 112 6-6 6 6" /></g>)}
         {[[14, 14], [226, 14], [14, 322], [226, 322]].map(([x, y]) => <circle key={`${x}-${y}`} cx={x} cy={y} r="4" fill="var(--about-expertise-blue)" />)}
       </g>
@@ -46,6 +46,7 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   reducedMotion: boolean;
 }) {
   const headingRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<HTMLSpanElement>(null);
   const flourishRef = useRef<SVGSVGElement>(null);
   const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const flipRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -74,6 +75,10 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
       section.dataset.cardProgress = p.toFixed(4);
       section.dataset.cardLayout = cinematic ? "cinematic" : "reading";
       const heading = expertiseHeadingPose(p);
+      if (studioRef.current) {
+        studioRef.current.style.transform = `translate3d(0,${-Math.min(1, p / .28) * 45}vh,0)`;
+        studioRef.current.style.opacity = cinematic ? String(Math.max(0, 1 - p / .22)) : "0";
+      }
       if (headingRef.current) {
         headingRef.current.style.transform = cinematic ? `translate3d(0,${heading.yVh}vh,0)` : "";
         headingRef.current.style.opacity = cinematic ? String(heading.opacity) : "1";
@@ -136,8 +141,9 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   return (
     <section id="about-capability" ref={sectionRef} className="about-playing-expertise" data-reduced={reducedMotion} aria-labelledby="about-expertise-heading">
       <div className="about-expertise-stage">
+        <span ref={studioRef} className="about-expertise-studio" aria-hidden="true">STUDIO</span>
         <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" fill="none" aria-hidden="true">
-          <path d="M-84 824C224 650 420 574 620 382S1020 48 1518-172" stroke="currentColor" strokeWidth="26" strokeLinecap="round" />
+          <path d="M280-80C740 70 1400-200 1220 240C1150 400 1100 470 1030 505" stroke="currentColor" strokeWidth="26" strokeLinecap="round" />
         </svg>
         {/* The overlapping editorial heading is not a hit target; keep the
             actual controls interactive without masking the cards underneath. */}

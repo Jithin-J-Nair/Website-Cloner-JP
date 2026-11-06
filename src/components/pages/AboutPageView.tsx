@@ -14,7 +14,10 @@ import { createAboutTerrainMaterial, createAboutGroundClasts, terrainHeightAt } 
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
-import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
+import { AboutContactSection } from "@/components/pages/AboutContactSection";
+import { AboutRecognition } from "@/components/pages/AboutRecognition";
+import { AboutPageStyles } from "@/components/pages/AboutPageStyles";
+import { createAboutBodyContours } from "@/components/three/AboutBodyContours";
 import { StudioFooter } from "@/components/sections/StudioFooter";
 
 declare global {
@@ -86,6 +89,7 @@ function AboutWhoExperience({
   const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
   const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
+  const teamCursorRef = useRef<HTMLDivElement | null>(null);
   const portraitCountRef = useRef(8192);
   const photoDataRef = useRef<AboutPhotoPortrait | null>(null);
   const [portraitLoaded, setPortraitLoaded] = useState(false);
@@ -228,10 +232,9 @@ function AboutWhoExperience({
     const tier = useStudioStore.getState().qualityTier;
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
     // Portrait quality stays bounded and independent from the plume's bead budget.
-    portraitCountRef.current = reducedMotion || software || window.innerWidth < 820 || tier === "low"
-      ? 8192
-      : tier === "medium" ? 16384 : 24576;
-    glRenderer.setClearColor(0x0d0c0f, 1);
+    portraitCountRef.current = reducedMotion || tier === "low" || window.innerWidth < 820 ? 8192
+      : software || tier === "medium" ? 16384 : 24576;
+    glRenderer.setClearColor(0x000302, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.05;
@@ -575,6 +578,8 @@ function AboutWhoExperience({
           uTime: { value: 0 },
           uMorph: { value: 1 },
           uPhoto: { value: 0 },
+          uReveal: { value: 0 },
+          uPhotoPointSize: { value: reducedMotion ? 2.8 : 2.3 },
           uViewportHeight: { value: window.innerHeight },
           uPixelRatio: { value: 1 },
           uPointerNDC: { value: new THREE.Vector2(0, 0) },
@@ -583,12 +588,14 @@ function AboutWhoExperience({
           uniform float uTime;
           uniform float uPixelRatio;
           uniform float uMorph;
-          uniform float uPhoto, uViewportHeight;
+          uniform float uPhoto, uViewportHeight, uReveal, uPhotoPointSize;
           attribute float aPhotoShade;
           uniform vec2 uPointerNDC;
           attribute vec3 aMorphFrom;
           varying float vDepth;
           varying float vShade;
+          varying float vBirth;
+          varying float vGlint;
           void main() {
             vec3 p = mix(aMorphFrom, position, clamp(uMorph, 0.0, 1.0));
             // An interruptible outward transport builds the photo from grains,
@@ -605,22 +612,30 @@ function AboutWhoExperience({
             p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
             vec4 mv = modelViewMatrix * vec4(p, 1.0);
             vDepth = -mv.z;
-            vShade = mix(clamp(p.z * 0.85 + 0.42, 0.12, 1.0), aPhotoShade, uPhoto);
+            vec3 normal = normalize(vec3(p.x * .8, p.y * .2, 1.));
+            vec3 light = normalize(vec3(uPointerNDC.x * 1.4, .6 + uPointerNDC.y * .5, 1.));
+            float illumination = .6 + .4 * max(0., dot(normal, light));
+            vShade = mix(clamp(p.z * .85 + .42, .12, 1.), pow(aPhotoShade, 1.25) * illumination, uPhoto);
+            vGlint = pow(max(0., dot(normal, normalize(light + vec3(0.,0.,1.)))), 38.) * .24 * aPhotoShade;
+            vBirth = smoothstep(clamp((position.y + 1.55) / 3.1,0.,1.) - .18,
+              clamp((position.y + 1.55) / 3.1,0.,1.) + .10, uReveal);
             float dof = 1.0 + abs(p.z - 0.35) * 2.2;
-            gl_PointSize = mix(2.45 * dof, 3.4 * clamp(uViewportHeight / 900., .85, 2.4), uPhoto) * uPixelRatio;
+            gl_PointSize = mix(2.45 * dof, uPhotoPointSize * clamp(uViewportHeight / 900., .85, 2.4), uPhoto) * uPixelRatio;
             gl_Position = projectionMatrix * mv;
           }
         `,
         fragmentShader: `
           uniform float uOpacity;
           varying float vShade;
+          varying float vBirth;
+          varying float vGlint;
           void main() {
             vec2 d = gl_PointCoord - 0.5;
             float r = length(d);
             if (r > 0.5) discard;
             float soft = smoothstep(0.5, 0.08, r);
-            vec3 col = mix(vec3(0.055, 0.085, 0.11), vec3(0.92, 0.96, 1.0), vShade);
-            gl_FragColor = vec4(col, soft * uOpacity * (.32 + .68 * vShade));
+            vec3 col = mix(vec3(.025,.035,.04), vec3(.72,.80,.83), vShade) + vGlint;
+            gl_FragColor = vec4(col, soft * uOpacity * (.2 + .8 * vShade) * vBirth);
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
           }
@@ -629,10 +644,12 @@ function AboutWhoExperience({
     );
     portraitMatRef.current = portraitMat;
 
-    let portraitLastTime = 0;
+    let portraitLastTime = 0, teamAssemblyStart = -1, teamWasVisible = false;
     const portraitPoints = new THREE.Points(portraitGeo, portraitMat);
     portraitPoints.visible = false;
     scene.add(portraitPoints);
+    const bodyContours = track(createAboutBodyContours());
+    bodyContours.group.visible = false; scene.add(bodyContours.group);
     // Keep the previous buffers alive on photo arrival, selection and recovery.
     // The original photograph is never fetched by the browser.
     Promise.resolve(photoDataRef.current ?? loadAboutPhotoPortrait(portraitRequest.signal)).then(data => {
@@ -676,9 +693,9 @@ function AboutWhoExperience({
       fragmentShader: `uniform float uTime, uOpacity; varying vec3 vLocal;
         void main() {
           float envelope = smoothstep(-1.9, -.9, vLocal.y) * (1. - smoothstep(.8, 2.35, vLocal.y));
-          float scan = pow(.5 + .5 * sin(vLocal.y * 3. - uTime * .65 + vLocal.x * 7.), 8.);
+          float scan = pow(.5 + .5 * sin(vLocal.y * 72. - uTime * .65 + vLocal.x * 17.), 18.);
           float edge = .25 + .75 * smoothstep(.3, 1.6, abs(vLocal.x));
-          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.08 + scan * .19) * uOpacity);
+          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.006 + scan * .14) * uOpacity);
         }`,
     }));
     const portraitLightField = new THREE.LineSegments(lightGeometry, lightMaterial);
@@ -855,9 +872,9 @@ function AboutWhoExperience({
 
       // 3. 36 Topographic Elevation Contour Lines ('about-03' & 'about-04')
       const contourVis = smoothstep(3.75, 4.85, u);
-      contourLines.visible = contourVis > 0.01;
+      contourLines.visible = contourVis > 0.01 && tTeamPhase < .99;
       if (contourLines.visible) {
-        contourMat.uniforms.uOpacity.value = contourVis * lerp(0.42, 1.95, tTeamPhase);
+        contourMat.uniforms.uOpacity.value = contourVis * lerp(.42, .12, tTeamPhase);
         contourMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         contourMat.uniforms.uTeamPhase.value = tTeamPhase;
       }
@@ -865,6 +882,13 @@ function AboutWhoExperience({
       // 4. Subtle Lower-Pedestal Team Hologram Shimmer ('about-04' — upper sky kept pure deep `#000000`!)
       portraitPoints.visible = tTeamPhase > 0.02;
       portraitLightField.visible = portraitPoints.visible;
+      bodyContours.group.visible = portraitPoints.visible;
+      bodyContours.uniforms.uOpacity.value = tTeamPhase;
+      bodyContours.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
+      if (portraitPoints.visible && !teamWasVisible) teamAssemblyStart = elapsedSec;
+      teamWasVisible = portraitPoints.visible;
+      portraitMat.uniforms.uReveal.value = reducedMotion || cachedPhoto ? 1.15
+        : 1.15 * smoothstep(0, .9, Math.max(0, elapsedSec - teamAssemblyStart));
       if (portraitPoints.visible) {
         if (reducedMotion) {
           portraitMat.uniforms.uMorph.value = 1;
@@ -888,13 +912,16 @@ function AboutWhoExperience({
         portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, portraitDamping);
         portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, portraitDamping);
         portraitPoints.rotation.z = 0;
-        portraitPoints.scale.setScalar(isMobile ? .88 : 1.03);
+        portraitPoints.scale.setScalar(isMobile ? .76 : .9);
         portraitPoints.position.set(
           camera.position.x + (isMobile ? -0.12 : -0.48),
-          camera.position.y - (isMobile ? 2.65 : 2.55),
+          camera.position.y - (isMobile ? 2.25 : 2.0),
           camera.position.z - 5.8
         );
         portraitLightField.position.copy(portraitPoints.position);
+        bodyContours.group.position.copy(portraitPoints.position);
+        bodyContours.group.rotation.copy(portraitPoints.rotation);
+        bodyContours.group.scale.copy(portraitPoints.scale);
       }
 
       // -----------------------------------------------------------------------
@@ -903,6 +930,13 @@ function AboutWhoExperience({
       // A. Exclusive lettering chapters: opening → flourish → manifesto.
       // One pure packet owns visibility; no second playhead or delayed callbacks.
       const lettering = aboutLetteringPose(u, isMobile);
+      if (teamCursorRef.current) {
+        teamCursorRef.current.style.opacity = hasPointer && !pointerOverControl && !reducedMotion && !isMobile ? String(tTeamPhase) : "0";
+        const x = (pointerNDC.x + 1) * window.innerWidth * .5;
+        const y = (1 - pointerNDC.y) * window.innerHeight * .5;
+        const scale = .8 + Math.min(.6, pointerActive * .5);
+        teamCursorRef.current.style.transform = `translate3d(${x - 52}px,${y - 52}px,0) scale(${scale})`;
+      }
       if (heroWordmarkRef.current) {
         const wordOut = lettering.opening;
         const slideX = reducedMotion ? 0 : -lettering.openingTravel * (isMobile ? 24 : 36);
@@ -979,7 +1013,9 @@ function AboutWhoExperience({
       lastTime = now;
       const rect = sectionEl.getBoundingClientRect();
       if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
-      if (!reducedMotion) sceneTime += dt;
+      // Analytical shaders/reveals follow active elapsed time even on slow GPUs.
+      // Keep the bounded dt only for damping; ensureLoop resets lastTime after sleep.
+      if (!reducedMotion) sceneTime += elapsed;
       frameTimes.push(elapsed * 1000); if (frameTimes.length > 180) frameTimes.shift();
       targetScrollY = window.scrollY;
       const diff = targetScrollY - smoothScrollY;
@@ -997,9 +1033,11 @@ function AboutWhoExperience({
       }
     };
     requestSceneRenderRef.current = ensureLoop;
-    const releasePointer = () => { pointerTarget.set(0, 0); ensureLoop(); };
+    let hasPointer = false, pointerOverControl = false;
+    const releasePointer = () => { hasPointer = false; pointerTarget.set(0, 0); ensureLoop(); };
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType === "touch" || reducedMotion) return;
+      hasPointer = true; pointerOverControl = e.target instanceof Element && !!e.target.closest("button,a,input");
       pointerTarget.set(Math.max(-1, Math.min(1, e.clientX / Math.max(1, window.innerWidth) * 2 - 1)), Math.max(-1, Math.min(1, 1 - e.clientY / Math.max(1, window.innerHeight) * 2)));
       pointerActive = 1;
       ensureLoop();
@@ -1324,9 +1362,13 @@ function AboutWhoExperience({
           ref={teamOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
           data-team-active="false"
+          onPointerUp={event => {
+            if (event.pointerType === "mouse" && event.target instanceof Element && !event.target.closest("button,a,input")) onStepMember(1);
+          }}
           data-reduced={reducedMotion}
           className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pb-8"
         >
+          <div ref={teamCursorRef} className="about-team-cursor" aria-hidden="true">↗</div>
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
             {/* Mobile full-width spaced `T E A M` above index row (`390x844/about-04`) */}
@@ -1452,13 +1494,13 @@ function AboutWhoExperience({
   );
 }
 
-/** The logo files are part of the repository's approved media bundle.
- * The alt text remains the brand name; the second marquee copy is hidden from AT.
+/** Accessible text-only brand names; no captured logo artwork is requested.
+ * The second marquee copy is hidden from assistive technology.
  */
 function ClientLogoTile({ name }: { name: string }) {
   return (
     <div role="listitem" className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
-      <span className="about-client-wordmark" aria-label={name}>
+      <span className="about-client-wordmark" aria-label={name} data-brand={name}>
         {name}
       </span>
     </div>
@@ -1489,9 +1531,9 @@ function AboutClientMarqueeLifecycle() {
 }
 
 /** Historical-evidence reconstruction, not a claim of exact current live parity.
- * Sticky native Three world → brands → recognition → expertise → shared CTA/footer.
- * Original generic portrait and procedural terrain replace restricted capture data;
- * the shared CTA uses original GPU-instanced analytical flow, not a FLIP solver.
+ * Sticky native Three world → brands → recognition → expertise → owned CTA/shared footer.
+ * The supplied Jithin portrait and procedural geometry replace restricted capture data;
+ * the About CTA uses an original analytical glyph wave, not a FLIP solver.
  */
 export function AboutPageView() {
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
@@ -1512,6 +1554,10 @@ export function AboutPageView() {
     let disposed = false;
     const elements = [capabilityBandRef.current, darkUpperRef.current, document.getElementById("end-section")];
     let bands: ({ top: number; bottom: number } | null)[] = [];
+    const capability = capabilityBandRef.current;
+    const cardFaces = [...(capability?.querySelectorAll<HTMLElement>(".about-card-front") ?? [])];
+    let cardBands: { top: number; bottom: number; left: number; right: number }[] = [];
+    let logoSample = { x: 0, y: 0 };
     const syncHeaderSurface = () => {
       rafId = 0;
       if (document.hidden) return;
@@ -1522,12 +1568,23 @@ export function AboutPageView() {
           const rect = el.getBoundingClientRect();
           return { top: rect.top + y, bottom: rect.bottom + y };
         });
+        // Reading-layout cards can pass underneath the fixed header. Sample
+        // the wordmark's actual position, not only the blue section background.
+        const logo = document.getElementById("header-logo")?.getBoundingClientRect();
+        if (logo) logoSample = { x: logo.x + logo.width / 2, y: logo.y + logo.height / 2 };
+        cardBands = cardFaces.map(face => {
+          const rect = face.getBoundingClientRect();
+          return { top: rect.top + y, bottom: rect.bottom + y, left: rect.left, right: rect.right };
+        });
         dirty = false;
       }
       const line = y + window.innerHeight * 0.12;
       const [cap, dark, end] = bands;
       const covers = (band: { top: number; bottom: number } | null) => band && band.top <= line && band.bottom >= line;
-      const nextSurface = covers(cap) || covers(end) ? "cobalt" : dark && dark.bottom >= line ? "void" : "ice";
+      const overReadingCard = capability?.dataset.cardLayout === "reading" && cardBands.some(band =>
+        band.top <= y + logoSample.y && band.bottom >= y + logoSample.y &&
+        band.left <= logoSample.x && band.right >= logoSample.x);
+      const nextSurface = overReadingCard ? "ice" : covers(cap) || covers(end) ? "cobalt" : dark && dark.bottom >= line ? "void" : "ice";
       if (lastSurfaceRef.current !== nextSurface) {
         lastSurfaceRef.current = nextSurface;
         setActiveSurface(nextSurface);
@@ -1580,6 +1637,7 @@ export function AboutPageView() {
       if (dirty) { awardTop = measure(award); dirty = false; }
       const vh = Math.max(1, window.innerHeight), y = window.scrollY;
       const awardsP = reducedMotion ? .5 : clamp01((y - awardTop + vh) / (vh * 2));
+      if (award) award.style.setProperty("--recognition-progress", String(clamp01((y - awardTop) / Math.max(1, award.offsetHeight - vh))));
       if (word) word.style.transform = `translate3d(${lerp(3, -3, awardsP)}%,0,0)`;
 
     };
@@ -1612,6 +1670,7 @@ export function AboutPageView() {
   return (
     <main id="about" data-scene-version="about-photo-terrain-v4" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
+      <AboutPageStyles />
       <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
         {/* =====================================================================
             1. 3D SPHERE VORTEX + CRATER LANDSCAPE + TOPOGRAPHIC HUD + TEAM (`#about-who`)
@@ -1676,124 +1735,20 @@ export function AboutPageView() {
         </section>
 
         {/* =====================================================================
-            3. RECOGNITION LEDGER — pinned category index, internally scrolling record
+            3. RECOGNITION — consecutive awards, articles and talks in document flow
            ===================================================================== */}
-        <section
-          id="about-award"
-          onPointerMove={event => {
-            const bounds = event.currentTarget.getBoundingClientRect();
-            event.currentTarget.style.setProperty("--award-pointer-x", `${((event.clientX - bounds.left) / Math.max(1, bounds.width)) * 100}%`);
-            event.currentTarget.style.setProperty("--award-pointer-y", `${((event.clientY - bounds.top) / Math.max(1, bounds.height)) * 100}%`);
-          }}
-          className="about-recognition-section relative isolate overflow-hidden bg-[#0d0c0f] px-[var(--base-padding-x)] py-20 text-white min-[813px]:py-24"
-        >
-          <div className="about-awards-monument" aria-hidden="true">
-            {["AWARD", "WINNING", "MULTI", "DISCIPLINARY", "CREATIVE", "STUDIO"].map(word => (
-              <span key={word}>{word}</span>
-            ))}
-          </div>
-
-          <div className="about-recognition-layout relative z-10 grid grid-cols-1 gap-10 min-[813px]:grid-cols-12 min-[813px]:gap-8">
-            <nav className="about-recognition-index min-[813px]:col-span-4" aria-label="Recognition categories">
-              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 0 } as React.CSSProperties}>
-                <h2>AWARDS</h2>
-                <span className="about-recognition-count">
-                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
-                  <span>{LUSION_ABOUT.recognition.awardsDisplayedTotal}</span>
-                </span>
-              </div>
-              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 1 } as React.CSSProperties}>
-                <h2>ARTICLES</h2>
-                <span className="about-recognition-count">
-                  <span className="about-recognition-count-icon" aria-hidden="true">↗</span>
-                  <span>{LUSION_ABOUT.recognition.articlesDisplayedTotal}</span>
-                </span>
-              </div>
-              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 2 } as React.CSSProperties}>
-                <h2>TALKS</h2>
-                <span className="about-recognition-count">
-                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
-                  <span>{LUSION_ABOUT.recognition.talksDisplayedTotal}</span>
-                </span>
-              </div>
-            </nav>
-
-            <div id="about-recognition-window" className="about-recognition-window min-[813px]:col-span-8" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
-              <section className="about-recognition-record" aria-labelledby="about-awards-record-title">
-                <div className="about-recognition-record-heading">
-                  <h3 id="about-awards-record-title">AWARDS</h3>
-                  <span className="font-mono text-xs text-white/55">58 HONORS</span>
-                </div>
-                <div className="about-recognition-award-header" aria-hidden="true">
-                  <span>ORGANIZATION</span><span>COUNT</span><span>RECOGNITION</span>
-                </div>
-                <ul className="about-recognition-award-table">
-                  {LUSION_ABOUT.recognition.awardGroups.flatMap(group =>
-                    group.honors.map(honor => (
-                      <li
-                        key={`${group.organization}-${honor.recognition}`}
-                        className="about-recognition-award-row"
-                        data-award-reveal
-                      >
-                        <span className="about-recognition-org">{group.organization}</span>
-                        <span className="about-recognition-count-cell">{honor.countFormatted}</span>
-                        <span className="about-recognition-label">{honor.recognition}</span>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              </section>
-
-              <section className="about-recognition-record" aria-labelledby="about-articles-record-title">
-                <div className="about-recognition-record-heading">
-                  <h3 id="about-articles-record-title">ARTICLES</h3>
-                  <span className="font-mono text-xs text-white/55">03 FEATURES</span>
-                </div>
-                <ul className="about-recognition-link-list">
-                  {LUSION_ABOUT.recognition.articles.map(article => (
-                    <li key={article.href}>
-                      <a
-                        href={article.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="about-recognition-link"
-                      >
-                        <span>{article.title}</span>
-                        <span aria-hidden="true" className="font-mono text-xs">↗</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <section className="about-recognition-record" aria-labelledby="about-talks-record-title">
-                <div className="about-recognition-record-heading">
-                  <h3 id="about-talks-record-title">TALKS</h3>
-                  <span className="font-mono text-xs text-white/55">05 EVENTS</span>
-                </div>
-                <ul className="about-recognition-talk-table">
-                  {LUSION_ABOUT.recognition.talks.map(talk => (
-                    <li key={`${talk.event}-${talk.dateAndLocation}`} className="about-talk-row">
-                      <span>{talk.event}</span>
-                      <span>{talk.dateAndLocation}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </div>
-          </div>
-        </section>
+        <AboutRecognition />
       </div>
 
       {/* =====================================================================
-          4. AREA OF EXPERTISE (`#about-capability` — Full-Bleed Electric Cobalt `#1a2ffb`)
+          4. AREA OF EXPERTISE (`#about-capability` — route-owned blue playing-card act)
          ===================================================================== */}
       <AboutExpertiseCards sectionRef={capabilityBandRef} reducedMotion={reducedMotion} />
 
       {/* =====================================================================
           5, 6 & 7. END CTA, STUDIO FOOTER & SCROLL PORTAL (`Our Projects` -> `/projects`)
          ===================================================================== */}
-      <ContactCtaSection />
+      <AboutContactSection />
       <StudioFooter nextHref="/projects" nextLabel={LUSION_ABOUT.scrollNav.targetTitle} />
     </main>
   );
