@@ -95,6 +95,7 @@ function AboutWhoExperience({
 
   const portraitMatRef = useRef<THREE.ShaderMaterial | null>(null);
   const portraitGeoRef = useRef<THREE.BufferGeometry | null>(null);
+  const requestSceneRenderRef = useRef<(() => void) | null>(null);
 
   const [sceneGeneration, setSceneGeneration] = useState(0);
   const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
@@ -189,6 +190,10 @@ function AboutWhoExperience({
       portraitMatRef.current.uniforms.uMorph.value = 1;
       portraitMorphStartRef.current = null;
     }
+    // Reduced motion sleeps after each draw. Uploading new attributes alone
+    // would leave the selected portrait stale until the next scroll/resize.
+    // Reuse the owned scheduler: one static frame, not another animation loop.
+    requestSceneRenderRef.current?.();
   }, [activeMemberIdx, reducedMotion]);
 
   useEffect(() => {
@@ -991,6 +996,7 @@ function AboutWhoExperience({
         rafId = window.requestAnimationFrame(tick);
       }
     };
+    requestSceneRenderRef.current = ensureLoop;
     const releasePointer = () => { pointerTarget.set(0, 0); ensureLoop(); };
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType === "touch" || reducedMotion) return;
@@ -1066,6 +1072,7 @@ function AboutWhoExperience({
 
     return () => {
       disposed = true;
+      if (requestSceneRenderRef.current === ensureLoop) requestSceneRenderRef.current = null;
       portraitRequest.abort();
       unsubscribeChrome();
       if (window.__aboutProbe === probe) delete window.__aboutProbe;

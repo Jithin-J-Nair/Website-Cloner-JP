@@ -139,11 +139,13 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
         <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" fill="none" aria-hidden="true">
           <path d="M-84 824C224 650 420 574 620 382S1020 48 1518-172" stroke="currentColor" strokeWidth="26" strokeLinecap="round" />
         </svg>
-        <div ref={headingRef} className="about-expertise-heading">
+        {/* The overlapping editorial heading is not a hit target; keep the
+            actual controls interactive without masking the cards underneath. */}
+        <div ref={headingRef} className="about-expertise-heading pointer-events-none">
           <h2 id="about-expertise-heading"><span>AREA OF</span><span>EXPERTISE</span></h2>
           <div className="about-expertise-caption">
             <p>{LUSION_ABOUT.capability.subtitle}</p>
-            <div className="about-expertise-controls" aria-label="Expertise areas">
+            <div className="about-expertise-controls pointer-events-auto" aria-label="Expertise areas">
               {cards.map((card, i) => <button key={card.title} type="button" aria-label={`Focus ${card.title}`} aria-controls={`expertise-${i}`} aria-pressed={active === i} onClick={() => { soundEngine.playClick(); readCard(i, true); }}><CapabilityGlyph index={i} /></button>)}
             </div>
           </div>

@@ -37,8 +37,12 @@ export function terrainHeightAt(x: number, z: number): number {
   const ridge = (center: number, width: number) => Math.pow(Math.max(0, 1 - Math.abs((x - center) / width)), .78);
   const buttress = .88 + .24 * Math.pow(1 - Math.abs(noise(z * .24, 29) * 2 - 1), 2);
   const nearRim = 1 - smoothstep(10, 24, z);
-  const left = ridge(-12.2 + Math.sin(z * .14) * 1.2, 8.4) * (3.1 + noise(z * .3, 2) * .65) * buttress
-    * (.68 + .32 * (1 - smoothstep(-8, 4, z)));
+  // A broad outer shelf with a steep, irregular inner face, rather than a
+  // rounded tent-shaped ridge. The supplied close still has a long left crest
+  // dropping into the floor; its silhouette is not a pointed alpine summit.
+  const leftCrest = -9.6 + Math.sin(z * .14) * .9 + (noise(z * .4, 71) - .5) * .65;
+  const leftShelf = smoothstep(-24, -16, x) * (1 - smoothstep(leftCrest - 1.3, leftCrest + 2.7, x));
+  const left = leftShelf * (5.1 + noise(z * .3, 2) * .65) * buttress * .88;
   // The tall rear escarpment is separate from the lower foreground shoulder;
   // the supplied basin still has a high right skyline, not a symmetric mound.
   const rearWall = Math.exp(-Math.pow((x - 16) / 6, 2))
@@ -112,7 +116,7 @@ export function createAboutTerrainMaterial() {
         channels += vec2(noise(p * .38), noise(p * .38 + 13.)) * .24;
         vec2 surfaceUV = mix(p, channels, smoothstep(4.5, 10., abs(p.x)));
         float footprint = max(length(dFdx(surfaceUV)), length(dFdy(surfaceUV)));
-        float grain = 0., relief = 0., frequency = 10.4, amplitude = .036;
+        float grain = 0., relief = 0., frequency = 7.6, amplitude = .036;
         for (int i = 0; i < 4; i++) {
           float weight = 1. - smoothstep(.25, .85, footprint * frequency);
           float n = noise(surfaceUV * frequency + float(i) * 17.3) - .5;
@@ -122,7 +126,7 @@ export function createAboutTerrainMaterial() {
           amplitude *= .42;
         }
         // Fine regolith remains quiet; fractured relief belongs to the flanks.
-        relief *= smoothstep(4., 8., abs(p.x)) * .10;
+        relief *= smoothstep(4., 8., abs(p.x)) * .28;
         // Screen-space surface gradient: no finite-difference resampling and no
         // additional normal texture. Work entirely in world space with the light.
         vec3 n = normalize(vNormalW);
@@ -154,15 +158,17 @@ export function createAboutTerrainMaterial() {
         color += vec3(.045, .055, .06) * specular * (.12 + pool * .88);
         // Low reflected shaft light continues down the floor; it must not end
         // in a circular black cutoff immediately outside the astronaut's pool.
-        float spill = exp(-p.x * p.x / 72. - pow((p.y - 9.) / 24., 2.));
-        color += vec3(.017, .022, .025) * spill * smoothstep(.65, .94, slope) * uValleyBrightness;
+        float spill = exp(-p.x * p.x / 72. - pow((p.y - 9.) / 30., 2.));
+        color += vec3(.026, .032, .035) * spill * smoothstep(.65, .94, slope) * uValleyBrightness;
         // Quiet, mip-filtered fines only. Larger grains are real clustered,
         // half-embedded instances; the former repeated black-dot tile is gone.
         color *= .98 + noise(p * 22.) * .04;
         // During the editorial passage retain only the low pool, not a grey
         // full-screen wall behind the type. Team mode is hidden by the owner.
         color *= mix(pow(pool, 2.) * .7, 1., uValleyBrightness);
-        float farFade = 1. - smoothstep(23., 45., length(p));
+        // Fade the distant sides, not the near foreground floor: a circular
+        // world-space mask made the pullback look like a floating little island.
+        float farFade = 1. - smoothstep(23., 45., length(vec2(p.x, p.y * .52)));
         gl_FragColor = vec4(color, uOpacity * farFade);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
