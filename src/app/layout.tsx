@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "JITHIN" }],
   openGraph: {
-    title: LUSION_HOME.meta.title,
+    title: "JITHIN",
     description: LUSION_HOME.meta.description,
     type: "website",
     siteName: "JITHIN",
