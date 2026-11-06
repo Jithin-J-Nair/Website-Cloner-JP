@@ -1,0 +1,296 @@
+[
+  {
+    "width": 1568,
+    "height": 832,
+    "reduced": false,
+    "errors": [],
+    "consoleErrors": [],
+    "faceRequests": [],
+    "sourceResponses": [
+      {
+        "url": "contours.buf",
+        "status": 200
+      },
+      {
+        "url": "edan.buf",
+        "status": 200
+      },
+      {
+        "url": "ffi.buf",
+        "status": 200
+      },
+      {
+        "url": "pierre.buf",
+        "status": 200
+      },
+      {
+        "url": "paul.buf",
+        "status": 200
+      },
+      {
+        "url": "sunny.buf",
+        "status": 200
+      },
+      {
+        "url": "contours.buf",
+        "status": 200
+      },
+      {
+        "url": "ffi.buf",
+        "status": 200
+      }
+    ],
+    "checks": [
+      "narrative bounds",
+      "original asset selection and morph",
+      "fast selection / no geometry growth",
+      "native wheel forward/reverse",
+      "reverse narrative / deterministic camera",
+      "third-screenshot transition / full heading",
+      "offscreen sleep",
+      "context recovery / preserved selected source asset",
+      "menu sleep / route cleanup"
+    ],
+    "narrative": [
+      {
+        "left": 78.390625,
+        "right": 788.140625,
+        "top": 133.09375,
+        "bottom": 335.921875,
+        "text": "A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"
+      },
+      {
+        "left": 708.53125,
+        "right": 1489.609375,
+        "top": 570.953125,
+        "bottom": 773.78125,
+        "text": "working together to\nturn ambitious ideas into\nimmersive digital experiences."
+      }
+    ],
+    "selection": {
+      "asset": "ffi",
+      "points": 8192,
+      "ready": true,
+      "morph": 1
+    },
+    "transition": {
+      "top": 316.0625,
+      "headingTop": 597.4593505859375,
+      "headingBottom": 943.6468505859375,
+      "svg": "none"
+    },
+    "pass": true
+  },
+  {
+    "width": 1024,
+    "height": 768,
+    "reduced": false,
+    "errors": [],
+    "consoleErrors": [],
+    "faceRequests": [],
+    "sourceResponses": [
+      {
+        "url": "contours.buf",
+        "status": 200
+      },
+      {
+        "url": "edan.buf",
+        "status": 200
+      },
+      {
+        "url": "ffi.buf",
+        "status": 200
+      },
+      {
+        "url": "pierre.buf",
+        "status": 200
+      },
+      {
+        "url": "paul.buf",
+        "status": 200
+      },
+      {
+        "url": "sunny.buf",
+        "status": 200
+      }
+    ],
+    "checks": [
+      "narrative bounds",
+      "original asset selection and morph",
+      "fast selection / no geometry growth",
+      "reverse narrative / deterministic camera",
+      "offscreen sleep"
+    ],
+    "narrative": [
+      {
+        "left": 51.1875,
+        "right": 514.75,
+        "top": 122.875,
+        "bottom": 255.296875,
+        "text": "A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"
+      },
+      {
+        "left": 462.640625,
+        "right": 972.8125,
+        "top": 581.828125,
+        "bottom": 714.25,
+        "text": "working together to\nturn ambitious ideas into\nimmersive digital experiences."
+      }
+    ],
+    "selection": {
+      "asset": "ffi",
+      "points": 8192,
+      "ready": true,
+      "morph": 1
+    },
+    "pass": true
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "reduced": false,
+    "errors": [],
+    "consoleErrors": [],
+    "faceRequests": [],
+    "sourceResponses": [
+      {
+        "url": "contours.buf",
+        "status": 200
+      },
+      {
+        "url": "edan.buf",
+        "status": 200
+      },
+      {
+        "url": "ffi.buf",
+        "status": 200
+      },
+      {
+        "url": "pierre.buf",
+        "status": 200
+      },
+      {
+        "url": "paul.buf",
+        "status": 200
+      },
+      {
+        "url": "sunny.buf",
+        "status": 200
+      }
+    ],
+    "checks": [
+      "narrative bounds",
+      "original asset selection and morph",
+      "fast selection / no geometry growth",
+      "horizontal touch swipe",
+      "reverse narrative / deterministic camera",
+      "offscreen sleep",
+      "menu sleep / route cleanup"
+    ],
+    "narrative": [
+      {
+        "left": 15,
+        "right": 250.109375,
+        "top": 202.546875,
+        "bottom": 269.71875,
+        "text": "A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"
+      },
+      {
+        "left": 116.265625,
+        "right": 375,
+        "top": 624.9375,
+        "bottom": 692.109375,
+        "text": "working together to\nturn ambitious ideas into\nimmersive digital experiences."
+      }
+    ],
+    "selection": {
+      "asset": "ffi",
+      "points": 8192,
+      "ready": true,
+      "morph": 1
+    },
+    "pass": true
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "reduced": true,
+    "errors": [],
+    "consoleErrors": [],
+    "faceRequests": [],
+    "sourceResponses": [
+      {
+        "url": "contours.buf",
+        "status": 200
+      },
+      {
+        "url": "edan.buf",
+        "status": 200
+      },
+      {
+        "url": "contours.buf",
+        "status": 200
+      },
+      {
+        "url": "edan.buf",
+        "status": 200
+      },
+      {
+        "url": "ffi.buf",
+        "status": 200
+      },
+      {
+        "url": "pierre.buf",
+        "status": 200
+      },
+      {
+        "url": "yannic.buf",
+        "status": 200
+      },
+      {
+        "url": "paul.buf",
+        "status": 200
+      },
+      {
+        "url": "andrii.buf",
+        "status": 200
+      },
+      {
+        "url": "sunny.buf",
+        "status": 200
+      }
+    ],
+    "checks": [
+      "narrative bounds",
+      "original asset selection and morph",
+      "all seven original heads",
+      "reduced motion idle",
+      "reverse narrative / deterministic camera",
+      "offscreen sleep",
+      "menu sleep / route cleanup"
+    ],
+    "narrative": [
+      {
+        "left": 15,
+        "right": 250.109375,
+        "top": 202.546875,
+        "bottom": 269.71875,
+        "text": "A worldwide team of\nspecialists in design,\nmotion, 3D, and technology"
+      },
+      {
+        "left": 116.265625,
+        "right": 375,
+        "top": 624.9375,
+        "bottom": 692.109375,
+        "text": "working together to\nturn ambitious ideas into\nimmersive digital experiences."
+      }
+    ],
+    "selection": {
+      "asset": "ffi",
+      "points": 8192,
+      "ready": true,
+      "morph": 1
+    },
+    "pass": true
+  }
+]

@@ -87,7 +87,7 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
       }
       if (flourishRef.current) {
         flourishRef.current.style.opacity = String(.25 + .75 * Math.max(0, Math.min(1, (p - .12) / .24)));
-        flourishRef.current.style.transform = `rotate(${p * -105}deg) scale(1.07)`;
+        flourishRef.current.style.transform = `rotate(${p * -105}deg)`;
       }
       cards.forEach((_, i) => {
         const pose = expertiseCardPose(p, i), slot = slotRefs.current[i], flip = flipRefs.current[i];
@@ -144,8 +144,8 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
         {/* A clipped solid continuation at the blue boundary, distinct from
             the outlined word behind the black recognition records. */}
         <span ref={studioRef} className="about-expertise-studio" aria-hidden="true">STUDIO</span>
-        <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" fill="none" aria-hidden="true">
-          <path d="M-180-110C280 10 520 230 1040 130S1460 80 1365 330C1300 510 1240 570 1170 600" stroke="currentColor" strokeWidth="24" strokeLinecap="round" />
+        <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none" aria-hidden="true">
+          <path d="M420 30C650 110 1000 110 1230 65C1500 20 1490 270 1170 610" stroke="currentColor" strokeWidth="24" strokeLinecap="round" />
         </svg>
         {/* The overlapping editorial heading is not a hit target; keep the
             actual controls interactive without masking the cards underneath. */}

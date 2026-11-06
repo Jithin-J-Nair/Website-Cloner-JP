@@ -4,7 +4,7 @@ export function AboutPageStyles() {
     #about { --about-blue: #3733e8; background: #000302; }
     #about > div:first-of-type, #about #about-who, #about #about-who > .sticky, #about #about-clients { background-color: #000302; }
     #about .about-narrative-layout #about-who-desc-top { position: absolute; left: 0; top: 2vh; text-align: left; font-size: 3.85vw; }
-    #about .about-narrative-layout #about-who-desc-bottom { position: absolute; right: 0; bottom: 1vh; text-align: right; font-size: 3.85vw; }
+    #about .about-narrative-layout #about-who-desc-bottom { position: absolute; right: 0; bottom: 1vh; max-width: 100%; text-align: right; font-size: 3.85vw; }
     #about #about-clients { background-color: #000302; }
     #about #about-clients { border-top: 0; padding-top: 8vw; padding-bottom: 8vw; }
     #about #about-clients h2 { font-size: 3.55vw; letter-spacing: -.04em; line-height: 1; }
@@ -58,6 +58,13 @@ export function AboutPageStyles() {
     #about .about-expertise-flourish { right: 0; width: 100%; }
     #about .about-expertise-heading h2 { font-size: 12vw; line-height: .92; }
     #about .about-expertise-caption { top: 0; }
+    @media (min-width:1000px) {
+      #about .about-expertise-caption { width: 21.3vw; }
+      #about .about-expertise-caption p { font-size: .9vw; }
+      #about .about-expertise-controls { gap: .8vw; }
+      #about .about-expertise-controls button { width: 2.9vw; height: 3.2vw; }
+      #about .about-expertise-controls .about-card-glyph { width: 1vw; height: 1.2vw; }
+    }
     #about .about-who-team-overlay { padding-top: max(7rem, calc(var(--base-padding-y) + clamp(1rem,1vw,1.5rem) * 2.8 + 2rem)); }
     #about .about-team-selector button > span { width: 2px; height: 5px; border-radius: 0; }
     #about .about-team-selector > span { display: none; }

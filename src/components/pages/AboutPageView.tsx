@@ -5,8 +5,6 @@ import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
 import { aboutScenePose, aboutWordmarkSweepPose, aboutLetteringPose } from "@/lib/about-scene-motion";
-import { buildSculpturalPortraitPositions } from "@/lib/about-portrait-geometry";
-import { loadAboutPhotoPortrait, sampleAboutPhotoPortrait, type AboutPhotoPortrait } from "@/components/three/AboutPhotoPortrait";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
@@ -17,15 +15,14 @@ import { soundEngine } from "@/lib/audio";
 import { AboutContactSection } from "@/components/pages/AboutContactSection";
 import { AboutRecognition } from "@/components/pages/AboutRecognition";
 import { AboutPageStyles } from "@/components/pages/AboutPageStyles";
+import { createAboutSourceTeam } from "@/components/three/AboutSourceTeam";
 import { createAboutWordmarkSweep } from "@/components/three/AboutWordmarkSweep";
-import { createAboutPortraitSurface } from "@/components/three/AboutPortraitSurface";
-import { createAboutBodyContours } from "@/components/three/AboutBodyContours";
 import { StudioFooter } from "@/components/sections/StudioFooter";
 
 declare global {
   interface Window {
     __enableAboutProbe?: boolean;
-    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; portraitPoints: number; streakCount: number; qualityTier: string; reducedMotion: boolean; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; teamAsset?: string; teamReady?: boolean; teamMorph?: number; count: number; portraitPoints: number; streakCount: number; qualityTier: string; reducedMotion: boolean; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
   }
 }
 
@@ -92,20 +89,16 @@ function AboutWhoExperience({
   const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
   const teamCursorRef = useRef<HTMLDivElement | null>(null);
-  const portraitCountRef = useRef(8192);
-  const photoDataRef = useRef<AboutPhotoPortrait | null>(null);
-  const [portraitLoaded, setPortraitLoaded] = useState(false);
+  const sourceTeamRef = useRef<ReturnType<typeof createAboutSourceTeam> | null>(null);
+  const [sourceTeamState, setSourceTeamState] = useState("loading");
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
 
-  const portraitMatRef = useRef<THREE.ShaderMaterial | null>(null);
-  const portraitGeoRef = useRef<THREE.BufferGeometry | null>(null);
   const requestSceneRenderRef = useRef<(() => void) | null>(null);
 
   const [sceneGeneration, setSceneGeneration] = useState(0);
   const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
-  const portraitMorphStartRef = useRef<number | null>(null);
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
@@ -159,47 +152,9 @@ function AboutWhoExperience({
     };
   }, [activeMemberIdx, onStepMember, reducedMotion]);
 
-  // Photo-derived portrait with an abstract fallback. A selection interpolates from
-  // the currently visible point positions, so rapid selections remain interruptible.
   useEffect(() => {
     memberRef.current = activeMemberIdx;
-    const geo = portraitGeoRef.current;
-    if (!geo) return;
-    const position = geo.getAttribute("position") as THREE.BufferAttribute;
-    const from = geo.getAttribute("aMorphFrom") as THREE.BufferAttribute | undefined;
-    if (!from) return;
-    const currentMorph = portraitMatRef.current?.uniforms.uMorph.value ?? 1;
-    for (let i = 0; i < position.array.length; i++) {
-      from.array[i] = from.array[i] * (1 - currentMorph) + position.array[i] * currentMorph;
-    }
-    // Bake the currently visible GPU transport into the next start buffer.
-    // Otherwise a rapid selection during assembly would jump back to its
-    // undisplaced linear position before starting the next transition.
-    const transport = Math.sin(clamp01(currentMorph) * Math.PI) * (portraitMatRef.current?.uniforms.uPhoto.value ?? 0);
-    const oldShade = geo.getAttribute("aPhotoShade") as THREE.BufferAttribute;
-    if (transport > 0) for (let i = 0; i < position.count; i++) {
-      from.array[i * 3] += Math.sin(position.array[i * 3 + 1] * 7 + oldShade.array[i] * 11) * transport * .28;
-      from.array[i * 3 + 2] += Math.cos(position.array[i * 3] * 9 + oldShade.array[i] * 13) * transport * .35;
-    }
-    from.needsUpdate = true;
-    const photo = photoDataRef.current;
-    const sampled = photo ? sampleAboutPhotoPortrait(photo, portraitCountRef.current, activeMemberIdx) : null;
-    position.array.set(sampled?.positions ?? buildSculpturalPortraitPositions(activeMemberIdx, portraitCountRef.current));
-    if (sampled) {
-      const shade = geo.getAttribute("aPhotoShade") as THREE.BufferAttribute;
-      shade.array.set(sampled.shades); shade.needsUpdate = true;
-    }
-    position.needsUpdate = true;
-    geo.computeBoundingSphere();
-    portraitMorphStartRef.current = -1;
-    if (reducedMotion && portraitMatRef.current) {
-      portraitMatRef.current.uniforms.uMorph.value = 1;
-      portraitMorphStartRef.current = null;
-    }
-    // Reduced motion sleeps after each draw. Uploading new attributes alone
-    // would leave the selected portrait stale until the next scroll/resize.
-    // Reuse the owned scheduler: one static frame, not another animation loop.
-    requestSceneRenderRef.current?.();
+    void sourceTeamRef.current?.setMember(activeMemberIdx, reducedMotion);
   }, [activeMemberIdx, reducedMotion]);
 
   useEffect(() => {
@@ -208,7 +163,6 @@ function AboutWhoExperience({
     if (!sectionEl || !hostEl) return;
 
     let contextLost = false, disposed = false;
-    const portraitRequest = new AbortController();
     const fallback = (reason: string) => {
       sectionEl.dataset.sceneState = reason;
       if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "flex";
@@ -233,9 +187,6 @@ function AboutWhoExperience({
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
-    // Portrait quality stays bounded and independent from the plume's bead budget.
-    portraitCountRef.current = reducedMotion || tier === "low" || window.innerWidth < 820 ? 8192
-      : tier === "medium" ? 16384 : 32768;
     glRenderer.setClearColor(0x000302, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -570,156 +521,20 @@ function AboutWhoExperience({
       if (!disposed) { wordmarkSweep.repaint(); ensureLoop(); }
     });
 
-    // -------------------------------------------------------------------------
-    // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
-    // -------------------------------------------------------------------------
-    const portraitGeo = track(new THREE.BufferGeometry());
-    const cachedPhoto = photoDataRef.current ? sampleAboutPhotoPortrait(photoDataRef.current, portraitCountRef.current, memberRef.current) : null;
-    const initialPortrait = cachedPhoto?.positions ?? buildSculpturalPortraitPositions(memberRef.current, portraitCountRef.current);
-    portraitGeo.setAttribute("position", new THREE.BufferAttribute(initialPortrait, 3));
-    portraitGeo.setAttribute("aMorphFrom", new THREE.BufferAttribute(initialPortrait.slice(), 3));
-    portraitGeo.setAttribute("aPhotoShade", new THREE.BufferAttribute(cachedPhoto?.shades ?? new Float32Array(portraitCountRef.current).fill(.75), 1));
-    portraitGeoRef.current = portraitGeo;
-    sectionEl.dataset.teamPortraitSource = "procedural-study";
-
-    const portraitMat = track(
-      new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        uniforms: {
-          uOpacity: { value: 0 },
-          uTime: { value: 0 },
-          uMorph: { value: 1 },
-          uPhoto: { value: 0 },
-          uReveal: { value: 0 },
-          uPhotoPointSize: { value: reducedMotion ? 2.8 : 2.3 },
-          uViewportHeight: { value: window.innerHeight },
-          uPixelRatio: { value: 1 },
-          uPointerNDC: { value: new THREE.Vector2(0, 0) },
-        },
-        vertexShader: `
-          uniform float uTime;
-          uniform float uPixelRatio;
-          uniform float uMorph;
-          uniform float uPhoto, uViewportHeight, uReveal, uPhotoPointSize;
-          attribute float aPhotoShade;
-          uniform vec2 uPointerNDC;
-          attribute vec3 aMorphFrom;
-          varying float vDepth;
-          varying float vShade;
-          varying float vBirth;
-          varying float vGlint;
-          void main() {
-            vec3 p = mix(aMorphFrom, position, clamp(uMorph, 0.0, 1.0));
-            // An interruptible outward transport builds the photo from grains,
-            // on the existing clock. No CPU particle integration or extra RAF.
-            float assembly = sin(clamp(uMorph, 0., 1.) * 3.14159265) * uPhoto;
-            p.x += sin(position.y * 7. + aPhotoShade * 11.) * assembly * .28;
-            p.z += cos(position.x * 9. + aPhotoShade * 13.) * assembly * .35;
-            // Pointer repulsion bends only nearby grains; the silhouette remains readable.
-            vec2 pointerDelta = p.xy - uPointerNDC * vec2(.82, 1.34);
-            float pointerInfluence = exp(-dot(pointerDelta, pointerDelta) * 5.2);
-            p.xy += normalize(pointerDelta + vec2(.0001)) * pointerInfluence * .032;
-            // Scan motion is small enough to retain eyes, lips and hair detail.
-            p.x += sin(p.y * 8.0 + uTime * 2.1) * 0.004;
-            p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
-            vec4 mv = modelViewMatrix * vec4(p, 1.0);
-            vDepth = -mv.z;
-            vec3 normal = normalize(vec3(p.x * 1.6, p.y * .55, .55));
-            vec3 light = normalize(vec3(.9 + uPointerNDC.x * 1.8, .3 + uPointerNDC.y * .8, .6));
-            float illumination = .35 + .65 * max(0., dot(normal, light));
-            vShade = mix(clamp(p.z * .85 + .42, .12, 1.), pow(aPhotoShade, 1.2) * illumination, uPhoto);
-            vGlint = pow(max(0., dot(normal, normalize(light + vec3(0.,0.,1.)))), 38.) * .24 * aPhotoShade;
-            vBirth = smoothstep(clamp((position.y + 1.55) / 3.1,0.,1.) - .18,
-              clamp((position.y + 1.55) / 3.1,0.,1.) + .10, uReveal);
-            float dof = 1.0 + abs(p.z - 0.35) * 2.2;
-            gl_PointSize = mix(2.45 * dof, uPhotoPointSize * clamp(uViewportHeight / 900., .85, 2.4), uPhoto) * uPixelRatio;
-            gl_Position = projectionMatrix * mv;
-          }
-        `,
-        fragmentShader: `
-          uniform float uOpacity;
-          varying float vShade;
-          varying float vBirth;
-          varying float vGlint;
-          void main() {
-            vec2 d = gl_PointCoord - 0.5;
-            float r = length(d);
-            if (r > 0.5) discard;
-            float soft = smoothstep(0.5, 0.08, r);
-            vec3 col = mix(vec3(.025,.035,.04), vec3(.72,.80,.83), vShade) + vGlint;
-            gl_FragColor = vec4(col, soft * uOpacity * (.25 + .75 * vShade) * vBirth);
-            #include <tonemapping_fragment>
-            #include <colorspace_fragment>
-          }
-        `,
-      })
-    );
-    portraitMatRef.current = portraitMat;
-
-    let portraitLastTime = 0, teamAssemblyStart = -1, teamWasVisible = false;
-    let photoSurface: ReturnType<typeof createAboutPortraitSurface> | null = null;
-    const portraitPoints = new THREE.Points(portraitGeo, portraitMat);
-    portraitPoints.visible = false;
-    scene.add(portraitPoints);
-    const bodyContours = track(createAboutBodyContours());
-    bodyContours.group.visible = false; scene.add(bodyContours.group);
-    // Keep the previous buffers alive on photo arrival, selection and recovery.
-    // The original photograph is never fetched by the browser.
-    Promise.resolve(photoDataRef.current ?? loadAboutPhotoPortrait(portraitRequest.signal)).then(data => {
+    // Authorized source roster points and captured topographic contours. This
+    // replaces the user's photo, reconstructed mesh and invented anatomical bust.
+    let teamAssemblyStart = -1, teamWasVisible = false;
+    const sourceTeam = track(createAboutSourceTeam(() => ensureLoop(), (state, id) => {
       if (disposed) return;
-      photoDataRef.current = data;
-      photoSurface = track(createAboutPortraitSurface(data));
-      photoSurface.mesh.visible = false; scene.add(photoSurface.mesh);
-      sectionEl.dataset.portraitSurface = "estimated-photo-relief";
-      const sampled = sampleAboutPhotoPortrait(data, portraitCountRef.current, memberRef.current);
-      const position = portraitGeo.getAttribute("position") as THREE.BufferAttribute;
-      const from = portraitGeo.getAttribute("aMorphFrom") as THREE.BufferAttribute;
-      const shade = portraitGeo.getAttribute("aPhotoShade") as THREE.BufferAttribute;
-      from.array.set(position.array); from.needsUpdate = true;
-      position.array.set(sampled.positions); position.needsUpdate = true;
-      shade.array.set(sampled.shades); shade.needsUpdate = true;
-      portraitGeo.computeBoundingSphere();
-      portraitMat.uniforms.uPhoto.value = 1;
-      portraitMat.uniforms.uMorph.value = reducedMotion || cachedPhoto ? 1 : 0;
-      portraitMorphStartRef.current = reducedMotion || cachedPhoto ? null : -1;
-      sectionEl.dataset.teamPortraitSource = "jithin-photo-relief";
-      setPortraitLoaded(true);
-      ensureLoop();
-    }).catch(() => {
-      if (!disposed && !portraitRequest.signal.aborted) sectionEl.dataset.teamPortraitSource = "photo-unavailable-abstract-fallback";
-    });
-
-    // Original depth-layered vertical light field, sharing the portrait clock.
-    // These are abstract atmosphere, never a replacement claim for an employee likeness.
-    const streakCount = 144;
-    const lightPositions = new Float32Array(streakCount * 6);
-    for (let i = 0; i < streakCount; i++) {
-      const x = (i / (streakCount - 1) - .5) * 10.5;
-      const z = Math.sin(i * 17.31) * 1.2 - .6;
-      const bottom = -4.8 + Math.sin(i * 9.1) * .4;
-      const top = 4.5 + Math.cos(i * 4.7) * .75;
-      lightPositions.set([x, bottom, z, x, top, z], i * 6);
-    }
-    const lightGeometry = track(new THREE.BufferGeometry());
-    lightGeometry.setAttribute("position", new THREE.BufferAttribute(lightPositions, 3));
-    const lightMaterial = track(new THREE.ShaderMaterial({
-      uniforms: { ...portraitMat.uniforms, uOpacity: { value: 0 } }, transparent: true, depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      vertexShader: `varying vec3 vLocal; void main() { vLocal = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
-      fragmentShader: `uniform float uTime, uOpacity; varying vec3 vLocal;
-        void main() {
-          float envelope = smoothstep(-2.4, -1.2, vLocal.y) * (1. - smoothstep(1.8, 3.3, vLocal.y));
-          float scan = pow(.5 + .5 * sin(vLocal.y * 72. - uTime * .65 + vLocal.x * 17.), 18.);
-          float edge = .25 + .75 * smoothstep(.3, 1.6, abs(vLocal.x));
-          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.006 + scan * .19) * uOpacity);
-        }`,
+      if (id === "contours") { sectionEl.dataset.teamTerrainState = state; return; }
+      sectionEl.dataset.teamPortraitSource = "source-roster";
+      sectionEl.dataset.teamAssetState = state;
+      sectionEl.dataset.teamAssetId = id;
+      setSourceTeamState(state);
     }));
-    const portraitLightField = new THREE.LineSegments(lightGeometry, lightMaterial);
-    portraitLightField.visible = false;
-    scene.add(portraitLightField);
-
+    sourceTeamRef.current = sourceTeam;
+    scene.add(sourceTeam.group);
+    void sourceTeam.setMember(memberRef.current, reducedMotion);
 
     // -------------------------------------------------------------------------
     // Scroll & Camera Spline Update Loop
@@ -772,8 +587,6 @@ function AboutWhoExperience({
       glRenderer.setSize(W, H, false);
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
-      portraitMat.uniforms.uPixelRatio.value = dpr;
-      portraitMat.uniforms.uViewportHeight.value = H;
       stormMat.uniforms.uPixelRatio.value = dpr;
       syncInspector();
     };
@@ -894,69 +707,22 @@ function AboutWhoExperience({
 
       // 3. 36 Topographic Elevation Contour Lines ('about-03' & 'about-04')
       const contourVis = smoothstep(3.75, 4.85, u);
-      contourLines.visible = contourVis > 0.01 && tTeamPhase < .99;
+      contourLines.visible = contourVis > 0.01 && u < 4.8;
       if (contourLines.visible) {
         contourMat.uniforms.uOpacity.value = contourVis * lerp(.42, .12, tTeamPhase);
         contourMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         contourMat.uniforms.uTeamPhase.value = tTeamPhase;
       }
 
-      // 4. Subtle Lower-Pedestal Team Hologram Shimmer ('about-04' — upper sky kept pure deep `#000000`!)
-      portraitPoints.visible = tTeamPhase > 0.02;
-      portraitLightField.visible = portraitPoints.visible;
-      bodyContours.group.visible = portraitPoints.visible;
-      bodyContours.uniforms.uOpacity.value = tTeamPhase;
-      bodyContours.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
-      bodyContours.uniforms.uPointer.value.copy(pointerNDC);
-      if (photoSurface) photoSurface.mesh.visible = portraitPoints.visible;
-      if (portraitPoints.visible && !teamWasVisible) teamAssemblyStart = elapsedSec;
-      teamWasVisible = portraitPoints.visible;
-      portraitMat.uniforms.uReveal.value = reducedMotion || cachedPhoto ? 1.15
-        : 1.15 * smoothstep(0, .9, Math.max(0, elapsedSec - teamAssemblyStart));
-      if (portraitPoints.visible) {
-        if (reducedMotion) {
-          portraitMat.uniforms.uMorph.value = 1;
-          portraitMorphStartRef.current = null;
-        } else if (portraitMorphStartRef.current !== null) {
-          if (portraitMorphStartRef.current < 0) portraitMorphStartRef.current = elapsedSec;
-          const morphT = Math.max(0, Math.min(1, (elapsedSec - portraitMorphStartRef.current) / .58));
-          portraitMat.uniforms.uMorph.value = 1 - Math.pow(1 - morphT, 3);
-          if (morphT >= 1) portraitMorphStartRef.current = null;
-        }
-        portraitMat.uniforms.uOpacity.value = tTeamPhase * (photoSurface ? .12 : .95);
-        lightMaterial.uniforms.uOpacity.value = tTeamPhase * .95;
-        portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
-        portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
-        // One damped whole-form target combines cursor tilt and subtle idle drift.
-        // Do not follow this with a direct rotation.set(): it would overwrite the easing.
-        const portraitTilt = reducedMotion ? 0 : 1;
-        const targetPitch = pointerNDC.y * -0.10 * portraitTilt;
-        const targetYaw = pointerNDC.x * 0.24 * portraitTilt + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05);
-        const portraitDamping = 1 - Math.exp(-12 * Math.min(.1, Math.max(0, elapsedSec - portraitLastTime)));
-        portraitLastTime = elapsedSec;
-        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, portraitDamping);
-        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, portraitDamping);
-        portraitPoints.rotation.z = 0;
-        portraitPoints.scale.setScalar(isMobile ? .70 : .80);
-        portraitPoints.position.set(
-          camera.position.x + (isMobile ? -0.12 : -1.0),
-          camera.position.y - (isMobile ? 2.10 : 1.92),
-          camera.position.z - 5.8
-        );
-        portraitLightField.position.copy(portraitPoints.position);
-        if (photoSurface) {
-          photoSurface.mesh.position.copy(portraitPoints.position);
-          photoSurface.mesh.rotation.copy(portraitPoints.rotation);
-          photoSurface.mesh.scale.copy(portraitPoints.scale);
-          photoSurface.uniforms.uOpacity.value = tTeamPhase;
-          photoSurface.uniforms.uReveal.value = portraitMat.uniforms.uReveal.value;
-          photoSurface.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
-          photoSurface.uniforms.uPointer.value.copy(pointerNDC);
-        }
-        bodyContours.group.position.copy(portraitPoints.position);
-        bodyContours.group.rotation.copy(portraitPoints.rotation);
-        bodyContours.group.scale.copy(portraitPoints.scale).multiplyScalar(isMobile ? 1.05 : 1.32);
-      }
+      // Source portrait and terrain share one camera-aligned stage. Terrain
+      // does not rotate with the head and is not disguised as a shirt/torso.
+      const teamVisible = tTeamPhase > .02 && sourceTeam.ready;
+      if (teamVisible && !teamWasVisible) teamAssemblyStart = elapsedSec;
+      teamWasVisible = teamVisible;
+      sourceTeam.update(camera, elapsedSec, tTeamPhase,
+        smoothstep(4.7, 5.1, u) * (1 - tTeamPhase), pointerNDC,
+        window.innerWidth, window.innerHeight, glRenderer.getPixelRatio(), reducedMotion,
+        reducedMotion ? 1.2 : 1.2 * smoothstep(0, 1.1, Math.max(0, elapsedSec - teamAssemblyStart)));
 
       // -----------------------------------------------------------------------
       // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
@@ -1095,11 +861,12 @@ function AboutWhoExperience({
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
       state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x,
-      teamYaw: portraitPoints.rotation.y, teamPitch: portraitPoints.rotation.x,
+      teamYaw: sourceTeam.head.rotation.y, teamPitch: sourceTeam.head.rotation.x,
+      teamAsset: sourceTeam.member, teamReady: sourceTeam.ready, teamMorph: sourceTeam.morph,
       teamMember: teamOverlayRef.current?.querySelector("#about-who-team-name")?.textContent?.trim() ?? null,
       count,
-      portraitPoints: (portraitGeoRef.current?.getAttribute("position") as THREE.BufferAttribute | undefined)?.count ?? 0,
-      streakCount, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
+      portraitPoints: sourceTeam.count,
+      streakCount: 0, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
       memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height, camera: camera.position.toArray() });
     if (window.__enableAboutProbe) window.__aboutProbe = probe;
@@ -1147,11 +914,10 @@ function AboutWhoExperience({
     return () => {
       disposed = true;
       if (requestSceneRenderRef.current === ensureLoop) requestSceneRenderRef.current = null;
-      portraitRequest.abort();
+      if (sourceTeamRef.current === sourceTeam) sourceTeamRef.current = null;
       unsubscribeChrome();
       if (window.__aboutProbe === probe) delete window.__aboutProbe;
       if (window.__lusionInspector?.scrollManager === ownedInspector && window.__lusionInspector) delete window.__lusionInspector.scrollManager;
-      portraitGeoRef.current = null; portraitMatRef.current = null;
       glRenderer.domElement.removeEventListener("webglcontextlost", onLost);
       glRenderer.domElement.removeEventListener("webglcontextrestored", onRestored);
       window.removeEventListener("pointercancel", releasePointer);
@@ -1460,8 +1226,7 @@ function AboutWhoExperience({
               <div className="about-team-progress mt-3" aria-hidden="true">
                 <span key={activeMemberIdx} className="about-team-progress-fill" />
               </div>
-              {portraitLoaded ? <p className="mt-2 font-mono text-[9px] uppercase tracking-[.12em] text-white/65">Portrait: Jithin · photo-derived particle study</p> : null}
-              {portraitLoaded ? <p className="sr-only">Particle bas-relief of Jithin from the supplied photo, not a photograph of {activeMember.name}. Depth is estimated, not a 3D scan.</p> : <p className="sr-only">Abstract procedural visualization; not a likeness of {activeMember.name}.</p>}
+              <p className="sr-only" aria-live="polite">{sourceTeamState === "ready" ? `Original point portrait of ${activeMember.name}.` : sourceTeamState === "unavailable" ? "Team portrait unavailable." : "Loading team portrait."}</p>
             </div>
 
             <div className="flex items-end gap-6">
@@ -1522,7 +1287,7 @@ function AboutClientMarqueeLifecycle() {
 
 /** Historical-evidence reconstruction, not a claim of exact current live parity.
  * Sticky native Three world → brands → recognition → expertise → owned CTA/shared footer.
- * The supplied Jithin portrait and procedural geometry replace restricted capture data;
+ * Authorized source team points replace the former personal-photo reconstruction;
  * the About CTA uses an original pressure-projected PIC/FLIP glyph liquid.
  */
 export function AboutPageView() {
@@ -1658,7 +1423,7 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="about-photo-terrain-v4" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
+    <main id="about" data-scene-version="about-source-team-v5" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <AboutPageStyles />
       <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
