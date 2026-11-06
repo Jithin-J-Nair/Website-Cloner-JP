@@ -189,7 +189,7 @@ function ProjectMediaCard({
 }
 
 /**
- * Verified Lusion Case-Study Page (`/projects/[slug]` — All 19 Canonical Routes)
+ * Verified Lusion Case-Study Page (`/projects/[slug]` — All 17 Current Canonical Routes)
  *
  * Matches all 38 desktop (`1440x900`) and mobile (`390x844`) captures in `docs/validation/phase-g/reference/`:
  *   - Exact brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
@@ -253,6 +253,22 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
 
   const renderLaunchCta = () => {
     if (!project.launchCta) return null;
+    if (!project.launchCta.href?.trim() && !project.launchCta.isVimeoOverlay) {
+      // The current reference capture exposes this CTA label but no destination.
+      // Preserve the visible pill without turning an empty href into a self-link.
+      return (
+        <span
+          role="note"
+          aria-label={`${project.launchCta.label} — destination unavailable in the reference data`}
+          data-launch-unavailable="true"
+          className="inline-flex h-12 items-center gap-3.5 rounded-full px-7 font-sans text-xs font-medium tracking-[0.05em] uppercase shadow-[0_10px_28px_rgba(0,0,0,0.08)]"
+          style={{ backgroundColor: pillBg, color: pillText }}
+        >
+          <span className="h-2 w-2 rounded-full bg-current" />
+          <span>{project.launchCta.label}</span>
+        </span>
+      );
+    }
     if (project.launchCta.isVimeoOverlay) {
       return (
         <button
@@ -399,7 +415,7 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
                 isHeroDesktop={true}
                 onOpenModal={openMediaModal}
               />
-              {/* Bottom-Right `SCROLL TO EXPLORE >>` Indicator matching `12-01..12-19` desktop captures */}
+              {/* Bottom-Right `SCROLL TO EXPLORE >>` Indicator matching `12-01..12-17` desktop captures */}
               <div className="mt-5 flex justify-end max-[812px]:hidden min-[813px]:pr-[var(--base-padding-x)]">
                 <span
                   style={{ color: highlight }}
@@ -424,7 +440,7 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
         </div>
       </section>
 
-      {/* Verified `NEXT PROJECT` Chain Banner (`project.nextProject` across all 19 case studies) */}
+      {/* Verified `NEXT PROJECT` Chain Banner (`project.nextProject` across all 17 current case studies) */}
       <section
         id="project-next"
         style={{

@@ -26,12 +26,12 @@ export function ProjectsArchiveView() {
 
   return (
     <main id="projects" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
-      <section className="px-[var(--base-padding-x)] pt-28 pb-20 min-[813px]:pt-[29vh] min-[813px]:pb-28">
+      <section className="px-[var(--base-padding-x)] pt-28 pb-20 min-[813px]:pt-[28vh] min-[813px]:pb-28">
         {/* Monumental `PROJECTS` Header Band with `19` Count + `↘` Arrow */}
         <div className="flex items-stretch justify-between gap-4">
           <h1
             id="projects-title"
-            className="m-0 -ml-[0.04em] font-sans text-[17.4vw] leading-[0.86] font-normal tracking-[-0.03em] text-[#000000] uppercase min-[813px]:text-[15.4vw]"
+            className="m-0 -ml-[0.04em] font-sans text-[17.4vw] leading-[0.86] font-normal tracking-[-0.03em] text-[#000000] uppercase min-[813px]:text-[17vw]"
           >
             {LUSION_PROJECTS_ARCHIVE.heading}
           </h1>
@@ -48,7 +48,7 @@ export function ProjectsArchiveView() {
               aria-hidden="true"
               viewBox="0 0 36 36"
               fill="none"
-              className="h-5 w-5 text-[#000000] min-[813px]:h-12 min-[813px]:w-12"
+              className="h-5 w-5 text-[#000000] min-[813px]:h-14 min-[813px]:w-14"
             >
               <path
                 d="M7 7L29 29M29 29V11M29 29H11"
@@ -64,7 +64,7 @@ export function ProjectsArchiveView() {
         {/* All 19 Verified Canonical Lusion Projects Grid */}
         <div
           id="projects-list"
-          className="project-list relative mt-7 grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:mt-24 min-[813px]:grid-cols-12"
+          className="project-list relative mt-7 grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:mt-[8.25rem] min-[813px]:grid-cols-12"
         >
           {LUSION_PROJECTS_ARCHIVE.projects.map((project, idx) => (
             <FeaturedProjectCard key={project.id} project={project} index={idx} />

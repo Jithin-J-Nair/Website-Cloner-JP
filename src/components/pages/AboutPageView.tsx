@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
-import { aboutScenePose } from "@/lib/about-scene-motion";
+import { aboutScenePose, aboutWordmarkSweepPose } from "@/lib/about-scene-motion";
+import { buildSculpturalPortraitPositions } from "@/lib/about-portrait-geometry";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
@@ -18,7 +19,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 declare global {
   interface Window {
     __enableAboutProbe?: boolean;
-    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; portraitPoints: number; streakCount: number; qualityTier: string; reducedMotion: boolean; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
   }
 }
 
@@ -29,79 +30,38 @@ const smoothstep = (e0: number, e1: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/** Original deterministic generic portrait study; not the likeness of a named
- * team member and not decoded from captured/restricted models. */
-function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Float32Array {
-  const out = new Float32Array(count * 3);
-  let seed = (memberIndex * 2654435761 + 1013904223) >>> 0;
-  const rnd = () => {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 4294967296;
-  };
-
-  const yawTurn = ((memberIndex % 3) - 1) * 0.18;
-  const jawWidth = 0.88 + (memberIndex % 4) * 0.04;
-  const hairCrown = 1.04 + (memberIndex % 3) * 0.06;
-
-  let written = 0;
-  let guard = 0;
-  while (written < count && guard < count * 18) {
-    guard++;
-    const u = rnd() * 2 - 1;
-    const v = rnd() * 2 - 1;
-
-    // Cranium + jawline + neck & shoulders silhouette
-    const inHead =
-      Math.hypot(u / (0.56 * jawWidth * (1 - Math.max(0, -v - 0.05) * 0.34)), (v - 0.18) / (0.68 * hairCrown)) <=
-      1.0;
-    const inNeck = Math.abs(u) < 0.22 && v > -0.58 && v < -0.25;
-    const inShoulders =
-      v <= -0.44 &&
-      v >= -1.0 &&
-      Math.abs(u) < 0.24 + smoothstep(-0.44, -0.95, v) * 0.78;
-
-    if (!inHead && !inNeck && !inShoulders) continue;
-
-    let z = 0;
-    if (inHead) {
-      const hu = u / (0.56 * jawWidth);
-      const hv = (v - 0.18) / (0.68 * hairCrown);
-      const sphereZ = Math.sqrt(Math.max(0, 1 - hu * hu - hv * hv)) * 0.56;
-      // Brow ridge, nose bridge, orbital hollows & cheekbones
-      const nose =
-        Math.exp(-Math.pow(u / 0.085, 2) - Math.pow((v - 0.14) / 0.22, 2)) * 0.16;
-      const eyes =
-        -Math.exp(-Math.pow((Math.abs(u) - 0.17) / 0.09, 2) - Math.pow((v - 0.24) / 0.065, 2)) *
-        0.075;
-      const lips =
-        Math.exp(-Math.pow(u / 0.14, 2) - Math.pow((v + 0.08) / 0.045, 2)) * 0.045;
-      z = sphereZ + nose + eyes + lips;
-    } else if (inNeck) {
-      z = Math.sqrt(Math.max(0, 0.062 - u * u)) * 1.1;
-    } else {
-      z = Math.cos(u * 1.35) * 0.34 + 0.04;
-    }
-
-    // Apply slight 3/4 portrait turn
-    const px = u * 1.42;
-    const py = v * 1.52;
-    const pz = z * 1.35;
-    const rx = px * Math.cos(yawTurn) + pz * Math.sin(yawTurn);
-    const rz = -px * Math.sin(yawTurn) + pz * Math.cos(yawTurn);
-
-    out[written * 3] = rx;
-    out[written * 3 + 1] = py;
-    out[written * 3 + 2] = rz;
-    written++;
-  }
-
-  return out;
-}
-
 /** Native Three.js sticky world. Retains local legacy scroll coordinates for
  * camera/DOM choreography; original shader filament flow and sculptural studies.
  * Historical captures support the layout; current live fidelity is unverified.
  */
+/** Original 4×5 block-pixel initials for the seven-member studio roster. */
+const PIXEL_FONT: Record<string, string[]> = {
+  A: [".##.", "#..#", "####", "#..#", "#..#"],
+  E: ["####", "#...", "###.", "#...", "####"],
+  F: ["####", "#...", "###.", "#...", "#..."],
+  P: ["###.", "#..#", "###.", "#...", "#..."],
+  S: [".###", "#...", ".##.", "...#", "###."],
+  Y: ["#..#", "#..#", ".##.", ".##.", ".##."],
+};
+
+function PixelGlyph({ char, className }: { char: string; className?: string }) {
+  const rows = PIXEL_FONT[(char || "A").toUpperCase()] ?? PIXEL_FONT.A;
+  return (
+    <svg
+      viewBox="0 0 4 5"
+      aria-hidden="true"
+      shapeRendering="crispEdges"
+      className={className}
+    >
+      {rows.flatMap((row, y) =>
+        row.split("").map((cell, x) =>
+          cell === "#" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#fff" /> : null
+        )
+      )}
+    </svg>
+  );
+}
+
 interface AboutWhoStageProps {
   activeMemberIdx: number;
   onStepMember: (delta: number) => void;
@@ -118,10 +78,14 @@ function AboutWhoExperience({
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
   const heroWordmarkRef = useRef<HTMLDivElement | null>(null);
+  const sweepWordmarkRef = useRef<HTMLDivElement | null>(null);
   const scrollPromptRef = useRef<HTMLDivElement | null>(null);
+  const chromaticRingRef = useRef<HTMLDivElement | null>(null);
   const manifestoOverlayRef = useRef<HTMLDivElement | null>(null);
   const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
+  const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
+  const portraitCountRef = useRef(8192);
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
@@ -131,21 +95,83 @@ function AboutWhoExperience({
 
   const [sceneGeneration, setSceneGeneration] = useState(0);
   const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
+  const portraitMorphStartRef = useRef<number | null>(null);
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
+  const narrativeWords = (words: string[], offset: number, italicCount = 0) =>
+    words.map((word, index) => (
+      <React.Fragment key={offset + index}>
+        {index > 0 ? " " : null}
+        <span
+          ref={el => { narrativeWordRefs.current[offset + index] = el; }}
+          className={`about-narrative-word${index < italicCount ? " is-italic" : ""}`}
+        >
+          {word}
+        </span>
+      </React.Fragment>
+    ));
+  
 
-  // Original generic sculptural study, NOT an authentic likeness of the named member.
-  // Never request restricted captured portrait buffers.
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    let timeoutId = 0;
+    const clearAdvance = () => {
+      if (timeoutId) window.clearTimeout(timeoutId);
+      timeoutId = 0;
+    };
+    const evaluateTeamStage = () => {
+      if (document.hidden || teamOverlayRef.current?.dataset.teamActive !== "true") {
+        clearAdvance();
+        return;
+      }
+      if (!timeoutId) {
+        timeoutId = window.setTimeout(() => {
+          timeoutId = 0;
+          if (!document.hidden && teamOverlayRef.current?.dataset.teamActive === "true") {
+            onStepMember(1);
+          }
+        }, 4800);
+      }
+    };
+    const pollId = window.setInterval(evaluateTeamStage, 160);
+    const onVisibility = () => {
+      clearAdvance();
+      if (!document.hidden) evaluateTeamStage();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    evaluateTeamStage();
+    return () => {
+      window.clearInterval(pollId);
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearAdvance();
+    };
+  }, [activeMemberIdx, onStepMember, reducedMotion]);
+
+  // Original, non-likeness portrait study. A member change interpolates from
+  // the currently visible point positions, so rapid selections remain interruptible.
   useEffect(() => {
     memberRef.current = activeMemberIdx;
     const geo = portraitGeoRef.current;
     if (!geo) return;
     const position = geo.getAttribute("position") as THREE.BufferAttribute;
-    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx));
+    const from = geo.getAttribute("aMorphFrom") as THREE.BufferAttribute | undefined;
+    if (!from) return;
+    const currentMorph = portraitMatRef.current?.uniforms.uMorph.value ?? 1;
+    for (let i = 0; i < position.array.length; i++) {
+      from.array[i] = from.array[i] * (1 - currentMorph) + position.array[i] * currentMorph;
+    }
+    from.needsUpdate = true;
+    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx, portraitCountRef.current));
     position.needsUpdate = true;
     geo.computeBoundingSphere();
-  }, [activeMemberIdx]);
+    portraitMorphStartRef.current = -1;
+    if (reducedMotion && portraitMatRef.current) {
+      portraitMatRef.current.uniforms.uMorph.value = 1;
+      portraitMorphStartRef.current = null;
+    }
+  }, [activeMemberIdx, reducedMotion]);
 
   useEffect(() => {
     const sectionEl = sectionRef.current;
@@ -177,7 +203,11 @@ function AboutWhoExperience({
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
     const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
-    glRenderer.setClearColor(0x0c0e11, 1);
+    // Portrait quality stays bounded and independent from the plume's bead budget.
+    portraitCountRef.current = reducedMotion || software || window.innerWidth < 820 || tier === "low"
+      ? 8192
+      : tier === "medium" ? 16384 : 24576;
+    glRenderer.setClearColor(0x0d0c0f, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.05;
@@ -193,7 +223,7 @@ function AboutWhoExperience({
     };
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.016);
+    scene.fog = new THREE.FogExp2(0x0d0c0f, 0.016);
 
     const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);
 
@@ -416,7 +446,7 @@ function AboutWhoExperience({
     // -------------------------------------------------------------------------
     // 5. One instanced draw: 48 suspended stones and 272 grounded grains.
     // -------------------------------------------------------------------------
-    const ROCK_COUNT = 320, FLOATING_ROCK_COUNT = 48;
+    const ROCK_COUNT = 224, FLOATING_ROCK_COUNT = 16;
     const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
     const rockMat = track(
       new THREE.MeshStandardMaterial({
@@ -434,7 +464,7 @@ function AboutWhoExperience({
       const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
       const rx = Math.cos(ang) * rad;
       const rz = 3.5 + Math.sin(ang) * rad * 0.72;
-      const scale = floating ? 0.2 + ((i * 19) % 10) * .075 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
+      const scale = floating ? 0.12 + ((i * 19) % 10) * .028 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
       // Half-embed small clasts instead of lifting every size eight centimetres
       // above the floor. Concentrate the same population on the visible basin.
       const ry = floating
@@ -464,11 +494,11 @@ function AboutWhoExperience({
     // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
     // -------------------------------------------------------------------------
     const portraitGeo = track(new THREE.BufferGeometry());
-    portraitGeo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(buildSculpturalPortraitPositions(memberRef.current, 8192), 3)
-    );
+    const initialPortrait = buildSculpturalPortraitPositions(memberRef.current, portraitCountRef.current);
+    portraitGeo.setAttribute("position", new THREE.BufferAttribute(initialPortrait, 3));
+    portraitGeo.setAttribute("aMorphFrom", new THREE.BufferAttribute(initialPortrait.slice(), 3));
     portraitGeoRef.current = portraitGeo;
+    sectionEl.dataset.teamPortraitSource = "procedural-study";
 
     const portraitMat = track(
       new THREE.ShaderMaterial({
@@ -478,25 +508,32 @@ function AboutWhoExperience({
         uniforms: {
           uOpacity: { value: 0 },
           uTime: { value: 0 },
+          uMorph: { value: 1 },
           uPixelRatio: { value: 1 },
           uPointerNDC: { value: new THREE.Vector2(0, 0) },
         },
         vertexShader: `
           uniform float uTime;
           uniform float uPixelRatio;
+          uniform float uMorph;
           uniform vec2 uPointerNDC;
+          attribute vec3 aMorphFrom;
           varying float vDepth;
           varying float vShade;
           void main() {
-            vec3 p = position;
-            // Subtle holographic scan shimmer + pointer tilt
+            vec3 p = mix(aMorphFrom, position, clamp(uMorph, 0.0, 1.0));
+            // Pointer repulsion bends only nearby grains; the silhouette remains readable.
+            vec2 pointerDelta = p.xy - uPointerNDC * vec2(.82, 1.34);
+            float pointerInfluence = exp(-dot(pointerDelta, pointerDelta) * 5.2);
+            p.xy += normalize(pointerDelta + vec2(.0001)) * pointerInfluence * .032;
+            // Subtle holographic scan shimmer remains procedural and non-identifying.
             p.x += sin(p.y * 8.0 + uTime * 2.1) * 0.012;
             p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
             vec4 mv = modelViewMatrix * vec4(p, 1.0);
             vDepth = -mv.z;
             vShade = clamp(p.z * 0.85 + 0.42, 0.12, 1.0);
             float dof = 1.0 + abs(p.z - 0.35) * 2.2;
-            gl_PointSize = (2.15 * dof) * uPixelRatio;
+            gl_PointSize = (2.45 * dof) * uPixelRatio;
             gl_Position = projectionMatrix * mv;
           }
         `,
@@ -522,12 +559,13 @@ function AboutWhoExperience({
 
     // Original depth-layered vertical light field, sharing the portrait clock.
     // These are abstract atmosphere, never a replacement claim for an employee likeness.
-    const lightPositions = new Float32Array(96 * 6);
-    for (let i = 0; i < 96; i++) {
-      const x = (i / 95 - .5) * 3.5;
-      const z = Math.sin(i * 17.31) * .7 - .3;
-      const bottom = -1.8 + Math.sin(i * 9.1) * .2;
-      const top = 1.7 + Math.cos(i * 4.7) * .65;
+    const streakCount = 384;
+    const lightPositions = new Float32Array(streakCount * 6);
+    for (let i = 0; i < streakCount; i++) {
+      const x = (i / (streakCount - 1) - .5) * 10.5;
+      const z = Math.sin(i * 17.31) * 1.2 - .6;
+      const bottom = -4.8 + Math.sin(i * 9.1) * .4;
+      const top = 4.5 + Math.cos(i * 4.7) * .75;
       lightPositions.set([x, bottom, z, x, top, z], i * 6);
     }
     const lightGeometry = track(new THREE.BufferGeometry());
@@ -663,10 +701,15 @@ function AboutWhoExperience({
       godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
       godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : 0;
 
-      // Keep a faint real rock surface beneath the narrative/contours, as in the historical still.
+      // The reference opening already has a readable, near-black basin rim behind
+      // the silver plume. Reveal the terrain silhouette independently from the
+      // astronaut and god-ray beat: the world should not begin as a floating
+      // particle-only void. The full landscape, explorer and shaft still arrive
+      // on the later pullback cue.
+      const terrainReveal = lerp(.24, 1, smoothstep(.12, .92, u));
       // Team mode returns to black to preserve portrait contrast.
       const narrativeGround = (1 - tTeamPhase) * .22;
-      const terrainVis = landscapeVis * Math.max(darkHudFade, narrativeGround);
+      const terrainVis = terrainReveal * Math.max(darkHudFade, narrativeGround);
       terrainMesh.visible = terrainVis > .01;
       terrainMat.uniforms.uOpacity.value = terrainVis;
       terrainMat.uniforms.uValleyBrightness.value = lerp(.16, 1, darkHudFade);
@@ -714,60 +757,99 @@ function AboutWhoExperience({
       portraitPoints.visible = tTeamPhase > 0.02;
       portraitLightField.visible = portraitPoints.visible;
       if (portraitPoints.visible) {
+        if (reducedMotion) {
+          portraitMat.uniforms.uMorph.value = 1;
+          portraitMorphStartRef.current = null;
+        } else if (portraitMorphStartRef.current !== null) {
+          if (portraitMorphStartRef.current < 0) portraitMorphStartRef.current = elapsedSec;
+          const morphT = Math.max(0, Math.min(1, (elapsedSec - portraitMorphStartRef.current) / .58));
+          portraitMat.uniforms.uMorph.value = 1 - Math.pow(1 - morphT, 3);
+          if (morphT >= 1) portraitMorphStartRef.current = null;
+        }
         portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
+        // One damped whole-form target combines cursor tilt and subtle idle drift.
+        // Do not follow this with a direct rotation.set(): it would overwrite the easing.
+        const portraitTilt = reducedMotion ? 0 : 1;
+        const targetPitch = pointerNDC.y * -0.10 * portraitTilt;
+        const targetYaw = pointerNDC.x * 0.14 * portraitTilt + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05);
+        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, .12);
+        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, .12);
+        portraitPoints.rotation.z = 0;
         portraitPoints.position.set(
-          camera.position.x + (isMobile ? -0.10 : -0.15),
+          camera.position.x + (isMobile ? -0.12 : -0.48),
           camera.position.y - (isMobile ? 2.65 : 2.55),
           camera.position.z - 5.8
         );
         portraitLightField.position.copy(portraitPoints.position);
-        portraitPoints.rotation.set(
-          pointerNDC.y * -0.10,
-          pointerNDC.x * 0.14 + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05),
-          0
-        );
       }
 
       // -----------------------------------------------------------------------
       // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
       // -----------------------------------------------------------------------
-      // A. Monumental Double-Stroke 'LUSION' Wordmark ('about-01' & 'about-02', sweeps left across '1.85..3.1')
+      // A. The straight monumental wordmark holds through the first elastic
+      // lettering sweep, returns cleanly, then exits only as the studio statement
+      // settles. The previous early fade removed it before the reference's main beat.
       if (heroWordmarkRef.current) {
-        const wordOut = 1 - smoothstep(isMobile ? 2.05 : .45, isMobile ? 2.65 : 1.1, u);
-        if (wordOut > 0.005) {
-          const slideX = -smoothstep(1.75, 3.15, u) * 65;
-          heroWordmarkRef.current.style.opacity = String(wordOut);
-          heroWordmarkRef.current.style.transform = `translate3d(${slideX}vw, 0, 0)`;
-          heroWordmarkRef.current.style.visibility = "visible";
-        } else {
-          heroWordmarkRef.current.style.visibility = "hidden";
-        }
+        const wordOut = 1 - smoothstep(isMobile ? 4.55 : 4.72, isMobile ? 5.18 : 5.38, u);
+        const slideX = -smoothstep(isMobile ? 4.58 : 4.72, isMobile ? 5.18 : 5.38, u) * (isMobile ? 48 : 66);
+        heroWordmarkRef.current.style.opacity = String(wordOut);
+        heroWordmarkRef.current.style.transform = `translate3d(${slideX}vw, 0, 0)`;
+        heroWordmarkRef.current.style.visibility = wordOut > 0.005 ? "visible" : "hidden";
       }
 
       if (scrollPromptRef.current) {
         const promptVis = 1 - smoothstep(0.08, 0.55, u);
         scrollPromptRef.current.style.opacity = String(promptVis);
+         // Faint chromatic edge ring belongs only to the pullback/wide-shot beat.
+         // It is a CSS overlay over the original scene, never a copied post-process.
+         if (chromaticRingRef.current) {
+           const wideShot = smoothstep(1.35, 1.68, u) * (1 - smoothstep(2.38, 2.82, u));
+           chromaticRingRef.current.style.opacity = String(wideShot * 0.42);
+         }
       }
 
-      // B. 'WE ARE A CREATIVE PRODUCTION STUDIO' Manifesto Band ('u = 2.05 .. 4.35')
+      // A2. Short curved logotype sweep across the first grounded valley beat.
+      // This uses the same native-scroll playhead and existing DOM transform path.
+      if (sweepWordmarkRef.current) {
+        const sweep = aboutWordmarkSweepPose(u, isMobile);
+        sweepWordmarkRef.current.style.opacity = String(sweep.opacity);
+        sweepWordmarkRef.current.style.visibility = sweep.opacity > 0.005 ? "visible" : "hidden";
+        sweepWordmarkRef.current.style.transform =
+          `translate3d(${sweep.xVw}vw,${sweep.yVh}vh,0) skewX(${sweep.skewX}deg) rotate(${sweep.rotation}deg) scaleX(${sweep.stretchX}) scale(${sweep.scale})`;
+      }
+
+      // B. The two-sided studio statement arrives after the first wordmark
+      // distortion and remains alongside the valley shot until the later narrative.
       if (manifestoOverlayRef.current) {
-        const manIn = smoothstep(isMobile ? 2.05 : 1.1, isMobile ? 2.65 : 1.6, u);
-        const manOut = 1 - smoothstep(3.65, 4.35, u);
+        const manIn = smoothstep(isMobile ? 1.95 : 2.02, isMobile ? 2.45 : 2.48, u);
+        const manOut = 1 - smoothstep(isMobile ? 5.72 : 5.78, isMobile ? 6.28 : 6.34, u);
         const manVis = manIn * manOut;
         manifestoOverlayRef.current.style.opacity = String(manVis);
         manifestoOverlayRef.current.style.visibility = manVis > 0.005 ? "visible" : "hidden";
-        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(1.1, 1.6, u))}vw, 0, 0)`;
+        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(2.02, 2.48, u))}vw, 0, 0)`;
       }
 
-      // C. Studio Narrative HUD ('about-03-details-hud', 'u = 4.45 .. 6.35')
+      // C. Studio Narrative HUD: each word owns a deterministic scroll window.
+      // No React state or per-frame DOM queries; the same playhead drives reverse fade/slide.
       if (narrativeOverlayRef.current) {
-        const narIn = smoothstep(4.45, 5.0, u);
-        const narOut = 1 - smoothstep(5.85, 6.45, u);
+        const narIn = smoothstep(4.45, 4.82, u);
+        const exit = smoothstep(5.82, 6.42, u);
+        const narOut = 1 - exit;
         const narVis = narIn * narOut;
-        narrativeOverlayRef.current.style.opacity = String(narVis);
+        narrativeOverlayRef.current.style.opacity = "1";
         narrativeOverlayRef.current.style.visibility = narVis > 0.005 ? "visible" : "hidden";
+        narrativeOverlayRef.current.style.transform = `translate3d(${-7 * exit}vw,0,0)`;
+        for (let i = 0; i < narrativeWordRefs.current.length; i++) {
+          const word = narrativeWordRefs.current[i];
+          if (!word) continue;
+          const stagger = i * 0.014;
+          const enter = smoothstep(4.45 + stagger, 4.69 + stagger, u);
+          const leave = 1 - smoothstep(5.82 + stagger * .65, 6.12 + stagger * .65, u);
+          word.style.opacity = String(enter * leave);
+          word.style.transform = `translate3d(${lerp(16, 0, enter) - 10 * exit}px,0,0)`;
+        }
       }
 
       // D. Full-Bleed Interactive 'T E A M' Hologram HUD ('about-04-team-hologram', 'u >= 6.45')
@@ -775,6 +857,7 @@ function AboutWhoExperience({
         teamOverlayRef.current.style.opacity = String(tTeamPhase);
         teamOverlayRef.current.style.visibility = tTeamPhase > 0.01 ? "visible" : "hidden";
         teamOverlayRef.current.style.pointerEvents = tTeamPhase > 0.45 ? "auto" : "none";
+        teamOverlayRef.current.dataset.teamActive = tTeamPhase > .985 ? "true" : "false";
       }
 
       glRenderer.render(scene, camera);
@@ -828,7 +911,12 @@ function AboutWhoExperience({
     };
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
-      state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x, count, frameTimes: [...frameTimes],
+      state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x,
+      teamYaw: portraitPoints.rotation.y, teamPitch: portraitPoints.rotation.x,
+      teamMember: teamOverlayRef.current?.querySelector("#about-who-team-name")?.textContent?.trim() ?? null,
+      count,
+      portraitPoints: (portraitGeoRef.current?.getAttribute("position") as THREE.BufferAttribute | undefined)?.count ?? 0,
+      streakCount, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
       memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height, camera: camera.position.toArray() });
     if (window.__enableAboutProbe) window.__aboutProbe = probe;
@@ -937,17 +1025,18 @@ function AboutWhoExperience({
           if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5 && Number(teamOverlayRef.current?.style.opacity) > .45) onStepMember(dx < 0 ? 1 : -1);
         }}
         onTouchCancel={() => { touchStartXRef.current = null; touchStartYRef.current = null; }}
-        className="sticky top-0 h-screen w-full overflow-hidden bg-[#000000]"
+        className="sticky top-0 h-screen w-full overflow-hidden bg-[#0d0c0f]"
       >
         {/* Full-Bleed WebGL Canvas Host */}
         <div ref={canvasHostRef} className="absolute inset-0 h-full w-full" />
+        <div ref={chromaticRingRef} aria-hidden="true" className="about-wide-chromatic-ring" />
 
         {/* Graceful Non-WebGL Atmospheric Fallback */}
         <div
           ref={fallbackPosterRef}
           style={{ display: "none" }}
           role="status"
-          className="relative z-40 min-h-svh flex-col items-start justify-center gap-6 bg-[#080a0e] px-[var(--base-padding-x)] py-32"
+          className="relative z-40 min-h-svh flex-col items-start justify-center gap-6 bg-[#0d0c0f] px-[var(--base-padding-x)] py-32"
         >
           <h2 className="max-w-3xl text-5xl">We are a creative production studio.</h2>
           <p className="max-w-xl text-xl">A worldwide team of specialists in design, motion, 3D, and technology working together to turn ambitious ideas into immersive digital experiences.</p>
@@ -971,6 +1060,7 @@ function AboutWhoExperience({
         {/* Layer 1: Monumental Solid `LUSION` Hero Wordmark (`about-01` & `about-02`) */}
         <div
           ref={heroWordmarkRef}
+          data-about-opening-wordmark
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-4 z-20 will-change-transform"
         >
           <svg
@@ -1006,9 +1096,61 @@ function AboutWhoExperience({
           </div>
         </div>
 
+        {/* Layer 1.5: source-observed curved logotype beat, rebuilt as original SVG text-on-path. */}
+        <div
+          ref={sweepWordmarkRef}
+          aria-hidden="true"
+          data-about-wordmark-sweep
+          style={{ opacity: 0, visibility: "hidden" }}
+          className="pointer-events-none absolute inset-x-[5vw] top-[65%] z-10 h-[42vh] overflow-visible will-change-transform max-[819px]:inset-x-[10vw] max-[819px]:top-[43%] max-[819px]:h-[25vh]"
+        >
+          <svg
+            viewBox="0 0 1900 620"
+            preserveAspectRatio="none"
+            className="h-full w-full overflow-visible"
+          >
+            <defs>
+              <path
+                id="about-wordmark-sweep-path"
+                d="M 80 480 C 240 250 500 190 760 345 C 980 470 1230 520 1450 380 C 1640 250 1830 210 1980 300"
+              /><path
+                id="about-wordmark-sweep-path-mobile"
+                d="M 90 390 C 360 330 640 325 900 355 C 1180 390 1480 395 1810 340"
+              />
+            </defs>
+            <text
+              data-about-wordmark-desktop
+              className="hidden min-[820px]:block"
+              fill="#ffffff"
+              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
+              fontSize="390"
+              fontWeight="450"
+              letterSpacing="-12"
+              textLength="1720"
+              lengthAdjust="spacingAndGlyphs"
+            >
+              <textPath href="#about-wordmark-sweep-path" startOffset="0%">LUSION</textPath>
+            </text>
+            <text
+              data-about-wordmark-mobile
+              className="block min-[820px]:hidden"
+              fill="#ffffff"
+              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
+              fontSize="230"
+              fontWeight="450"
+              letterSpacing="-7"
+              textLength="1480"
+              lengthAdjust="spacingAndGlyphs"
+            >
+              <textPath href="#about-wordmark-sweep-path-mobile" startOffset="0%">LUSION</textPath>
+            </text>
+          </svg>
+        </div>
+
         {/* Layer 2: Horizontal `WE ARE A CREATIVE PRODUCTION STUDIO` Reveal (`u = 2.05 .. 4.35`) */}
         <div
           ref={manifestoOverlayRef}
+          data-about-manifesto
           style={{ opacity: 0, visibility: "hidden" }}
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 min-[820px]:bottom-[5.7vh] z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
         >
@@ -1039,15 +1181,21 @@ function AboutWhoExperience({
         >
           <p
             id="about-who-desc-top"
-            className="whitespace-pre-line font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
+            aria-label="A worldwide team of specialists in design, motion, 3D, and technology"
+            className="font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
           >
-            <em className="font-normal">A worldwide team</em>{" of\nspecialists in design,\nmotion, 3D, and technology"}
+            {narrativeWords(["A", "worldwide", "team"], 0, 3)}<br />
+            {narrativeWords(["of", "specialists", "in", "design,"], 3)}<br />
+            {narrativeWords(["motion,", "3D,", "and", "technology"], 7)}
           </p>
           <p
             id="about-who-desc-bottom"
-            className="self-end whitespace-pre-line text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            aria-label="working together to turn ambitious ideas into immersive digital experiences."
+            className="self-end text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
           >
-            {"working together to\nturn ambitious ideas into\nimmersive digital experiences."}
+            {narrativeWords(["working", "together", "to"], 11)}<br />
+            {narrativeWords(["turn", "ambitious", "ideas", "into"], 14)}<br />
+            {narrativeWords(["immersive", "digital", "experiences."], 18)}
           </p>
         </div>
 
@@ -1055,14 +1203,16 @@ function AboutWhoExperience({
         <div
           ref={teamOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-16 pb-8 min-[820px]:pt-28"
+          data-team-active="false"
+          data-reduced={reducedMotion}
+          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-28 pb-8 min-[820px]:pt-36"
         >
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
             {/* Mobile full-width spaced `T E A M` above index row (`390x844/about-04`) */}
             <div
               aria-hidden="true"
-              className="mb-3 flex w-full items-center justify-between font-sans text-[19vw] font-normal uppercase leading-none text-white min-[820px]:hidden"
+              data-team-hud-title className="mb-3 flex w-full items-center justify-between font-sans text-[19vw] font-normal uppercase leading-none text-white min-[820px]:hidden"
             >
               <span>T</span>
               <span>E</span>
@@ -1096,27 +1246,34 @@ function AboutWhoExperience({
                       aria-label={`Select ${member.name}`}
                       aria-pressed={idx === activeMemberIdx}
                       onClick={() => onSelectMember(idx)}
-                      className={`h-2 w-2 rounded-full transition-transform ${
-                        idx === activeMemberIdx
-                          ? "scale-125 bg-white"
-                          : "bg-white/40 hover:bg-white/80"
-                      }`}
-                    />
+                      className="grid h-6 w-6 place-items-center rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-0 focus-visible:outline-white"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`block h-2 w-2 rounded-full transition-transform ${
+                          idx === activeMemberIdx
+                            ? "scale-125 bg-white"
+                            : "bg-white/40 hover:bg-white/80"
+                        }`}
+                      />
+                    </button>
                   ))}
                   {team.map((member, idx) => (
                     <span
                       key={`${member.id}-row2`}
                       aria-hidden="true"
-                      className={`h-1.5 w-1.5 rounded-full ${
+                      className="grid h-6 w-6 place-items-center"
+                    >
+                      <span className={`h-1.5 w-1.5 rounded-full ${
                         idx === activeMemberIdx ? "bg-white/90" : "bg-white/30"
-                      }`}
-                    />
+                      }`} />
+                    </span>
                   ))}
                 </div>
 
                 <div
                   aria-hidden="true"
-                  className="hidden items-center gap-6 font-sans text-[5.4vw] font-normal uppercase leading-[0.88] tracking-[0.06em] text-white min-[820px]:flex"
+                  data-team-hud-title className="hidden items-center gap-6 font-sans text-[5.4vw] font-normal uppercase leading-[0.88] tracking-[0.06em] text-white min-[820px]:flex"
                 >
                   <span>T</span>
                   <span>E</span>
@@ -1125,23 +1282,6 @@ function AboutWhoExperience({
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Dead-Center Royal-Blue `#223aff` Interactive Specialist Advance Orb (`→` / `SWIPE TO CHANGE`) */}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <button
-              type="button"
-              onClick={() => onStepMember(1)}
-              aria-label="Next team member"
-              className="pointer-events-auto flex h-36 w-36 cursor-pointer items-center justify-center rounded-full bg-[#223aff] text-center font-sans text-xs font-medium uppercase tracking-[0.06em] text-white shadow-[0_14px_44px_rgba(34,58,255,0.5)] transition-transform duration-300 hover:scale-105 min-[820px]:h-[154px] min-[820px]:w-[154px]"
-            >
-              <span className="hidden text-3xl font-light leading-none min-[820px]:inline">
-                &rarr;
-              </span>
-              <span className="px-3 leading-snug min-[820px]:hidden">
-                {LUSION_ABOUT.who.mobileSwipeHint}
-              </span>
-            </button>
           </div>
 
           {/* Bottom Specialist Bio Left + Translucent Specialist Monogram + Studio Copy Right */}
@@ -1162,17 +1302,20 @@ function AboutWhoExperience({
                   </span>
                 ))}
               </p>
-              <div className="mt-3 h-[1px] w-40 bg-white/35" />
-              <p className="mt-2 max-w-[28ch] font-sans text-xs leading-relaxed text-white/80">Abstract visualization — not a likeness of {activeMember.name}.</p>
+              <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-white/55 min-[820px]:hidden">
+                {LUSION_ABOUT.who.mobileSwipeHint}
+              </p>
+              <div className="about-team-progress mt-3" aria-hidden="true">
+                <span key={activeMemberIdx} className="about-team-progress-fill" />
+              </div>
+              <p className="sr-only">Abstract procedural visualization; not a likeness of {activeMember.name}.</p>
             </div>
 
             <div className="flex items-end gap-6">
-              <span
-                aria-hidden="true"
-                className="hidden select-none font-sans text-[112px] leading-[0.80] font-bold tracking-[-0.04em] text-white/55 min-[820px]:block"
-              >
-                {activeMember.name[0]}
-              </span>
+              <PixelGlyph
+                char={activeMember.name[0]}
+                className="hidden h-[max(56px,5vw)] w-auto opacity-90 min-[820px]:block"
+              />
 
               <p
                 id="about-who-team-desc-text"
@@ -1188,13 +1331,40 @@ function AboutWhoExperience({
   );
 }
 
-/** Brand names retain verified content without reusing captured trademark SVGs. */
+/** The logo files are part of the repository's approved media bundle.
+ * The alt text remains the brand name; the second marquee copy is hidden from AT.
+ */
 function ClientLogoTile({ name }: { name: string }) {
   return (
-    <div className="flex h-20 items-center justify-center px-3 opacity-85 transition-opacity duration-300 hover:opacity-100 md:h-24 md:px-5">
-      <span className="text-center font-sans text-base font-medium tracking-[-0.02em] text-white/90 md:text-xl">{name}</span>
+    <div role="listitem" className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
+      <span className="about-client-wordmark" aria-label={name}>
+        {name}
+      </span>
     </div>
   );
+}
+
+/** Keep decorative marquees off the compositor when the brand wall is off-screen. */
+function AboutClientMarqueeLifecycle() {
+  useEffect(() => {
+    const rows = [...document.querySelectorAll<HTMLElement>("#about-clients .about-client-marquee")];
+    if (!rows.length) return;
+    if (!("IntersectionObserver" in window)) {
+      rows.forEach(row => row.classList.add("is-in-view"));
+      return;
+    }
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        (entry.target as HTMLElement).classList.toggle("is-in-view", entry.isIntersecting);
+      }
+    }, { rootMargin: "140px 0px", threshold: 0.01 });
+    rows.forEach(row => observer.observe(row));
+    return () => {
+      observer.disconnect();
+      rows.forEach(row => row.classList.remove("is-in-view"));
+    };
+  }, []);
+  return null;
 }
 
 /** Historical-evidence reconstruction, not a claim of exact current live parity.
@@ -1268,6 +1438,19 @@ export function AboutPageView() {
   useEffect(() => {
     const award = document.getElementById("about-award");
     const word = award?.querySelector<HTMLElement>("[data-awards-word]");
+    const revealTargets = award ? [...award.querySelectorAll<HTMLElement>("[data-award-reveal]")] : [];
+    let revealObserver: IntersectionObserver | null = null;
+    if (award && !reducedMotion && "IntersectionObserver" in window && revealTargets.length) {
+      award.dataset.awardsMotionReady = "true";
+      revealObserver = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).classList.add("is-in-view");
+          revealObserver?.unobserve(entry.target);
+        }
+      }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
+      revealTargets.forEach(target => revealObserver?.observe(target));
+    }
     let raf = 0, dirty = true, disposed = false, awardTop = 0;
     const measure = (el: HTMLElement | null) => el ? el.getBoundingClientRect().top + window.scrollY : 0;
     const render = () => {
@@ -1288,7 +1471,8 @@ export function AboutPageView() {
     window.addEventListener("resize", reflow, { passive: true });
     document.addEventListener("visibilitychange", reflow);
     return () => {
-      disposed = true; cancelAnimationFrame(raf); ro.disconnect();
+      disposed = true; cancelAnimationFrame(raf); ro.disconnect(); revealObserver?.disconnect();
+      if (award) delete award.dataset.awardsMotionReady;
       window.removeEventListener("scroll", schedule); window.removeEventListener("resize", reflow);
       document.removeEventListener("visibilitychange", reflow);
     };
@@ -1305,9 +1489,9 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="suspended-volume-dual-basin-v2" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
+    <main id="about" data-scene-version="suspended-volume-dual-basin-v2" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
-      <div ref={darkUpperRef} className="bg-[#000000] text-white">
+      <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
         {/* =====================================================================
             1. 3D SPHERE VORTEX + CRATER LANDSCAPE + TOPOGRAPHIC HUD + TEAM (`#about-who`)
            ===================================================================== */}
@@ -1323,7 +1507,7 @@ export function AboutPageView() {
            ===================================================================== */}
         <section
           id="about-clients"
-          className="border-t border-white/10 bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+          className="border-t border-white/10 bg-[#0d0c0f] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
         >
           <div className="grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:grid-cols-12">
             <div className="col-span-6 min-[813px]:col-span-5">
@@ -1338,128 +1522,143 @@ export function AboutPageView() {
             </div>
           </div>
 
-          <div className="mt-16 flex flex-col gap-8 md:mt-20 md:gap-10">
+          <AboutClientMarqueeLifecycle />
+          <div className="about-client-marquee-stack mt-16 flex flex-col gap-6 md:mt-20 md:gap-8">
             {LUSION_ABOUT.clients.carouselRows.map((row, rowIdx) => (
               <div
                 key={rowIdx}
-                className="grid grid-cols-3 items-center gap-4 sm:grid-cols-4 md:grid-cols-6"
+                role="list"
+                className="about-client-marquee group"
+                data-direction={rowIdx === 1 ? "reverse" : "forward"}
+                style={{ "--marquee-duration": `${34 + rowIdx * 7}s` } as React.CSSProperties}
+                aria-label={`Client brands row ${rowIdx + 1}`}
               >
-                {row.map((client, cIdx) => (
-                  <ClientLogoTile
-                    key={`${client.id}-${cIdx}`}
-                    name={client.name}
-                  />
-                ))}
+                <div className="about-client-marquee-track">
+                  {[0, 1].map(copy => (
+                    <div
+                      key={copy}
+                      className="about-client-marquee-set"
+                      aria-hidden={copy === 1 ? true : undefined}
+                    >
+                      {row.map((client, cIdx) => (
+                        <ClientLogoTile
+                          key={`${copy}-${client.id}-${cIdx}`}
+                          name={client.name}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
         </section>
 
         {/* =====================================================================
-            3. RECOGNITION LEDGER (`#about-award`: `58` Awards, `03` Articles, `5` Talks)
+            3. RECOGNITION LEDGER — pinned category index, internally scrolling record
            ===================================================================== */}
         <section
           id="about-award"
-          className="relative overflow-hidden bg-[#000000] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
+          onPointerMove={event => {
+            const bounds = event.currentTarget.getBoundingClientRect();
+            event.currentTarget.style.setProperty("--award-pointer-x", `${((event.clientX - bounds.left) / Math.max(1, bounds.width)) * 100}%`);
+            event.currentTarget.style.setProperty("--award-pointer-y", `${((event.clientY - bounds.top) / Math.max(1, bounds.height)) * 100}%`);
+          }}
+          className="about-recognition-section relative isolate overflow-hidden bg-[#0d0c0f] px-[var(--base-padding-x)] py-20 text-white min-[813px]:py-24"
         >
-          <div aria-hidden="true" className="about-awards-monument"><span data-awards-word>AWARDS</span></div>
-          <div className="relative grid grid-cols-6 gap-8 min-[813px]:grid-cols-12">
-            <div className="col-span-6 min-[813px]:col-span-4">
-              <div className="flex items-start gap-3">
-                <h2 className="font-sans text-5xl font-normal tracking-[-0.025em] text-white md:text-6xl">
-                  {LUSION_ABOUT.recognition.awardsHeading}
-                </h2>
-                <span className="mt-1 rounded-full bg-[#1a2ffb] px-3 py-1 font-mono text-xs font-medium text-white">
-                  {LUSION_ABOUT.recognition.awardsDisplayedTotal}
-                </span>
-              </div>
-            </div>
-
-            <div className="col-span-6 grid gap-5 md:grid-cols-2 min-[813px]:col-span-8">
-              {LUSION_ABOUT.recognition.awardGroups.map((group) => (
-                <div
-                  key={group.organization}
-                  className="border-t border-white/20 py-5"
-                >
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                    <h3 className="font-sans text-lg font-medium text-white">
-                      {group.organization}
-                    </h3>
-                    <span className="font-mono text-xs text-white/60">
-                      {String(group.totalCount).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <ul className="mt-3 divide-y divide-white/8">
-                    {group.honors.map((honor) => (
-                      <li
-                        key={`${group.organization}-${honor.recognition}`}
-                        className="flex items-center justify-between py-2.5 text-sm"
-                      >
-                        <span className="text-white/85">{honor.recognition}</span>
-                        <span className="font-mono text-xs text-white/65">
-                          {honor.countFormatted}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+          <div className="about-awards-monument" aria-hidden="true">
+            {["AWARD", "WINNING", "MULTI", "DISCIPLINARY", "CREATIVE", "STUDIO"].map(word => (
+              <span key={word}>{word}</span>
+            ))}
           </div>
 
-          {/* 03 Articles + 5 Talks */}
-          <div className="mt-16 grid grid-cols-6 gap-10 border-t border-white/10 pt-14 min-[813px]:grid-cols-12">
-            <div className="col-span-6 min-[813px]:col-span-6">
-              <div className="flex items-start gap-3">
-                <h3 className="font-sans text-4xl font-normal tracking-[-0.02em] text-white">
-                  {LUSION_ABOUT.recognition.articlesHeading}
-                </h3>
-                <span className="mt-1 rounded-full bg-white/12 px-3 py-0.5 font-mono text-xs text-white">
-                  {LUSION_ABOUT.recognition.articlesDisplayedTotal}
+          <div className="about-recognition-layout relative z-10 grid grid-cols-1 gap-10 min-[813px]:grid-cols-12 min-[813px]:gap-8">
+            <nav className="about-recognition-index min-[813px]:col-span-4" aria-label="Recognition categories">
+              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 0 } as React.CSSProperties}>
+                <h2>AWARDS</h2>
+                <span className="about-recognition-count">
+                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
+                  <span>{LUSION_ABOUT.recognition.awardsDisplayedTotal}</span>
                 </span>
               </div>
-              <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                {LUSION_ABOUT.recognition.articles.map((article) => (
-                  <li key={article.href}>
-                    <a
-                      href={article.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center justify-between py-4 text-base text-white transition-colors hover:text-[#6e85ff]"
-                    >
-                      <span>{article.title}</span>
-                      <span
-                        aria-hidden="true"
-                        className="font-mono text-xs transition-transform group-hover:translate-x-1"
-                      >
-                        &#8599;
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 1 } as React.CSSProperties}>
+                <h2>ARTICLES</h2>
+                <span className="about-recognition-count">
+                  <span className="about-recognition-count-icon" aria-hidden="true">↗</span>
+                  <span>{LUSION_ABOUT.recognition.articlesDisplayedTotal}</span>
+                </span>
+              </div>
+              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 2 } as React.CSSProperties}>
+                <h2>TALKS</h2>
+                <span className="about-recognition-count">
+                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
+                  <span>{LUSION_ABOUT.recognition.talksDisplayedTotal}</span>
+                </span>
+              </div>
+            </nav>
 
-            <div className="col-span-6 min-[813px]:col-span-6">
-              <div className="flex items-start gap-3">
-                <h3 className="font-sans text-4xl font-normal tracking-[-0.02em] text-white">
-                  {LUSION_ABOUT.recognition.talksHeading}
-                </h3>
-                <span className="mt-1 rounded-full bg-white/12 px-3 py-0.5 font-mono text-xs text-white">
-                  {LUSION_ABOUT.recognition.talksDisplayedTotal}
-                </span>
-              </div>
-              <ul className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                {LUSION_ABOUT.recognition.talks.map((talk) => (
-                  <li
-                    key={`${talk.event}-${talk.dateAndLocation}`}
-                    className="flex items-center justify-between py-4 text-base"
-                  >
-                    <span className="font-medium text-white">{talk.event}</span>
-                    <span className="font-mono text-xs text-white/70">{talk.dateAndLocation}</span>
-                  </li>
-                ))}
-              </ul>
+            <div id="about-recognition-window" className="about-recognition-window min-[813px]:col-span-8" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
+              <section className="about-recognition-record" aria-labelledby="about-awards-record-title">
+                <div className="about-recognition-record-heading">
+                  <h3 id="about-awards-record-title">AWARDS</h3>
+                  <span className="font-mono text-xs text-white/55">58 HONORS</span>
+                </div>
+                <div className="about-recognition-award-header" aria-hidden="true">
+                  <span>ORGANIZATION</span><span>COUNT</span><span>RECOGNITION</span>
+                </div>
+                <ul className="about-recognition-award-table">
+                  {LUSION_ABOUT.recognition.awardGroups.flatMap(group =>
+                    group.honors.map(honor => (
+                      <li
+                        key={`${group.organization}-${honor.recognition}`}
+                        className="about-recognition-award-row"
+                        data-award-reveal
+                      >
+                        <span className="about-recognition-org">{group.organization}</span>
+                        <span className="about-recognition-count-cell">{honor.countFormatted}</span>
+                        <span className="about-recognition-label">{honor.recognition}</span>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </section>
+
+              <section className="about-recognition-record" aria-labelledby="about-articles-record-title">
+                <div className="about-recognition-record-heading">
+                  <h3 id="about-articles-record-title">ARTICLES</h3>
+                  <span className="font-mono text-xs text-white/55">03 FEATURES</span>
+                </div>
+                <ul className="about-recognition-link-list">
+                  {LUSION_ABOUT.recognition.articles.map(article => (
+                    <li key={article.href}>
+                      <a
+                        href={article.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="about-recognition-link"
+                      >
+                        <span>{article.title}</span>
+                        <span aria-hidden="true" className="font-mono text-xs">↗</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="about-recognition-record" aria-labelledby="about-talks-record-title">
+                <div className="about-recognition-record-heading">
+                  <h3 id="about-talks-record-title">TALKS</h3>
+                  <span className="font-mono text-xs text-white/55">05 EVENTS</span>
+                </div>
+                <ul className="about-recognition-talk-table">
+                  {LUSION_ABOUT.recognition.talks.map(talk => (
+                    <li key={`${talk.event}-${talk.dateAndLocation}`} className="about-talk-row">
+                      <span>{talk.event}</span>
+                      <span>{talk.dateAndLocation}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             </div>
           </div>
         </section>

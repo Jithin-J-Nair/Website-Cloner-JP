@@ -14,7 +14,7 @@ try {
   }
   const {JourneySoundEngine}=await import(pathToFileURL(`${dir}/audio.mjs`));
   const {journeyMix,IDLE_JOURNEY,crossesFracture}=await import(pathToFileURL(`${dir}/journey-audio-state.mjs`));
-  const {createScore}=await import(pathToFileURL(`${dir}/journey-score.mjs`));
+  const {createScore,createFracture}=await import(pathToFileURL(`${dir}/journey-score.mjs`));
   const input=(values={})=>({...IDLE_JOURNEY,active:true,...values});
   const tick=async()=>{await Promise.resolve();await Promise.resolve();};
   class Param {
@@ -97,6 +97,8 @@ try {
   const c1=new Context(),c2=new Context();let ci=0;const closed=new JourneySoundEngine(()=>ci++===0?c1:c2);closed.setEnabled(true);await tick();await c1.close();c1.onstatechange();closed.setEnabled(true);await tick();assert.equal(closed.snapshot().loops,5);assert.equal(closed.snapshot().contextCreations,2);assert.ok(c1.sources.every(s=>s.stopped));closed.dispose();
   const hiddenRemount=new JourneySoundEngine(()=>new Context());document.visibilityState='hidden';let d=hiddenRemount.attach();assert.equal(hiddenRemount.snapshot().hidden,true);d();document.visibilityState='visible';d=hiddenRemount.attach();assert.equal(hiddenRemount.snapshot().hidden,false);d();hiddenRemount.dispose();
   const c=new Context(),score=createScore(c);assert.equal(score.size,5);
+  const fracture=createFracture(c);
+  assert.ok(Math.abs(fracture.duration-.95)<1e-9,'fracture transient is a tight sub-second impact, not a long shatter wash');
   for(const buffer of score.values()){const l=buffer.getChannelData(0);assert.ok(l.every(Number.isFinite));assert.ok(Math.max(...l.subarray(0,1000))<.7);assert.ok(Math.abs(l[0]-l.at(-1))<.02,'continuous loop seam');}
   const rms=b=>{let s=0;for(const v of b.getChannelData(0))s+=v*v;return Math.sqrt(s/b.length);};assert.ok(new Set([...score.values()].map(b=>rms(b).toFixed(4))).size>=3);
   globalThis.window=oldWindow;globalThis.document=oldDocument;

@@ -47,11 +47,11 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     }
 
     const lenis = new Lenis({
-      duration: 1.05,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 0.92,
+      easing: (t) => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3.2),
       smoothWheel: true,
       syncTouch: false,
-      touchMultiplier: 1.4,
+      touchMultiplier: 1.25,
     });
     lenisRef.current = lenis;
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;

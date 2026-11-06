@@ -1,5 +1,6 @@
 /** Shared, allocation-free motion math. Rendering and DOM ownership stay with their components. */
-export const GOAL_CINEMATIC_SECONDS = 22.5;
+// Two complete 10-second music loops at 96 BPM; one bar-aligned 20-second journey.
+export const GOAL_CINEMATIC_SECONDS = 20;
 export const UHD_PIXEL_BUDGET = 3840 * 2160;
 export const clampMotion = (value: number) => Math.max(0, Math.min(1, value));
 
@@ -8,10 +9,10 @@ export function homeRenderDpr(width: number, height: number, deviceDpr: number):
   return Math.min(Math.max(0.25, deviceDpr || 1), 2, Math.sqrt(UHD_PIXEL_BUDGET / Math.max(1, width * height)));
 }
 
-/** Normalized constant-acceleration travel: nonzero entry velocity, increasing fall speed. */
+/** Faster gravity-led fall: stronger entry descent, smooth acceleration, and an exact 0→1 endpoint. */
 export function acceleratedFall(progress: number): number {
   const t = clampMotion(progress);
-  return 0.28 * t + 0.72 * t * t;
+  return 0.65 * t + 0.26 * t * t + 0.09 * t * t * t;
 }
 
 export interface MotionSpring { value: number; velocity: number }

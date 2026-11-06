@@ -10,18 +10,32 @@ const ease = (start: number, end: number, value: number) => {
 export function expertiseCardPose(progress: number, index: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
   const i = Number.isFinite(index) ? Math.max(0, Math.min(3, Math.round(index))) : 0;
-  const spread = ease(.16, .64, p);
+
+  // Each card peels away from the shared deck on its own short scroll interval.
+  // This makes the first view read as one object, then resolves into four faces.
+  const release = ease(.12 + i * .024, .62 + i * .018, p);
+  const lift = ease(.08 + i * .012, .54 + i * .016, p);
+  const flip = ease(.32 + i * .035, .72 + i * .035, p);
+
+  const remaining = 1 - release;
+  const settled = (value: number) => value * remaining || 0;
+
   return {
-    xVw: spread === 1 ? 0 : (1.5 - i) * 23 * (1 - spread),
-    dropVh: 32 * (1 - ease(.08, .55, p)),
-    z: spread === 1 || i === 0 ? 0 : -i * 3 * (1 - spread),
-    roll: spread === 1 ? 0 : (i - 1.5) * 1.2 * (1 - spread),
-    flip: 180 * (1 - ease(.32 + i * .035, .72 + i * .035, p)),
+    // The backs begin as one readable fan around centre, then settle into
+    // their four authored columns as the scroll playhead approaches the fronts.
+    xVw: settled((1.5 - i) * 8),
+    dropVh: 22 * (1 - lift),
+    z: settled(-i * 2.4),
+    roll: settled((i - 1.5) * 8),
+    yaw: settled((1.5 - i) * 6),
+    pitch: settled(-3),
+    scale: .92 + .08 * release,
+    flip: 180 * (1 - flip),
     opacity: i === 0 ? 1 : ease(.1, .3, p),
   };
 }
 
 export function expertiseHeadingPose(progress: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
-  return { opacity: 1 - ease(.12, .36, p), yVh: -38 * ease(.1, .42, p) };
+  return { opacity: 1 - ease(.82, .98, p), yVh: -16 * ease(.82, 1, p) };
 }

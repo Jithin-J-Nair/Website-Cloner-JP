@@ -7,6 +7,35 @@ const ease = (a: number, b: number, u: number) => {
   const t = Math.max(0, Math.min(1, (u - a) / (b - a)));
   return t * t * (3 - 2 * t);
 };
+/**
+ * A brief, original curved wordmark sweep observed during the supplied About
+ * recording. Values are authored scroll-space choreography, not recovered
+ * Lusion spline/timing constants. It shares the About world’s single playhead.
+ */
+export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
+  const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
+  // In the reference recording the monumental wordmark holds first. A single
+  // oversized elastic sweep crosses it during the first valley reveal, then
+  // clears so the straight baseline mark can remain readable.
+  const start = mobile ? 1.9 : 1.92;
+  const peak = mobile ? 2.32 : 2.34;
+  const holdEnd = mobile ? 2.56 : 2.62;
+  const end = mobile ? 2.98 : 3.02;
+  const enter = ease(start, peak, u);
+  const exit = 1 - ease(holdEnd, end, u);
+  const flourish = enter * exit;
+  const travel = ease(start, end, u);
+  return {
+    opacity: flourish,
+    xVw: mobile ? mix(-1, -3, travel) : mix(0, -2, travel),
+    yVh: mobile ? mix(1, -2, travel) : mix(1, -3, travel),
+    rotation: mobile ? mix(-1, 1, travel) : mix(-1.2, 1.2, travel),
+    stretchX: 1 + (mobile ? 0.28 : 0.72) * flourish,
+    skewX: (mobile ? -18 : -28) * flourish,
+    scale: mobile ? mix(1.05, 1.12, flourish) : mix(1.18, 1.42, flourish),
+  };
+}
+
 export function aboutScenePose(progress: number, mobile: boolean) {
   const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
   const pullback = ease(.05, 1.45, u);

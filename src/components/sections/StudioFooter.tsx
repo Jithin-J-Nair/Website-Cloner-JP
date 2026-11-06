@@ -166,12 +166,17 @@ export function StudioFooter({
     };
   }, [navigateNextChapter, pathname, reducedMotion]);
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim() || !email.includes("@")) {
+    const input = e.currentTarget.elements.namedItem("EMAIL");
+    if (!(input instanceof HTMLInputElement) || !input.checkValidity()) {
       setStatus("error");
+      input instanceof HTMLInputElement && input.focus();
       return;
     }
+    // The reference page's newsletter endpoint is not available in this clean-room
+    // reconstruction. Keep the local acknowledgement explicit; never imply a
+    // remote subscription was stored.
     soundEngine.playClick();
     setStatus("saved");
     setEmail("");
@@ -188,7 +193,7 @@ export function StudioFooter({
       <footer
         id="footer-section"
         ref={footerRef}
-        className="relative z-[32] flex min-h-[728px] flex-col justify-between bg-[#ffffff] px-[var(--base-padding-x)] pt-32 pb-8 text-[clamp(0.875rem,1vw,1.1rem)] text-[#000000] md:min-h-[472px] md:pt-20 md:pb-8"
+        className="relative z-[32] flex min-h-[728px] flex-col justify-between bg-[#ffffff] px-[var(--base-padding-x)] pt-32 pb-8 text-[clamp(0.875rem,1vw,1.1rem)] text-[#000000] md:min-h-[472px] md:pt-40 md:pb-8"
       >
         {/* Subtle Curved Top Edge Crest (`#footer-bg`) */}
         <div
@@ -309,6 +314,10 @@ export function StudioFooter({
                   id="footer-newsletter-input-field"
                   type="email"
                   name="EMAIL"
+                  required
+                  autoComplete="email"
+                  aria-invalid={status === "error"}
+                  aria-describedby={status !== "idle" ? "footer-newsletter-feedback-message" : undefined}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -372,7 +381,7 @@ export function StudioFooter({
             id="footer-bottom-copyright"
             className="col-span-6 text-[0.95em] max-[1000px]:order-3 min-[1001px]:col-span-6"
           >
-            {LUSION_GLOBAL_CHROME.footer.copyright}
+            {pathname === "/" ? "©2026 JITHIN" : LUSION_GLOBAL_CHROME.footer.copyright}
           </div>
 
           <a
@@ -393,7 +402,7 @@ export function StudioFooter({
             id="footer-bottom-tagline"
             className="col-span-6 inline-flex items-center gap-1.5 text-[0.95em] max-[1000px]:order-2 min-[1001px]:col-span-3"
           >
-            <span>Built by Lusion with</span>
+            <span>{pathname === "/" ? "Built by JITHIN with" : "Built by Lusion with"}</span>
             <span className="sr-only">❤️</span>
             <svg
               width="14"
@@ -485,6 +494,8 @@ export function StudioFooter({
             <button
               type="button"
               id="scroll-nav-next"
+              data-next-href={resolvedPortal.targetPath}
+              data-next-label={resolvedPortal.label}
               onClick={navigateNextChapter}
               aria-label={`Next page: ${resolvedPortal.label}`}
               className="flex min-w-[210px] cursor-pointer items-center gap-3 text-[0.85em] leading-none uppercase min-[813px]:w-[22%]"

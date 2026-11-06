@@ -13,34 +13,34 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://lusion.co"),
+  metadataBase: new URL("https://jithinrp.com"),
   alternates: {
     canonical: "/",
   },
   title: {
-    default: LUSION_HOME.meta.title,
-    template: "Lusion - %s",
+    default: "JITHIN",
+    template: "JITHIN - %s",
   },
   description: LUSION_HOME.meta.description,
   keywords: [
-    "Lusion",
+    "JITHIN",
     "Creative Production Studio",
     "WebGL",
     "3D Visual Storytelling",
     "Interactive Web Experiences",
     "Bristol",
   ],
-  authors: [{ name: "Lusion Creative Studio" }],
+  authors: [{ name: "JITHIN" }],
   openGraph: {
-    title: LUSION_HOME.meta.title,
+    title: "JITHIN",
     description: LUSION_HOME.meta.description,
     type: "website",
-    siteName: "Lusion",
+    siteName: "JITHIN",
     locale: "en_GB",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@lusionltd",
+    site: "@jithin",
     title: LUSION_HOME.meta.title,
     description: LUSION_HOME.meta.description,
   },

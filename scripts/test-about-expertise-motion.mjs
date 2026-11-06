@@ -10,13 +10,35 @@ try {
  const {expertiseCardPose: pose, expertiseHeadingPose: heading} = await import(pathToFileURL(`${dir}/motion.mjs`));
  for (let i=0;i<4;i++) {
   assert.equal(pose(0,i).flip,180); assert.equal(pose(1,i).flip,0);
-  assert.equal(pose(1,i).xVw,0); assert.equal(pose(1,i).dropVh,0); assert.equal(pose(1,i).roll,0); assert.equal(pose(1,i).opacity,1);
+  assert.equal(pose(1,i).xVw,0); assert.equal(pose(1,i).dropVh,0);
+  assert.equal(pose(1,i).roll,0); assert.equal(pose(1,i).yaw,0);
+  assert.equal(pose(1,i).pitch,0); assert.equal(pose(1,i).scale,1);
+  assert.equal(pose(1,i).opacity,1);
+  assert.ok(Math.abs(pose(0,i).yaw) <= 13.5);
+  assert.ok(Math.abs(pose(0,i).pitch) <= 5);
+  assert.equal(pose(0,i).scale,.92);
   assert.deepEqual(pose(-3,i),pose(0,i));assert.deepEqual(pose(5,i),pose(1,i));assert.deepEqual(pose(NaN,i),pose(0,i));
   let last=pose(0,i);
-  for(let n=1;n<=1000;n++) {const p=pose(n/1000,i);assert.ok(Object.values(p).every(Number.isFinite));assert.ok(p.flip<=last.flip&&p.dropVh<=last.dropVh&&p.opacity>=last.opacity);assert.ok(Math.abs(p.flip-last.flip)<1);assert.ok(Math.abs(p.xVw-last.xVw)<.2);last=p;}
+  for(let n=1;n<=1000;n++) {const p=pose(n/1000,i);assert.ok(Object.values(p).every(Number.isFinite));assert.ok(p.flip<=last.flip&&p.dropVh<=last.dropVh&&p.opacity>=last.opacity);
+  assert.ok(Math.abs(p.yaw)<=Math.abs(last.yaw)+1e-9);
+  assert.ok(Math.abs(p.pitch)<=Math.abs(last.pitch)+1e-9);
+  assert.ok(p.scale>=last.scale);
+  assert.ok(Math.abs(p.flip-last.flip)<1);
+  assert.ok(Math.abs(p.xVw-last.xVw)<.2);
+  assert.ok(Math.abs(p.yaw-last.yaw)<.2);
+  assert.ok(Math.abs(p.pitch-last.pitch)<.1);
+  assert.ok(Math.abs(p.scale-last.scale)<.001);
+  last=p;}
   for(const p of [.01,.15,.35,.51,.79,.95]) {const a=pose(p,i);pose(1,i);pose(0,i);assert.deepEqual(pose(p,i),a,'reverse / intermediate re-entry is stateless');}
  }
  assert.equal(heading(0).opacity,1);assert.equal(heading(1).opacity,0);
+ const styles = fs.readFileSync("src/app/globals.css", "utf8");
+ const cardsSource = fs.readFileSync("src/components/pages/AboutExpertiseCards.tsx", "utf8");
+ assert.match(styles, /--about-expertise-blue:\s*#353DEF/i, "About expertise blue is the specified royal blue");
+ assert.match(cardsSource, /M-84 824C224 650 420 574 620 382S1020 48 1518-172/, "the expertise flourish is one original diagonal stroke");
+ assert.match(cardsSource, /about-card-back-art/, "the card backs retain authored line art");
+ assert.match(cardsSource, /M120 99 189 168 120 237 51 168Z/, "card back keeps the original central L/diamond mark");
+
  assert.notEqual(pose(.5,0).flip,pose(.5,3).flip,'authored stagger, not four simultaneous copies');
  console.log('PASS card poses: finite, bounded, continuous, monotonic, deterministic, reversible; aligned settled fronts; stagger; malformed scroll fallback. Not a reference-timing assertion.');
 } finally {fs.rmSync(dir,{recursive:true,force:true});}

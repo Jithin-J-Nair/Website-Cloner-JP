@@ -57,7 +57,7 @@ export function getCanonicalProjectTitle(id: string, fallbackTitle: string): str
 }
 
 /**
- * Set of every canonical asset relative path referenced across all 22 Lusion routes.
+ * Set of every canonical asset relative path referenced across all 20 current Lusion routes.
  */
 const APPROVED_SYNTHETIC_PATHS: Map<
   string,

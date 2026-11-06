@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const reference = JSON.parse(fs.readFileSync("src/data/reference/lusion-ground-truth.json", "utf8")).about;
+const page = fs.readFileSync("src/components/pages/AboutPageView.tsx", "utf8");
+const css = fs.readFileSync("src/app/globals.css", "utf8");
+const recognition = reference.recognition;
+const awardsSum = recognition.awardGroups.reduce((sum, group) => sum + group.honors.reduce((n, honor) => n + honor.count, 0), 0);
+
+assert.equal(awardsSum, 58, "award line items reconcile to the published total");
+assert.equal(recognition.awardsVerifiedSum, 58);
+assert.equal(recognition.articles.length, 3);
+assert.equal(recognition.talks.length, 5);
+for (const article of recognition.articles) assert.match(article.href, /^https:\/\//, `secure external article link: ${article.title}`);
+assert.match(page, /about-recognition-section/);
+assert.match(page, /about-recognition-index/);
+assert.match(page, /about-recognition-window/);
+assert.match(page, /role="region" aria-label="Awards, articles and talks" tabIndex=\{0\}/, "clipped recognition ledger is a keyboard-focusable named region");
+assert.match(page, /about-recognition-award-row/);
+assert.match(page, /about-recognition-count-cell/);
+assert.match(page, /about-recognition-talk-table/);
+assert.match(page, /about-awards-monument/);
+assert.match(page, /--award-pointer-x/);
+assert.match(page, /LUSION_ABOUT\.recognition\.awardGroups\.flatMap/);
+assert.match(page, /LUSION_ABOUT\.recognition\.articles\.map/);
+assert.match(page, /LUSION_ABOUT\.recognition\.talks\.map/);
+assert.match(css, /about-recognition-window[\s\S]*?overflow-y:\s*auto/);
+assert.match(css, /mask-image:\s*linear-gradient\(to bottom/);
+assert.match(css, /position:\s*sticky/);
+assert.match(css, /prefers-reduced-motion:\s*reduce/);
+console.log("PASS About recognition ledger: 58 awards reconcile, 3 article links and 5 talks remain in a clipped, fade-masked scrolling record.");

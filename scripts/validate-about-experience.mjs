@@ -8,7 +8,7 @@ const browser=await launchMotionBrowser();
 try{
  for(const width of [1440,390]){
   const context=await browser.newContext({viewport:{width,height:width===390?844:900},isMobile:width===390,hasTouch:width===390,reducedMotion:'no-preference'});
-  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;window.__aboutBuffersCreated=0;
+  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;window.__enableCtaProbe=true;window.__aboutBuffersCreated=0;
     const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){const gl=Reflect.apply(get,this,[type,...args]);if(gl&&/webgl/.test(type)&&!gl.__counted){gl.__counted=true;const create=gl.createBuffer;gl.createBuffer=function(...a){window.__aboutBuffersCreated++;return Reflect.apply(create,this,a);};}return gl;};});
   const page=await context.newPage(),report={width,height:width===390?844:900,baseline,errors:[],consoleErrors:[],restrictedRequests:[],milestones:[]};
   page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.consoleErrors.push(m.text());});
@@ -24,9 +24,41 @@ try{
    for(const id of ['about-clients','about-award','about-capability','end-section','footer-section']){
     const y=await page.locator(`#${id}`).evaluate(e=>e.getBoundingClientRect().top+scrollY);await seek(y);
     const file=`${width}-${id}.jpg`;await page.screenshot({path:`${out}/${file}`,type:'jpeg',quality:65,timeout:120000});report.milestones.push({id,file,y});
+    if(id==='end-section' && !baseline){
+     await page.waitForFunction(()=>window.__ctaProbe?.().frames>0,null,{timeout:20000});
+     const cta=await page.evaluate(()=>window.__ctaProbe());
+     assert.ok(width===390 ? cta.count===720 : cta.count===960 || cta.count===1600);
+     assert.ok(cta.draws<=3,'CTA field must remain at three instanced draws');
+     assert.ok(cta.triangles<=cta.count*24,'CTA geometry must remain within its triangle budget');
+     if(width!==390){
+      await page.mouse.move(width*.56,height*.68);
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer>.85,null,{timeout:5000});
+      const engaged=await page.evaluate(()=>window.__ctaProbe().pointer);
+      await page.mouse.move(width+40,height+40);
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer<.12,null,{timeout:5000});
+      report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,pointerEngaged:engaged,pointerReleased:true};
+     }else{
+      report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,touchPointerInactive:cta.pointer===0};
+      assert.equal(cta.pointer,0,'touch scrolling must not activate mouse repulsion');
+     }
+    }
    }
    if(!baseline){
     assert.deepEqual(report.restrictedRequests,[]);assert.deepEqual(report.errors,[]);assert.deepEqual(report.consoleErrors,[]);
+    // Verify that the curved valley wordmark is actually wired to the same
+    // scroll playhead, disappears at its authored exit, and re-enters on reverse.
+    const sweep=page.locator('[data-about-wordmark-sweep]');assert.equal(await sweep.count(),1);
+    const peak=width===390?2.45:1.25,end=width===390?3.45:2.35;
+    await seek(unit*peak);
+    const atPeak=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility,transform:el.style.transform,text:el.querySelector('textPath')?.textContent?.trim()}));
+    assert.ok(atPeak.opacity>.99);assert.equal(atPeak.visibility,'visible');assert.equal(atPeak.text,'LUSION');
+    await seek(unit*end);
+    const atExit=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility}));
+    assert.ok(atExit.opacity<.005);assert.equal(atExit.visibility,'hidden');
+    await seek(unit*peak);
+    const onReverse=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility}));
+    assert.ok(onReverse.opacity>.99);assert.equal(onReverse.visibility,'visible');
+    report.wordmarkSweep={peak,end,atPeak,atExit,onReverse,reversible:true};
     // Scene must sleep when it is entirely outside the viewport.
     await page.waitForTimeout(250);const sleeping=await page.evaluate(()=>window.__aboutProbe());await page.waitForTimeout(450);assert.equal((await page.evaluate(()=>window.__aboutProbe())).frames,sleeping.frames);
     await seek(unit*7.2);const beforeName=await page.locator('#about-who-team-name').textContent().catch(()=>null);
