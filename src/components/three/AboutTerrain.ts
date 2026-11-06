@@ -29,15 +29,15 @@ export function terrainHeightAt(x: number, z: number): number {
   const ridgeB = 1 - Math.abs(noise(wx * .34 + 31, wz * .31 - 11) * 2 - 1);
   const ridgeC = 1 - Math.abs(noise(wx * .72 - 7, wz * .72 + 41) * 2 - 1);
   const escarpment = (Math.pow(ridgeA, 2) - .32) * .96 + (Math.pow(ridgeB, 3) - .2) * .36 + ridgeC * .32;
-  const detail = (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (.32 + flankMask * 1.12);
+  const detail = .55 * (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (.32 + flankMask * 1.12);
   // Distinct narrow escarpments, not a single smooth bowl. Erosion runs
   // downhill in actual mesh relief and shares the floor/stone/figure sampler.
   // A sharp watershed with independent along-ridge erosion, rather than a
   // quadratic mound extruded down the valley. This changes actual silhouettes.
-  const ridge = (center: number, width: number) => Math.pow(Math.max(0, 1 - Math.abs((x - center) / width)), 1.12);
-  const buttress = .72 + .56 * Math.pow(1 - Math.abs(noise(z * .24, 29) * 2 - 1), 2);
+  const ridge = (center: number, width: number) => Math.pow(Math.max(0, 1 - Math.abs((x - center) / width)), .78);
+  const buttress = .88 + .24 * Math.pow(1 - Math.abs(noise(z * .24, 29) * 2 - 1), 2);
   const nearRim = 1 - smoothstep(10, 24, z);
-  const left = ridge(-10.7 + Math.sin(z * .19) * 1.15, 6.5) * (5.4 + noise(z * .42, 2) * 1.15) * buttress
+  const left = ridge(-12.2 + Math.sin(z * .14) * 1.2, 8.4) * (3.1 + noise(z * .3, 2) * .65) * buttress
     * (.68 + .32 * (1 - smoothstep(-8, 4, z)));
   // The tall rear escarpment is separate from the lower foreground shoulder;
   // the supplied basin still has a high right skyline, not a symmetric mound.
@@ -52,7 +52,7 @@ export function terrainHeightAt(x: number, z: number): number {
   const foreground = (ridge(-15 + Math.sin(z * .14) * 1.4, 5.8) * 8
     + ridge(17.5 + Math.sin(z * .17) * 1.2, 6.2) * 5) * frontDepth * buttress;
   const channels = Math.pow(1 - Math.abs(noise(wx * .6, wz * .7) * 2 - 1), 3);
-  const erosion = (channels - .38) * .82 * flankMask;
+  const erosion = (channels - .38) * .38 * flankMask;
   const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .17 * flankMask;
   const edge = 1 - smoothstep(27, 43, Math.hypot(x, z * .8));
   return (rimRise * .78 + (left + right) * nearRim + rearWall + foreground + escarpment * flankMask + erosion + micro + detail) * edge - 1.7;
@@ -63,7 +63,7 @@ export function terrainHeightAt(x: number, z: number): number {
 export function createAboutTerrainMaterial() {
   // Bake a periodic original noise tile once, rather than hashing sixteen
   // lattice corners per terrain fragment per frame. Mips filter subpixel relief.
-  const size = 256, pixels = new Uint8Array(size * size * 4);
+  const size = 256, pixels = new Uint8Array(size * size);
   const hash = (x: number, y: number) => {
     let n = Math.imul(x & 63, 374761393) ^ Math.imul(y & 63, 668265263);
     n = Math.imul(n ^ (n >>> 13), 1274126177);
@@ -72,21 +72,11 @@ export function createAboutTerrainMaterial() {
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
     const px = x / 4, py = y / 4, ix = Math.floor(px), iy = Math.floor(py);
     const fx = px - ix, fy = py - iy, u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
-    const at = (y * size + x) * 4;
+    const at = y * size + x;
     pixels[at] = Math.round(255 * lerp(lerp(hash(ix, iy), hash(ix + 1, iy), u), lerp(hash(ix, iy + 1), hash(ix + 1, iy + 1), u), v));
-    // Pack regolith coverage and its contact shadow beside the original noise.
-    // One mip-filtered GPU read replaces five hashes/samples per floor fragment.
-    const cx = Math.floor(x / 8), cy = Math.floor(y / 8);
-    const ox = 2 + hash(cx * 7, cy * 13) * 3;
-    const oy = 2 + hash(cx * 17, cy * 3) * 3;
-    const qx = x % 8 - ox, qy = y % 8 - oy;
-    const radius = .55 + hash(cx * 11, cy * 19) * 1.1;
-    const population = hash(cx * 23, cy * 29) > .7 ? 1 : 0;
-    pixels[at + 1] = Math.round(255 * population * (1 - smoothstep(radius - .4, radius + .5, Math.hypot(qx, qy * 1.4))));
-    pixels[at + 2] = Math.round(255 * population * (1 - smoothstep(radius, radius * 2.4 + .5, Math.hypot(qx - .7, (qy - 1.2) * .7))));
-    pixels[at + 3] = 255;
+
   }
-  const rockNoise = new THREE.DataTexture(pixels, size, size, THREE.RGBAFormat);
+  const rockNoise = new THREE.DataTexture(pixels, size, size, THREE.RedFormat);
   rockNoise.wrapS = rockNoise.wrapT = THREE.RepeatWrapping;
   rockNoise.magFilter = THREE.LinearFilter;
   rockNoise.minFilter = THREE.LinearMipmapLinearFilter;
@@ -116,13 +106,13 @@ export function createAboutTerrainMaterial() {
         // previously looked like crumpled paper rather than an eroded surface.
         // No atan seam: the former polar-UV derivative discontinuity made a
         // high-contrast checker/moire patch across the right mountain face.
-        vec2 channels = vec2(p.y * .95 + sin(p.x * .63) * .32, p.x * .72);
+        vec2 channels = vec2(p.x * 1.35 + p.y * .26, p.y * 1.1 - p.x * .22);
         // Avoid long rubber-like grooves: cross-cut drainage with shorter
         // isotropic fractures while keeping the same mip-filtered noise tile.
-        channels += vec2(noise(p * .38), noise(p * .38 + 13.)) * .9;
+        channels += vec2(noise(p * .38), noise(p * .38 + 13.)) * .24;
         vec2 surfaceUV = mix(p, channels, smoothstep(4.5, 10., abs(p.x)));
         float footprint = max(length(dFdx(surfaceUV)), length(dFdy(surfaceUV)));
-        float grain = 0., relief = 0., frequency = 4.4, amplitude = .036;
+        float grain = 0., relief = 0., frequency = 10.4, amplitude = .036;
         for (int i = 0; i < 4; i++) {
           float weight = 1. - smoothstep(.25, .85, footprint * frequency);
           float n = noise(surfaceUV * frequency + float(i) * 17.3) - .5;
@@ -132,7 +122,7 @@ export function createAboutTerrainMaterial() {
           amplitude *= .42;
         }
         // Fine regolith remains quiet; fractured relief belongs to the flanks.
-        relief *= smoothstep(4., 8., abs(p.x)) * .8;
+        relief *= smoothstep(4., 8., abs(p.x)) * .10;
         // Screen-space surface gradient: no finite-difference resampling and no
         // additional normal texture. Work entirely in world space with the light.
         vec3 n = normalize(vNormalW);
@@ -149,7 +139,9 @@ export function createAboutTerrainMaterial() {
         float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 64.);
         float fractured = 1. - abs(noise(surfaceUV * 1.8) * 2. - 1.);
         float fractures = pow(fractured, 2.) * .55 + noise(surfaceUV * 6.3) * .3 + noise(p * 16.) * .15;
-        float crevice = mix(.94, clamp(.15 + fractures * 1.45 + grain * 2., .24, 1.), smoothstep(4., 8., abs(p.x)));
+        // Fine mineral variation must not paint large black cavities onto
+        // otherwise smooth rock. Actual mesh normals carry the broad shading.
+        float crevice = mix(.96, clamp(.88 + (fractures - .5) * .18 + grain * 2.5, .72, 1.05), smoothstep(4., 8., abs(p.x)));
         float flankExposure = mix(1., p.x < 0. ? 1.22 : .78, smoothstep(4., 8., abs(p.x)));
         vec3 rock = vec3(.003, .004, .005) + vec3(.034, .039, .042) * diffuse * crevice * flankExposure;
         // Linear-space pale regolith target; after ACES + sRGB output this is
@@ -164,12 +156,9 @@ export function createAboutTerrainMaterial() {
         // in a circular black cutoff immediately outside the astronaut's pool.
         float spill = exp(-p.x * p.x / 72. - pow((p.y - 9.) / 24., 2.));
         color += vec3(.017, .022, .025) * spill * smoothstep(.65, .94, slope) * uValleyBrightness;
-        // Subpixel-filtered, world-anchored regolith clasts and contact shadows.
-        // These add close-shot floor detail without another draw or texture.
-        vec4 clasts = texture2D(uRockNoise, p / 8.);
-        float floorMask = smoothstep(.65, .94, slope);
-        color *= 1. - clasts.b * floorMask * .45;
-        color = mix(color, vec3(.025, .031, .035), clasts.g * floorMask);
+        // Quiet, mip-filtered fines only. Larger grains are real clustered,
+        // half-embedded instances; the former repeated black-dot tile is gone.
+        color *= .98 + noise(p * 22.) * .04;
         // During the editorial passage retain only the low pool, not a grey
         // full-screen wall behind the type. Team mode is hidden by the owner.
         color *= mix(pow(pool, 2.) * .7, 1., uValleyBrightness);
@@ -182,4 +171,30 @@ export function createAboutTerrainMaterial() {
   let disposed = false;
   material.addEventListener("dispose", () => { if (!disposed) { disposed = true; rockNoise.dispose(); } });
   return material;
+}
+
+/** Original sediment patches, not a uniform polar disk or a tiled dot pattern.
+ * One bounded population is baked at mount; no per-frame stone transforms.
+ */
+export function createAboutGroundClasts(count: number) {
+  let state = 492801;
+  const random = () => { state = (Math.imul(state, 1664525) + 1013904223) >>> 0; return state / 4294967296; };
+  const centers = Array.from({ length: 19 }, (_, i) => {
+    const z = -12 + i * 2.1;
+    return { x: Math.sin(i * 2.39) * (3.5 + random() * 5.5), z };
+  });
+  const stones: Array<{ x: number; y: number; z: number; size: number; aspect: number; angle: number }> = [];
+  for (let attempt = 0; stones.length < count && attempt < count * 28; attempt++) {
+    const patch = centers[Math.floor(random() * centers.length)];
+    const loose = random() < .2;
+    const x = loose ? (random() - .5) * 25 : patch.x + (random() + random() + random() - 1.5) * 3.3;
+    const z = loose ? -15 + random() * 45 : patch.z + (random() + random() - 1) * 3.4;
+    const y = terrainHeightAt(x, z);
+    // Keep steep cliffs and the astronaut's immediate footprint free of gravel.
+    if (y > .3 || Math.hypot(x + .35, z + 1.8) < .85) continue;
+    const size = .018 + Math.pow(random(), 3) * .11;
+    const aspect = .35 + random() * .35;
+    stones.push({ x, y: y + size * aspect * .45, z, size, aspect, angle: random() * Math.PI * 2 });
+  }
+  return stones;
 }

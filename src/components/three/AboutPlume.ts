@@ -26,6 +26,12 @@ vec3 plume(vec4 seed) {
   float z = sin(phase) * radius * 1.12 + cos(phase * .62 - h) * .28;
   float turbulence = sin(phase * 3. + h * 2.1 + uTime * .32) * .12;
   vec3 p = vec3(x, h + turbulence, z);
+  // Coherent low-frequency billows act on the whole volume, not independent
+  // random per-grain jitter. Both populations evaluate the same GPU field.
+  vec3 billow = vec3(sin(p.y * 1.7 + uTime * .23) - cos(p.z * 1.4),
+    sin(p.z * 1.5 + uTime * .19) - cos(p.x * 1.8),
+    sin(p.x * 1.6 - uTime * .21) - cos(p.y * 1.3));
+  p += billow * .14;
   p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .34) * .065;
   // Sparse pearl/bokeh outliers break the silhouette into suspended particles.
   float fringe = smoothstep(.965, .998, seed.w);
@@ -158,7 +164,7 @@ void main() {
   vec3 light = normalize(vec3(-.3, .8, .7));
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + vec3(0., 0., 1.)))), 20.);
-  vec3 silver = vec3(.045, .05, .055) + vec3(.25, .28, .30) * diffuse + specular * .82;
+  vec3 silver = vec3(.065, .075, .08) + vec3(.42, .46, .48) * diffuse + specular * 1.05;
   silver = mix(silver, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   float edge = 1. - smoothstep(mix(.62, .05, vBlur), 1., r2);
   gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed) * mix(.85, 1.6, uCompact), edge * vFade);

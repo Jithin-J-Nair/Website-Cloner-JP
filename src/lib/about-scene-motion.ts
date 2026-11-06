@@ -16,10 +16,10 @@ export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
   const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
   // Desktop hands off before the settled basin; touch uses its own later
   // shallow curve. These authored windows are not source timing measurements.
-  const start = mobile ? 1.9 : .72;
+  const start = mobile ? 1.9 : .78;
   const peak = mobile ? 2.32 : 1.10;
-  const holdEnd = mobile ? 2.56 : 1.30;
-  const end = mobile ? 2.98 : 1.58;
+  const holdEnd = mobile ? 2.56 : 1.27;
+  const end = mobile ? 2.98 : 1.43;
   const enter = ease(start, peak, u);
   const exit = 1 - ease(holdEnd, end, u);
   const flourish = enter * exit;
@@ -58,9 +58,9 @@ export function aboutScenePose(progress: number, mobile: boolean) {
 export function aboutLetteringPose(progress: number, mobile: boolean) {
   const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
   return {
-    opening: 1 - ease(mobile ? 1.45 : .62, mobile ? 1.95 : 1.15, u),
-    openingTravel: ease(mobile ? 1.45 : .62, mobile ? 1.95 : 1.15, u),
-    manifesto: ease(mobile ? 1.95 : 1.1, mobile ? 2.42 : 1.6, u) * (1 - ease(3.65, 4.35, u)),
+    opening: 1 - ease(mobile ? 1.38 : .45, mobile ? 1.88 : .75, u),
+    openingTravel: ease(mobile ? 1.38 : .45, mobile ? 1.88 : .75, u),
+    manifesto: ease(mobile ? 1.95 : 1.44, mobile ? 2.42 : 1.6, u) * (1 - ease(3.65, 4.35, u)),
     narrative: ease(4.45, 4.82, u) * (1 - ease(5.82, 6.42, u)),
   };
 }

@@ -6,10 +6,11 @@ import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
 import { aboutScenePose, aboutWordmarkSweepPose, aboutLetteringPose } from "@/lib/about-scene-motion";
 import { buildSculpturalPortraitPositions } from "@/lib/about-portrait-geometry";
+import { loadAboutPhotoPortrait, sampleAboutPhotoPortrait, type AboutPhotoPortrait } from "@/components/three/AboutPhotoPortrait";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
-import { createAboutTerrainMaterial, terrainHeightAt } from "@/components/three/AboutTerrain";
+import { createAboutTerrainMaterial, createAboutGroundClasts, terrainHeightAt } from "@/components/three/AboutTerrain";
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
@@ -86,6 +87,8 @@ function AboutWhoExperience({
   const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
   const portraitCountRef = useRef(8192);
+  const photoDataRef = useRef<AboutPhotoPortrait | null>(null);
+  const [portraitLoaded, setPortraitLoaded] = useState(false);
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
@@ -149,7 +152,7 @@ function AboutWhoExperience({
     };
   }, [activeMemberIdx, onStepMember, reducedMotion]);
 
-  // Original, non-likeness portrait study. A member change interpolates from
+  // Photo-derived portrait with an abstract fallback. A selection interpolates from
   // the currently visible point positions, so rapid selections remain interruptible.
   useEffect(() => {
     memberRef.current = activeMemberIdx;
@@ -162,8 +165,23 @@ function AboutWhoExperience({
     for (let i = 0; i < position.array.length; i++) {
       from.array[i] = from.array[i] * (1 - currentMorph) + position.array[i] * currentMorph;
     }
+    // Bake the currently visible GPU transport into the next start buffer.
+    // Otherwise a rapid selection during assembly would jump back to its
+    // undisplaced linear position before starting the next transition.
+    const transport = Math.sin(clamp01(currentMorph) * Math.PI) * (portraitMatRef.current?.uniforms.uPhoto.value ?? 0);
+    const oldShade = geo.getAttribute("aPhotoShade") as THREE.BufferAttribute;
+    if (transport > 0) for (let i = 0; i < position.count; i++) {
+      from.array[i * 3] += Math.sin(position.array[i * 3 + 1] * 7 + oldShade.array[i] * 11) * transport * .28;
+      from.array[i * 3 + 2] += Math.cos(position.array[i * 3] * 9 + oldShade.array[i] * 13) * transport * .35;
+    }
     from.needsUpdate = true;
-    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx, portraitCountRef.current));
+    const photo = photoDataRef.current;
+    const sampled = photo ? sampleAboutPhotoPortrait(photo, portraitCountRef.current, activeMemberIdx) : null;
+    position.array.set(sampled?.positions ?? buildSculpturalPortraitPositions(activeMemberIdx, portraitCountRef.current));
+    if (sampled) {
+      const shade = geo.getAttribute("aPhotoShade") as THREE.BufferAttribute;
+      shade.array.set(sampled.shades); shade.needsUpdate = true;
+    }
     position.needsUpdate = true;
     geo.computeBoundingSphere();
     portraitMorphStartRef.current = -1;
@@ -179,6 +197,7 @@ function AboutWhoExperience({
     if (!sectionEl || !hostEl) return;
 
     let contextLost = false, disposed = false;
+    const portraitRequest = new AbortController();
     const fallback = (reason: string) => {
       sectionEl.dataset.sceneState = reason;
       if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "flex";
@@ -282,6 +301,18 @@ function AboutWhoExperience({
             // the cloud to the ground. Its top naturally enters the wide shot.
             float x = (vUv.x - .5) * 38.;
             float y = vUv.y * 56. - 2.5;
+            // Opening needs only a compact cloud veil. Avoid evaluating every
+            // shaft/emitter Gaussian over the entire screen while their weight
+            // is exactly zero; the later pullback still uses the full material.
+            if (uOpening > .999) {
+              float haze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
+              vec3 openingColor = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore) * haze * .15;
+              float fade = smoothstep(-2.5, 0., y) * (1. - smoothstep(42., 53.5, y));
+              gl_FragColor = vec4(openingColor, uOpacity * fade);
+              #include <tonemapping_fragment>
+              #include <colorspace_fragment>
+              return;
+            }
             float coneWidth = mix(3., .30, smoothstep(8., 23.2, y));
             float beam = exp(-pow(x / coneWidth, 2.)) * smoothstep(6., 10., y)
               * (1. - smoothstep(23.3, 24.4, y));
@@ -466,15 +497,15 @@ function AboutWhoExperience({
         flatShading: true,
       })
     );
-    const rocksMesh = new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT);
+    const rocksMesh = track(new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT));
     const rockDummy = new THREE.Object3D();
     const rockSeeds = Array.from({ length: ROCK_COUNT }, (_, i) => {
       const floating = i < FLOATING_ROCK_COUNT;
       const ang = (i * 2.39996) % (Math.PI * 2);
       const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
-      const rx = Math.cos(ang) * rad;
-      const rz = 3.5 + Math.sin(ang) * rad * 0.72;
-      const scale = floating ? .38 + ((i * 19) % 10) * .078 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
+      const rx = floating ? Math.cos(ang) * rad : Math.sin(i * 7.31) * (2 + ((i * 37) % 100) * .095);
+      const rz = floating ? 3.5 + Math.sin(ang) * rad * .72 : -11 + ((i * 43) % 100) * .39;
+      const scale = floating ? .38 + ((i * 19) % 10) * .078 : .06 + Math.pow(((i * 17) % 100) / 100, 4) * .58;
       // Half-embed small clasts instead of lifting every size eight centimetres
       // above the floor. Concentrate the same population on the visible basin.
       const ry = floating
@@ -494,20 +525,38 @@ function AboutWhoExperience({
       const rs = rockSeeds[i];
       rockDummy.position.set(rs.x, rs.y, rs.z);
       rockDummy.rotation.set(rs.phase, rs.phase * 1.4, 0);
-      rockDummy.scale.setScalar(rs.scale * .58);
+      rockDummy.scale.set(rs.scale * .7, rs.scale * (rs.floating ? .58 : .3), rs.scale * .5);
       rockDummy.updateMatrix(); rocksMesh.setMatrixAt(i, rockDummy.matrix);
       rocksMesh.setColorAt(i, new THREE.Color(rs.floating ? 0xb3bdc4 : 0x4e5458));
     }
     rocksMesh.instanceMatrix.needsUpdate = true;
     scene.add(rocksMesh);
 
+    // Angular sediment is actual contact-anchored geometry, not black polka dots.
+    // Reuse the stone material and one static instanced draw at bounded tiers.
+    const sediment = createAboutGroundClasts(software ? 1100 : window.innerWidth < 820 ? 1600 : 3200);
+    const sedimentGeo = track(new THREE.IcosahedronGeometry(1, 0));
+    const sedimentMesh = track(new THREE.InstancedMesh(sedimentGeo, rockMat, sediment.length));
+    for (let i = 0; i < sediment.length; i++) {
+      const stone = sediment[i];
+      rockDummy.position.set(stone.x, stone.y, stone.z);
+      rockDummy.rotation.set(0, stone.angle, .12 * Math.sin(stone.angle));
+      rockDummy.scale.set(stone.size, stone.size * stone.aspect, stone.size * (1.1 + .3 * Math.sin(stone.angle)));
+      rockDummy.updateMatrix(); sedimentMesh.setMatrixAt(i, rockDummy.matrix);
+      sedimentMesh.setColorAt(i, new THREE.Color().setScalar(.36 + .3 * (i % 17) / 16));
+    }
+    sedimentMesh.instanceMatrix.needsUpdate = true;
+    scene.add(sedimentMesh);
+
     // -------------------------------------------------------------------------
     // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
     // -------------------------------------------------------------------------
     const portraitGeo = track(new THREE.BufferGeometry());
-    const initialPortrait = buildSculpturalPortraitPositions(memberRef.current, portraitCountRef.current);
+    const cachedPhoto = photoDataRef.current ? sampleAboutPhotoPortrait(photoDataRef.current, portraitCountRef.current, memberRef.current) : null;
+    const initialPortrait = cachedPhoto?.positions ?? buildSculpturalPortraitPositions(memberRef.current, portraitCountRef.current);
     portraitGeo.setAttribute("position", new THREE.BufferAttribute(initialPortrait, 3));
     portraitGeo.setAttribute("aMorphFrom", new THREE.BufferAttribute(initialPortrait.slice(), 3));
+    portraitGeo.setAttribute("aPhotoShade", new THREE.BufferAttribute(cachedPhoto?.shades ?? new Float32Array(portraitCountRef.current).fill(.75), 1));
     portraitGeoRef.current = portraitGeo;
     sectionEl.dataset.teamPortraitSource = "procedural-study";
 
@@ -520,6 +569,8 @@ function AboutWhoExperience({
           uOpacity: { value: 0 },
           uTime: { value: 0 },
           uMorph: { value: 1 },
+          uPhoto: { value: 0 },
+          uViewportHeight: { value: window.innerHeight },
           uPixelRatio: { value: 1 },
           uPointerNDC: { value: new THREE.Vector2(0, 0) },
         },
@@ -527,24 +578,31 @@ function AboutWhoExperience({
           uniform float uTime;
           uniform float uPixelRatio;
           uniform float uMorph;
+          uniform float uPhoto, uViewportHeight;
+          attribute float aPhotoShade;
           uniform vec2 uPointerNDC;
           attribute vec3 aMorphFrom;
           varying float vDepth;
           varying float vShade;
           void main() {
             vec3 p = mix(aMorphFrom, position, clamp(uMorph, 0.0, 1.0));
+            // An interruptible outward transport builds the photo from grains,
+            // on the existing clock. No CPU particle integration or extra RAF.
+            float assembly = sin(clamp(uMorph, 0., 1.) * 3.14159265) * uPhoto;
+            p.x += sin(position.y * 7. + aPhotoShade * 11.) * assembly * .28;
+            p.z += cos(position.x * 9. + aPhotoShade * 13.) * assembly * .35;
             // Pointer repulsion bends only nearby grains; the silhouette remains readable.
             vec2 pointerDelta = p.xy - uPointerNDC * vec2(.82, 1.34);
             float pointerInfluence = exp(-dot(pointerDelta, pointerDelta) * 5.2);
             p.xy += normalize(pointerDelta + vec2(.0001)) * pointerInfluence * .032;
-            // Subtle holographic scan shimmer remains procedural and non-identifying.
-            p.x += sin(p.y * 8.0 + uTime * 2.1) * 0.012;
+            // Scan motion is small enough to retain eyes, lips and hair detail.
+            p.x += sin(p.y * 8.0 + uTime * 2.1) * 0.004;
             p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
             vec4 mv = modelViewMatrix * vec4(p, 1.0);
             vDepth = -mv.z;
-            vShade = clamp(p.z * 0.85 + 0.42, 0.12, 1.0);
+            vShade = mix(clamp(p.z * 0.85 + 0.42, 0.12, 1.0), aPhotoShade, uPhoto);
             float dof = 1.0 + abs(p.z - 0.35) * 2.2;
-            gl_PointSize = (2.45 * dof) * uPixelRatio;
+            gl_PointSize = mix(2.45 * dof, 3.4 * clamp(uViewportHeight / 900., .85, 2.4), uPhoto) * uPixelRatio;
             gl_Position = projectionMatrix * mv;
           }
         `,
@@ -556,17 +614,42 @@ function AboutWhoExperience({
             float r = length(d);
             if (r > 0.5) discard;
             float soft = smoothstep(0.5, 0.08, r);
-            vec3 col = mix(vec3(0.35, 0.44, 0.58), vec3(0.92, 0.96, 1.0), vShade);
-            gl_FragColor = vec4(col, soft * uOpacity * 0.72);
+            vec3 col = mix(vec3(0.055, 0.085, 0.11), vec3(0.92, 0.96, 1.0), vShade);
+            gl_FragColor = vec4(col, soft * uOpacity * (.32 + .68 * vShade));
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
           }
         `,
       })
     );
     portraitMatRef.current = portraitMat;
 
+    let portraitLastTime = 0;
     const portraitPoints = new THREE.Points(portraitGeo, portraitMat);
     portraitPoints.visible = false;
     scene.add(portraitPoints);
+    // Keep the previous buffers alive on photo arrival, selection and recovery.
+    // The original photograph is never fetched by the browser.
+    Promise.resolve(photoDataRef.current ?? loadAboutPhotoPortrait(portraitRequest.signal)).then(data => {
+      if (disposed) return;
+      photoDataRef.current = data;
+      const sampled = sampleAboutPhotoPortrait(data, portraitCountRef.current, memberRef.current);
+      const position = portraitGeo.getAttribute("position") as THREE.BufferAttribute;
+      const from = portraitGeo.getAttribute("aMorphFrom") as THREE.BufferAttribute;
+      const shade = portraitGeo.getAttribute("aPhotoShade") as THREE.BufferAttribute;
+      from.array.set(position.array); from.needsUpdate = true;
+      position.array.set(sampled.positions); position.needsUpdate = true;
+      shade.array.set(sampled.shades); shade.needsUpdate = true;
+      portraitGeo.computeBoundingSphere();
+      portraitMat.uniforms.uPhoto.value = 1;
+      portraitMat.uniforms.uMorph.value = reducedMotion || cachedPhoto ? 1 : 0;
+      portraitMorphStartRef.current = reducedMotion || cachedPhoto ? null : -1;
+      sectionEl.dataset.teamPortraitSource = "jithin-photo-relief";
+      setPortraitLoaded(true);
+      ensureLoop();
+    }).catch(() => {
+      if (!disposed && !portraitRequest.signal.aborted) sectionEl.dataset.teamPortraitSource = "photo-unavailable-abstract-fallback";
+    });
 
     // Original depth-layered vertical light field, sharing the portrait clock.
     // These are abstract atmosphere, never a replacement claim for an employee likeness.
@@ -650,6 +733,7 @@ function AboutWhoExperience({
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
       portraitMat.uniforms.uPixelRatio.value = dpr;
+      portraitMat.uniforms.uViewportHeight.value = H;
       stormMat.uniforms.uPixelRatio.value = dpr;
       syncInspector();
     };
@@ -745,6 +829,7 @@ function AboutWhoExperience({
       }
 
       rocksMesh.visible = explorerVis > 0.02;
+      sedimentMesh.visible = rocksMesh.visible;
       if (rocksMesh.visible) {
         for (let i = 0; i < FLOATING_ROCK_COUNT; i++) {
           const rs = rockSeeds[i];
@@ -785,7 +870,7 @@ function AboutWhoExperience({
           portraitMat.uniforms.uMorph.value = 1 - Math.pow(1 - morphT, 3);
           if (morphT >= 1) portraitMorphStartRef.current = null;
         }
-        portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
+        portraitMat.uniforms.uOpacity.value = tTeamPhase * .95;
         portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
         // One damped whole-form target combines cursor tilt and subtle idle drift.
@@ -793,9 +878,12 @@ function AboutWhoExperience({
         const portraitTilt = reducedMotion ? 0 : 1;
         const targetPitch = pointerNDC.y * -0.10 * portraitTilt;
         const targetYaw = pointerNDC.x * 0.14 * portraitTilt + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05);
-        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, .12);
-        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, .12);
+        const portraitDamping = 1 - Math.exp(-12 * Math.min(.1, Math.max(0, elapsedSec - portraitLastTime)));
+        portraitLastTime = elapsedSec;
+        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, portraitDamping);
+        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, portraitDamping);
         portraitPoints.rotation.z = 0;
+        portraitPoints.scale.setScalar(isMobile ? .88 : 1.03);
         portraitPoints.position.set(
           camera.position.x + (isMobile ? -0.12 : -0.48),
           camera.position.y - (isMobile ? 2.65 : 2.55),
@@ -824,7 +912,7 @@ function AboutWhoExperience({
          // Faint chromatic edge ring belongs only to the pullback/wide-shot beat.
          // It is a CSS overlay over the original scene, never a copied post-process.
          if (chromaticRingRef.current) {
-           const wideShot = smoothstep(1.35, 1.68, u) * (1 - smoothstep(2.38, 2.82, u));
+           const wideShot = smoothstep(1.35, 1.68, u) * (1 - smoothstep(3.55, 3.95, u));
            chromaticRingRef.current.style.opacity = String(wideShot * 0.42);
          }
       }
@@ -948,7 +1036,14 @@ function AboutWhoExperience({
 
     const onVisibility = () => {
       docVisible = document.visibilityState === "visible";
-      ensureLoop();
+      if (!docVisible) {
+        // A backgrounded browser may defer this callback indefinitely. Do not
+        // leave a stale pending id that blocks a fresh request on return.
+        if (rafId) window.cancelAnimationFrame(rafId);
+        rafId = 0;
+      } else {
+        ensureLoop();
+      }
     };
 
     resize();
@@ -971,6 +1066,7 @@ function AboutWhoExperience({
 
     return () => {
       disposed = true;
+      portraitRequest.abort();
       unsubscribeChrome();
       if (window.__aboutProbe === probe) delete window.__aboutProbe;
       if (window.__lusionInspector?.scrollManager === ownedInspector && window.__lusionInspector) delete window.__lusionInspector.scrollManager;
@@ -1117,7 +1213,7 @@ function AboutWhoExperience({
           aria-hidden="true"
           data-about-wordmark-sweep
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[5vw] top-[65%] z-10 h-[42vh] overflow-visible will-change-transform max-[819px]:inset-x-[10vw] max-[819px]:top-[43%] max-[819px]:h-[25vh]"
+          className="pointer-events-none absolute inset-x-[5vw] top-[32%] z-10 h-[34vh] overflow-visible will-change-transform max-[819px]:inset-x-[10vw] max-[819px]:top-[43%] max-[819px]:h-[25vh]"
         >
           <svg
             viewBox="0 0 1900 620"
@@ -1325,7 +1421,8 @@ function AboutWhoExperience({
               <div className="about-team-progress mt-3" aria-hidden="true">
                 <span key={activeMemberIdx} className="about-team-progress-fill" />
               </div>
-              <p className="sr-only">Abstract procedural visualization; not a likeness of {activeMember.name}.</p>
+              {portraitLoaded ? <p className="mt-2 font-mono text-[9px] uppercase tracking-[.12em] text-white/65">Portrait: Jithin · photo-derived particle study</p> : null}
+              {portraitLoaded ? <p className="sr-only">Particle bas-relief of Jithin from the supplied photo, not a photograph of {activeMember.name}. Depth is estimated, not a 3D scan.</p> : <p className="sr-only">Abstract procedural visualization; not a likeness of {activeMember.name}.</p>}
             </div>
 
             <div className="flex items-end gap-6">
@@ -1506,7 +1603,7 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="about-lettering-filaments-v3" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
+    <main id="about" data-scene-version="about-photo-terrain-v4" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
         {/* =====================================================================
