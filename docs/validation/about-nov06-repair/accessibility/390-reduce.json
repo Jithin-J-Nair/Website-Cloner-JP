@@ -1,0 +1,141 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "reducedMotion": "reduce",
+  "errors": [],
+  "keyboard": [
+    {
+      "tag": "A",
+      "id": "",
+      "label": "Skip to main content",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "A",
+      "id": "header-logo",
+      "label": "Lusion Home",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "BUTTON",
+      "id": "header-right-sound-btn",
+      "label": "Enable studio sound",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "BUTTON",
+      "id": "header-right-menu-btn",
+      "label": "Open navigation menu",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "DIV",
+      "id": "about-recognition-window",
+      "label": "Awards, articles and talks",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "A",
+      "id": "",
+      "label": "Porsche Newsroom - Driven By Dream↗",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "A",
+      "id": "",
+      "label": "Wallpaper - Driven by Dreams↗",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "A",
+      "id": "",
+      "label": "Opera North - The Turn of the Screw↗",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "label": "Focus Strategy",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "label": "Focus Creative",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "label": "Focus Tech",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "BUTTON",
+      "id": "",
+      "label": "Focus Production",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "DIV",
+      "id": "expertise-0",
+      "label": "Strategy expertise",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "DIV",
+      "id": "expertise-1",
+      "label": "Creative expertise",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "DIV",
+      "id": "expertise-2",
+      "label": "Tech expertise",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "DIV",
+      "id": "expertise-3",
+      "label": "Production expertise",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "A",
+      "id": "end-section-title-link",
+      "label": "Let's work together!",
+      "visible": true,
+      "inAriaHiddenTree": false
+    },
+    {
+      "tag": "A",
+      "id": "end-bottom",
+      "label": "↓CONTINUE TO SCROLL↓",
+      "visible": true,
+      "inAriaHiddenTree": false
+    }
+  ],
+  "checks": [
+    "recognition region scrolls from keyboard focus",
+    "team selectors have 24px minimum targets and work with Enter",
+    "reduced-motion mode: static team/CTA, 8K portrait, no chromatic ring, complete recognition content"
+  ]
+}

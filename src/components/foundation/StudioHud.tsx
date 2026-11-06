@@ -393,7 +393,7 @@ export function StudioHud() {
             }`}
           >
             {pathname === "/about" ? (
-              <span className="font-sans text-[1.16rem] font-normal leading-none tracking-[-0.075em] text-current">
+              <span className="font-sans text-[1.65rem] min-[813px]:text-[2.2rem] font-normal leading-none tracking-[-0.025em] text-current">
                 LUSION
               </span>
             ) : (

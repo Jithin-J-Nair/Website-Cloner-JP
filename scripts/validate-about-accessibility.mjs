@@ -81,9 +81,12 @@ try {
       const recognition = page.locator("#about-recognition-window");
       await recognition.scrollIntoViewIfNeeded();
       await recognition.focus();
+      // Tab traversal above visits article links and can leave this region at
+      // its lower boundary. PageDown needs a known nonterminal starting point.
+      await recognition.evaluate(el => { el.scrollTop = 0; });
       const scrollBefore = await recognition.evaluate(el => el.scrollTop);
       await page.keyboard.press("PageDown");
-      await page.waitForTimeout(100);
+      await page.waitForFunction(before => document.querySelector('#about-recognition-window').scrollTop > before, scrollBefore, {timeout:5000});
       const scrollAfter = await recognition.evaluate(el => el.scrollTop);
       assert.ok(scrollAfter > scrollBefore, "PageDown scrolls the focused recognition region");
       report.checks.push("recognition region scrolls from keyboard focus");

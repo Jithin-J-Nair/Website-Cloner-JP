@@ -1,0 +1,485 @@
+{
+  "width": 1536,
+  "height": 810,
+  "peak": 1.25,
+  "end": 2.35,
+  "atValley": {
+    "opacity": 0,
+    "visibility": "hidden",
+    "transform": "translate3d(-2vw, -3vh, 0px) skewX(0deg) rotate(2deg) scaleX(1) scale(0.98)",
+    "fill": "rgb(255, 255, 255)",
+    "stroke": "none",
+    "text": "LUSION",
+    "fontSize": 390,
+    "pathLength": 2068.34130859375,
+    "stage": {
+      "width": 1365.56787109375,
+      "height": 380.4610595703125,
+      "top": 482.063232421875
+    },
+    "activeText": "desktop"
+  },
+  "atPeak": {
+    "opacity": 1,
+    "visibility": "visible",
+    "transform": "translate3d(-1.34255vw, -1.6851vh, 0px) skewX(-13deg) rotate(0.0276454deg) scaleX(1.34) scale(1.035)",
+    "fill": "rgb(255, 255, 255)",
+    "stroke": "none",
+    "text": "LUSION",
+    "fontSize": 390,
+    "pathLength": 2068.34130859375,
+    "stage": {
+      "width": 1998.5025634765625,
+      "height": 353.0190734863281,
+      "top": 506.4349060058594
+    },
+    "activeText": "desktop"
+  },
+  "atExit": {
+    "opacity": 0,
+    "visibility": "hidden",
+    "transform": "translate3d(-2vw, -3vh, 0px) skewX(0deg) rotate(2deg) scaleX(1) scale(0.98)",
+    "fill": "rgb(255, 255, 255)",
+    "stroke": "none",
+    "text": "LUSION",
+    "fontSize": 390,
+    "pathLength": 2068.34130859375,
+    "stage": {
+      "width": 1365.56787109375,
+      "height": 380.4610595703125,
+      "top": 482.063232421875
+    },
+    "activeText": "desktop"
+  },
+  "onReverse": {
+    "opacity": 1,
+    "visibility": "visible",
+    "transform": "translate3d(-1.34255vw, -1.6851vh, 0px) skewX(-13deg) rotate(0.0276454deg) scaleX(1.34) scale(1.035)",
+    "fill": "rgb(255, 255, 255)",
+    "stroke": "none",
+    "text": "LUSION",
+    "fontSize": 390,
+    "pathLength": 2068.34130859375,
+    "stage": {
+      "width": 1998.5025634765625,
+      "height": 353.0190734863281,
+      "top": 506.4349060058594
+    },
+    "activeText": "desktop"
+  },
+  "probeAtPeak": {
+    "frames": 64,
+    "u": 1.25,
+    "time": 3.3376000000000947,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": true,
+    "state": "ready",
+    "explorer": "ready",
+    "explorerScale": 1.33,
+    "teamYaw": 0,
+    "teamPitch": 0,
+    "teamMember": "Edan Kwan",
+    "count": 1800,
+    "portraitPoints": 8192,
+    "streakCount": 384,
+    "qualityTier": "high",
+    "reducedMotion": false,
+    "frameTimes": [
+      57,
+      164.89999999990687,
+      35.40000000037253,
+      17.899999999906868,
+      36.299999999813735,
+      7.899999999906867,
+      1194.2000000001863,
+      118.79999999981374,
+      47,
+      13,
+      12.700000000186265,
+      14.700000000186265,
+      18.899999999906868,
+      13.299999999813735,
+      16.700000000186265,
+      16.799999999813735,
+      16.700000000186265,
+      16.699999999720603,
+      16.600000000093132,
+      16.5,
+      16.800000000279397,
+      16.59999999962747,
+      16.700000000186265,
+      16.600000000093132,
+      16.600000000093132,
+      16.699999999720603,
+      16.600000000093132,
+      16.600000000093132,
+      16.600000000093132,
+      16.799999999813735,
+      49.39999999990687,
+      166.70000000018626,
+      227.5,
+      229.29999999981374,
+      206.39999999990687,
+      197.90000000037253,
+      360.1999999997206,
+      50.89999999990687,
+      356.40000000037253,
+      54.5,
+      262,
+      437.79999999981374,
+      5.7999999998137355,
+      320.3000000002794,
+      196.39999999990687,
+      232,
+      396.70000000018626,
+      362.09999999962747,
+      411,
+      395.8000000002794,
+      372.5,
+      389.1999999997206,
+      196.3000000002794,
+      389.89999999990687,
+      398.39999999990687,
+      424.3000000002794,
+      1835.0999999996275,
+      494.40000000037253,
+      434.79999999981374,
+      397.79999999981374,
+      349.8000000002794,
+      386.79999999981374,
+      76.3000000002794,
+      501.79999999981374
+    ],
+    "draws": 10,
+    "triangles": 104174,
+    "memory": {
+      "geometries": 10,
+      "textures": 5
+    },
+    "width": 1045,
+    "height": 551,
+    "camera": [
+      0,
+      4.7966472303206995,
+      19.274344023323614
+    ]
+  },
+  "probeOnReverse": {
+    "frames": 97,
+    "u": 1.25,
+    "time": 5.430899999999443,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": true,
+    "state": "ready",
+    "explorer": "ready",
+    "explorerScale": 1.33,
+    "teamYaw": 0,
+    "teamPitch": 0,
+    "teamMember": "Edan Kwan",
+    "count": 1800,
+    "portraitPoints": 8192,
+    "streakCount": 384,
+    "qualityTier": "high",
+    "reducedMotion": false,
+    "frameTimes": [
+      57,
+      164.89999999990687,
+      35.40000000037253,
+      17.899999999906868,
+      36.299999999813735,
+      7.899999999906867,
+      1194.2000000001863,
+      118.79999999981374,
+      47,
+      13,
+      12.700000000186265,
+      14.700000000186265,
+      18.899999999906868,
+      13.299999999813735,
+      16.700000000186265,
+      16.799999999813735,
+      16.700000000186265,
+      16.699999999720603,
+      16.600000000093132,
+      16.5,
+      16.800000000279397,
+      16.59999999962747,
+      16.700000000186265,
+      16.600000000093132,
+      16.600000000093132,
+      16.699999999720603,
+      16.600000000093132,
+      16.600000000093132,
+      16.600000000093132,
+      16.799999999813735,
+      49.39999999990687,
+      166.70000000018626,
+      227.5,
+      229.29999999981374,
+      206.39999999990687,
+      197.90000000037253,
+      360.1999999997206,
+      50.89999999990687,
+      356.40000000037253,
+      54.5,
+      262,
+      437.79999999981374,
+      5.7999999998137355,
+      320.3000000002794,
+      196.39999999990687,
+      232,
+      396.70000000018626,
+      362.09999999962747,
+      411,
+      395.8000000002794,
+      372.5,
+      389.1999999997206,
+      196.3000000002794,
+      389.89999999990687,
+      398.39999999990687,
+      424.3000000002794,
+      1835.0999999996275,
+      494.40000000037253,
+      434.79999999981374,
+      397.79999999981374,
+      349.8000000002794,
+      386.79999999981374,
+      76.3000000002794,
+      501.79999999981374,
+      790.2999999998137,
+      434.90000000037253,
+      401.29999999981374,
+      391.5,
+      43,
+      396.79999999981374,
+      382.10000000009313,
+      42.10000000009313,
+      17.899999999906868,
+      371.8000000002794,
+      16.59999999962747,
+      362.60000000009313,
+      344.70000000018626,
+      375.10000000009313,
+      55.89999999990687,
+      14.899999999906868,
+      372,
+      14.799999999813735,
+      392.3000000002794,
+      15.100000000093132,
+      396.1999999997206,
+      16.5,
+      80.8000000002794,
+      406.79999999981374,
+      16.5,
+      382.10000000009313,
+      92.79999999981374,
+      422.10000000009313,
+      378.39999999990687,
+      377.5,
+      379.20000000018626,
+      452.60000000009313,
+      387.79999999981374
+    ],
+    "draws": 10,
+    "triangles": 104174,
+    "memory": {
+      "geometries": 10,
+      "textures": 5
+    },
+    "width": 1045,
+    "height": 551,
+    "camera": [
+      0,
+      4.7966472303206995,
+      19.274344023323614
+    ]
+  },
+  "cardFrames": [
+    {
+      "requestedProgress": 0,
+      "progress": 0,
+      "layout": "cinematic",
+      "slots": [
+        "translate3d(12vw, calc(-50% + 22vh), 0px) rotateZ(-12deg) rotateY(9deg) rotateX(-3deg) scale(0.92)",
+        "translate3d(4vw, calc(-50% + 22vh), -2.4px) rotateZ(-4deg) rotateY(3deg) rotateX(-3deg) scale(0.92)",
+        "translate3d(-4vw, calc(-50% + 22vh), -4.8px) rotateZ(4deg) rotateY(-3deg) rotateX(-3deg) scale(0.92)",
+        "translate3d(-12vw, calc(-50% + 22vh), -7.2px) rotateZ(12deg) rotateY(-9deg) rotateX(-3deg) scale(0.92)"
+      ],
+      "flips": [
+        "rotateY(180deg)",
+        "rotateY(180deg)",
+        "rotateY(180deg)",
+        "rotateY(180deg)"
+      ]
+    },
+    {
+      "requestedProgress": 0.34,
+      "progress": 0.3402,
+      "layout": "cinematic",
+      "slots": [
+        "translate3d(7.06887vw, calc(-50% + 8.84822vh), 0px) rotateZ(-7.06887deg) rotateY(5.30165deg) rotateX(-1.76722deg) scale(0.952874)",
+        "translate3d(2.60868vw, calc(-50% + 9.85201vh), -1.56521px) rotateZ(-2.60868deg) rotateY(1.95651deg) rotateX(-1.95651deg) scale(0.947826)",
+        "translate3d(-2.85767vw, calc(-50% + 10.8472vh), -3.42921px) rotateZ(2.85767deg) rotateY(-2.14325deg) rotateX(-2.14325deg) scale(0.942847)",
+        "translate3d(-9.29531vw, calc(-50% + 11.8266vh), -5.57719px) rotateZ(9.29531deg) rotateY(-6.97148deg) rotateX(-2.32383deg) scale(0.938031)"
+      ],
+      "flips": [
+        "rotateY(178.673deg)",
+        "rotateY(180deg)",
+        "rotateY(180deg)",
+        "rotateY(180deg)"
+      ]
+    },
+    {
+      "requestedProgress": 0.67,
+      "progress": 0.67,
+      "layout": "cinematic",
+      "slots": [
+        "translate3d(0vw, calc(-50% + 0vh), 0px) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1)",
+        "translate3d(0vw, calc(-50% + 0vh), 0px) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1)",
+        "translate3d(0vw, calc(-50% + 0vh), 0px) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1)",
+        "translate3d(-0.00249821vw, calc(-50% + 0vh), -0.00149893px) rotateZ(0.00249821deg) rotateY(-0.00187366deg) rotateX(-0.000624552deg) scale(0.999983)"
+      ],
+      "flips": [
+        "rotateY(7.74219deg)",
+        "rotateY(20.9419deg)",
+        "rotateY(38.895deg)",
+        "rotateY(60.1545deg)"
+      ]
+    },
+    {
+      "requestedProgress": 1,
+      "progress": 0.9998,
+      "layout": "cinematic",
+      "slots": [
+        "translate3d(0vw, calc(-50% + 0vh), 0px) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1)",
+        "translate3d(0vw, calc(-50% + 0vh), 0px) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1)",
+        "translate3d(0vw, calc(-50% + 0vh), 0px) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1)",
+        "translate3d(0vw, calc(-50% + 0vh), 0px) rotateZ(0deg) rotateY(0deg) rotateX(0deg) scale(1)"
+      ],
+      "flips": [
+        "rotateY(0deg)",
+        "rotateY(0deg)",
+        "rotateY(0deg)",
+        "rotateY(0deg)"
+      ]
+    }
+  ],
+  "cta": {
+    "count": 3600,
+    "draws": 4,
+    "triangles": 45900,
+    "pointerEngaged": 0.8645564052179542,
+    "pointerReleased": true
+  },
+  "browserReport": {
+    "width": 1536,
+    "height": 810,
+    "teamHudClearance": {
+      "headerBottom": 144.796875,
+      "titleTop": 160.796875,
+      "gap": 16
+    },
+    "brandWall": {
+      "count": 16,
+      "labels": 16,
+      "named": 16,
+      "names": [
+        "The Coca-Cola Company",
+        "Max Mara",
+        "Calvin Klein",
+        "Porsche",
+        "Wallpaper*",
+        "Hyundai",
+        "Google",
+        "Apple",
+        "The Webby Awards",
+        "Stanford University",
+        "Sony",
+        "Awwwards",
+        "NVIDIA",
+        "AKQA",
+        "Nexus Studios",
+        "The Coca-Cola Company"
+      ],
+      "imageRequests": 0,
+      "animation": "about-client-marquee",
+      "playState": "running",
+      "rows": 3
+    },
+    "ctaLayout": {
+      "stage": {
+        "x": 0,
+        "y": 0.375,
+        "width": 1536,
+        "height": 810
+      },
+      "subtitle": {
+        "x": 0,
+        "y": 166.421875,
+        "width": 1536,
+        "height": 17.625
+      },
+      "title": {
+        "x": 442.203125,
+        "y": 225.34375,
+        "width": 651.59375,
+        "height": 291.8125
+      },
+      "pill": {
+        "x": 648.7890625,
+        "y": 700.375,
+        "width": 238.421875,
+        "height": 54
+      },
+      "crosses": [
+        {
+          "x": 316.40625,
+          "y": 170.46875,
+          "width": 11,
+          "height": 11
+        },
+        {
+          "x": 1208.59375,
+          "y": 170.46875,
+          "width": 11,
+          "height": 11
+        },
+        {
+          "x": 316.40625,
+          "y": 612.265625,
+          "width": 11,
+          "height": 11
+        },
+        {
+          "x": 1208.59375,
+          "y": 612.265625,
+          "width": 11,
+          "height": 11
+        }
+      ]
+    },
+    "ctaMotion": {
+      "progress": 0.6244212962962963,
+      "armOpacity": 0.824777,
+      "armTransform": "matrix(0.999984, -0.00571861, 0.00571861, 0.999984, -8.80735, -2.654)"
+    },
+    "portalLayout": {
+      "top": 508.640625,
+      "bottom": 524.296875,
+      "portalTop": 381.578125,
+      "portalBottom": 809.578125,
+      "height": 810,
+      "scrollHeight": 428,
+      "clientHeight": 428
+    }
+  },
+  "errors": []
+}

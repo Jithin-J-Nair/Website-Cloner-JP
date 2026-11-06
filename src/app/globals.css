@@ -860,6 +860,12 @@ body {
   height: 100%;
   background: rgb(255 255 255 / .96);
 }
+/* Clear the shared header's padding and 2.8em controls at every viewport,
+   including ultrawide. No per-frame layout reads or Home chrome changes. */
+.about-who-team-overlay {
+  padding-top: max(7rem, calc(var(--base-padding-y) * 2 + clamp(1rem, 1vw, 1.5rem) * 2.8 + 1rem));
+}
+
 .about-who-team-overlay[data-team-active="true"]:not([data-reduced="true"]) .about-team-progress-fill {
   animation: about-team-member-progress 4.8s linear forwards;
 }

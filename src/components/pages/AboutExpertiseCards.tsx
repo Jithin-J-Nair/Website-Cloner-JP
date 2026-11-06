@@ -32,7 +32,7 @@ function CardBack() {
           {[34, 206].map(x => <g key={x}><path d={`M${x} 83v55`} />{[84, 103, 130].map(y => <circle key={y} cx={x} cy={y} r="2.7" fill="var(--about-expertise-blue)" />)}</g>)}
         </g>)}
         <path d="M120 99 189 168 120 237 51 168Z M120 108 180 168 120 228 60 168Z M120 116 172 168 120 220 68 168Z" />
-        <circle cx="120" cy="168" r="45" /><circle cx="120" cy="168" r="34" />
+        <path d="M120 126C129 119 139 123 144 134L154 144C165 149 169 159 162 168C169 177 165 187 154 192L144 202C139 213 129 217 120 210C111 217 101 213 96 202L86 192C75 187 71 177 78 168C71 159 75 149 86 144L96 134C101 123 111 119 120 126Z" fill="var(--about-expertise-blue)" strokeWidth="2" /><circle cx="120" cy="168" r="30" />
         {[0, 90, 180, 270].map(angle => <g key={angle} transform={`rotate(${angle} 120 168)`}><circle cx="120" cy="126" r="2.8" fill="var(--about-expertise-blue)" /><path d="m114 112 6-6 6 6" /></g>)}
         {[[14, 14], [226, 14], [14, 322], [226, 322]].map(([x, y]) => <circle key={`${x}-${y}`} cx={x} cy={y} r="4" fill="var(--about-expertise-blue)" />)}
       </g>
@@ -46,6 +46,7 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   reducedMotion: boolean;
 }) {
   const headingRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<HTMLSpanElement>(null);
   const flourishRef = useRef<SVGSVGElement>(null);
   const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const flipRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -74,15 +75,19 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
       section.dataset.cardProgress = p.toFixed(4);
       section.dataset.cardLayout = cinematic ? "cinematic" : "reading";
       const heading = expertiseHeadingPose(p);
+      if (studioRef.current) {
+        studioRef.current.style.transform = `translate3d(0,${-Math.min(1, p / .28) * 45}vh,0)`;
+        studioRef.current.style.opacity = cinematic ? String(Math.max(0, 1 - p / .22)) : "0";
+      }
       if (headingRef.current) {
-        headingRef.current.style.transform = cinematic ? `translate3d(0,${heading.yVh}vh,0)` : "";
+        headingRef.current.style.transform = cinematic ? `translate3d(0,${heading.yVh + 7 * (1 - Math.min(1, p / .22))}vh,0)` : "";
         headingRef.current.style.opacity = cinematic ? String(heading.opacity) : "1";
         headingRef.current.style.pointerEvents = cinematic && heading.opacity < .01 ? "none" : "";
         headingRef.current.querySelectorAll("button").forEach(button => { button.tabIndex = cinematic && heading.opacity < .01 ? -1 : 0; });
       }
       if (flourishRef.current) {
-        flourishRef.current.style.opacity = cinematic ? String(.38 + .42 * p) : ".8";
-        flourishRef.current.style.transform = `translate3d(${(1 - p) * 10}%,0,0)`;
+        flourishRef.current.style.opacity = String(.25 + .75 * Math.max(0, Math.min(1, (p - .12) / .24)));
+        flourishRef.current.style.transform = `rotate(${p * -105}deg)`;
       }
       cards.forEach((_, i) => {
         const pose = expertiseCardPose(p, i), slot = slotRefs.current[i], flip = flipRefs.current[i];
@@ -136,14 +141,19 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   return (
     <section id="about-capability" ref={sectionRef} className="about-playing-expertise" data-reduced={reducedMotion} aria-labelledby="about-expertise-heading">
       <div className="about-expertise-stage">
-        <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" fill="none" aria-hidden="true">
-          <path d="M-84 824C224 650 420 574 620 382S1020 48 1518-172" stroke="currentColor" strokeWidth="26" strokeLinecap="round" />
+        {/* A clipped solid continuation at the blue boundary, distinct from
+            the outlined word behind the black recognition records. */}
+        <span ref={studioRef} className="about-expertise-studio" aria-hidden="true">STUDIO</span>
+        <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none" aria-hidden="true">
+          <path d="M420 30C650 110 1000 110 1230 65C1500 20 1490 270 1170 610" stroke="currentColor" strokeWidth="24" strokeLinecap="round" />
         </svg>
-        <div ref={headingRef} className="about-expertise-heading">
+        {/* The overlapping editorial heading is not a hit target; keep the
+            actual controls interactive without masking the cards underneath. */}
+        <div ref={headingRef} className="about-expertise-heading pointer-events-none">
           <h2 id="about-expertise-heading"><span>AREA OF</span><span>EXPERTISE</span></h2>
           <div className="about-expertise-caption">
             <p>{LUSION_ABOUT.capability.subtitle}</p>
-            <div className="about-expertise-controls" aria-label="Expertise areas">
+            <div className="about-expertise-controls pointer-events-auto" aria-label="Expertise areas">
               {cards.map((card, i) => <button key={card.title} type="button" aria-label={`Focus ${card.title}`} aria-controls={`expertise-${i}`} aria-pressed={active === i} onClick={() => { soundEngine.playClick(); readCard(i, true); }}><CapabilityGlyph index={i} /></button>)}
             </div>
           </div>

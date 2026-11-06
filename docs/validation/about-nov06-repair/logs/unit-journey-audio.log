@@ -1,0 +1,7 @@
+PASS silence before explicit enable; state handoff does not create context/nodes
+PASS async enable cancellation, rapid toggling and shared coherent loop sources
+PASS every stage, continuous crossfade boundaries, reverse and rapid latest-state replacement
+PASS composable hold API and every interruption release; production pointer-down intentionally unbound
+PASS fracture sampled visible rising edge, forward/reverse replay, mute, skip, first-entry suppression
+PASS pause, visibility, stale lease/unmount, remount and bounded source lifecycle
+PASS unsupported/rejected context fallback; original finite, bounded, distinct looping stems; no audio URL/decode dependency

@@ -11,31 +11,27 @@ export function expertiseCardPose(progress: number, index: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
   const i = Number.isFinite(index) ? Math.max(0, Math.min(3, Math.round(index))) : 0;
 
-  // Each card peels away from the shared deck on its own short scroll interval.
-  // This makes the first view read as one object, then resolves into four faces.
-  const release = ease(.12 + i * .024, .62 + i * .018, p);
-  const lift = ease(.08 + i * .012, .54 + i * .016, p);
-  const flip = ease(.32 + i * .035, .72 + i * .035, p);
-
-  const remaining = 1 - release;
-  const settled = (value: number) => value * remaining || 0;
-
+  // Three distinct beats: lift the deck, spread/hold four readable backs,
+  // then peel each face over independently into four nonoverlapping columns.
+  const spread = ease(.12, .32, p);
+  const lift = ease(.04, .32, p);
+  const settle = ease(.55, .88, p);
+  const flip = ease(.49 + i * .035, .65 + i * .035, p);
+  const remaining = 1 - settle;
   return {
-    // The backs begin as one readable fan around centre, then settle into
-    // their four authored columns as the scroll playhead approaches the fronts.
-    xVw: settled((1.5 - i) * 8),
-    dropVh: 22 * (1 - lift),
-    z: settled(-i * 2.4),
-    roll: settled((i - 1.5) * 8),
-    yaw: settled((1.5 - i) * 6),
-    pitch: settled(-3),
-    scale: .92 + .08 * release,
+    xVw: (1.5 - i) * (23 - 18 * spread) * remaining || 0,
+    dropVh: 56 * (1 - lift) + (Math.abs(i - 1.5) - .5) * 2 * spread * remaining,
+    z: (6 - i * 4) * remaining || 0,
+    roll: (i - 1.5) * 8 * spread * remaining || 0,
+    yaw: (i - 1.5) * 5 * spread * remaining || 0,
+    pitch: -4 * spread * remaining || 0,
+    scale: .86 + .09 * spread + .05 * settle,
     flip: 180 * (1 - flip),
-    opacity: i === 0 ? 1 : ease(.1, .3, p),
+    opacity: i === 0 ? 1 : ease(.10, .18, p),
   };
 }
 
 export function expertiseHeadingPose(progress: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
-  return { opacity: 1 - ease(.82, .98, p), yVh: -16 * ease(.82, 1, p) };
+  return { opacity: 1 - ease(.22, .34, p), yVh: 10 - 85 * ease(.04, .34, p) };
 }

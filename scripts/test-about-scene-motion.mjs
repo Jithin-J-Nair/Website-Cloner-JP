@@ -24,7 +24,7 @@ fs.mkdirSync('temp',{recursive:true});
 const dir=fs.mkdtempSync(path.resolve('temp/about-camera-'));
 try {
  fs.writeFileSync(`${dir}/motion.mjs`,ts.transpileModule(fs.readFileSync('src/lib/about-scene-motion.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
- const {aboutScenePose:pose,aboutWordmarkSweepPose:sweep}=await import(pathToFileURL(`${dir}/motion.mjs`));
+ const {aboutScenePose:pose,aboutWordmarkSweepPose:sweep,aboutLetteringPose:lettering}=await import(pathToFileURL(`${dir}/motion.mjs`));
  for(const mobile of [false,true]){
   const samples=[];
   for(let u=0;u<=11.25;u+=.001){
@@ -67,6 +67,25 @@ try {
   assert.ok(sweep(mobile?2.45:1.25,mobile).opacity>.99,'sweep reaches full opacity');
   assert.equal(sweep(mobile?3.45:2.35,mobile).opacity,0,'sweep exits');
  }
+ for (const mobile of [false, true]) {
+  const samples = [];
+  for (let i = 0; i <= 11250; i++) {
+   const u = i / 1000, p = lettering(u, mobile);
+   assert.ok(Object.values(p).every(value => Number.isFinite(value) && value >= 0 && value <= 1));
+   assert.equal(p.manifesto * p.narrative, 0, 'manifesto and narrative never share readable opacity');
+   assert.ok(p.opening * p.manifesto < .001, 'opening clears before the settled manifesto');
+   if (samples.length) for (const key of Object.keys(p)) {
+    assert.ok(Math.abs(p[key] - samples.at(-1).pose[key]) < .01, `continuous lettering ${key}`);
+   }
+   samples.push({u, pose:p});
+  }
+  for (const {u, pose:p} of samples.reverse()) assert.deepEqual(lettering(u, mobile), p, 'lettering reverses and fast seeks without state');
+  for (const u of [-1, NaN, Infinity]) assert.deepEqual(lettering(u, mobile), lettering(0, mobile));
+  const basin = lettering(mobile ? 2.45 : 1.6, mobile), narrative = lettering(5.35, mobile);
+  assert.equal(basin.opening, 0); assert.equal(basin.manifesto, 1); assert.equal(basin.narrative, 0);
+  assert.equal(narrative.opening, 0); assert.equal(narrative.manifesto, 0); assert.equal(narrative.narrative, 1);
+ }
+ console.log('PASS 22,502 lettering samples: finite/bounded, C0 continuous, reversible, invalid-input safe, opening handoff and nonoverlapping manifesto/narrative.');
  console.log('PASS wordmark sweep: deterministic, bounded, continuous, reversible and scroll-seek safe. Authored timing is not represented as measured source timing.');
  console.log('PASS 22,502 camera samples: finite, deterministic, reversible, bounded per-step travel, C1 joins, distinct near/wide framing and retained editorial/team endpoints. Original timing, not recovered source curves.');
 }finally{fs.rmSync(dir,{recursive:true,force:true});}
