@@ -97,7 +97,9 @@ try {
           mediaSources: media.map(node => {
             const source = node.getAttribute("src") ||
               node.querySelector("source")?.getAttribute("src") ||
-              node.querySelector("img")?.getAttribute("src");
+              node.querySelector("img")?.getAttribute("src") ||
+              node.dataset.previewSource ||
+              node.dataset.projectMediaSrc;
             if (source) return source;
             return node.getAttribute("data-project-media-type") === "text"
               ? `text:${node.getAttribute("data-project-media-index")}`
