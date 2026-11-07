@@ -26,6 +26,10 @@ try{
  await card.press('Enter');
  await page.getByRole('dialog').waitFor();
  await page.waitForFunction(()=>document.querySelector('main video').paused);await state('modal-pauses-preview');
+ await page.waitForFunction(()=>{
+  const v=document.querySelector('#video-overlay__vimeo-video video');
+  return v&&Number.isFinite(v.duration)&&v.duration>0&&v.readyState>=1;
+ });
  const modalVideo=page.locator('#video-overlay__vimeo-video video');
  await page.getByRole('button',{name:'PAUSE'}).click();
  await page.waitForFunction(()=>document.querySelector('#video-overlay__vimeo-video video')?.paused);
