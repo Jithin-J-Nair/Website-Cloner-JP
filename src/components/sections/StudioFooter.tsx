@@ -14,6 +14,7 @@ import {
 interface StudioFooterProps {
   nextHref?: string;
   nextLabel?: string;
+  brandName?: string;
 }
 
 function DiagonalSocialArrow() {
@@ -50,12 +51,16 @@ function DiagonalSocialArrow() {
 export function StudioFooter({
   nextHref = "/about",
   nextLabel = "About Us",
+  brandName = "Lusion",
 }: StudioFooterProps) {
   const pathname = usePathname();
   const router = useRouter();
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
   const setTransition = useStudioStore((s) => s.setTransition);
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
+  const footerCopyright = brandName === "Lusion"
+    ? LUSION_GLOBAL_CHROME.footer.copyright
+    : `©2026 ${brandName} Creative Studio`;
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "error" | "saved">("idle");
@@ -383,7 +388,7 @@ export function StudioFooter({
             id="footer-bottom-copyright"
             className="col-span-6 text-[0.95em] max-[1000px]:order-3 min-[1001px]:col-span-6"
           >
-            {LUSION_GLOBAL_CHROME.footer.copyright}
+            {footerCopyright}
           </div>
 
           <a
@@ -404,7 +409,7 @@ export function StudioFooter({
             id="footer-bottom-tagline"
             className="col-span-6 inline-flex items-center gap-1.5 text-[0.95em] max-[1000px]:order-2 min-[1001px]:col-span-3"
           >
-            <span>Built by Lusion with</span>
+            <span>Built by {brandName} with</span>
             <span className="sr-only">❤️</span>
             <svg
               width="14"

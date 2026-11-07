@@ -201,8 +201,8 @@ function ProjectMediaCard({
  * Captured surfaces below are implementation inputs, not a current parity certificate.
  *   - Captured brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
  *   - Crisp `#ffffff` `• LAUNCH PROJECT` pill matching `.project-details-launch-btn` in `lusion.co` CSS
- *   - Desktop opening `100vh` split stage: sticky left narrative (`cols 1..5`) + right flush-bleeding `70vh` media stage (`left: 46vw..100vw`) + `SCROLL TO EXPLORE >>`
- *   - Mobile opening `100svh` editorial viewport (`LUSION`, `←` + `••` white circles, `h1`, paragraphs, `SERVICES`/`LINKS`, `• LAUNCH PROJECT`) followed seamlessly below by full media gallery & `NEXT PROJECT`
+ *   - Desktop opening `100vh` split stage: sticky left narrative (`cols 1..5`) + right flush-bleeding `70vh` media stage (`left: ~53.5vw..100vw`) + `SCROLL TO EXPLORE >>`
+ *   - Mobile opening `100svh` editorial viewport (`LUSION`, `←` + `••` white circles, `h1`, paragraphs, `SERVICES`/`LINKS`, `• LAUNCH PROJECT` after the mobile services/links block, followed by the full media gallery & `NEXT PROJECT`
  */
 export function LusionProjectDetailView({ project }: LusionProjectDetailViewProps) {
   const setActiveProjectTheme = useStudioStore((s) => s.setActiveProjectTheme);
@@ -333,17 +333,17 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
       </div>
 
       {/* Split Sticky Editorial + Right Media Showcase Band */}
-      <section className="relative z-10 px-[var(--base-padding-x)] pt-24 pb-20 min-[813px]:grid min-[813px]:grid-cols-12 min-[813px]:items-start min-[813px]:gap-x-[var(--grid-gap)] min-[813px]:pt-[17vh] min-[813px]:pb-28">
+      <section className="relative z-10 px-[var(--base-padding-x)] pt-[6.5rem] pb-20 min-[813px]:grid min-[813px]:grid-cols-12 min-[813px]:items-start min-[813px]:gap-x-[var(--grid-gap)] min-[813px]:pt-[17vh] min-[813px]:pb-28">
         {/* Left Sticky Editorial Column (fills first mobile viewport cleanly; sticky cols 1..5 on desktop) */}
-        <div className="flex min-h-[calc(100svh-7.5rem)] flex-col justify-between pb-6 min-[813px]:sticky min-[813px]:top-[22vh] min-[813px]:col-span-5 min-[813px]:min-h-0 min-[813px]:pt-[5vh] min-[813px]:pb-0">
+        <div className="flex min-h-[calc(100svh-7.5rem)] flex-col justify-between pb-6 min-[813px]:sticky min-[813px]:top-[22vh] min-[813px]:col-span-5 min-[813px]:min-h-0 min-[813px]:pt-[3.7vh] min-[813px]:pb-0">
           <div>
-            <h1 className="m-0 font-sans text-[13.4vw] leading-[0.98] font-normal tracking-[-0.025em] min-[813px]:text-[3.45vw]">
+            <h1 className="m-0 font-sans text-[16vw] leading-[0.98] font-normal tracking-[-0.025em] min-[813px]:text-[3.45vw]">
               {canonicalTitle}
             </h1>
 
             {/* Desktop 2-column sub-split (`paragraphs + CTA` left, `SERVICES + LINKS` right) */}
-            <div className="mt-8 grid grid-cols-1 gap-8 min-[1100px]:grid-cols-12 min-[1100px]:gap-6">
-              <div className="space-y-5 font-sans text-[15px] leading-[1.58] opacity-92 min-[1100px]:col-span-8">
+            <div className="mt-[4.25rem] grid grid-cols-1 gap-8 min-[1100px]:grid-cols-12 min-[1100px]:gap-6">
+              <div className="space-y-5 font-sans text-[15.5px] leading-[1.58] opacity-92 min-[1100px]:col-span-8">
                 {project.paragraphs.map((para, idx) => (
                   <RichGroundTruthParagraph
                     key={idx}
@@ -401,17 +401,15 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
                   </div>
                 )}
               </div>
+              {project.launchCta && (
+                <div className="mt-8 min-[813px]:hidden" data-mobile-launch-cta>{renderLaunchCta()}</div>
+              )}
             </div>
           </div>
-
-          {/* Mobile `• LAUNCH PROJECT` White Pill at bottom of opening mobile screen */}
-          {project.launchCta && (
-            <div className="mt-8 min-[813px]:hidden">{renderLaunchCta()}</div>
-          )}
         </div>
 
         {/* Right Media Showcase Column (`cols 6..12` on desktop, flush right bleed on opening hero frame) */}
-        <div className="mt-10 space-y-6 min-[813px]:col-span-7 min-[813px]:mt-0 min-[813px]:space-y-8">
+        <div className="mt-10 space-y-6 min-[813px]:col-start-7 min-[813px]:col-span-6 min-[813px]:ml-[2.5vw] min-[813px]:mt-0 min-[813px]:space-y-8">
           {heroMedia && (
             <div className="min-[813px]:-mr-[var(--base-padding-x)] min-[813px]:pb-14">
               <ProjectMediaCard

@@ -434,7 +434,7 @@ export function StudioHud() {
           <TransitionLink
             href="/"
             transitionLabel="Home"
-            aria-label="Lusion Home"
+            aria-label={pathname === "/" ? "Jithin Home" : "Lusion Home"}
             id="header-logo"
             style={logoColorStyle}
             onClick={() => setNavMenuOpen(false)}
@@ -442,7 +442,11 @@ export function StudioHud() {
               navMenuOpen ? "max-[812px]:!text-black" : ""
             }`}
           >
-            {pathname === "/about" ? (
+            {pathname === "/" ? (
+              <span className="inline-flex h-6 w-[6em] items-center font-sans text-[1.5rem] font-semibold leading-none tracking-[-0.055em] text-current min-[813px]:w-[7.5em]">
+                JITHIN
+              </span>
+            ) : pathname === "/about" ? (
               <span className="font-sans text-[1.65rem] min-[813px]:text-[2.2rem] font-normal leading-none tracking-[-0.025em] text-current">
                 LUSION
               </span>
