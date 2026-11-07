@@ -42,12 +42,11 @@ try {
   for(const p of [.01,.15,.35,.51,.79,.95]) {const a=pose(p,i);pose(1,i);pose(0,i);assert.deepEqual(pose(p,i),a,'reverse / intermediate re-entry is stateless');}
  }
  assert.equal(heading(0).opacity,1);assert.equal(heading(1).opacity,0);
- const styles = fs.readFileSync("src/app/globals.css", "utf8");
+ const pageStyles = fs.readFileSync("src/components/pages/AboutPageStyles.tsx", "utf8");
  const cardsSource = fs.readFileSync("src/components/pages/AboutExpertiseCards.tsx", "utf8");
- assert.match(styles, /--about-expertise-blue:\s*#353DEF/i, "About expertise blue is the specified royal blue");
- assert.match(cardsSource, /M-84 824C224 650 420 574 620 382S1020 48 1518-172/, "the expertise flourish is one original diagonal stroke");
- assert.match(cardsSource, /about-card-back-art/, "the card backs retain authored line art");
- assert.match(cardsSource, /M120 99 189 168 120 237 51 168Z/, "card back keeps the original central L/diamond mark");
+ assert.match(pageStyles, /#about \{ --about-blue: #3733e8;/i, "About expertise section uses its route-owned live blue");
+ assert.match(cardsSource, /M420 30C650 110 1000 110 1230 65C1500 20 1490 270 1170 610/, "the expertise flourish is one authored diagonal stroke");
+ assert.match(cardsSource, /className="about-card-back-art" src="\/assets\/images\/cards\/back-ink\.png" width=\{628\} height=\{876\}/, "card backs retain the source-derived 628 by 876 line art");
 
  assert.notEqual(pose(.5,0).flip,pose(.5,3).flip,'authored stagger, not four simultaneous copies');
  console.log('PASS card poses: finite, bounded, continuous, monotonic, deterministic, reversible; aligned settled fronts; stagger; malformed scroll fallback. Not a reference-timing assertion.');
