@@ -39,6 +39,32 @@ const atlasDetail = details.find(project => project.id === "atlas_motion");
 assert.equal(atlasCard?.categoriesText, "concept • web • design • development • 3d • animation", "Atlas Motion homepage/archive category label matches live Lusion");
 assert.deepEqual(atlasCard?.categories, ["concept", "web", "design", "development", "3d", "animation"]);
 assert.equal(atlasDetail?.categoriesText, atlasCard?.categoriesText, "Atlas Motion detail metadata stays synchronized with its archive card");
+const categoriesById = Object.fromEntries(projects.map(project => [project.id, project.categoriesText]));
+assert.deepEqual(categoriesById, {
+  "oryzo_ai": "concept • web • design • development • 3d • animation",
+  "atlas_motion": "concept • web • design • development • 3d • animation",
+  "devin_ai": "web • design • development • 3d",
+  "of_the_oak": "web • design • development • 3d • animation",
+  "everswap": "concept • web • design • development • 3d • animation",
+  "porsche_dream_machine": "concept • 3D illustration • mograph • video",
+  "synthetic_human": "web • design • development • 3d",
+  "ddd_2024": "web • design • development • 3d",
+  "spaace": "web • design • development • 3d • web3",
+  "choo_choo_world": "concept • web • game design • 3d",
+  "zero_tech": "web • design • development • 3d",
+  "spatial_fusion": "api design • webgl • 3d",
+  "worldcoin": "web • design • development • 3d",
+  "lusion_labs": "concept • web • design • development • 3d",
+  "my_little_story_book": "concept • design • development • 3d",
+  "soda_experience": "AR • development • 3d",
+  "infinite_passerella": "concept • design • development • 3d",
+  "the_turn_of_the_screw": "design • development • 3d",
+  "maxmara_bearings_gifts": "development • 3D"
+}, "all current archive category labels match the live Lusion archive");
+for (const [id, categoriesText] of Object.entries({"oryzo_ai":"concept • web • design • development • 3d • animation","atlas_motion":"concept • web • design • development • 3d • animation","devin_ai":"web • design • development • 3d","of_the_oak":"web • design • development • 3d • animation","everswap":"concept • web • design • development • 3d • animation","porsche_dream_machine":"concept • 3D illustration • mograph • video","synthetic_human":"web • design • development • 3d","ddd_2024":"web • design • development • 3d","spaace":"web • design • development • 3d • web3","choo_choo_world":"concept • web • game design • 3d","zero_tech":"web • design • development • 3d","spatial_fusion":"api design • webgl • 3d","worldcoin":"web • design • development • 3d","lusion_labs":"concept • web • design • development • 3d","my_little_story_book":"concept • design • development • 3d","soda_experience":"AR • development • 3d","infinite_passerella":"concept • design • development • 3d","the_turn_of_the_screw":"design • development • 3d","maxmara_bearings_gifts":"development • 3D"})) {
+  const detailPage = details.find(project => project.id === id);
+  assert.equal(detailPage?.categoriesText, categoriesText, `current project detail category metadata is synchronized for ${id}`);
+}
 const unavailableLaunchDestinations = details
   .filter(project => !project.launchCta?.href?.trim() && !project.launchCta?.isVimeoOverlay)
   .map(project => project.id);

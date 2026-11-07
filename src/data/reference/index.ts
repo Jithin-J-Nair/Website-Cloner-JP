@@ -14,13 +14,34 @@ export type LusionProjectDetail = LusionGroundTruth["projectDetails"][number];
 export type LusionTeamMember = LusionGroundTruth["about"]["who"]["team"][number];
 export type LusionCapabilityCard = LusionGroundTruth["about"]["capability"]["cards"][number];
 
+const categoryOverrides = currentLiveProjects.categoryOverrides as Record<
+  string,
+  { categoriesText: string; categories: string[] }
+>;
+const applyCurrentCategories = <T extends { id: string; categoriesText: string; categories: string[] }>(project: T): T => {
+  const override = categoryOverrides[project.id];
+  return override ? { ...project, ...override } : project;
+};
+
 const cardEntries: Array<[string, LusionProjectCard]> = [
-  ...groundTruthJson.projectsArchive.projects.map((project): [string, LusionProjectCard] => [project.id, project]),
-  ...currentLiveProjects.projects.map((project): [string, LusionProjectCard] => [project.card.id, project.card])
+  ...groundTruthJson.projectsArchive.projects.map((project): [string, LusionProjectCard] => {
+    const current = applyCurrentCategories(project);
+    return [current.id, current];
+  }),
+  ...currentLiveProjects.projects.map((project): [string, LusionProjectCard] => {
+    const current = applyCurrentCategories(project.card);
+    return [current.id, current];
+  })
 ];
 const detailEntries: Array<[string, LusionProjectDetail]> = [
-  ...groundTruthJson.projectDetails.map((project): [string, LusionProjectDetail] => [project.id, project]),
-  ...currentLiveProjects.projects.map((project): [string, LusionProjectDetail] => [project.detail.id, project.detail])
+  ...groundTruthJson.projectDetails.map((project): [string, LusionProjectDetail] => {
+    const current = applyCurrentCategories(project);
+    return [current.id, current];
+  }),
+  ...currentLiveProjects.projects.map((project): [string, LusionProjectDetail] => {
+    const current = applyCurrentCategories(project.detail);
+    return [current.id, current];
+  })
 ];
 
 const cardsById = new Map<string, LusionProjectCard>(cardEntries);

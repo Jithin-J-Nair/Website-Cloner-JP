@@ -2,13 +2,30 @@ import fs from "node:fs";
 import path from "node:path";
 
 export function mergeCurrentLiveGroundTruth(base, extension) {
+  const categoryOverrides = extension.categoryOverrides ?? {};
+  const applyCurrentCategories = (project) => {
+    const override = categoryOverrides[project.id];
+    return override ? { ...project, ...override } : project;
+  };
   const cardsById = new Map([
-    ...base.projectsArchive.projects.map((project) => [project.id, project]),
-    ...extension.projects.map(({ card }) => [card.id, card])
+    ...base.projectsArchive.projects.map((project) => {
+      const current = applyCurrentCategories(project);
+      return [current.id, current];
+    }),
+    ...extension.projects.map(({ card }) => {
+      const current = applyCurrentCategories(card);
+      return [current.id, current];
+    })
   ]);
   const detailsById = new Map([
-    ...base.projectDetails.map((project) => [project.id, project]),
-    ...extension.projects.map(({ detail }) => [detail.id, detail])
+    ...base.projectDetails.map((project) => {
+      const current = applyCurrentCategories(project);
+      return [current.id, current];
+    }),
+    ...extension.projects.map(({ detail }) => {
+      const current = applyCurrentCategories(detail);
+      return [current.id, current];
+    })
   ]);
   const featuredIndexById = new Map(extension.featuredOrder.map((id, index) => [id, index + 1]));
 

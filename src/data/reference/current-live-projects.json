@@ -483,5 +483,182 @@
         }
       }
     }
-  ]
+  ],
+  "categoryOverrides": {
+    "oryzo_ai": {
+      "categoriesText": "concept • web • design • development • 3d • animation",
+      "categories": [
+        "concept",
+        "web",
+        "design",
+        "development",
+        "3d",
+        "animation"
+      ]
+    },
+    "atlas_motion": {
+      "categoriesText": "concept • web • design • development • 3d • animation",
+      "categories": [
+        "concept",
+        "web",
+        "design",
+        "development",
+        "3d",
+        "animation"
+      ]
+    },
+    "devin_ai": {
+      "categoriesText": "web • design • development • 3d",
+      "categories": [
+        "web",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "of_the_oak": {
+      "categoriesText": "web • design • development • 3d • animation",
+      "categories": [
+        "web",
+        "design",
+        "development",
+        "3d",
+        "animation"
+      ]
+    },
+    "everswap": {
+      "categoriesText": "concept • web • design • development • 3d • animation",
+      "categories": [
+        "concept",
+        "web",
+        "design",
+        "development",
+        "3d",
+        "animation"
+      ]
+    },
+    "porsche_dream_machine": {
+      "categoriesText": "concept • 3D illustration • mograph • video",
+      "categories": [
+        "concept",
+        "3D illustration",
+        "mograph",
+        "video"
+      ]
+    },
+    "synthetic_human": {
+      "categoriesText": "web • design • development • 3d",
+      "categories": [
+        "web",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "ddd_2024": {
+      "categoriesText": "web • design • development • 3d",
+      "categories": [
+        "web",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "spaace": {
+      "categoriesText": "web • design • development • 3d • web3",
+      "categories": [
+        "web",
+        "design",
+        "development",
+        "3d",
+        "web3"
+      ]
+    },
+    "choo_choo_world": {
+      "categoriesText": "concept • web • game design • 3d",
+      "categories": [
+        "concept",
+        "web",
+        "game design",
+        "3d"
+      ]
+    },
+    "zero_tech": {
+      "categoriesText": "web • design • development • 3d",
+      "categories": [
+        "web",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "spatial_fusion": {
+      "categoriesText": "api design • webgl • 3d",
+      "categories": [
+        "api design",
+        "webgl",
+        "3d"
+      ]
+    },
+    "worldcoin": {
+      "categoriesText": "web • design • development • 3d",
+      "categories": [
+        "web",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "lusion_labs": {
+      "categoriesText": "concept • web • design • development • 3d",
+      "categories": [
+        "concept",
+        "web",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "my_little_story_book": {
+      "categoriesText": "concept • design • development • 3d",
+      "categories": [
+        "concept",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "soda_experience": {
+      "categoriesText": "AR • development • 3d",
+      "categories": [
+        "AR",
+        "development",
+        "3d"
+      ]
+    },
+    "infinite_passerella": {
+      "categoriesText": "concept • design • development • 3d",
+      "categories": [
+        "concept",
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "the_turn_of_the_screw": {
+      "categoriesText": "design • development • 3d",
+      "categories": [
+        "design",
+        "development",
+        "3d"
+      ]
+    },
+    "maxmara_bearings_gifts": {
+      "categoriesText": "development • 3D",
+      "categories": [
+        "development",
+        "3D"
+      ]
+    }
+  }
 }
