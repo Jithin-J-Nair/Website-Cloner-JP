@@ -78,6 +78,13 @@ try {
       const main = page.locator(`main#project-${project.id}`);
       await main.waitFor({ state: "attached" });
       await page.waitForTimeout(90);
+      await page.waitForFunction(projectId => {
+        const root = document.getElementById(`project-${projectId}`);
+        if (!root) return false;
+        return [...root.querySelectorAll("video")].every(video =>
+          Boolean(video.dataset.previewSource || video.dataset.projectMediaSrc)
+        );
+      }, project.id);
 
       const state = await main.evaluate((element, expectedLaunchLabel) => {
         const heading = element.querySelector("h1");
