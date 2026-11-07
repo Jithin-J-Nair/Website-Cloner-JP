@@ -31,7 +31,7 @@ export function ProjectsArchiveView() {
         <div className="flex items-stretch justify-between gap-4">
           <h1
             id="projects-title"
-            className="m-0 -ml-[0.04em] font-sans text-[17.4vw] leading-[0.86] font-normal tracking-[-0.03em] text-[#000000] uppercase min-[813px]:text-[19vw]"
+            className="m-0 -ml-[0.04em] font-sans text-[17.4vw] leading-[0.86] font-normal tracking-[-0.03em] text-[#000000] uppercase min-[813px]:text-[17vw]"
           >
             {LUSION_PROJECTS_ARCHIVE.heading}
           </h1>
@@ -64,7 +64,7 @@ export function ProjectsArchiveView() {
         {/* All 19 Verified Canonical Lusion Projects Grid */}
         <div
           id="projects-list"
-          className="project-list relative mt-[3.25rem] grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:mt-[9.9rem] min-[813px]:grid-cols-12"
+          className="project-list relative mt-[3.25rem] grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:mt-[8.7rem] min-[813px]:grid-cols-12"
         >
           {LUSION_PROJECTS_ARCHIVE.projects.map((project, idx) => (
             <FeaturedProjectCard key={project.id} project={project} index={idx} />

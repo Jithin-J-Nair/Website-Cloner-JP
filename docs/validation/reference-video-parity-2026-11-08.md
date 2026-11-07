@@ -19,7 +19,7 @@
 
 ### Projects archive
 
-- At 1440×900 the PROJECTS heading was materially narrower/shorter than the source, and the first row began roughly 43 px too early. Desktop type scale, title top offset and row gap were tuned.
+- The first post-patch CI screenshot showed the 19vw PROJECTS heading too wide and the first row roughly 48 px too low versus the 11a source capture. Recalibrated the desktop heading to 17vw and the first-row gap to 8.7rem; the mobile grid gap remains 3.25rem. The title top offset at 27.4vh was already within a few pixels and was preserved.
 - At 390×844 the first archive card began about 24 px too early. The mobile grid top gap was increased without changing card aspect ratios or order.
 
 ### Project detail
