@@ -218,6 +218,9 @@ try {
       // Brand wall: real source SVG marks remain named for assistive technology.
       const clients = page.locator('#about-clients');
       const clientsTop = await clients.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
+      // Move the real pointer away before scrolling the marquee under the viewport.
+      // The source behavior intentionally pauses a row while it is hovered.
+      await page.mouse.move(width - 2, height - 2);
       await seekY(clientsTop);
       const logoState = await clients.evaluate(section => {
         const firstSets = [...section.querySelectorAll('.about-client-marquee-set:not([aria-hidden="true"])')];
@@ -236,6 +239,7 @@ try {
           rows: section.querySelectorAll('.about-client-marquee').length,
         };
       });
+      fs.writeFileSync(path.join(out, `${width}-clients-debug.json`), JSON.stringify(logoState, null, 2));
       assert.equal(logoState.rows, 3, 'client brands retain three flowing rows');
       assert.equal(logoState.count, 16, 'all 16 source placements remain represented across the three rows');
       assert.equal(logoState.labels, 16, 'every SVG logo has a non-empty accessible brand label');

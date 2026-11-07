@@ -103,13 +103,17 @@ try {
       );
       report.checks.push("full-flow recognition remains keyboard reachable without nested clipping");
 
-      const who = page.locator("#about-who");
+      // The scene timeline is normalized from #about, not the nested #about-who
+      // sticky stage. Use the same section origin as AboutPageView.renderAtScroll.
+      const about = page.locator("#about");
       const unit = width === 390 ? height : width;
-      const whoTop = await who.evaluate(el => el.getBoundingClientRect().top + window.scrollY);
+      const aboutTop = await about.evaluate(el => el.getBoundingClientRect().top + window.scrollY);
       await page.evaluate(({ top, delta }) => window.scrollTo({ top: top + delta, behavior: "instant" }),
-        { top: whoTop, delta: unit * 7.1 });
+        { top: aboutTop, delta: unit * 7.1 });
       await page.waitForFunction(() => {
-        return document.querySelector(".about-who-team-overlay")?.dataset.teamActive === "true";
+        const probe = window.__aboutProbe?.();
+        return probe && probe.u > 7.05 &&
+          document.querySelector(".about-who-team-overlay")?.dataset.teamActive === "true";
       }, null, { timeout: 20000 });
       const selectors = page.locator(".about-who-team-overlay button[aria-label^='Select ']");
       assert.equal(await selectors.count(), 7, "seven individual team selectors remain exposed");
@@ -118,6 +122,12 @@ try {
       assert.ok(selectorBox && selectorBox.width >= 24 && selectorBox.height >= 24);
       await selector.focus();
       await page.keyboard.press("Enter");
+      await page.waitForFunction(() =>
+        document.querySelectorAll(".about-who-team-overlay button[aria-label^='Select ']")[1]
+          ?.getAttribute("aria-pressed") === "true",
+        null,
+        { timeout: 3000 }
+      );
       assert.equal(await selector.getAttribute("aria-pressed"), "true", "Enter activates the focused team selector");
       report.checks.push("team selectors have 24px minimum targets and work with Enter");
 
