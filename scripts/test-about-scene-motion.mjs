@@ -108,4 +108,6 @@ assert.match(narrativeBlock, /-7 \* exit/, "narrative block slides left on exit"
 assert.match(aboutView, /setInterval\(evaluateTeamStage, 160\)/, "team auto-advance is polled only while the team stage is active");
 assert.match(aboutView, /\}, 4800\)/, "team member dwell is 4.8 seconds");
 assert.match(aboutView, /document\.hidden \|\| teamOverlayRef\.current\?\.dataset\.teamActive !== "true"/, "auto-advance pauses off-stage or in a hidden tab");
-assert.match(aboutView, /const streakCount = 384/, "team stage uses a dense full-frame light-streak field");
+assert.match(sourceTeam, /const count = 8192/, "team stage renders the complete 8,192-point captured roster buffer");
+assert.match(aboutView, /const teamVisible = tTeamPhase > \.02 && sourceTeam\.ready/, "team portrait becomes visible only after its source geometry is ready");
+assert.match(aboutView, /teamOverlayRef\.current\.dataset\.teamActive = tTeamPhase > \.985 \? "true" : "false"/, "team auto-advance is enabled only after the team chapter fully settles");
