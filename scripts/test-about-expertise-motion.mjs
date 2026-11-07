@@ -16,7 +16,7 @@ try {
   assert.equal(pose(1,i).opacity,1);
   assert.ok(Math.abs(pose(0,i).yaw) <= 13.5);
   assert.ok(Math.abs(pose(0,i).pitch) <= 5);
-  assert.equal(pose(0,i).scale,.92);
+  assert.equal(pose(0,i).scale,.86);
   assert.deepEqual(pose(-3,i),pose(0,i));assert.deepEqual(pose(5,i),pose(1,i));assert.deepEqual(pose(NaN,i),pose(0,i));
   let last=pose(0,i);
   for(let n=1;n<=1000;n++) {const p=pose(n/1000,i);assert.ok(Object.values(p).every(Number.isFinite));assert.ok(p.flip<=last.flip&&p.dropVh<=last.dropVh&&p.opacity>=last.opacity);
