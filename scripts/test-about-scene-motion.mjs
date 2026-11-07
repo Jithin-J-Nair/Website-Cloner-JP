@@ -104,7 +104,7 @@ try {
 const narrativeBlock = aboutView.slice(aboutView.indexOf("// C. Studio Narrative HUD"), aboutView.indexOf("// D. Full-Bleed Interactive"));
 assert.match(narrativeBlock, /narrativeWordRefs\.current\.length/, "narrative sequence updates individual words, not only the paragraph");
 assert.match(narrativeBlock, /i \* 0\.014/, "word fades are staggered from a stable order");
-assert.match(narrativeBlock, /-7 \* exit/, "narrative block slides left on exit");
+assert.match(narrativeBlock, /-58 \* exit/, "narrative block slides left on exit");
 assert.match(aboutView, /setInterval\(evaluateTeamStage, 160\)/, "team auto-advance is polled only while the team stage is active");
 assert.match(aboutView, /\}, 4800\)/, "team member dwell is 4.8 seconds");
 assert.match(aboutView, /document\.hidden \|\| teamOverlayRef\.current\?\.dataset\.teamActive !== "true"/, "auto-advance pauses off-stage or in a hidden tab");
