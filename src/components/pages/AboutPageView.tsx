@@ -1164,6 +1164,11 @@ function AboutWhoExperience({
                       aria-label={`Select ${member.name}`}
                       aria-pressed={idx === activeMemberIdx}
                       onClick={() => onSelectMember(idx)}
+                      onKeyDown={event => {
+                        if (event.key !== "Enter" && event.key !== " ") return;
+                        event.preventDefault();
+                        onSelectMember(idx);
+                      }}
                       className="grid h-6 w-6 place-items-center rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-0 focus-visible:outline-white"
                     >
                       <span

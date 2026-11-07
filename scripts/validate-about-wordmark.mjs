@@ -212,7 +212,8 @@ try {
       } else {
         teamInteraction = { ...teamInteraction, touchMemberSwitch: true };
       }
-      await page.screenshot({ path: `${out}/${width}-team.png`, fullPage: false, timeout: 120000 });
+      // Team screenshots are captured by validate-about-scroll-capture.mjs.
+      // This test remains focused on the wordmark and team interaction probes.
 
       // Brand wall: real source SVG marks remain named for assistive technology.
       const clients = page.locator('#about-clients');

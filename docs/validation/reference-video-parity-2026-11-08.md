@@ -12,8 +12,9 @@
 
 ### Home
 
-- At 1440×900 the captured local hero headline began about 33 px below the source and the stage began about 16 px too low; the stage bottom ended about 26 px too high. Desktop top padding, stage top gap and bottom gap were recalibrated together.
+- The 2026-11-04 Home recording is a 2560×1600 browser capture. After accounting for browser chrome and normalizing the webpage viewport to 1440×900, the first CI screenshot showed the title and cross stage beginning roughly 30 px too high while the stage bottom was already within about 3 px. Desktop top padding was recalibrated to 5.3vh, section bottom padding to 0.94×base padding, and the scroll cue to the viewport bottom.
 - At 390×844 the local headline wrapped later than the source (it carried “and” on line one), and the stage was too tall. Mobile type scale and bottom breathing room were corrected.
+- The recording shows the hero's accent palette changing on deliberate stage clicks (cobalt, lime, red, violet and gold); the branch already has the matching click-driven palette cycle, so that interaction was preserved.
 - The showreel modal title and Home-only shared footer/header brand now use JITHIN. About and Projects retain the Lusion wordmark.
 
 ### Projects archive

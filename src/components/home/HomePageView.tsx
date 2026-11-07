@@ -309,7 +309,7 @@ export function HomePageView() {
       <section
         id="home-hero"
         ref={heroSectionRef}
-        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+2.9rem)] pb-[calc(var(--base-padding-y)*1.25)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*2)] min-[813px]:pb-[var(--base-padding-y)]"
+        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+2.9rem)] pb-[calc(var(--base-padding-y)*1.25)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*5.3)] min-[813px]:pb-[calc(var(--base-padding-y)*0.94)]"
       >
         {/* Reference Headline (`#home-hero-title`: cols 4..8 desktop, cols 1..6 mobile) */}
         <h1
@@ -350,7 +350,7 @@ export function HomePageView() {
         <div
           id="home-hero-scroll-container"
           ref={heroCueRef}
-          className="pointer-events-none absolute right-[var(--base-padding-x)] bottom-[calc(var(--base-padding-y)*0.32)] left-[var(--base-padding-x)] flex h-[var(--base-padding-y)] items-center justify-between"
+          className="pointer-events-none absolute right-[var(--base-padding-x)] bottom-0 left-[var(--base-padding-x)] flex h-[var(--base-padding-y)] items-center justify-between"
         >
           <div
             id="home-hero-scroll-container-crosses"
