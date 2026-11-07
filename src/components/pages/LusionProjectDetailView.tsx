@@ -195,7 +195,7 @@ function ProjectMediaCard({
 }
 
 /**
- * Captured Lusion Case-Study Page (`/projects/[slug]` — 17 captured canonical detail routes)
+ * Captured Lusion Case-Study Page (`/projects/[slug]` — 19 current canonical detail routes: 17 captured + 2 current additions)
  *
  * Historical desktop (`1440x900`) and mobile (`390x844`) layout references are in `docs/validation/phase-g/reference/`:
  * Captured surfaces below are implementation inputs, not a current parity certificate.
