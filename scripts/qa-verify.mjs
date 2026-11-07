@@ -116,8 +116,14 @@ console.log(`  PASS Audited ${srcFiles.length} active source files — zero unap
 
 // 3. Shared Lusion Shell & About/Archive Landmark Verification
 const hudSource = fs.readFileSync(path.join(process.cwd(), "src", "components", "foundation", "StudioHud.tsx"), "utf8");
-const backdropHandler = hudSource.match(/id="header-background"[\\s\\S]*?onClick=\\{\\(\\) => \\{([\\s\\S]*?)\\}\\}/)?.[1] || "";
-const backdropRestoresFocus = /setNavMenuOpen\\(false\\)[\\s\\S]*menuTriggerRef\\.current\\?\\.focus/.test(backdropHandler);
+const backdropStart = hudSource.indexOf('id="header-background"');
+const backdropEnd = hudSource.indexOf('className={`fixed inset-0', backdropStart);
+const backdropMarkup = backdropStart >= 0 && backdropEnd > backdropStart
+  ? hudSource.slice(backdropStart, backdropEnd)
+  : "";
+const backdropRestoresFocus =
+  backdropMarkup.includes("setNavMenuOpen(false)") &&
+  backdropMarkup.includes("menuTriggerRef.current?.focus");
 console.log(`  ${backdropRestoresFocus ? "PASS" : "FAIL"} Navigation backdrop close restores focus to its trigger`);
 if (!backdropRestoresFocus) failures += 1;
 
