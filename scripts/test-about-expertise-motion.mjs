@@ -20,8 +20,18 @@ try {
   assert.deepEqual(pose(-3,i),pose(0,i));assert.deepEqual(pose(5,i),pose(1,i));assert.deepEqual(pose(NaN,i),pose(0,i));
   let last=pose(0,i);
   for(let n=1;n<=1000;n++) {const p=pose(n/1000,i);assert.ok(Object.values(p).every(Number.isFinite));assert.ok(p.flip<=last.flip&&p.dropVh<=last.dropVh&&p.opacity>=last.opacity);
-  assert.ok(Math.abs(p.yaw)<=Math.abs(last.yaw)+1e-9);
-  assert.ok(Math.abs(p.pitch)<=Math.abs(last.pitch)+1e-9);
+  const yaw = Math.abs(p.yaw), previousYaw = Math.abs(last.yaw);
+  const pitch = Math.abs(p.pitch), previousPitch = Math.abs(last.pitch);
+  assert.ok(yaw <= 7.5 + 1e-9, "card yaw remains within its authored fan angle");
+  assert.ok(pitch <= 4 + 1e-9, "card pitch remains within its authored tilt");
+  if (n >= 120 && n <= 320) {
+   assert.ok(yaw >= previousYaw - 1e-9, "the spread phase progressively fans the card backs");
+   assert.ok(pitch >= previousPitch - 1e-9, "the spread phase progressively pitches the deck");
+  }
+  if (n > 550) {
+   assert.ok(yaw <= previousYaw + 1e-9, "the settle phase unwinds card yaw");
+   assert.ok(pitch <= previousPitch + 1e-9, "the settle phase unwinds card pitch");
+  }
   assert.ok(p.scale>=last.scale);
   assert.ok(Math.abs(p.flip-last.flip)<1);
   assert.ok(Math.abs(p.xVw-last.xVw)<.2);
