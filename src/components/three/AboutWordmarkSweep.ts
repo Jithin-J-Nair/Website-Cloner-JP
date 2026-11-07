@@ -1,8 +1,11 @@
 import * as THREE from "three";
 
 /** A single subdivided type surface, not individually tilted textPath glyphs.
- * Original screen-space deformation informed by the recording's short 2–3 s
- * fold. The existing About renderer/playhead owns its render and lifetime. */
+ * The supplied About recording keeps the wordmark readable while it sweeps
+ * across the valley. Keep the deformation continuous and restrained: the
+ * letters may bend with the scene, but must never collapse into separate
+ * wedges or expand asymmetrically. The About renderer owns its render/lifetime.
+ */
 export function createAboutWordmarkSweep() {
   const canvas = document.createElement("canvas");
   canvas.width = 2048; canvas.height = 512;
@@ -33,15 +36,19 @@ export function createAboutWordmarkSweep() {
     vertexShader: `uniform float uPhase,uAspect; varying vec2 vUv;
       void main(){
         vUv=uv;
-        float fold=smoothstep(.05,.90,uPhase);
+        // Preserve the wordmark's original proportions. A small scroll-linked
+        // bend gives the line perspective without pinching the left glyphs or
+        // stretching the right glyphs into unreadable wedges.
+        float fold=.28*smoothstep(.05,.90,uPhase);
         float x=uv.x;
-        float thickness=mix(1.,.14+1.15*smoothstep(.20,.85,x),fold);
+        float curve=sin(x*3.14159265);
+        float thickness=mix(1.,.88+.12*smoothstep(.20,.85,x),fold);
         float height=min(1.10,1.31/uAspect);
-        float baseline=mix(-.59,-.49-.045*x,fold);
-        vec2 p=vec2(mix(-.90,.91,pow(x,mix(1.,1.45,fold))),baseline+(uv.y-.5)*height*thickness);
-        // Continuous shear across the glyph surface compresses the left loops
-        // while the right edge peels upward; no per-letter pivot/rotation.
-        p.x+=(uv.y-.5)*.86*pow(sin(x*3.14159265),4.)*fold;
+        float baseline=mix(-.59,-.57-.015*x+.025*curve,fold);
+        vec2 p=vec2(mix(-.90,.91,pow(x,mix(1.,1.08,fold))),
+          baseline+(uv.y-.5)*height*thickness);
+        p.x+=(uv.y-.5)*.22*pow(curve,4.)*fold;
+        p.y+=.012*curve*fold;
         gl_Position=vec4(p,0.,1.);
       }`,
     fragmentShader: `uniform sampler2D uMap; uniform float uOpacity; varying vec2 vUv;
