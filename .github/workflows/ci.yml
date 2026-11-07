@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - arena/53eb1ea0-website-cloner-jp
   pull_request:
     branches:
       - master
@@ -63,6 +64,9 @@ jobs:
 
       - name: About client-logo wall tests
         run: node scripts/test-about-clients.mjs
+
+      - name: About accessible-copy regression
+        run: npm run test:about-copy
 
       - name: About recognition-ledger tests
         run: node scripts/test-about-recognition.mjs
@@ -220,6 +224,13 @@ jobs:
           name: home-motion-render-evidence
           path: temp/home-motion-*/
           if-no-files-found: ignore
+
+      - name: Showreel playback and keyboard seeking regression
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          PROJECT_PREVIEW_BASE: http://127.0.0.1:3000
+        run: node scripts/test-project-preview-browser.mjs
 
       - name: Validate current Projects experience in production browser
         if: always() && !cancelled() && steps.build.outcome == 'success'
