@@ -71,11 +71,6 @@ jobs:
       - name: Preloader progress semantics
         run: npm run test:preloader-a11y
 
-      - name: Navigation keyboard focus loop
-        env:
-          CHROMIUM_MULTIPROCESS: '1'
-          NAVIGATION_A11Y_BASE: http://127.0.0.1:3000
-        run: node scripts/test-navigation-a11y.mjs
 
       - name: About recognition-ledger tests
         run: node scripts/test-about-recognition.mjs
@@ -234,6 +229,11 @@ jobs:
           path: temp/home-motion-*/
           if-no-files-found: ignore
 
+      - name: Navigation keyboard focus loop
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          NAVIGATION_A11Y_BASE: http://127.0.0.1:3000
+        run: node scripts/test-navigation-a11y.mjs
       - name: Showreel playback and keyboard seeking regression
         if: always() && !cancelled() && steps.build.outcome == 'success'
         env:
