@@ -10,7 +10,13 @@ import currentLiveProjects from "./current-live-projects.json";
 
 export type LusionGroundTruth = typeof groundTruthJson;
 export type LusionProjectCard = LusionGroundTruth["projectsArchive"]["projects"][number];
-export type LusionProjectDetail = LusionGroundTruth["projectDetails"][number];
+type CapturedLusionProjectDetail = LusionGroundTruth["projectDetails"][number];
+type LusionLaunchCta = Omit<NonNullable<CapturedLusionProjectDetail["launchCta"]>, "vimeoId"> & {
+  vimeoId: string | null;
+};
+export type LusionProjectDetail = Omit<CapturedLusionProjectDetail, "launchCta"> & {
+  launchCta: LusionLaunchCta | null;
+};
 export type LusionTeamMember = LusionGroundTruth["about"]["who"]["team"][number];
 export type LusionCapabilityCard = LusionGroundTruth["about"]["capability"]["cards"][number];
 
@@ -131,7 +137,7 @@ export const LUSION_GLOBAL_CHROME = LUSION_GROUND_TRUTH.globalChrome;
 export const LUSION_HOME = LUSION_GROUND_TRUTH.home;
 export const LUSION_ABOUT = LUSION_GROUND_TRUTH.about;
 export const LUSION_PROJECTS_ARCHIVE = LUSION_GROUND_TRUTH.projectsArchive;
-export const LUSION_PROJECT_DETAILS = LUSION_GROUND_TRUTH.projectDetails;
+export const LUSION_PROJECT_DETAILS: LusionProjectDetail[] = projectDetails;
 
 export function getLusionProjectBySlug(slug: string): LusionProjectDetail | undefined {
   return LUSION_PROJECT_DETAILS.find((project) => project.id === slug);
