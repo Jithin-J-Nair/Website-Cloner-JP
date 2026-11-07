@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
 import { launchMotionBrowser } from './lib/browser-runtime.mjs';
 
 const base = process.env.ABOUT_WORDMARK_BASE || 'http://127.0.0.1:3000';
