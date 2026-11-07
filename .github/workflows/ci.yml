@@ -68,6 +68,9 @@ jobs:
       - name: About accessible-copy regression
         run: npm run test:about-copy
 
+      - name: Preloader progress semantics
+        run: npm run test:preloader-a11y
+
       - name: About recognition-ledger tests
         run: node scripts/test-about-recognition.mjs
 

@@ -79,9 +79,13 @@ export function Preloader() {
         <motion.div
           id="preloader"
           key="lusion-preloader"
-          role="status"
+          role="progressbar"
           aria-live="off"
           aria-label="Loading Lusion experience"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+          aria-valuetext={`${progress} percent`}
           initial={{ opacity: 1 }}
           exit={{
             opacity: 0,
