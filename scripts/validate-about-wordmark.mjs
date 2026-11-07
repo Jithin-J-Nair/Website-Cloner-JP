@@ -246,7 +246,7 @@ try {
       assert.equal(logoState.labels, 16, 'every SVG logo has a non-empty accessible brand label');
       assert.equal(logoState.uniqueNames, 15, 'the 16 placements represent 15 unique source brands');
       assert.equal(logoState.sources, 16, 'every image is served from the bundled source-logo directory');
-      assert.equal(logoState.imageRequests, 16, 'all 16 visible logo placements use actual SVG images');
+      assert.equal(logoState.imageRequests, 32, '16 visible logo placements each have a duplicate image for seamless marquee looping');
       assert.equal(logoState.animation, 'about-client-marquee');
       assert.equal(logoState.playState, 'running', 'visible client marquees animate only while in view');
       if (width !== 390) {
