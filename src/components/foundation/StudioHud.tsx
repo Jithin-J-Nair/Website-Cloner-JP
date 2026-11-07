@@ -115,6 +115,8 @@ export function StudioHud() {
 
   const waveCanvasRef = useRef<HTMLCanvasElement>(null);
   const scrollBarRef = useRef<HTMLDivElement>(null);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLElement>(null);
 
   // Track vertical scroll so fixed top chrome masks underlying scrolling copy cleanly
   useEffect(() => {
@@ -196,13 +198,56 @@ export function StudioHud() {
   }, [pathname, setNavMenuOpen]);
 
   useEffect(() => {
+    if (!navMenuOpen) return;
+
+    const getVisibleMenuControls = () => {
+      const menu = menuRef.current;
+      if (!menu) return [];
+      return Array.from(
+        menu.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => (
+        element.tabIndex >= 0 &&
+        element.getClientRects().length > 0 &&
+        element.getAttribute("aria-hidden") !== "true"
+      ));
+    };
+
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && navMenuOpen) {
+      if (e.key === "Escape") {
+        e.preventDefault();
         setNavMenuOpen(false);
+        menuTriggerRef.current?.focus({ preventScroll: true });
+        return;
+      }
+
+      if (e.key !== "Tab") return;
+      const controls = getVisibleMenuControls();
+      if (!controls.length) return;
+
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      const active = document.activeElement;
+      const focusOutsideMenu = !menuRef.current?.contains(active);
+
+      if (e.shiftKey && (active === first || focusOutsideMenu)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || focusOutsideMenu)) {
+        e.preventDefault();
+        first.focus();
       }
     };
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      getVisibleMenuControls()[0]?.focus({ preventScroll: true });
+    });
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, [navMenuOpen, setNavMenuOpen]);
 
   // Sound canvas waveform renderer (`#header-right-sound-btn canvas`)
@@ -529,7 +574,9 @@ export function StudioHud() {
             {/* Menu Toggle Pill (`#header-right-menu-btn`, `MENU ••` / `CLOSE ••`) */}
             <button
               id="header-right-menu-btn"
+              ref={menuTriggerRef}
               type="button"
+              aria-haspopup="true"
               aria-expanded={navMenuOpen}
               aria-controls="header-menu"
               aria-label={navMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -587,6 +634,7 @@ export function StudioHud() {
         {/* Floating Stacked Menu Popover (`#header-menu`) */}
         <nav
           id="header-menu"
+          ref={menuRef}
           aria-label="Primary Navigation"
           aria-hidden={!navMenuOpen}
           className={`fixed top-[calc(var(--base-padding-y)+3.45rem)] right-[var(--base-padding-x)] z-20 flex flex-col gap-[0.625em] text-black max-[812px]:left-[var(--base-padding-x)] min-[813px]:w-[19.4em] ${
