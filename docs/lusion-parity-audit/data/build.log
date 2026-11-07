@@ -19,4 +19,3 @@ temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/text-anima
 temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/text-animations-word-highlight.tsx(1,24): error TS2307: Cannot find module '@remotion/google-fonts/Inter' or its corresponding type declarations.
 temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/text-animations-word-highlight.tsx(8,8): error TS2307: Cannot find module 'remotion' or its corresponding type declarations.
 Failed to type check.
-

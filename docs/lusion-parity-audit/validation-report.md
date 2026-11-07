@@ -63,3 +63,7 @@ The About accessibility/budget/capture commands and phase-e audit were not run i
 The initial 120-state census ran against the isolated 5051 production snapshot. After successful root build it was deliberately replaced on port 3000 with the latest root production server. The root HTTP QA and existing browser/motion gates then ran against that server. Source, public/media and dependency files are unchanged relative to 5051, so this is not a silent baseline substitution.
 
 No GPU/physical-phone/OS-background/speaker/thermal/hardware-4K60 benchmark or current-live source parity is certified. Existing functional failures are not dismissed as software-renderer artifacts without diagnosis.
+
+## Stored-log formatting
+
+Stored text logs normalize line endings and remove terminal progress-line trailing whitespace / extra EOF blank lines for clean Git diffs. Command output, assertion failures and exit-status records are otherwise retained; this is not suppression of a failed gate. Initial raw workspace logs remain in the ignored temp/lusion-parity directory.

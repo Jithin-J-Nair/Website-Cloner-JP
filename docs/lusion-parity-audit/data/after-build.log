@@ -11,9 +11,9 @@
   Finished TypeScript in 9.8s ...
   Collecting page data using 1 worker ...
   Generating static pages using 1 worker (0/27) ...
-  Generating static pages using 1 worker (6/27) 
-  Generating static pages using 1 worker (13/27) 
-  Generating static pages using 1 worker (20/27) 
+  Generating static pages using 1 worker (6/27)
+  Generating static pages using 1 worker (13/27)
+  Generating static pages using 1 worker (20/27)
 ✓ Generating static pages using 1 worker (27/27) in 949ms
   Finalizing page optimization ...
 
@@ -44,4 +44,3 @@ Route (app)
 
 > lusion-studio-reconstruction@1.0.0 postbuild
 > cp -r public .next/standalone/ && cp -r media-bundle .next/standalone/ && cp -r .next/static .next/standalone/.next/
-
