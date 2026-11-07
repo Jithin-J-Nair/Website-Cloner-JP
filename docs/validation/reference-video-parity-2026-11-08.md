@@ -27,6 +27,12 @@
 - The mobile launch action was moved after the services/links block instead of being pinned to the bottom of the first viewport, matching the source still's editorial ordering.
 - At desktop, the media column now uses the right-hand six-column lane with a calibrated inset and flush right bleed; the left editorial column remains five columns.
 
+### About
+
+- Verified that the current About scene loads the seven permissioned team point-cloud models through `/about/scene/[asset]` and uses the bundled `terrain_lines.buf`; these are not generic placeholder portraits.
+- Found that `AboutExpertiseCards` requested `/assets/images/cards/back-ink.png`, which was not present in the served asset catalog. Replaced it with `public/assets/images/cards/back-ink.svg`, an original 628×876 clean-room vector texture. It is explicitly allowlisted and covered by the About-card and asset-route assertions; it is not copied or derived from the proprietary bundled `images/cards/back.png`.
+- Verified that the About closing CTA already uses the WebGL `CinematicContactField` instanced particle scene, not a flat 2D placeholder. It was preserved.
+
 ## Preserved
 
 - Reference screen-recording MP4s were not wired into the site as production media; they are observation material, not page assets.
@@ -36,4 +42,4 @@
 
 ## Validation boundary
 
-Source assertions were updated alongside the layout values. This remote edit session has not run the repository's local build/browser suite. The branch must be checked by GitHub Actions if configured, then visually reviewed at 1440×900, 1024×768 and 390×844. This pass does not certify 100% visual or motion parity.
+Source assertions were updated alongside the layout values and the About asset fix. GitHub Actions has started the branch quality job, but its dependency-install step is still in progress and the tests/build have not yet reported a conclusion. This remote edit session has not run the repository's local build/browser suite. The branch must be checked by GitHub Actions, then visually reviewed at 1440×900, 1024×768 and 390×844. This pass does not certify 100% visual or motion parity.
