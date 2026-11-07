@@ -8,11 +8,11 @@ Actual Chromium navigation to `https://lusion.co/`, `/about`, `/projects` at 144
 
 The remaining 17 captured detail URLs were not separately navigated on the live host after the core failures. Their current status is **unverified**, not verified failure. Atlas Motion/Everswap destinations and the reported 19-card live archive are unresolved. Do not invent URLs, detail pages, redirects, launch links or removal explanations.
 
-A user decision is needed before proceeding with a captured-reference-only reconstruction that cannot meet current-live verification criteria. Otherwise reference-dependent visual changes must wait for permitted live access.
+The user explicitly selected **Keep current-live verification mandatory**. Captured-reference-only reconstruction is not authorized. Local source forensics and failure diagnosis may continue; reference-dependent visual changes must wait for permitted live access.
 
 ## Discovery and evidence gaps
 
-- Full source-content review across components/lib/data/assets/reference/scripts is not complete; inventory is not reading.
+- Full source-content review across components/lib/data/assets/reference/scripts is not complete; inventory is not reading. HomeConnectorPhysics was subsequently read in full for the local cancellation investigation; HeroCrossesStage was only partially inspected.
 - Manifest route/accessor and selected page/shell/config/test code were reviewed. The complete 211 KB data file was parsed, with routes/archive/project structures extracted; this is not a claim of line-by-line review of all project content/media.
 - All 20 required skill entry documents were evaluated. Some host-only supporting utilities and external references were not read or invoked because their runtime workflow is not applicable here; see skill ledger.
 - All 120 initial clone route/viewport states were recorded and passed the saved-evidence smoke checker, separately from full-section coverage. No matched original screenshots, image-difference scores, full gallery/footer interactions or animation phase comparisons yet.

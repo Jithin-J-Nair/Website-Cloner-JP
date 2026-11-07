@@ -91,6 +91,7 @@ This is the initial register of established findings, not a claim that the full-
 - Verification: unchanged cancellation scenario plus hover/throw/recovery, native pointer, reentry and reduced-motion paths; source parity separately measured when accessible.
 - Evidence: data/home-motion-validation.log, data/home-motion-report.json.
 - Status: open; not hidden by passing numerical tests/build.
+- Follow-up isolation: full HomeConnectorPhysics source reviewed. New test-home-pointer-decay.mjs passes at frame deltas 1/240, 1/120, 1/60 and 1/20: seeded maximum energy reaches zero after 4.8 **simulated** seconds without a pointer ray. This does not reproduce DOM cancellation or certify wall-clock recovery. Actual event/ray state and rendered-frame progress still need tracing; no physics/scheduler change was made.
 
 ## LP-007 — About portrait test targets former source structure
 

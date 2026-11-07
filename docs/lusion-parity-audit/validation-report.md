@@ -67,3 +67,11 @@ No GPU/physical-phone/OS-background/speaker/thermal/hardware-4K60 benchmark or c
 ## Stored-log formatting
 
 Stored text logs normalize line endings and remove terminal progress-line trailing whitespace / extra EOF blank lines for clean Git diffs. Command output, assertion failures and exit-status records are otherwise retained; this is not suppression of a failed gate. Initial raw workspace logs remain in the ignored temp/lusion-parity directory.
+
+## Follow-up after the reference-scope decision
+
+The user selected **Keep current-live verification mandatory**. No captured-reference-only visual reconstruction is authorized. Local investigation continued without changing application code.
+
+`node scripts/test-home-pointer-decay.mjs` **passes** (data/pointer-decay-test.log). The full 287-line HomeConnectorPhysics module was read. This diagnostic seeds maximum interaction energy in a two-body, no-pointer numerical setup and verifies finite coordinates, monotonic nonnegative decay and exact zero within six simulated seconds. Four frame deltas (1/240, 1/120, 1/60, 1/20) each reach zero at 4.8 simulated seconds. It does not replace, weaken or bypass the failing browser gate, exercise React event dispatch, use the full 23-body scene, or measure wall-clock recovery/GPU FPS.
+
+The browser integration failure remains LP-006. Next discrimination is actual pointer-event/ray state versus advancing frame/physics steps during the unchanged failing scenario. Partial HeroCrossesStage review identified the event handlers, frame delta cap and software idle scheduling; those policies were **not modified**. No renderer performance cause is established by this isolated passing test. Changed-file ESLint and Git diff whitespace checks pass.

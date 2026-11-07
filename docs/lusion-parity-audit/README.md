@@ -36,7 +36,7 @@ All six overview sheets were visually inspected. That is a low-resolution initia
 
 Six actual Chromium visits to the live Home/About/Projects pages at desktop/mobile sizes failed with ERR_CONNECTION_CLOSED. No live source screenshot was captured; other live detail routes and Atlas Motion/Everswap destinations remain unverified. The sandbox allowlist excludes lusion.co. This does **not** establish a public-site outage. The 2026-09-23 captured manifest is a provisional baseline, not promoted to current live truth.
 
-**A decision is needed:** enable permitted live-browser access, or explicitly authorize captured-reference-only implementation while current-live parity and unknown destinations stay unresolved. No source-dependent visual redesign should be guessed.
+**User decision recorded:** keep current-live verification mandatory. Continue local source forensics and investigate failures, but defer source-dependent visual changes until permitted live-browser access is available. Captured-reference-only reconstruction was not authorized.
 
 ## Sequential review roles — no simulated subagents
 
