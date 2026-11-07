@@ -171,7 +171,9 @@ export function StudioFooter({
     const input = e.currentTarget.elements.namedItem("EMAIL");
     if (!(input instanceof HTMLInputElement) || !input.checkValidity()) {
       setStatus("error");
-      input instanceof HTMLInputElement && input.focus();
+      if (input instanceof HTMLInputElement) {
+        input.focus();
+      }
       return;
     }
     // The reference page's newsletter endpoint is not available in this clean-room
