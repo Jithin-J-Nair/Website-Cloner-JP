@@ -34,6 +34,11 @@ assert.deepEqual(source.routes.filter(route => route.type === "project-detail").
 assert.equal(new Set(projects.map(project => project.id)).size, projects.length, "archive IDs are unique");
 assert.equal(source.home.featured.count, 12, "live Home Featured Work displays 12 items");
 assert.deepEqual(source.home.featured.projects.map(project => project.id), expectedFeaturedIds, "Home Featured Work matches current Lusion order");
+const atlasCard = projects.find(project => project.id === "atlas_motion");
+const atlasDetail = details.find(project => project.id === "atlas_motion");
+assert.equal(atlasCard?.categoriesText, "concept • web • design • development • 3d • animation", "Atlas Motion homepage/archive category label matches live Lusion");
+assert.deepEqual(atlasCard?.categories, ["concept", "web", "design", "development", "3d", "animation"]);
+assert.equal(atlasDetail?.categoriesText, atlasCard?.categoriesText, "Atlas Motion detail metadata stays synchronized with its archive card");
 const unavailableLaunchDestinations = details
   .filter(project => !project.launchCta?.href?.trim() && !project.launchCta?.isVimeoOverlay)
   .map(project => project.id);

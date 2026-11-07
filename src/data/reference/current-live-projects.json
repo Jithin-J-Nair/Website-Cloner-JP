@@ -42,12 +42,14 @@
         "id": "atlas_motion",
         "href": "/projects/atlas_motion",
         "title": "Atlas Motion",
-        "categoriesText": "web • design • development • 3d",
+        "categoriesText": "concept • web • design • development • 3d • animation",
         "categories": [
+          "concept",
           "web",
           "design",
           "development",
-          "3d"
+          "3d",
+          "animation"
         ],
         "colorBg": "#f0f1fa",
         "colorText": "#000000",
@@ -74,12 +76,14 @@
           "ogImage": "/assets/projects/atlas_motion/home.webp"
         },
         "title": "Atlas Motion",
-        "categoriesText": "web • design • development • 3d",
+        "categoriesText": "concept • web • design • development • 3d • animation",
         "categories": [
+          "concept",
           "web",
           "design",
           "development",
-          "3d"
+          "3d",
+          "animation"
         ],
         "thumbnail": "/assets/projects/atlas_motion/home.webp",
         "thumbnailWidth": 1200,
