@@ -12,14 +12,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { loadCurrentLiveGroundTruth } from "./lib/load-ground-truth.mjs";
 
 const BASE_URL = process.env.QA_BASE_URL || "http://127.0.0.1:3000";
-const GROUND_TRUTH = JSON.parse(
-  fs.readFileSync(
-    path.join(process.cwd(), "src", "data", "reference", "lusion-ground-truth.json"),
-    "utf8"
-  )
-);
+const GROUND_TRUTH = loadCurrentLiveGroundTruth();
 
 function hexToLuminance(hex) {
   const clean = hex.replace("#", "");

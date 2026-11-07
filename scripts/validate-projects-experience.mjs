@@ -3,23 +3,24 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { launchMotionBrowser } from "./lib/browser-runtime.mjs";
+import { loadCurrentLiveGroundTruth } from "./lib/load-ground-truth.mjs";
 
 const base = process.env.PROJECTS_EXPERIENCE_BASE || "http://127.0.0.1:3000";
 const out = process.env.PROJECTS_EXPERIENCE_OUT || "temp/projects-experience";
 fs.mkdirSync(out, { recursive: true });
 
-const source = JSON.parse(fs.readFileSync("src/data/reference/lusion-ground-truth.json", "utf8"));
+const source = loadCurrentLiveGroundTruth();
 const archive = source.projectsArchive;
 const projects = archive.projects;
 const details = source.projectDetails;
 const expectedArchive = projects.map(project => project.href);
 const expectedFeatured = source.home.featured.projects.map(project => project.href);
 
-assert.equal(source.routeCount, 20);
-assert.equal(projects.length, 17);
-assert.equal(details.length, 17);
-assert.equal(source.home.featured.count, 10);
-assert.equal(source.home.featured.projects.length, 10);
+assert.equal(source.routeCount, 22);
+assert.equal(projects.length, 19);
+assert.equal(details.length, 19);
+assert.equal(source.home.featured.count, 12);
+assert.equal(source.home.featured.projects.length, 12);
 
 const browser = await launchMotionBrowser();
 const report = { base, routeCount: source.routeCount, archiveCount: projects.length, featuredCount: expectedFeatured.length, viewports: [] };
@@ -45,7 +46,7 @@ try {
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
 
-    // Home Featured Work must match the live ten-item route selection.
+    // Home Featured Work must match the live twelve-item route selection.
     let response = await page.goto(base + "/", { waitUntil: "domcontentloaded", timeout: 60000 });
     assert.ok(response?.ok(), "Home route responds successfully");
     await page.locator("#home-featured").waitFor({ state: "attached" });
@@ -55,7 +56,7 @@ try {
     assert.deepEqual(featured, expectedFeatured, "Home Featured Work uses the current live project sequence");
     await page.screenshot({ path: path.join(out, `home-featured-${viewport.name}.jpg`), type: "jpeg", quality: 65, fullPage: false, timeout: 120000 });
 
-    // Projects archive must expose exactly the current 17 detail routes in order.
+    // Projects archive must expose exactly the current 19 detail routes in order.
     response = await page.goto(base + "/projects", { waitUntil: "domcontentloaded", timeout: 60000 });
     assert.ok(response?.ok(), "Projects archive responds successfully");
     await page.locator("#projects-list").waitFor({ state: "attached" });
@@ -64,7 +65,7 @@ try {
       links: [...main.querySelectorAll("#projects-list a")].map(anchor => new URL(anchor.href).pathname),
       overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
     }));
-    assert.equal(archiveState.count, "17", "archive count displays the live total");
+    assert.equal(archiveState.count, "19", "archive count displays the live total");
     assert.deepEqual(archiveState.links, expectedArchive, "archive cards match the live order and routes");
     assert.equal(archiveState.overflow, false, "archive has no horizontal page overflow");
     await page.screenshot({ path: path.join(out, `projects-archive-${viewport.name}.jpg`), type: "jpeg", quality: 65, fullPage: false, timeout: 120000 });
@@ -134,7 +135,7 @@ try {
     await context.close();
   }
   fs.writeFileSync(path.join(out, "report.json"), JSON.stringify(report, null, 2));
-  console.log(`PASS Projects experience: 10 Home features, 17 archive entries, 17 detail routes x 2 viewports, media slots, next-project chain, CTA links, sticky layout and overflow checks.`);
+  console.log(`PASS Projects experience: 12 Home features, 19 archive entries, 19 detail routes x 2 viewports, media slots, next-project chain, CTA links, sticky layout and overflow checks.`);
 } finally {
   await browser.close();
 }

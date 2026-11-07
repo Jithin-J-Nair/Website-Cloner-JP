@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { loadCurrentLiveGroundTruth } from "./lib/load-ground-truth.mjs";
 
-const source = JSON.parse(fs.readFileSync("src/data/reference/lusion-ground-truth.json", "utf8"));
+const source = loadCurrentLiveGroundTruth();
 const archive = source.projectsArchive;
 const projects = archive.projects;
 const details = source.projectDetails;
@@ -11,25 +12,27 @@ const card = fs.readFileSync("src/components/home/FeaturedProjectCard.tsx", "utf
 const detail = fs.readFileSync("src/components/pages/LusionProjectDetailView.tsx", "utf8");
 
 const expectedArchiveIds = [
-  "oryzo_ai", "of_the_oak", "devin_ai", "porsche_dream_machine", "synthetic_human",
-  "ddd_2024", "spaace", "choo_choo_world", "zero_tech", "spatial_fusion",
-  "worldcoin", "lusion_labs", "my_little_story_book", "soda_experience",
+  "oryzo_ai", "atlas_motion", "devin_ai", "of_the_oak", "everswap",
+  "porsche_dream_machine", "synthetic_human", "ddd_2024", "spaace",
+  "choo_choo_world", "zero_tech", "spatial_fusion", "worldcoin",
+  "lusion_labs", "my_little_story_book", "soda_experience",
   "infinite_passerella", "the_turn_of_the_screw", "maxmara_bearings_gifts",
 ];
 const expectedFeaturedIds = [
-  "oryzo_ai", "of_the_oak", "devin_ai", "porsche_dream_machine", "synthetic_human",
-  "spatial_fusion", "spaace", "ddd_2024", "choo_choo_world", "soda_experience",
+  "oryzo_ai", "atlas_motion", "devin_ai", "of_the_oak", "everswap",
+  "porsche_dream_machine", "synthetic_human", "spatial_fusion", "spaace",
+  "ddd_2024", "choo_choo_world", "soda_experience",
 ];
 
 assert.equal(archive.heading, "PROJECTS");
-assert.equal(Number(archive.displayedCount), 17, "live archive displays 17 projects");
-assert.equal(archive.count, 17);
+assert.equal(Number(archive.displayedCount), 19, "live archive displays 19 projects");
+assert.equal(archive.count, 19);
 assert.deepEqual(projects.map(project => project.id), expectedArchiveIds, "archive order matches current Lusion");
 assert.equal(details.length, projects.length, "every current archive entry has a detail route");
-assert.equal(source.routeCount, 20);
+assert.equal(source.routeCount, 22);
 assert.deepEqual(source.routes.filter(route => route.type === "project-detail").map(route => route.projectId), expectedArchiveIds);
 assert.equal(new Set(projects.map(project => project.id)).size, projects.length, "archive IDs are unique");
-assert.equal(source.home.featured.count, 10, "live Home Featured Work displays 10 items");
+assert.equal(source.home.featured.count, 12, "live Home Featured Work displays 12 items");
 assert.deepEqual(source.home.featured.projects.map(project => project.id), expectedFeaturedIds, "Home Featured Work matches current Lusion order");
 const unavailableLaunchDestinations = details
   .filter(project => !project.launchCta?.href?.trim() && !project.launchCta?.isVimeoOverlay)

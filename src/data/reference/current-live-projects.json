@@ -1,0 +1,483 @@
+{
+  "referenceUpdatedAt": "2026-11-07",
+  "source": "Current public Lusion project archive and the corresponding live Atlas Motion / Everswap case-study pages; source-owned media already present in media-bundle.",
+  "archiveOrder": [
+    "oryzo_ai",
+    "atlas_motion",
+    "devin_ai",
+    "of_the_oak",
+    "everswap",
+    "porsche_dream_machine",
+    "synthetic_human",
+    "ddd_2024",
+    "spaace",
+    "choo_choo_world",
+    "zero_tech",
+    "spatial_fusion",
+    "worldcoin",
+    "lusion_labs",
+    "my_little_story_book",
+    "soda_experience",
+    "infinite_passerella",
+    "the_turn_of_the_screw",
+    "maxmara_bearings_gifts"
+  ],
+  "featuredOrder": [
+    "oryzo_ai",
+    "atlas_motion",
+    "devin_ai",
+    "of_the_oak",
+    "everswap",
+    "porsche_dream_machine",
+    "synthetic_human",
+    "spatial_fusion",
+    "spaace",
+    "ddd_2024",
+    "choo_choo_world",
+    "soda_experience"
+  ],
+  "projects": [
+    {
+      "card": {
+        "id": "atlas_motion",
+        "href": "/projects/atlas_motion",
+        "title": "Atlas Motion",
+        "categoriesText": "web • design • development • 3d",
+        "categories": [
+          "web",
+          "design",
+          "development",
+          "3d"
+        ],
+        "colorBg": "#f0f1fa",
+        "colorText": "#000000",
+        "colorShadow": 0.9,
+        "thumbnail": "/assets/projects/atlas_motion/home.webp",
+        "thumbnailWidth": 1200,
+        "thumbnailHeight": 900,
+        "depthMap": "/assets/projects/atlas_motion/home_depth.webp",
+        "depthMapWidth": 1200,
+        "depthMapHeight": 900
+      },
+      "detail": {
+        "archiveIndex": 2,
+        "featuredIndex": 2,
+        "isFeatured": true,
+        "id": "atlas_motion",
+        "route": "/projects/atlas_motion",
+        "sourceHtml": "projects/atlas_motion/index.html",
+        "meta": {
+          "title": "Lusion - Atlas Motion",
+          "description": "Atlas is building next generation motion systems for drones, robotics, and autonomous hardware.",
+          "ogTitle": "Lusion - Atlas Motion",
+          "ogDescription": "Atlas is building next generation motion systems for drones, robotics, and autonomous hardware.",
+          "ogImage": "/assets/projects/atlas_motion/home.webp"
+        },
+        "title": "Atlas Motion",
+        "categoriesText": "web • design • development • 3d",
+        "categories": [
+          "web",
+          "design",
+          "development",
+          "3d"
+        ],
+        "thumbnail": "/assets/projects/atlas_motion/home.webp",
+        "thumbnailWidth": 1200,
+        "thumbnailHeight": 900,
+        "depthMap": "/assets/projects/atlas_motion/home_depth.webp",
+        "scrollPrompt": "scroll to explore",
+        "theme": {
+          "colorBg": "#f0f1fa",
+          "colorText": "#000000",
+          "colorHighlight": "#1a2ffb",
+          "colorBtnBg": "#ffffff",
+          "colorBtnBgHover": "#1a2ffb",
+          "colorBtnText": "#000000",
+          "colorBtnTextHover": "#ffffff",
+          "colorIcon": null,
+          "colorIconBg": "#ffffff",
+          "colorIconColor": "#000000",
+          "shadow": 0.9
+        },
+        "paragraphs": [
+          {
+            "text": "Atlas is building next generation motion systems for drones, robotics, and autonomous hardware. We worked with the team to create a focused digital experience that turns a complex manufacturing story into something clear, confident, and tangible. The site introduces Atlas’ joint development model, brings their product and factory story to the surface, and uses precise motion, visual pacing, and selective WebGL to communicate the scale of their ambition without losing the seriousness of the category.",
+            "html": "Atlas is building next generation motion systems for drones, robotics, and autonomous hardware. We worked with the team to create a focused digital experience that turns a complex manufacturing story into something clear, confident, and tangible. The site introduces Atlas’ joint development model, brings their product and factory story to the surface, and uses precise motion, visual pacing, and selective WebGL to communicate the scale of their ambition without losing the seriousness of the category.",
+            "links": []
+          }
+        ],
+        "launchCta": {
+          "label": "Launch Project",
+          "href": "https://atlasmotion.com/",
+          "isVimeoOverlay": false,
+          "vimeoId": null
+        },
+        "services": [
+          "Concept",
+          "Web Design",
+          "Web Development",
+          "3D Design",
+          "WebGL",
+          "Animation"
+        ],
+        "links": [],
+        "mediaCount": 7,
+        "media": [
+          {
+            "index": 0,
+            "type": "video",
+            "basePath": "/assets/projects/atlas_motion/main",
+            "desktopSrc": "/assets/projects/atlas_motion/main.mp4",
+            "mobileSrc": "/assets/projects/atlas_motion/main.mp4",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1234,
+            "declaredHeight": 720,
+            "actualWidth": 1234,
+            "actualHeight": 720,
+            "fullscreen": false,
+            "durationSec": 5.4,
+            "fps": 50,
+            "hasAudio": false
+          },
+          {
+            "index": 1,
+            "type": "image",
+            "basePath": "/assets/projects/atlas_motion/1",
+            "desktopSrc": "/assets/projects/atlas_motion/1.webp",
+            "mobileSrc": "/assets/projects/atlas_motion/1.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1820,
+            "declaredHeight": 1024,
+            "actualWidth": 1820,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 2,
+            "type": "image",
+            "basePath": "/assets/projects/atlas_motion/2",
+            "desktopSrc": "/assets/projects/atlas_motion/2.webp",
+            "mobileSrc": "/assets/projects/atlas_motion/2.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1820,
+            "declaredHeight": 1024,
+            "actualWidth": 1820,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 3,
+            "type": "image",
+            "basePath": "/assets/projects/atlas_motion/3",
+            "desktopSrc": "/assets/projects/atlas_motion/3.webp",
+            "mobileSrc": "/assets/projects/atlas_motion/3.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1820,
+            "declaredHeight": 1024,
+            "actualWidth": 1820,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 4,
+            "type": "image",
+            "basePath": "/assets/projects/atlas_motion/4",
+            "desktopSrc": "/assets/projects/atlas_motion/4.webp",
+            "mobileSrc": "/assets/projects/atlas_motion/4.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1820,
+            "declaredHeight": 1024,
+            "actualWidth": 1820,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 5,
+            "type": "image",
+            "basePath": "/assets/projects/atlas_motion/5",
+            "desktopSrc": "/assets/projects/atlas_motion/5.webp",
+            "mobileSrc": "/assets/projects/atlas_motion/5.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1820,
+            "declaredHeight": 1024,
+            "actualWidth": 1820,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 6,
+            "type": "image",
+            "basePath": "/assets/projects/atlas_motion/6",
+            "desktopSrc": "/assets/projects/atlas_motion/6.webp",
+            "mobileSrc": "/assets/projects/atlas_motion/6.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1820,
+            "declaredHeight": 1024,
+            "actualWidth": 1820,
+            "actualHeight": 1024,
+            "fullscreen": false
+          }
+        ],
+        "nextProject": {
+          "id": "devin_ai",
+          "href": "/projects/devin_ai",
+          "title": "Devin AI",
+          "label": "NEXT PROJECT",
+          "colorBg": "#121414",
+          "colorText": "#ffffff",
+          "shadow": 0.9
+        },
+        "scrollNav": {
+          "subtitle": "Keep Scrollingto Learn More",
+          "targetTitle": "About Us",
+          "nextPageLabel": "Next Page"
+        }
+      }
+    },
+    {
+      "card": {
+        "id": "everswap",
+        "href": "/projects/everswap",
+        "title": "Everswap",
+        "categoriesText": "concept • web • design • development • 3d • animation",
+        "categories": [
+          "concept",
+          "web",
+          "design",
+          "development",
+          "3d",
+          "animation"
+        ],
+        "colorBg": "#203727",
+        "colorText": "#fbfff4",
+        "colorShadow": 0.9,
+        "thumbnail": "/assets/projects/everswap/home.webp",
+        "thumbnailWidth": 1200,
+        "thumbnailHeight": 900,
+        "depthMap": "/assets/projects/everswap/home_depth.webp",
+        "depthMapWidth": 1200,
+        "depthMapHeight": 900
+      },
+      "detail": {
+        "archiveIndex": 5,
+        "featuredIndex": 5,
+        "isFeatured": true,
+        "id": "everswap",
+        "route": "/projects/everswap",
+        "sourceHtml": "projects/everswap/index.html",
+        "meta": {
+          "title": "Lusion - Everswap",
+          "description": "We were commissioned by the EverSwap team to create an immersive storytelling experience that makes their Web3 products feel intuitive and engaging.",
+          "ogTitle": "Lusion - Everswap",
+          "ogDescription": "We were commissioned by the EverSwap team to create an immersive storytelling experience that makes their Web3 products feel intuitive and engaging.",
+          "ogImage": "/assets/projects/everswap/home.webp"
+        },
+        "title": "Everswap",
+        "categoriesText": "concept • web • design • development • 3d • animation",
+        "categories": [
+          "concept",
+          "web",
+          "design",
+          "development",
+          "3d",
+          "animation"
+        ],
+        "thumbnail": "/assets/projects/everswap/home.webp",
+        "thumbnailWidth": 1200,
+        "thumbnailHeight": 900,
+        "depthMap": "/assets/projects/everswap/home_depth.webp",
+        "scrollPrompt": "scroll to explore",
+        "theme": {
+          "colorBg": "#203727",
+          "colorText": "#fbfff4",
+          "colorHighlight": "#fbfff4",
+          "colorBtnBg": "#fbfff4",
+          "colorBtnBgHover": "#fbfff4",
+          "colorBtnText": "#203727",
+          "colorBtnTextHover": "#203727",
+          "colorIcon": null,
+          "colorIconBg": "#fbfff4",
+          "colorIconColor": "#203727",
+          "shadow": 0.9
+        },
+        "paragraphs": [
+          {
+            "text": "We were commissioned by the EverSwap team to create an immersive storytelling experience that makes their Web3 products feel intuitive and engaging. Inspired by the natural flow of liquidity, we built a journey through evolving terrains, rivers and lakes - transforming the complexities of trading, lending and borrowing into a fluid visual narrative of movement, connection and exchange.",
+            "html": "We were commissioned by the EverSwap team to create an immersive storytelling experience that makes their Web3 products feel intuitive and engaging. Inspired by the natural flow of liquidity, we built a journey through evolving terrains, rivers and lakes - transforming the complexities of trading, lending and borrowing into a fluid visual narrative of movement, connection and exchange.",
+            "links": []
+          }
+        ],
+        "launchCta": {
+          "label": "Launch Project",
+          "href": "https://everswap.com/",
+          "isVimeoOverlay": false,
+          "vimeoId": null
+        },
+        "services": [
+          "Concept",
+          "Web Design",
+          "Web Development",
+          "3D Design",
+          "WebGL",
+          "Animation"
+        ],
+        "links": [
+          {
+            "label": "Awwwards SOTD",
+            "href": "https://www.awwwards.com/sites/everswap"
+          }
+        ],
+        "mediaCount": 10,
+        "media": [
+          {
+            "index": 0,
+            "type": "video",
+            "basePath": "/assets/projects/everswap/main",
+            "desktopSrc": "/assets/projects/everswap/main.mp4",
+            "mobileSrc": "/assets/projects/everswap/main.mp4",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1280,
+            "declaredHeight": 720,
+            "actualWidth": 1280,
+            "actualHeight": 720,
+            "fullscreen": false,
+            "durationSec": 33.55,
+            "fps": 60,
+            "hasAudio": false
+          },
+          {
+            "index": 1,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/1",
+            "desktopSrc": "/assets/projects/everswap/1.webp",
+            "mobileSrc": "/assets/projects/everswap/1.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1679,
+            "declaredHeight": 1024,
+            "actualWidth": 1679,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 2,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/2",
+            "desktopSrc": "/assets/projects/everswap/2.webp",
+            "mobileSrc": "/assets/projects/everswap/2.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 2262,
+            "declaredHeight": 1280,
+            "actualWidth": 2262,
+            "actualHeight": 1280,
+            "fullscreen": false
+          },
+          {
+            "index": 3,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/3",
+            "desktopSrc": "/assets/projects/everswap/3.webp",
+            "mobileSrc": "/assets/projects/everswap/3.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1810,
+            "declaredHeight": 1024,
+            "actualWidth": 1810,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 4,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/4",
+            "desktopSrc": "/assets/projects/everswap/4.webp",
+            "mobileSrc": "/assets/projects/everswap/4.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1819,
+            "declaredHeight": 1024,
+            "actualWidth": 1819,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 5,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/5",
+            "desktopSrc": "/assets/projects/everswap/5.webp",
+            "mobileSrc": "/assets/projects/everswap/5.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1885,
+            "declaredHeight": 1280,
+            "actualWidth": 1885,
+            "actualHeight": 1280,
+            "fullscreen": false
+          },
+          {
+            "index": 6,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/6",
+            "desktopSrc": "/assets/projects/everswap/6.webp",
+            "mobileSrc": "/assets/projects/everswap/6.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1819,
+            "declaredHeight": 1024,
+            "actualWidth": 1819,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 7,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/7",
+            "desktopSrc": "/assets/projects/everswap/7.webp",
+            "mobileSrc": "/assets/projects/everswap/7.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1819,
+            "declaredHeight": 1024,
+            "actualWidth": 1819,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 8,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/8",
+            "desktopSrc": "/assets/projects/everswap/8.webp",
+            "mobileSrc": "/assets/projects/everswap/8.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 1819,
+            "declaredHeight": 1024,
+            "actualWidth": 1819,
+            "actualHeight": 1024,
+            "fullscreen": false
+          },
+          {
+            "index": 9,
+            "type": "image",
+            "basePath": "/assets/projects/everswap/9",
+            "desktopSrc": "/assets/projects/everswap/9.webp",
+            "mobileSrc": "/assets/projects/everswap/9.webp",
+            "hasDedicatedMobileVariant": false,
+            "declaredWidth": 2280,
+            "declaredHeight": 1280,
+            "actualWidth": 2280,
+            "actualHeight": 1280,
+            "fullscreen": false
+          }
+        ],
+        "nextProject": {
+          "id": "porsche_dream_machine",
+          "href": "/projects/porsche_dream_machine",
+          "title": "Porsche: Dream Machine",
+          "label": "NEXT PROJECT",
+          "colorBg": "#EFD5D3",
+          "colorText": "#000000",
+          "shadow": 0.95
+        },
+        "scrollNav": {
+          "subtitle": "Keep Scrollingto Learn More",
+          "targetTitle": "About Us",
+          "nextPageLabel": "Next Page"
+        }
+      }
+    }
+  ]
+}

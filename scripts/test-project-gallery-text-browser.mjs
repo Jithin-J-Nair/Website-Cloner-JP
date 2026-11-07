@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {launchMotionBrowser} from './lib/browser-runtime.mjs';
-const manifest=JSON.parse(fs.readFileSync('src/data/reference/lusion-ground-truth.json','utf8'));
+import {loadCurrentLiveGroundTruth} from './lib/load-ground-truth.mjs';
+const manifest=loadCurrentLiveGroundTruth();
 const out='docs/lusion-parity-audit/evidence/project-gallery-text';fs.mkdirSync(out,{recursive:true});
 const report={scope:'Captured text/order/em sizing and visible browser render, not matched-source typography/spacing acceptance.',states:[],errors:[]};
 try{
