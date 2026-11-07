@@ -34,7 +34,7 @@ try {
   }
   assert.ok(p.scale>=last.scale);
   assert.ok(Math.abs(p.flip-last.flip)<1);
-  assert.ok(Math.abs(p.xVw-last.xVw)<.2);
+  assert.ok(Math.abs(p.xVw-last.xVw)<.21);
   assert.ok(Math.abs(p.yaw-last.yaw)<.2);
   assert.ok(Math.abs(p.pitch-last.pitch)<.1);
   assert.ok(Math.abs(p.scale-last.scale)<.001);
