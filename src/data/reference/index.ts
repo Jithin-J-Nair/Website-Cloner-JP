@@ -45,7 +45,14 @@ const detailEntries: Array<[string, LusionProjectDetail]> = [
 ];
 
 const cardsById = new Map<string, LusionProjectCard>(cardEntries);
-const detailsById = new Map<string, LusionProjectDetail>(detailEntries);
+const detailOverrides = currentLiveProjects.detailOverrides as Record<string, Partial<LusionProjectDetail>>;
+const detailsById = new Map<string, LusionProjectDetail>(
+  detailEntries.map(([id, detail]) => [id, {
+    ...detail,
+    ...detailOverrides[id],
+    ...(detailOverrides[id]?.launchCta ? { launchCta: detailOverrides[id].launchCta } : {})
+  }])
+);
 const featuredIndexById = new Map<string, number>(
   currentLiveProjects.featuredOrder.map((id, index): [string, number] => [id, index + 1])
 );

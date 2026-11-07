@@ -27,6 +27,10 @@ export function mergeCurrentLiveGroundTruth(base, extension) {
       return [current.id, current];
     })
   ]);
+  for (const [id, override] of Object.entries(extension.detailOverrides ?? {})) {
+    const existing = detailsById.get(id);
+    if (existing) detailsById.set(id, { ...existing, ...override });
+  }
   const featuredIndexById = new Map(extension.featuredOrder.map((id, index) => [id, index + 1]));
 
   const archiveProjects = extension.archiveOrder.map((id) => {
