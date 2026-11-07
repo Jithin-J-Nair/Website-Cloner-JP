@@ -666,26 +666,23 @@ body {
   align-items: center;
 }
 .about-client-logo-tile {
+  display: flex;
   flex: 1 1 0;
   min-width: 0;
+  align-items: center;
+  justify-content: center;
 }
-.about-client-wordmark {
+.about-client-logo-art {
   display: block;
+  width: min(100%, 9rem);
+  height: calc(100% - 1rem);
   max-width: 100%;
-  color: rgb(255 255 255 / .82);
-  font-family: var(--font-space-grotesk, ui-sans-serif), sans-serif;
-  font-size: clamp(10px, 1.12vw, 17px);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -.035em;
-  text-align: center;
-  text-wrap: balance;
-  overflow-wrap: anywhere;
+  object-fit: contain;
+  opacity: .84;
   transition: opacity 420ms ease-out, transform 420ms ease-out;
-  opacity: .78;
 }
 @media (hover: hover) and (pointer: fine) {
-  .about-client-marquee:hover .about-client-wordmark {
+  .about-client-marquee:hover .about-client-logo-art {
     opacity: 1;
     transform: scale(1.035);
   }
@@ -696,7 +693,6 @@ body {
 }
 @media (min-width: 813px) {
   .about-client-logo-tile { height: 6.5rem; }
-  .about-client-wordmark { font-size: clamp(13px, 1.15vw, 18px); }
 }
 @media (max-width: 812px) {
   .about-client-logo-tile { height: 5.5rem; }
@@ -717,7 +713,7 @@ body {
   }
   .about-client-marquee-set { width: 100%; flex-basis: 100%; }
   .about-client-marquee-set[aria-hidden="true"] { display: none; }
-  .about-client-wordmark { transition: none !important; transform: none !important; }
+  .about-client-logo-art { transition: none !important; transform: none !important; }
 }
 
 
