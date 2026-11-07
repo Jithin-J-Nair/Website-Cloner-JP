@@ -443,7 +443,7 @@ export function StudioHud() {
             }`}
           >
             {pathname === "/" ? (
-              <span className="inline-flex h-6 w-[6em] items-center font-sans text-[1.5rem] font-semibold leading-none tracking-[-0.055em] text-current min-[813px]:w-[7.5em]">
+              <span className="inline-flex h-6 w-[6em] items-center font-sans text-[1.5rem] font-semibold leading-none tracking-[-0.055em] text-current min-[813px]:w-[7.5em] min-[813px]:origin-left min-[813px]:scale-x-[1.8] min-[813px]:scale-y-[1.1] min-[813px]:-translate-y-1">
                 JITHIN
               </span>
             ) : pathname === "/about" ? (
