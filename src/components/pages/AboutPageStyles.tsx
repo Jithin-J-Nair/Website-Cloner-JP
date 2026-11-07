@@ -64,6 +64,9 @@ export function AboutPageStyles() {
       #about .about-expertise-controls .about-card-glyph { width: 1vw; height: 1.2vw; }
     }
     #about .about-who-team-overlay { padding-top: max(7rem, calc(var(--base-padding-y) + clamp(1rem,1vw,1.5rem) * 2.8 + 2rem)); }
+    @media (min-width:820px) {
+      #about .about-who-team-overlay { padding-top: max(10rem, calc(var(--base-padding-y) + clamp(1rem,1vw,1.5rem) * 2.8 + 2rem)); }
+    }
     #about .about-team-selector button > span { width: 2px; height: 5px; border-radius: 0; }
     #about .about-team-selector > span { display: none; }
     #about .about-team-cursor { position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 104px; height: 104px; border-radius: 50%; color: white; background: #4330f5; font-size: 43px; font-weight: 300; pointer-events: none; opacity: 0; will-change: transform; z-index: 40; }
