@@ -4,22 +4,33 @@ import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import ts from 'typescript';
 const aboutView = fs.readFileSync('src/components/pages/AboutPageView.tsx', 'utf8');
-assert.match(aboutView, /pointerDelta = p\.xy - uPointerNDC/, 'team hologram grains respond locally to the cursor');
-assert.match(aboutView, /portraitPoints\.rotation\.y = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form yaw response');
-const portraitFrame = aboutView.slice(aboutView.indexOf("// One damped whole-form target"), aboutView.indexOf("// Synchronized DOM HUD"));
-assert.doesNotMatch(portraitFrame, /portraitPoints\.rotation\.set\(/, 'a later direct rotation write must not overwrite the damped target');
-assert.match(aboutView, /portraitPoints\.rotation\.x = THREE\.MathUtils\.lerp/, 'team hologram has a damped whole-form pitch response');
-assert.match(aboutView, /reducedMotion \? 0 : 1/, 'team hologram pointer tilt respects reduced motion');
-const portraitGeometry = fs.readFileSync('src/lib/about-portrait-geometry.ts', 'utf8');
-assert.match(aboutView, /from "@\/lib\/about-portrait-geometry"/, 'the team scene uses the independently testable clean-room portrait generator');
-assert.match(aboutView, /skewX\(\$\{sweep\.skewX\}deg\).*scaleX\(\$\{sweep\.stretchX\}\)/, 'wordmark applies scroll-owned planar skew and stretch without 3D rotation');
-assert.match(portraitGeometry, /const px = \(u \+ 0\.1\) \* facing \* 2\.25/, 'abstract portrait retains a broad side-profile silhouette with a stable center offset');
-assert.match(portraitGeometry, /const py = v \* 1\.6/, 'abstract portrait maintains full head-to-shoulder height');
-assert.match(portraitGeometry, /const pz = \(depth \+ \(random\(\) - 0\.5\) \* 0\.012\) \* 1\.45/, 'abstract profile retains real depth for dimensional shading');
-assert.match(aboutView, /attribute vec3 aMorphFrom/, 'team points use a dedicated previous-position buffer');
-assert.match(aboutView, /mix\(aMorphFrom, position, clamp\(uMorph/, 'team portraits interpolate in the existing vertex shader');
-assert.match(aboutView, /portraitMorphStartRef\.current = -1/, 'a new member selection starts an interruptible morph');
-assert.match(aboutView, /elapsedSec - portraitMorphStartRef\.current\) \/ \.58/, 'the team morph is driven by the existing scene clock');
+const sourceTeam = fs.readFileSync('src/components/three/AboutSourceTeam.ts', 'utf8');
+const wordmarkSweep = fs.readFileSync('src/components/three/AboutWordmarkSweep.ts', 'utf8');
+
+// The active source-team renderer owns the actual roster point shader. Verify its
+// local pointer glint and the camera-facing head tilt at the point where reduced
+// motion is applied, rather than asserting against the retired portraitPoints shader.
+assert.match(sourceTeam, /uniform float uTime,uMorph,uReveal,uPointSize,uPixelRatio;uniform vec2 uPointer;/, 'team point shader receives normalized pointer input');
+assert.match(sourceTeam, /float hot=exp\(-dot\(p\.xy-uPointer\*vec2\(1\.4,1\.1\),p\.xy-uPointer\*vec2\(1\.4,1\.1\)\)\*3\.\)/, 'team hologram glints respond locally around the pointer');
+assert.match(sourceTeam, /vGlint=.*hot\*shade/, 'pointer influence is isolated to local point highlights');
+assert.match(sourceTeam, /head\.rotation\.set\(reduced \? 0 : -pointer\.y \* \.035, reduced \? 0 : pointer\.x \* \.09, 0\)/, 'whole portrait tilt is damped to zero when reduced motion is active');
+assert.match(aboutView, /sourceTeam\.update\(camera, elapsedSec, tTeamPhase,[\s\S]*pointerNDC,[\s\S]*reducedMotion/, 'the shared scene pointer and reduced-motion preference reach the active source-team renderer');
+
+// Verify the current interruptible point-buffer morph. The GPU interpolates the
+// previous member into the selected member over the scene-owned morph uniform.
+assert.match(sourceTeam, /attribute vec3 aFrom,aNormal,aNormalFrom;attribute float aShade,aShadeFrom;/, 'source roster uses dedicated prior-position and shading buffers');
+assert.match(sourceTeam, /vec3 p=mix\(aFrom,position,t\)/, 'team members interpolate in the existing point vertex shader');
+assert.match(sourceTeam, /if \(disposed \|\| token !== revision\) return/, 'stale roster loads cannot overwrite the latest selected member');
+assert.match(sourceTeam, /morph = reduced \|\| !ready \? 1 : 0/, 'initial and reduced-motion roster states avoid an unnecessary morph');
+assert.match(sourceTeam, /morph = reduced \? 1 : Math\.min\(1, morph \+ dt \/ \.85\)/, 'subsequent team changes use the scene clock for their morph');
+
+// The current LUSION wordmark is a single continuously folded Three.js type
+// surface. Verify its mesh, texture and single shader deformation path.
+assert.match(aboutView, /createAboutWordmarkSweep\(\)/, 'About constructs one shared wordmark sweep scene');
+assert.match(aboutView, /wordmarkSweep\.uniforms\.uPhase\.value = sweep\.deformation/, 'scroll playhead controls the wordmark shader deformation');
+assert.match(aboutView, /wordmarkSweep\.uniforms\.uOpacity\.value = sweep\.opacity/, 'wordmark visibility follows the same scroll playhead');
+assert.match(wordmarkSweep, /geometry = new THREE\.PlaneGeometry\(2, 2, 160, 12\)/, 'wordmark uses a single subdivided surface instead of independently rotating letters');
+assert.match(wordmarkSweep, /p\.x\+=\(uv\.y-\.5\)\*\.86\*pow\(sin\(x\*3\.14159265\),4\.\)\*fold/, 'wordmark folds continuously across the full letter surface');
 fs.mkdirSync('temp',{recursive:true});
 const dir=fs.mkdtempSync(path.resolve('temp/about-camera-'));
 try {
