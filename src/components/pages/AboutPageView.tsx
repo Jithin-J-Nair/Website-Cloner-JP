@@ -1249,15 +1249,16 @@ function AboutWhoExperience({
   );
 }
 
-/** Accessible text-only brand names; no captured logo artwork is requested.
- * The second marquee copy is hidden from assistive technology.
- */
-function ClientLogoTile({ name }: { name: string }) {
+/** Verified bundled brand artwork. Duplicate marquee copies remain hidden from AT. */
+function ClientLogoTile({ name, src, id }: { name: string; src: string; id: string }) {
+  // The supplied About recording identifies this mark as European Partners;
+  // preserve the frozen manifest's provenance instead of rewriting its old label.
+  const label = id === "cocacola" ? "Coca-Cola European Partners" : name;
   return (
     <div role="listitem" className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
-      <span className="about-client-wordmark" aria-label={name} data-brand={name}>
-        {name}
-      </span>
+      {/* Native SVG image preserves the verified mark's exact viewBox and linework. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={label} width={240} height={240} loading="lazy" decoding="async" className="about-client-logo-art" />
     </div>
   );
 }
@@ -1479,6 +1480,8 @@ export function AboutPageView() {
                         <ClientLogoTile
                           key={`${copy}-${client.id}-${cIdx}`}
                           name={client.name}
+                          id={client.id}
+                          src={client.src}
                         />
                       ))}
                     </div>

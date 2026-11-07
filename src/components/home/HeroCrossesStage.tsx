@@ -821,7 +821,7 @@ export function HeroCrossesStage() {
       }
       const physicsFrame = isReduced
         ? {collisions:0,influencedPieces:0,interactionEnergy:0,kineticEnergy:0,maxTravel:0,meanRadius:0}
-        : physics.step(dt,now*0.001,ptr.active?pointerRay.ray:null,pointerSweep);
+        : physics.step(rawDt,now*0.001,ptr.active?pointerRay.ray:null,pointerSweep);
       ptr.vx*=Math.exp(-4.5*dt);
       ptr.vy*=Math.exp(-4.5*dt);
       const collisionCount=physicsFrame.collisions;

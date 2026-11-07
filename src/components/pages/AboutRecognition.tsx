@@ -3,6 +3,16 @@
 import { useEffect, useRef } from "react";
 import { LUSION_ABOUT } from "@/data/reference";
 
+/** Reference-informed vectors avoid platform-dependent Unicode glyph shapes. */
+function RecognitionMark({ kind }: { kind: "awards" | "articles" | "talks" }) {
+  return <svg viewBox="0 0 64 64" aria-hidden="true" className="about-recognition-mark" fill="currentColor">
+    {kind === "awards" ? Array.from({ length: 8 }, (_, i) =>
+      <ellipse key={i} cx="32" cy="17" rx="6" ry="14" transform={`rotate(${i * 45} 32 32)`} />)
+      : kind === "articles" ? <path d="M32 4C34 23 41 30 60 32C41 34 34 41 32 60C30 41 23 34 4 32C23 30 30 23 32 4Z" />
+      : [14, 32, 50].flatMap(y => [14, 32, 50].map(x => <circle key={`${x}-${y}`} cx={x} cy={y} r="6" />))}
+  </svg>;
+}
+
 function paintFoil(section: HTMLElement, x: number, y: number) {
   // Read before writing: the text-space highlight must follow the actual
   // scrolling/italic glyph bounds, not glow behind the entire section.
@@ -70,7 +80,7 @@ export function AboutRecognition() {
       <div id="about-recognition-window" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
         <section className="about-source-record" aria-labelledby="about-awards-record-title">
           <h2 id="about-awards-record-title">AWARDS</h2>
-          <div className="about-source-record-count"><span aria-hidden="true">✳</span> {recognition.awardsDisplayedTotal}</div>
+          <div className="about-source-record-count"><RecognitionMark kind="awards" /> {recognition.awardsDisplayedTotal}</div>
           <div className="about-source-record-data">
             {recognition.awardGroups.map(group => <div className="about-source-award-group" key={group.organization}>
               <h3>{group.organization}</h3>
@@ -82,14 +92,14 @@ export function AboutRecognition() {
         </section>
         <section className="about-source-record" aria-labelledby="about-articles-record-title">
           <h2 id="about-articles-record-title">ARTICLES</h2>
-          <div className="about-source-record-count"><span aria-hidden="true">✦</span> {recognition.articlesDisplayedTotal}</div>
+          <div className="about-source-record-count"><RecognitionMark kind="articles" /> {recognition.articlesDisplayedTotal}</div>
           <ul className="about-source-record-data about-source-articles">{recognition.articles.map(article => <li key={article.href}>
             <a href={article.href} target="_blank" rel="noopener noreferrer">{article.title}<span aria-hidden="true">↗</span></a>
           </li>)}</ul>
         </section>
         <section className="about-source-record" aria-labelledby="about-talks-record-title">
           <h2 id="about-talks-record-title">TALKS</h2>
-          <div className="about-source-record-count"><span aria-hidden="true">▦</span> {recognition.talksDisplayedTotal}</div>
+          <div className="about-source-record-count"><RecognitionMark kind="talks" /> {recognition.talksDisplayedTotal}</div>
           <ul className="about-source-record-data about-source-talks">{recognition.talks.map(talk => <li key={`${talk.event}-${talk.dateAndLocation}`}>
             <span>{talk.event}</span><span>{talk.dateAndLocation}</span>
           </li>)}</ul>

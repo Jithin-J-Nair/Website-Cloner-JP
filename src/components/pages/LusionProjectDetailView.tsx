@@ -9,6 +9,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 import { getCanonicalProjectTitle } from "@/lib/clean-media-synthesizer";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
+import { ProjectPreviewVideo } from "@/components/studio/ProjectPreviewVideo";
 
 interface LusionProjectDetailViewProps {
   project: LusionProjectDetail;
@@ -82,14 +83,12 @@ function ProjectMediaCard({
   item,
   projectId,
   canonicalTitle,
-  highlight,
   isHeroDesktop = false,
   onOpenModal,
 }: {
   item: LusionProjectDetail["media"][number];
   projectId: string;
   canonicalTitle: string;
-  highlight: string;
   isHeroDesktop?: boolean;
   onOpenModal: (label: string, desktopSrc: string, mobileSrc: string) => void;
 }) {
@@ -97,6 +96,17 @@ function ProjectMediaCard({
   const aspectW = item.declaredWidth || 1280;
   const aspectH = item.declaredHeight || 720;
   const fallbackPoster = `/assets/projects/${projectId}/home.webp`;
+
+  if (item.type === "text" && "text" in item) {
+    const fontSizeEm = "fontSizeEm" in item && typeof item.fontSizeEm === "number" ? item.fontSizeEm : 1.5;
+    return (
+      <div data-project-media-type="text" data-project-media-index={item.index} className="py-8">
+        <p className="font-sans leading-relaxed" style={{ fontSize: `${fontSizeEm}em` }}>
+          {item.text}
+        </p>
+      </div>
+    );
+  }
 
   if (item.type === "video") {
     const videoDesktop = item.desktopSrc || "/assets/textures/reel/desktop.mp4";
@@ -111,6 +121,7 @@ function ProjectMediaCard({
           )
         }
         role="button"
+        aria-label={`${canonicalTitle} — play sequence ${String(item.index + 1).padStart(2, "0")}`}
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -130,16 +141,11 @@ function ProjectMediaCard({
         }`}
       >
         {!videoFailed ? (
-          <video
-            src={videoDesktop}
+          <ProjectPreviewVideo
+            desktopSrc={videoDesktop}
+            mobileSrc={videoMobile}
             poster={fallbackPoster}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
             onError={() => setVideoFailed(true)}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
           />
         ) : (
           <>
@@ -189,10 +195,11 @@ function ProjectMediaCard({
 }
 
 /**
- * Verified Lusion Case-Study Page (`/projects/[slug]` — All 17 Current Canonical Routes)
+ * Captured Lusion Case-Study Page (`/projects/[slug]` — 17 captured canonical detail routes)
  *
- * Matches all 38 desktop (`1440x900`) and mobile (`390x844`) captures in `docs/validation/phase-g/reference/`:
- *   - Exact brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
+ * Historical desktop (`1440x900`) and mobile (`390x844`) layout references are in `docs/validation/phase-g/reference/`:
+ * Captured surfaces below are implementation inputs, not a current parity certificate.
+ *   - Captured brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
  *   - Crisp `#ffffff` `• LAUNCH PROJECT` pill matching `.project-details-launch-btn` in `lusion.co` CSS
  *   - Desktop opening `100vh` split stage: sticky left narrative (`cols 1..5`) + right flush-bleeding `70vh` media stage (`left: 46vw..100vw`) + `SCROLL TO EXPLORE >>`
  *   - Mobile opening `100svh` editorial viewport (`LUSION`, `←` + `••` white circles, `h1`, paragraphs, `SERVICES`/`LINKS`, `• LAUNCH PROJECT`) followed seamlessly below by full media gallery & `NEXT PROJECT`
@@ -408,10 +415,10 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
           {heroMedia && (
             <div className="min-[813px]:-mr-[var(--base-padding-x)] min-[813px]:pb-14">
               <ProjectMediaCard
+                key={`${project.id}-${heroMedia.index}`}
                 item={heroMedia}
                 projectId={project.id}
                 canonicalTitle={canonicalTitle}
-                highlight={highlight}
                 isHeroDesktop={true}
                 onOpenModal={openMediaModal}
               />
@@ -429,11 +436,10 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
 
           {restMedia.map((item) => (
             <ProjectMediaCard
-              key={item.index}
+              key={`${project.id}-${item.index}`}
               item={item}
               projectId={project.id}
               canonicalTitle={canonicalTitle}
-              highlight={highlight}
               onOpenModal={openMediaModal}
             />
           ))}

@@ -58,12 +58,13 @@ try {
   assert.equal(build(2, 0).length, 3, "invalid zero count is clamped to one safe point");
   assert.equal(build(NaN, 128).length, 128 * 3, "invalid member index falls back to a stable seed");
   const page = fs.readFileSync("src/components/pages/AboutPageView.tsx", "utf8");
-  assert.match(page, /tier === "medium" \? 16384 : 24576/, "desktop medium/high portrait tiers are 16K/24K");
-  assert.match(page, /portraitCountRef\.current = reducedMotion \|\| software \|\| window\.innerWidth < 820 \|\| tier === "low"/, "mobile, low and reduced-motion tiers cap at 8K");
   assert.match(page, /function PixelGlyph\(/, "team HUD includes a procedural pixel-font initial");
   assert.match(page, /shapeRendering="crispEdges"/, "team initial uses crisp block pixels");
   assert.match(page, /<PixelGlyph[\s\S]*?char=\{activeMember\.name\[0\]\}/, "glyph follows the active team member");
-  assert.match(page, /className="sr-only">Abstract procedural visualization; not a likeness/, "procedural/non-likeness clarification stays available to assistive technology without adding visible HUD copy");
+  assert.match(page, /Original point portrait of/, "source portrait loading status remains accessible");
+  assert.match(page, /createAboutSourceTeam/, "approved source-team pipeline stays mounted");
+  await import("./test-about-source-team.mjs");
+  await import("./test-about-source-lifecycle-extra.mjs");
 
   console.log("PASS About portrait geometry: deterministic, bounded, finite 3D side-profile silhouettes; distinct mirrored variants; exact point counts and safe input fallbacks.");
 } finally {

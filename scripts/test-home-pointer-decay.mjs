@@ -19,7 +19,7 @@ try {
   }).outputText);
   const { HomeConnectorPhysics } = await import(pathToFileURL(file));
   const results = [];
-  for (const frameDt of [1 / 240, 1 / 120, 1 / 60, 1 / 20]) {
+  for (const frameDt of [1 / 240, 1 / 120, 1 / 60, 1 / 20, 0.25, 1, 2]) {
     const positions = [new THREE.Vector3(-1, 0, 0), new THREE.Vector3(1, 0, 0)];
     const meshes = positions.map(() => new THREE.Mesh(geometry, material));
     const linear = positions.map(() => new THREE.Vector3());
@@ -40,14 +40,30 @@ try {
       previous = state.interactionEnergy;
       frames++;
     }
-    assert.equal(physics.interactionEnergy, 0, 'no-ray energy decays to exact zero within six simulated seconds');
-    results.push({ frameDt, frames, simulatedSeconds: Number(time.toFixed(5)), finalEnergy: physics.interactionEnergy });
+    assert.equal(physics.interactionEnergy, 0, 'no-ray energy decays to exact zero within six elapsed-input seconds, even when collision steps are capped');
+    results.push({ frameDt, frames, elapsedInputSeconds: Number(time.toFixed(5)), finalEnergy: physics.interactionEnergy });
+  }
+  // A stalled frame must not accelerate connector positions or held-pointer input.
+  const runCapped = (delta, active) => {
+    const positions = [new THREE.Vector3(-1, 0, 0), new THREE.Vector3(1, 0, 0)];
+    const meshes = positions.map(() => new THREE.Mesh(geometry, material));
+    const solver = new HomeConnectorPhysics(meshes, positions, positions.map(() => new THREE.Vector3()), positions.map(() => new THREE.Vector3()));
+    solver.interactionEnergy = 1;
+    const ray = active ? new THREE.Ray(new THREE.Vector3(-1, 0, 10), new THREE.Vector3(0, 0, -1)) : null;
+    const state = solver.step(delta, 1, ray, new THREE.Vector3());
+    return { positions: positions.map(p => p.toArray()), energy: state.interactionEnergy };
+  };
+  for (const active of [false, true]) {
+    const slow = runCapped(1, active), capped = runCapped(.05, active);
+    assert.deepEqual(slow.positions, capped.positions, 'collision integration stays capped at 50ms even for a one-second frame');
+    if (active) assert.equal(slow.energy, capped.energy, 'held-pointer response is unchanged by the release-clock repair');
   }
   console.log(JSON.stringify({
-    scope: 'Two-body numerical isolation with energy seeded to 1. Not wall-clock FPS, DOM cancellation, original physics or rendered motion verification.',
+    scope: 'Two-body numerical isolation with energy seeded to 1 and controlled elapsed-input deltas. Not wall-clock FPS, DOM cancellation, original physics or rendered motion verification.',
     results,
+    boundedCollisionAndHeldPointerChecks: true,
   }, null, 2));
-  console.log('PASS isolated no-pointer solver decay; browser cancellation failure remains open.');
+  console.log('PASS release-clock numerical checks; browser cancellation requires its separate integration gate.');
 } finally {
   geometry.dispose();
   material.dispose();
