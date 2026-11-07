@@ -170,17 +170,24 @@ function VideoOverlaySession({
   };
 
   const handleSliderKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft" && e.key !== "Home" && e.key !== "End") {
+      return;
+    }
+
+    e.preventDefault();
+    const video = videoRef.current;
+    const currentProgress =
+      video && Number.isFinite(video.duration) && video.duration > 0
+        ? (video.currentTime / video.duration) * 100
+        : progressPct;
+
     if (e.key === "ArrowRight") {
-      e.preventDefault();
-      seekToProgress(progressPct + 5);
+      seekToProgress(currentProgress + 5);
     } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      seekToProgress(progressPct - 5);
+      seekToProgress(currentProgress - 5);
     } else if (e.key === "Home") {
-      e.preventDefault();
       seekToProgress(0);
-    } else if (e.key === "End") {
-      e.preventDefault();
+    } else {
       seekToProgress(100);
     }
   };
