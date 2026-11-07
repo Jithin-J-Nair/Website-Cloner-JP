@@ -80,8 +80,8 @@ export function Preloader() {
           id="preloader"
           key="lusion-preloader"
           role="status"
-          aria-live="polite"
-          aria-label={`Loading Lusion experience ${progress} percent`}
+          aria-live="off"
+          aria-label="Loading Lusion experience"
           initial={{ opacity: 1 }}
           exit={{
             opacity: 0,
