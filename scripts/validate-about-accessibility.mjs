@@ -120,8 +120,7 @@ try {
       const selector = selectors.nth(1);
       const selectorBox = await selector.boundingBox();
       assert.ok(selectorBox && selectorBox.width >= 24 && selectorBox.height >= 24);
-      await selector.focus();
-      await page.keyboard.press("Enter");
+      await selector.press("Enter");
       await page.waitForFunction(() =>
         document.querySelectorAll(".about-who-team-overlay button[aria-label^='Select ']")[1]
           ?.getAttribute("aria-pressed") === "true",
