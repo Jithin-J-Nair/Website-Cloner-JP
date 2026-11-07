@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { StudioShell } from "@/components/foundation/StudioShell";
-import { LUSION_HOME } from "@/data/reference";
 
 export const viewport: Viewport = {
   width: "device-width",

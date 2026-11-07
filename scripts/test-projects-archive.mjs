@@ -100,9 +100,10 @@ assert.match(page, /LUSION_PROJECTS_ARCHIVE\.projects\.map/);
 assert.match(page, /id="projects-title"/);
 assert.match(page, /id="projects-count"/);
 assert.match(page, /id="projects-list"/);
-assert.match(page, /min-\[813px\]:text-\[17vw\]/, "desktop title scale is matched to the reference capture");
-assert.match(page, /min-\[813px\]:pt-\[28vh\]/, "desktop title begins at the reference vertical position");
-assert.match(page, /min-\[813px\]:mt-\[8\.25rem\]/, "first project row keeps the intended breathing room");
+assert.ok(page.includes('min-[813px]:text-[19vw]'), "desktop title scale matches the measured reference width");
+assert.ok(page.includes('min-[813px]:pt-[27.4vh]'), "desktop title begins at the reference vertical position");
+assert.ok(page.includes('min-[813px]:mt-[9.9rem]'), "desktop first project row matches the reference gap");
+assert.ok(page.includes('mt-[3.25rem]'), "mobile first project row matches the reference gap");
 assert.match(page, /min-\[813px\]:h-14 min-\[813px\]:w-14/, "desktop directional arrow keeps the reference scale");
 assert.match(page, /grid-cols-6[\s\S]*min-\[813px\]:grid-cols-12/, "archive grid adapts from mobile to desktop");
 
@@ -113,6 +114,10 @@ assert.match(card, /onFocus=\{\(\) => setHovered\(true\)\}/, "keyboard focus has
 assert.match(card, /project\.thumbnail/, "cards use the source project thumbnail");
 
 assert.match(detail, /project\.media\.slice\(1\)/);
+assert.ok(detail.includes('text-[16vw]'), "mobile project title uses the reference scale");
+assert.ok(detail.includes('text-[15.5px]'), "mobile project copy uses the reference reading size");
+assert.ok(detail.includes('min-[813px]:col-start-7 min-[813px]:col-span-6 min-[813px]:ml-[2.5vw]'), "desktop media occupies the right-hand reference lane");
+assert.ok(detail.includes('data-mobile-launch-cta'), "mobile launch CTA follows services and links");
 assert.match(detail, /if \(!project\.launchCta\.href\?\.trim\(\) && !project\.launchCta\.isVimeoOverlay\)/, "empty launch URLs must not become self-links");
 assert.match(detail, /data-launch-unavailable="true"/, "missing launch destinations remain visible without a fake link");
 assert.match(detail, /onError=\{\(\) => setVideoFailed\(true\)\}/, "video failure has a media fallback");
