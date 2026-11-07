@@ -75,6 +75,7 @@ const unavailableLaunchDestinations = details
 assert.deepEqual(unavailableLaunchDestinations, ["soda_experience", "maxmara_bearings_gifts"], "only the two live labels without exposed destinations stay non-navigating");
 const atlas = details.find(project => project.id === "atlas_motion");
 assert.ok(atlas?.links.some(link => link.label === "Launch Project" && link.href === "https://atlasmotion.com/"), "Atlas links block repeats the live Launch Project destination");
+assert.equal(atlas?.categoriesText, "concept • web • design • development • 3d", "Atlas card tags match the current live archive");
 
 const byId = new Map(details.map(project => [project.id, project]));
 for (const project of projects) {
