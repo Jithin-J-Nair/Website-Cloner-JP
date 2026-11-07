@@ -18,6 +18,35 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # One-shot extraction of the user's Projects walkthrough stored in Git LFS.
+      # The commit-message guard prevents future CI runs from repeatedly downloading it.
+      - name: Extract Projects walkthrough frames from Git LFS
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-project-reference]')
+        run: |
+          if ! command -v git-lfs >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y git-lfs
+          fi
+          git lfs install
+          git lfs pull --include="public/videos/Lusion-project.mp4"
+          test -s public/videos/Lusion-project.mp4
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          mkdir -p temp/project-reference
+          ffprobe -v error -show_entries format=duration,size -show_streams -of json public/videos/Lusion-project.mp4 > temp/project-reference/metadata.json
+          ffmpeg -hide_banner -loglevel error -i public/videos/Lusion-project.mp4 -vf "fps=1/2,scale=960:-1" -q:v 3 temp/project-reference/frame-%03d.jpg
+          ffmpeg -hide_banner -loglevel error -i public/videos/Lusion-project.mp4 -vf "fps=1/3,scale=480:-1,tile=4x4" -frames:v 1 -q:v 3 temp/project-reference/contact-sheet.jpg
+
+      - name: Upload Projects walkthrough reference frames
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-project-reference]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-reference-video-frames
+          path: temp/project-reference/
+          if-no-files-found: error
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
