@@ -341,7 +341,7 @@ export function StudioHud() {
     soundEngine.playClick();
     setNavMenuOpen(false);
     const target =
-      document.getElementById("footer-section") ?? document.getElementById("footer-middle-contact");
+      document.getElementById("end-section") ?? document.getElementById("footer-section");
     if (target) {
       target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
       return;

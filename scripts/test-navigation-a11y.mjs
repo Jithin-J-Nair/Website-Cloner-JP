@@ -49,8 +49,18 @@ try {
     const trigger = document.querySelector("#header-right-menu-btn");
     return trigger?.getAttribute("aria-expanded") === "false" && document.activeElement === trigger;
   });
+
+  await trigger.click();
+  await menu.getByRole("button", { name: "Contact" }).click();
+  await page.waitForFunction(() => {
+    const target = document.querySelector("#end-section");
+    const nav = document.querySelector("#header-menu");
+    const rect = target?.getBoundingClientRect();
+    return nav?.getAttribute("aria-hidden") === "true" &&
+      !!rect && rect.top < window.innerHeight && rect.bottom > 0;
+  }, null, { timeout: 30000 });
   assert.deepEqual(errors, []);
-  console.log("PASS navigation keyboard lifecycle: focus entry, Tab wrap, Shift+Tab wrap and Escape focus restoration.");
+  console.log("PASS navigation keyboard lifecycle: focus entry, Tab wrap, Shift+Tab wrap, Escape restoration and Contact-to-end-section scrolling.");
 } finally {
   await context.close();
   await browser.close();
