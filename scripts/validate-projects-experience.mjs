@@ -93,7 +93,7 @@ try {
         const launch = [...element.querySelectorAll("a,button,[data-launch-unavailable]")]
           .find(node => node.textContent?.trim().toLowerCase().includes(launchLabel.toLowerCase()));
         const firstStage = element.querySelector(":scope > section");
-        const stickyColumn = firstStage?.querySelector(":scope > div > div:first-child");
+        const stickyColumn = firstStage?.querySelector(":scope > div:first-child");
         const media = [...element.querySelectorAll("figure, video, div[role='button'] > img, [data-project-media-type='text']")];
         const emptyLinks = [...element.querySelectorAll("a")].filter(anchor => !anchor.getAttribute("href")?.trim());
         return {
