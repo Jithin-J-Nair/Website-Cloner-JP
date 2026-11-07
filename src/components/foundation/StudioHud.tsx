@@ -416,7 +416,10 @@ export function StudioHud() {
         <div
           id="header-background"
           aria-hidden="true"
-          onClick={() => setNavMenuOpen(false)}
+          onClick={() => {
+            setNavMenuOpen(false);
+            menuTriggerRef.current?.focus({ preventScroll: true });
+          }}
           className={`fixed inset-0 transition-opacity duration-300 ${
             navMenuOpen
               ? "pointer-events-auto opacity-100 max-[812px]:bg-[#0016ec] min-[813px]:left-1/2 min-[813px]:bg-[linear-gradient(270deg,rgba(11,11,18,0.38),rgba(11,11,18,0))]"

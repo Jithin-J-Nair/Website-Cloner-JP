@@ -115,6 +115,12 @@ for (const file of srcFiles) {
 console.log(`  PASS Audited ${srcFiles.length} active source files — zero unapproved portfolio references.`);
 
 // 3. Shared Lusion Shell & About/Archive Landmark Verification
+const hudSource = fs.readFileSync(path.join(process.cwd(), "src", "components", "foundation", "StudioHud.tsx"), "utf8");
+const backdropHandler = hudSource.match(/id="header-background"[\\s\\S]*?onClick=\\{\\(\\) => \\{([\\s\\S]*?)\\}\\}/)?.[1] || "";
+const backdropRestoresFocus = /setNavMenuOpen\\(false\\)[\\s\\S]*menuTriggerRef\\.current\\?\\.focus/.test(backdropHandler);
+console.log(`  ${backdropRestoresFocus ? "PASS" : "FAIL"} Navigation backdrop close restores focus to its trigger`);
+if (!backdropRestoresFocus) failures += 1;
+
 console.log("\n[3/5] Auditing Shared Lusion Chrome Landmarks & Page Sections...");
 const homeRes = await fetch(`${BASE_URL}/`);
 const homeHtml = await homeRes.text();
