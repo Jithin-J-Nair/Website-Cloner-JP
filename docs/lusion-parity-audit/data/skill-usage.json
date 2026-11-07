@@ -1,0 +1,202 @@
+[
+  {
+    "skill": "frontend-design-direction",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/frontend-design-direction/SKILL.md",
+    "sha256": "71a40f7bc4a28da01b54527fe5590f6055c93adc630e6ceee8c892b35c980893",
+    "readEvidence": "Prior full read, exact byte match verified against master snapshot",
+    "appliedTo": "Applied to evidence discipline, not visual redesign",
+    "filesOrComponents": "README.md; harness/capture-route-matrix.mjs",
+    "verification": "Reference unavailable explicitly blocks parity scores; local evidence only"
+  },
+  {
+    "skill": "design-system",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/design-system/SKILL.md",
+    "sha256": "1969e4cb6cd13cdafff5f84353047d6e55cebc24e1a595ec48e6e2c666f3d8b1",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Evaluated audit mode; token extraction/rendered visual audit pending",
+    "filesOrComponents": "No production styling changed",
+    "verification": "Do not generate a replacement visual identity"
+  },
+  {
+    "skill": "make-interfaces-feel-better",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/make-interfaces-feel-better/SKILL.md",
+    "sha256": "aff91aef917cba9c65681ae77197cee93ce9b697ee8916ea684ef8537c99fb52",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Evaluated; no polish changes applied",
+    "filesOrComponents": "No production component changed",
+    "verification": "Reference-matched geometry/wrapping needed before optical adjustments"
+  },
+  {
+    "skill": "liquid-glass-design",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/liquid-glass-design/SKILL.md",
+    "sha256": "6e424b8daba26c92a8283cd3e5b35c7b2bc78a0a9fc07821a5939027090b8e43",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Not applied: iOS 26 native APIs, not WebGL glass expertise",
+    "filesOrComponents": "None",
+    "verification": "SwiftUI/UIKit/WidgetKit scope read; no native UI or arbitrary blur added"
+  },
+  {
+    "skill": "frontend-patterns",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/frontend-patterns/SKILL.md",
+    "sha256": "a5b971eb9e74cd763c7e3308bfd888e0d9cf69f8b88477659889d77182479740",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Applied to architecture review only",
+    "filesOrComponents": "StudioShell, SmoothScrollProvider, project pages (reviewed)",
+    "verification": "Found existing framer-motion examples; preserve composition and existing stack"
+  },
+  {
+    "skill": "react-patterns",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/react-patterns/SKILL.md",
+    "sha256": "f3208d44a5d553038c42e046cec4dc16e4a3d90a9dbf931f883a2e21919a64a9",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Applied to lifecycle/source review only",
+    "filesOrComponents": "LusionProjectDetailView, StudioShell, SmoothScrollProvider (reviewed)",
+    "verification": "LP-004 identified; component implementation not yet changed"
+  },
+  {
+    "skill": "react-performance",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/react-performance/SKILL.md",
+    "sha256": "ac76e8694d4f802a7bccc3c07a73ac68ace6d82a65ea10f10d8b7384dda61a8f",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Applied to performance-risk review, not an optimization claim",
+    "filesOrComponents": "ProjectMediaCard (reviewed)",
+    "verification": "Desktop-only background video and eager autoplay/preload require browser profiling"
+  },
+  {
+    "skill": "nextjs-turbopack",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/nextjs-turbopack/SKILL.md",
+    "sha256": "336034322d2022f47b097e55b5448cbc1e204c11f964910fa6fb3baeab06a474",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Applied to version-compatible validation repair",
+    "filesOrComponents": "tsconfig.json; eslint.config.mjs; scripts/test-validation-boundaries.mjs",
+    "verification": "Installed Next 16.4.3 docs read; RED then GREEN and successful production build"
+  },
+  {
+    "skill": "motion-foundations",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/motion-foundations/SKILL.md",
+    "sha256": "ac0dd6de088e8cf2bff57230b365469e893c5f3a9578815a7f113689d0401972",
+    "readEvidence": "Prior full read, exact byte match verified against master snapshot",
+    "appliedTo": "Compatibility evaluation only; no new DOM motion applied",
+    "filesOrComponents": "motion-and-interaction-audit.md",
+    "verification": "Keep installed framer-motion; explicit exception to motion/react import rule"
+  },
+  {
+    "skill": "motion-patterns",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/motion-patterns/SKILL.md",
+    "sha256": "9d78bcd2c3b52abdb6fb29162f289b9c709547de264ad064b12e00bedb031907",
+    "readEvidence": "Prior full read, exact byte match verified against master snapshot",
+    "appliedTo": "Dependency/scope evaluation only",
+    "filesOrComponents": "motion-and-interaction-audit.md",
+    "verification": "Foundation required; no blind App Router transition or once-only reveal copying"
+  },
+  {
+    "skill": "motion-advanced",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/motion-advanced/SKILL.md",
+    "sha256": "1ee09b942bf328ffa97148bed838ecc8789c1891ca441abccdca52b4c47a9742",
+    "readEvidence": "Prior full read, exact byte match verified against master snapshot",
+    "appliedTo": "Dependency/scope evaluation only",
+    "filesOrComponents": "motion-and-interaction-audit.md",
+    "verification": "Explicitly excludes WebGL/game loops; no shader expertise inferred"
+  },
+  {
+    "skill": "accessibility",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/accessibility/SKILL.md",
+    "sha256": "2762f21d09d199009ed4f95b28c911436b367c30963dc5ddb48b8e1ad7fc1585",
+    "readEvidence": "Prior full read, exact byte match verified against master snapshot",
+    "appliedTo": "Review criteria selected; compliance audit pending",
+    "filesOrComponents": "Shared shell and media review",
+    "verification": "No automated or manual WCAG certification; source standards blocked by host access"
+  },
+  {
+    "skill": "frontend-a11y",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/frontend-a11y/SKILL.md",
+    "sha256": "e00991a3f4d47fcf1529dd74a080afcf46137dc5061e70dc6e3da7b27f2ae3f3",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Interaction-review criteria selected; runtime a11y work pending",
+    "filesOrComponents": "Shared shell/media review",
+    "verification": "Focus, labels, keyboard and live reduced motion require actual tests"
+  },
+  {
+    "skill": "e2e-testing",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/e2e-testing/SKILL.md",
+    "sha256": "b0e00e7e17cb259101139900816c5528aed18dd10bcf5f9cb42cfc35baf8a755",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Applied to browser evidence collection and artifact preservation",
+    "filesOrComponents": "harness/capture-route-matrix.mjs; scripts/phase-c-home-validate.mjs",
+    "verification": "Observable route/title/overflow/errors recorded; browser output redirect changes no assertions"
+  },
+  {
+    "skill": "browser-qa",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/browser-qa/SKILL.md",
+    "sha256": "6eb78a2460adcde116e6b44fcdff7ae37aeec6208241a24417cb2db4b3b254cd",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Applied to read-only reconnaissance and clone smoke census",
+    "filesOrComponents": "data/live-access.json; evidence/clone-initial/matrix.json",
+    "verification": "No source access => INCONCLUSIVE visual verdict; no production form submission"
+  },
+  {
+    "skill": "react-testing",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/react-testing/SKILL.md",
+    "sha256": "51c18b4e28285bb876ef469e47c6f53108b5a9f900950a60e897c3c24826a65e",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Evaluated; React component-test implementation pending",
+    "filesOrComponents": "None",
+    "verification": "No test-runner dependency added; JS boundary regression is not labeled an RTL/component test"
+  },
+  {
+    "skill": "repo-scan",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/repo-scan/SKILL.md",
+    "sha256": "b3318f6263629467d895d71a281cb64575d9d5de12c96d97cd1d19c66734e98e",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Evaluated bootstrap pointer; not installed or invoked",
+    "filesOrComponents": "data/code-surface-inventory.json is a separate manual census",
+    "verification": "Pinned external installation requires review/approval; inventory is not full content inspection"
+  },
+  {
+    "skill": "skill-host-compat",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/skill-host-compat/SKILL.md",
+    "sha256": "246242187c2da04369c23d782ba0970bcb9b9fb74acb421161649e4c572d4b54",
+    "readEvidence": "Prior full read, exact byte match verified against master snapshot",
+    "appliedTo": "Applied to compatibility assessment only, native gate not run",
+    "filesOrComponents": "ecc-skill-usage.md; motion-and-interaction-audit.md",
+    "verification": "Harness-specific tools/variables/frontmatter not auto-activated; no package installed"
+  },
+  {
+    "skill": "skill-comply",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/skill-comply/SKILL.md",
+    "sha256": "e26cbbc30a32ea8c76c56d09ba9a3a921e82ad6e2360f825ec63d3f8df6b1f5a",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Evaluated; native compliance workflow not invoked",
+    "filesOrComponents": "None",
+    "verification": "Requires claude subprocesses/LLM classification; 22 supporting files not read/run for this inapplicable execution path"
+  },
+  {
+    "skill": "skill-stocktake",
+    "skillMdReadFully": true,
+    "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/skill-stocktake/SKILL.md",
+    "sha256": "3de326f8f87216b024bf524433b91607068d805286394d5ed8e293b4799b7314",
+    "readEvidence": "Full read_file output in current task, not truncated",
+    "appliedTo": "Evaluated; provenance/overlap principles used manually, native stocktake not run",
+    "filesOrComponents": "data/skill-usage.json",
+    "verification": "Three native shell helpers not read/run; no home-directory cache or library changed"
+  }
+]

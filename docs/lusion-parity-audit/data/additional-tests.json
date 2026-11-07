@@ -1,0 +1,14 @@
+[
+  {
+    "command": "npm run test:about-portrait",
+    "exitCode": 1,
+    "seconds": 0.89,
+    "log": "about-portrait-test.log"
+  },
+  {
+    "command": "npm run test:assets",
+    "exitCode": 1,
+    "seconds": 0.86,
+    "log": "assets-test.log"
+  }
+]

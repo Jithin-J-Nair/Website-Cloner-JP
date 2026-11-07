@@ -33,7 +33,8 @@ import sparticuzChromium from "@sparticuz/chromium";
 const require = createRequire(import.meta.url);
 
 const RECON_URL = process.env.RECON_URL || "http://127.0.0.1:3000";
-const OUT_DIR = path.join(process.cwd(), "docs", "validation", "phase-d");
+// Allow independent audit runs without overwriting preserved reference evidence.
+const OUT_DIR = path.resolve(process.env.LUSION_VALIDATION_OUT_DIR || path.join(process.cwd(), "docs", "validation", "phase-d"));
 const COMP_OUT_DIR = path.join(OUT_DIR, "composites");
 const REF_COMP_DIR = path.join(process.cwd(), "docs", "validation", "phase-a", "composites");
 fs.mkdirSync(COMP_OUT_DIR, { recursive: true });

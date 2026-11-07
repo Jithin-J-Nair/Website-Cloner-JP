@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Lusion Reconstruction Automated QA, Contrast, Licensing, Full 22-Route & Asset Security Verifier
+ * Lusion Reconstruction Automated QA, Contrast, Licensing, Manifest-Driven Route & Asset Security Verifier
  * Verifies:
  *   1. WCAG 2.1 contrast math on verified Lusion tokens
  *   2. Font Option 2 compliance & zero unapproved personal portfolio leaks in active app modules
  *   3. Authentic shared Lusion shell landmarks & ground-truth copy across `/`, `/about`, `/projects`
- *   4. All 22 canonical ground-truth routes (`HTTP 200` + exact `<title>` + `<main>` + `<h1>` + SkipNav)
+ *   4. All canonical ground-truth routes (`HTTP 200` + exact `<title>` + `<main>` + `<h1>` + SkipNav)
  *      plus verified `HTTP 404` behavior on unknown top-level and unknown `/projects/<slug>` routes
  *   5. Clean-production asset delivery (`HTTP 200`, `0` unexpected `404`s, strict CSP + `nosniff`)
  */
@@ -134,7 +134,7 @@ for (const id of ["about-who", "about-clients", "about-award", "about-capability
   if (!ok) failures += 1;
 }
 
-// 4. Live HTTP, `<title>`, `<main>`, `<h1>` & 404 Audit Across ALL 22 Canonical Ground-Truth Routes + 2 Negative Routes
+// 4. Live HTTP, `<title>`, `<main>`, `<h1>` & 404 Audit Across ALL Manifest Canonical Ground-Truth Routes + 2 Negative Routes
 console.log(`\n[4/5] Auditing All ${GROUND_TRUTH.routes.length} Canonical Routes + 2 Negative 404 Routes on ${BASE_URL}...`);
 for (const entry of GROUND_TRUTH.routes) {
   const res = await fetch(`${BASE_URL}${entry.route}`);
@@ -233,5 +233,5 @@ if (failures > 0) {
   console.error(`\nQA FAILED with ${failures} issue(s).`);
   process.exit(1);
 } else {
-  console.log("\nALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).");
+  console.log(`\nALL LUSION QA GATES PASSED SUCCESSFULLY (${GROUND_TRUTH.routes.length}/${GROUND_TRUTH.routes.length} ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).`);
 }
