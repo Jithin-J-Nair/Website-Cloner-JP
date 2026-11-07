@@ -350,7 +350,7 @@ export function HomePageView() {
         <div
           id="home-hero-scroll-container"
           ref={heroCueRef}
-          className="pointer-events-none absolute right-[var(--base-padding-x)] bottom-0 left-[var(--base-padding-x)] flex h-[var(--base-padding-y)] items-center justify-between"
+          className="pointer-events-none absolute right-[var(--base-padding-x)] bottom-[calc(var(--base-padding-y)*0.32)] min-[813px]:bottom-0 left-[var(--base-padding-x)] flex h-[var(--base-padding-y)] items-center justify-between"
         >
           <div
             id="home-hero-scroll-container-crosses"

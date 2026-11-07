@@ -10,7 +10,7 @@ assert.ok(homeMarkup.includes('min-[813px]:pt-[calc(var(--vh,1vh)*5.3)]'), 'desk
 assert.ok(homeMarkup.includes('min-[813px]:mt-[calc(var(--base-padding-y)*0.9)]'), 'desktop stage top aligns with the reference');
 assert.ok(homeMarkup.includes('min-[813px]:mb-[calc(var(--base-padding-y)*0.05)]'), 'desktop stage bottom aligns with the reference');
 assert.ok(homeMarkup.includes('min-[813px]:pb-[calc(var(--base-padding-y)*0.94)]'), 'desktop section bottom matches the reference viewport');
-assert.ok(homeMarkup.includes('bottom-0'), 'desktop scroll cue sits on the reference bottom edge');
+assert.ok(homeMarkup.includes('min-[813px]:bottom-0'), 'desktop scroll cue sits on the reference bottom edge');
 assert.ok(homeMarkup.includes('mb-[calc(var(--base-padding-y)*1.35)]'), 'mobile stage bottom aligns with the reference');
 fs.mkdirSync('temp',{recursive:true});
 const dir = fs.mkdtempSync(path.resolve('temp/home-motion-unit-'));
