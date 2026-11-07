@@ -41,8 +41,8 @@ assert.deepEqual(atlasCard?.categories, ["concept", "web", "design", "developmen
 assert.equal(atlasDetail?.categoriesText, atlasCard?.categoriesText, "Atlas Motion detail metadata stays synchronized with its archive card");
 const porsche = details.find(project => project.id === "porsche_dream_machine");
 assert.equal(porsche?.launchCta?.label, "Watch Video", "Porsche uses the current live film CTA label");
-assert.equal(porsche?.launchCta?.isVimeoOverlay, true, "Porsche's current film CTA opens the in-page video overlay");
-assert.equal(porsche?.launchCta?.vimeoId, "783015830", "Porsche's film overlay uses the current Vimeo asset ID");
+assert.equal(porsche?.launchCta?.href, "https://player.vimeo.com/video/783015830", "Porsche links directly to its current Vimeo player");
+assert.equal(porsche?.launchCta?.isVimeoOverlay, false, "Porsche's Vimeo player remains a direct external link");
 const categoriesById = Object.fromEntries(projects.map(project => [project.id, project.categoriesText]));
 assert.deepEqual(categoriesById, {
   "oryzo_ai": "concept • web • design • development • 3d • animation",

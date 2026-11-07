@@ -660,15 +660,5 @@
         "3D"
       ]
     }
-  },
-  "detailOverrides": {
-    "porsche_dream_machine": {
-      "launchCta": {
-        "label": "Watch Video",
-        "href": "",
-        "isVimeoOverlay": true,
-        "vimeoId": "783015830"
-      }
-    }
   }
 }
