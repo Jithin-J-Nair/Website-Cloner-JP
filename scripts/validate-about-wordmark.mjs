@@ -223,6 +223,12 @@ try {
       // The source behavior intentionally pauses a row while it is hovered.
       await page.mouse.move(width - 2, height - 2);
       await seekY(clientsTop);
+      const firstMarquee = clients.locator('.about-client-marquee').first();
+      await firstMarquee.scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => {
+        const track = document.querySelector('#about-clients .about-client-marquee-track');
+        return Boolean(track && getComputedStyle(track).animationPlayState === 'running');
+      });
       const logoState = await clients.evaluate(section => {
         const firstSets = [...section.querySelectorAll('.about-client-marquee-set:not([aria-hidden="true"])')];
         const marks = firstSets.flatMap(set => [...set.querySelectorAll('img.about-client-logo-art')]);
@@ -250,7 +256,7 @@ try {
       assert.equal(logoState.animation, 'about-client-marquee');
       assert.equal(logoState.playState, 'running', 'visible client marquees animate only while in view');
       if (width !== 390) {
-        await clients.locator('.about-client-marquee').first().hover();
+        await firstMarquee.hover();
         assert.equal(await clients.locator('.about-client-marquee-track').first().evaluate(el => getComputedStyle(el).animationPlayState), 'paused', 'hover pauses the marquee without stopping other rows');
         await page.mouse.move(width - 2, height - 2);
       }
