@@ -344,6 +344,8 @@ export function StudioHud() {
       document.getElementById("end-section") ?? document.getElementById("footer-section");
     if (target) {
       target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
       return;
     }
     window.location.href = `mailto:${LUSION_GLOBAL_CHROME.footer.enquiriesEmail}`;

@@ -127,6 +127,16 @@ const backdropRestoresFocus =
 console.log(`  ${backdropRestoresFocus ? "PASS" : "FAIL"} Navigation backdrop close restores focus to its trigger`);
 if (!backdropRestoresFocus) failures += 1;
 
+const contactHandlerStart = hudSource.indexOf("const scrollToContactSection = useCallback");
+const contactHandlerEnd = hudSource.indexOf("const handleProjectBack", contactHandlerStart);
+const contactHandler = contactHandlerStart >= 0 && contactHandlerEnd > contactHandlerStart
+  ? hudSource.slice(contactHandlerStart, contactHandlerEnd)
+  : "";
+const contactRestoresFocus = contactHandler.includes('target.setAttribute("tabindex", "-1")') &&
+  contactHandler.includes("target.focus({ preventScroll: true })");
+console.log(`  ${contactRestoresFocus ? "PASS" : "FAIL"} Contact menu action moves focus to its scroll destination`);
+if (!contactRestoresFocus) failures += 1;
+
 console.log("\n[3/5] Auditing Shared Lusion Chrome Landmarks & Page Sections...");
 const homeRes = await fetch(`${BASE_URL}/`);
 const homeHtml = await homeRes.text();
