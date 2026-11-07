@@ -26,12 +26,24 @@ try{
  await card.press('Enter');
  await page.getByRole('dialog').waitFor();
  await page.waitForFunction(()=>document.querySelector('main video').paused);await state('modal-pauses-preview');
+ const modalVideo=page.locator('#video-overlay__vimeo-video video');
+ await page.getByRole('button',{name:'PAUSE'}).click();
+ await page.waitForFunction(()=>document.querySelector('#video-overlay__vimeo-video video')?.paused);
+ const beforeKeyboardSeek=await modalVideo.evaluate(v=>v.currentTime);
+ const progressSlider=page.getByRole('slider',{name:'Video playback progress'});
+ await progressSlider.focus();
+ await progressSlider.press('ArrowRight');
+ await page.waitForFunction(previous=>document.querySelector('#video-overlay__vimeo-video video')?.currentTime>previous+0.2,beforeKeyboardSeek);
+ const afterKeyboardSeek=await modalVideo.evaluate(v=>v.currentTime);
+ assert.ok(afterKeyboardSeek>beforeKeyboardSeek+0.2,'ArrowRight must seek the actual showreel video, not only its visual slider');
+ await progressSlider.press('Home');
+ await page.waitForFunction(()=>document.querySelector('#video-overlay__vimeo-video video')?.currentTime<0.2);
  await page.keyboard.press('Escape');
  await page.getByRole('dialog').waitFor({state:'hidden'});await playing('/mobile_video0.mp4');
  await page.evaluate(()=>window.__lenis?window.__lenis.scrollTo(0,{immediate:true}):window.scrollTo(0,0));
  await page.waitForFunction(()=>document.querySelector('main video').paused);await state('offscreen-paused');
  assert.deepEqual(report.errors,[]);
  report.passed=true;
- console.log('PASS responsive desktop/mobile source selection, real playback, live reduced motion, keyboard modal pause/resume and offscreen pause.');
+ console.log('PASS responsive desktop/mobile source selection, real playback, live reduced motion, keyboard modal seeking, modal pause/resume and offscreen pause.');
 }catch(e){report.error=e.message;process.exitCode=1;console.error(e);}
 finally{fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');await browser.close();}
