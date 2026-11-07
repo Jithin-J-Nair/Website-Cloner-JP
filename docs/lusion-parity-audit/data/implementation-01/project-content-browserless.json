@@ -1,0 +1,944 @@
+{
+  "scope": "17 independent detail routes: rendered SSR title/metadata/paragraphs/services/links/gallery count+order/image URLs/next chain against authorized frozen manifest. Not visual, playback, source-image identity or external reachability acceptance.",
+  "states": [
+    {
+      "route": "/projects/oryzo_ai",
+      "title": "Lusion - Oryzo AI",
+      "paragraphs": 2,
+      "services": 6,
+      "links": 4,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "video",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "video",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ]
+      ],
+      "next": "/projects/of_the_oak"
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "title": "Lusion - Of The Oak",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 1,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "text",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ]
+      ],
+      "next": "/projects/devin_ai"
+    },
+    {
+      "route": "/projects/devin_ai",
+      "title": "Lusion - Devin AI",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 0,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "video",
+          2
+        ],
+        [
+          "video",
+          3
+        ],
+        [
+          "image",
+          4
+        ]
+      ],
+      "next": "/projects/porsche_dream_machine"
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "title": "Lusion - Porsche: Dream Machine",
+      "paragraphs": 2,
+      "services": 4,
+      "links": 2,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "video",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ],
+        [
+          "video",
+          14
+        ],
+        [
+          "image",
+          15
+        ],
+        [
+          "image",
+          16
+        ]
+      ],
+      "next": "/projects/synthetic_human"
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "title": "Lusion - Synthetic Human",
+      "paragraphs": 2,
+      "services": 4,
+      "links": 0,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ]
+      ],
+      "next": "/projects/ddd_2024"
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "title": "Lusion - DDD 2024",
+      "paragraphs": 1,
+      "services": 5,
+      "links": 0,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ]
+      ],
+      "next": "/projects/spaace"
+    },
+    {
+      "route": "/projects/spaace",
+      "title": "Lusion - Spaace - NFT Marketplace",
+      "paragraphs": 2,
+      "services": 4,
+      "links": 1,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ]
+      ],
+      "next": "/projects/choo_choo_world"
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "title": "Lusion - Choo Choo World",
+      "paragraphs": 2,
+      "services": 6,
+      "links": 2,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "video",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "video",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ],
+        [
+          "image",
+          14
+        ],
+        [
+          "image",
+          15
+        ],
+        [
+          "image",
+          16
+        ],
+        [
+          "image",
+          17
+        ],
+        [
+          "image",
+          18
+        ]
+      ],
+      "next": "/projects/zero_tech"
+    },
+    {
+      "route": "/projects/zero_tech",
+      "title": "Lusion - Zero Tech",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 2,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ]
+      ],
+      "next": "/projects/spatial_fusion"
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "title": "Lusion - Meta: Spatial Fusion",
+      "paragraphs": 2,
+      "services": 4,
+      "links": 1,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "video",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ],
+        [
+          "image",
+          14
+        ],
+        [
+          "image",
+          15
+        ],
+        [
+          "image",
+          16
+        ]
+      ],
+      "next": "/projects/worldcoin"
+    },
+    {
+      "route": "/projects/worldcoin",
+      "title": "Lusion - Worldcoin Globe",
+      "paragraphs": 2,
+      "services": 3,
+      "links": 0,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "video",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "text",
+          4
+        ],
+        [
+          "image",
+          5
+        ]
+      ],
+      "next": "/projects/lusion_labs"
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "title": "Lusion - Lusion Labs",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 2,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "video",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ],
+        [
+          "image",
+          14
+        ],
+        [
+          "image",
+          15
+        ],
+        [
+          "image",
+          16
+        ]
+      ],
+      "next": "/projects/my_little_story_book"
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "title": "Lusion - My Little Storybook",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 3,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "video",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ],
+        [
+          "image",
+          14
+        ],
+        [
+          "image",
+          15
+        ]
+      ],
+      "next": "/projects/soda_experience"
+    },
+    {
+      "route": "/projects/soda_experience",
+      "title": "Lusion - Soda Experience",
+      "paragraphs": 2,
+      "services": 3,
+      "links": 1,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "video",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ]
+      ],
+      "next": "/projects/infinite_passerella"
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "title": "Lusion - Infinite Passerella",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 2,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "video",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "video",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ]
+      ],
+      "next": "/projects/the_turn_of_the_screw"
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "title": "Lusion - The Turn Of The Screw",
+      "paragraphs": 1,
+      "services": 4,
+      "links": 2,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "video",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "image",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ]
+      ],
+      "next": "/projects/maxmara_bearings_gifts"
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "title": "Lusion - Max Mara: Bearing Gifts",
+      "paragraphs": 3,
+      "services": 1,
+      "links": 1,
+      "gallery": [
+        [
+          "image",
+          0
+        ],
+        [
+          "video",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "image",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ],
+        [
+          "image",
+          7
+        ],
+        [
+          "image",
+          8
+        ],
+        [
+          "video",
+          9
+        ],
+        [
+          "image",
+          10
+        ],
+        [
+          "image",
+          11
+        ],
+        [
+          "image",
+          12
+        ],
+        [
+          "image",
+          13
+        ],
+        [
+          "image",
+          14
+        ],
+        [
+          "image",
+          15
+        ],
+        [
+          "image",
+          16
+        ]
+      ],
+      "next": "/projects/oryzo_ai"
+    }
+  ],
+  "passed": true
+}

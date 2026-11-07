@@ -15,7 +15,7 @@ See `data/hero-assets.json`. HeroCrossesStage explicitly loads `/assets/models/h
 
 ## Scope separation
 
-- Home: HeroCrossesStage, GoalTunnelSection, GoalDownstreamScenes and astronaut/captured-buffer loaders require scene-by-scene review.
+- Home: HeroCrossesStage was subsequently read in full with its physics module; GoalTunnelSection, GoalDownstreamScenes and astronaut/captured-buffer loaders still require a complete scene-by-scene material/lifecycle review.
 - About: procedural plume, terrain, source team geometry/glyph field, expertise and CTA each require their own render/resource/lifecycle checks.
 - Shared CTA and project media have independent lifecycle and loading costs.
 - Preserved experimental Three modules must not be promoted into production simply because their names sound relevant.
@@ -39,3 +39,18 @@ Current source-browser access is blocked. Consequently, no live silhouette, ligh
 - Exercise route transitions, hidden/offscreen pause, resize, repeated entry and physical-device behavior where access exists.
 
 No post-processing engine, shader package, new model or invented source asset was added. Existing procedural 3D plume and authorized source team assets are preserved. Source-asset rights remain distinct from ECC's MIT documentation license.
+
+## Implementation batch: what changed and what did not
+
+- Release activity uses actual elapsed time while bounded collision integration and held-pointer response remain unchanged; numerical positional-equality checks and the unchanged full Home motion browser gate pass. This is not a new shader, geometry or camera.
+- Source team geometry and the real procedural 3D plume are preserved, not replaced by video or a generic sphere. Original source-loader security/stale-load/recovery/disposal tests remain byte-identical to HEAD and pass with additional separate lifecycle checks.
+- Fifteen client SVGs and source-derived card-back ink restore available artwork; this is 2D source-asset identity, not certification of the 3D field/materials. The PNG generator runs in prebuild using the tracked bundled source; provenance is `data/implementation-01/card-derivation.json`.
+- Recognition vectors are authored approximations to observed eight-lobed / concave-star / 3×3-dot marks, not recovered proprietary vector control points.
+
+All-route local-checkpoint **static** raster regression explicitly hides canvas/video on both sides; unmasked review images are also retained. Zero static differences must never be represented as zero GLSL/Three.js differences or original-image parity. Normal About follow-up records the real scene probe while offscreen; its frameTimes are RAF intervals, not GPU FPS.
+
+## Available native expertise connector — not yet promoted
+
+Canonical About `connectorSpline` points to `/assets/models/lines/line_capability.buf`. The existing validated container decoder was used for inspection: meshType Mesh, 640 vertices, 1,914 indices; packed CP/position/Cd attributes. CP pairs share X/Y while their third values alternate 0/1; original shader semantics/width/draw progress are not inferred from the attribute name. A diagnostic 2D plot suggests the stored loop; it is not a recovered camera or original renderer. Current expertise SVG still uses an authored path. Native shape placement/progress must be calibrated against the recording before replacing it; this remains an explicit graphics gap rather than an invented curve claim.
+
+The last scoped fixes are 2D mobile artwork layout and missing project text, not GLSL/material changes. The 120-state and affected 18-state static gates cannot score this connector or plume/terrain optics as verified high fidelity.

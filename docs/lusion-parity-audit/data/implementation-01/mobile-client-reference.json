@@ -1,0 +1,19 @@
+{
+  "source": "docs/validation/phase-g/reference/10c-about-clients-awards--390x844.jpg",
+  "sha256": "8a96a19be51b55339af4432e665be48c17c687dfaa79dc3869301986d1692406",
+  "historicalDeclaredProvenance": "SHA-256 verified lusion.co bundle on local origin server + live https://lusion.co/ HTML verification",
+  "record": {
+    "id": "10c-about-clients-awards",
+    "route": "/about",
+    "viewport": "390x844",
+    "width": 390,
+    "height": 844,
+    "scrollY": 10288,
+    "targetScrollY": 10288,
+    "maxScrollY": 18273,
+    "action": null,
+    "file": "docs/validation/phase-g/reference/10c-about-clients-awards--390x844.jpg",
+    "capturedAt": "2026-10-22T10:05:13.927Z"
+  },
+  "limits": "Historical locally hosted captured source, not fresh current-live verification; marquee phase differs."
+}

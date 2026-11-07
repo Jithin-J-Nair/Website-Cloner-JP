@@ -2,6 +2,24 @@
 
 This is the initial register of established findings, not a claim that the full-site visual audit is complete. No live visual parity scores are assigned while the source browser is inaccessible. All reviews are sequential in this environment; no subagent results are fabricated.
 
+## Latest status (supersedes discovery-time statuses below)
+
+| ID | Current status and evidence |
+| --- | --- |
+| LP-001 / 003 / 005 | Validator boundaries, truthful route count and independent browser output fixed/verified in prior commits. |
+| LP-002 | Current-live verification blocked; captured implementation explicitly authorized and ongoing. |
+| LP-004 | Implemented and browser-verified desktop/mobile playback, live reduced motion, keyboard modal and offscreen pause. OS-background not exercised. |
+| LP-006 | Reproduced activity-clock root cause; release-only fix; expanded numerical checks and **unchanged full Home browser gate PASS**. First failed repair retained. |
+| LP-007 | Stale procedural-source assertion corrected; original source-team test unchanged; extra lifecycle suite; About suite PASS. |
+| LP-008 | Unknown Atlas/Everswap reject; verified canonical fallback still tested; all 20 asset/security tests PASS. No invented allowance/route. |
+| LP-009 | Actual 15 SVGs restored; all 32 copies decoded and full settled 1920 wall inspected. Six-viewport settled follow-up remains separate from initial 120-state gate. |
+| LP-010 | Source-derived back ink restored; normal 1920 back-facing render inspected. Outer frame lost with blue-background removal: inset frame restored and normal back-facing render rechecked. Original fan/flip remains untouched; exact source pose unverified. |
+| LP-011 / 012 | Reference-informed SVG marks and clipped full-width separators implemented; six-size normal capture/structure checks pass; sampled renders inspected. |
+| LP-013 | Historical mobile reference inspected; actual 72px-vs-130px RED; three-across CSS and all-content reduced-motion grid implemented; 390/375/1440 preference-cycle browser test PASS; six-size settled follow-up PASS. |
+| LP-014 | Two missing gallery text panels restored. All 17 rendered SSR content/order checks PASS; four real browser text renders PASS. |
+
+The entries below retain discovery evidence and the original plans/failures. “Open” in those historical paragraphs is not the latest regression verdict.
+
 ## LP-001 — Application validators traverse scratch and vendored examples
 
 - Route: all routes / repository build pipeline.
@@ -118,3 +136,67 @@ This is the initial register of established findings, not a claim that the full-
 - Verification: retain traversal, MIME/CSP/nosniff, byte-range and font-blocking assertions; establish expected fallback identity with current canonical/live data.
 - Evidence: data/assets-test.log, additional-tests.json.
 - Status: open; tests unchanged.
+
+## Captured-reference implementation authorization / batch 01
+
+The user now authorizes implementation from captured evidence; the earlier live-only restriction is superseded. Preserve existing checkpoints. LP-006–008 remain the first fixes. Additional evidence-backed work planned before edits:
+
+- LP-009: About client wall uses text instead of the 15 verified bundled SVG logos. Source recording 15.50s / historical E05; canonical manifest already supplies logo sources. Restore those assets and the recorded Coca-Cola European Partners accessible label; do not rewrite the frozen capture. P1, frontend-patterns/accessibility, verify rendered assets, loading, duplicated-copy semantics and screenshots.
+- LP-010: About playing-card backs use replacement SVG ornaments despite a verified bundled back.png matching recording 24.50s / E08. Restore actual linework, retain existing fan/flip/camera progression, verify back-facing screenshots and controls. P1, frontend-patterns/browser-qa; no invented motion curve.
+- LP-004 implementation plan: use one responsive background-video source, viewport/visibility/reduced-motion aware playback, preserve modal keyboard behavior and explicit still fallback. Verify source/play/pause and mobile before/after.
+
+These entries are planned implementations, not preemptive verified fixes.
+
+### LP-006 reproduced root cause / planned repair
+
+Actual pointercancel bubbles to the expected element; subsequent influencedPieces is 0. In 90 seconds the trace records roughly 96 further frames and energy remains 0.00003. The indicator is decayed only by the capped 1/120 collision substeps, so long real frames lengthen its apparent release indefinitely. Preserve the collision accumulator cap and all renderer scheduling. Decay only the input-activity envelope using elapsed input time, separately from bounded collision integration. Add low-frame-rate numerical cases before repair, keep the existing 90-second browser assertion, then rerun it unchanged. Trace: data/implementation-01/cancellation-before.json.
+
+## LP-011 — Recognition marks vary with platform font glyphs
+
+AboutRecognition uses Unicode asterisk/star/grid characters. Supplied recording / historical E06–E07 show an eight-lobed rounded award rosette, a concave four-point article mark and a 3×3 circular-dot talk mark. Magnified captured crops were inspected. P2, frontend-design-direction/frontend-patterns. Plan: deterministic inline SVG reproducing these observed categories/shapes; totals/data unchanged; no animation or external font. Verify rendered marks against recorded frames; no pixel-perfect vector claim.
+
+## LP-012 — Award separators stop at the right-hand data column
+
+AboutPageStyles applies a border only to right-column award groups. E06 shows full-bleed horizontal group separators across the left outline word as well. P2, design-system audit mode. Plan: clipped, full-width pseudo-element rules while preserving the table grid, text and row timing. Verify full-width lines, clipping and no horizontal overflow at all six sizes.
+
+### LP-010 follow-up — preserve the card's outer frame
+
+Normal back-facing rendered evidence exposed an omission not visible in reduced-motion front-facing screenshots: removing baked blue from back.png blends its outer blue silhouette into the stage, while the previous SVG and captured reference have a white outer rounded frame. The native inner linework is correct. Root cause: derivative intentionally retains white ink but removes the blue silhouette; wrapper lacked the previous outer stroke. Surgical plan: route-owned inset white frame on the existing rounded back face, without altering dimensions, art, fan, flip, camera or controls. Verify all four outer frames in settled normal back-facing renders; exact pose/source-phase remains separately unverified.
+
+## LP-013 — Mobile client wall compresses the marks into five/six columns
+
+- Route/section: `/about`, mobile client wall at 390×844 / 375×812.
+- Category/severity: responsive artwork scale/typography, P2.
+- Captured original: historical phase-g `10c-about-clients-awards--390x844.jpg` shows approximately three large marks across each horizontally moving row and a larger two-line heading, with centered narrow description. Metadata declares locally hosted captured source; it is not current-live evidence.
+- Current rendered clone: settled 390/375 captures show all five/six marks squeezed across the viewport, making native SVG artwork extremely small; heading is 8.5vw and description left-aligned.
+- Root cause: desktop track/set widths and flexible tile widths persist at mobile; the native 240×240 SVG art includes internal whitespace.
+- Skill: design-system audit mode, frontend-patterns, browser-qa; those entry instructions have been read fully.
+- Planned fix before edit: mobile-only content-sized duplicate sets, one-third-viewport tiles, full-bleed clipped rows, reference-informed heading sizing/wrapping and centered description. Keep canonical brand order, duplication/AT semantics, original CSS duration/direction/loop and offscreen/reduced-motion handling. Do not change scroll/3D/card motion.
+- Verification: six-size normal settled capture, assert mobile tile width ≈ viewport/3 and duplicated-set equality; no overflow/errors; recompare the source still with phase/vertical-position limits. Desktop unchanged. Preserve preceding captures.
+- Status: reproduced; actual pre-build browser regression RED (72px vs expected 130px tile at 390). Mobile CSS implemented; live preference-cycle browser regression GREEN at 390/375/1440, six-size settled capture PASS, affected 18-state regression PASS. Reduced-motion fallback explicitly wraps the first copy into a static three-column grid, keeping every mark visible rather than clipping the unmoving wide set.
+
+## LP-014 — Two captured project gallery text panels render as fallback images
+
+- Routes/sections: `/projects/of_the_oak` gallery index 4; `/projects/worldcoin` gallery index 4.
+- Category/severity: missing captured content / gallery semantics, P1.
+- Original: manifest records `type: text`, explicit paragraph text and `fontSizeEm: 1.5` for each panel.
+- Rendered clone: HTTP/SSR gallery renders those records as `<picture><img>` using the generic project's existing poster, omitting the paragraph.
+- Exact difference/root cause: ProjectMediaCard branches only on `video`; every other media type falls through to image. The earlier 371-asset presence census cannot catch missing text.
+- Skills: frontend-patterns, react-patterns, react-testing/e2e-testing (entry instructions read fully).
+- Plan before edits: explicit noninteractive text-panel branch, original text including captured spelling and provided em sizing, inherited project theme, no fabricated heading/asset/aspect ratio; preserve media ordering and all other media/modal behavior.
+- Verification: RED exact rendered SSR media-order comparison retained in `project-content-red.*`; then all 17 routes' complete SSR content/gallery order/links/metadata; actual visible text renders at desktop/mobile; affected-route six-size gate.
+- Status: fixed; full 17-detail SSR content/order verification passes, and both text panels pass actual desktop/mobile visible-text/em-size checks. Original font/spacing fidelity remains separately unverified.
+
+## Defect-scoped captured-reference scores
+
+These are narrow evidence assessments, **not overall route scores or current-live parity**. Unmeasured full-scene categories remain null in the original comparison matrix.
+
+| Scope | Before | After | Evidence / qualification |
+| --- | ---: | ---: | --- |
+| Client artwork identity | 1 | 5 | Before text-only local panels; after actual verified SVG linework, decoded assets and inspected renders. Geometry/timing not included in this identity score. |
+| Card-back artwork | unverified | 4 | Source-derived native ink plus observed outer rounded frame; current normal render inspected against E08. Exact frame width, pose and source phase not measured. |
+| Recognition mark shapes | 2 | 3 | Unicode substitutes replaced by observed rosette/star/dot categories; authored curves remain approximate. |
+| Mobile client horizontal scale/wrapping | 1 | 4 | Historical 390px source, 72px RED vs 130px GREEN tile, readable three-across current render; source phase/vertical placement/fonts not exact. |
+| Two captured gallery paragraphs | 0 | 5 | Previously absent/replaced by image in rendered SSR; exact captured text now visible and browser-compared at desktop/mobile. This is content, not typography/spacing scoring. |
+
+No source-motion/GLSL/camera/performance score of 5 is inferred from a passing test or static screenshot.

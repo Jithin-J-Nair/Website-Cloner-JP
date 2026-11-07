@@ -6,7 +6,7 @@ Inspected package.json, package-lock.json, installed package metadata, actual so
 
 **Decision:** retain the single installed `framer-motion` API for existing DOM motion. Its installed entry exports motion, AnimatePresence, MotionConfig, useReducedMotion, useScroll, useTransform, useMotionValue, useSpring and useAnimate. Do not add `motion`, mix imports or migrate working components merely to copy ECC examples. This is an explicit compatibility adaptation to ECC motion-foundations' import-only rule, not a claim that rule was followed literally. The broader frontend-patterns skill itself still demonstrates framer-motion imports.
 
-Treat the motion guidance in dependency order: foundations → patterns → advanced. All three entry documents were previously read fully and their bytes were verified identical to this task's master snapshot. No new DOM animation implementation has been applied in this checkpoint. Tokenization, cleanup, reduced motion and SSR continuity remain review criteria, not certified existing behavior.
+Treat the motion guidance in dependency order: foundations → patterns → advanced. All three entry documents were previously read fully and their bytes were verified identical to this task's master snapshot. No second DOM animation engine was introduced. New preview lifecycle work uses browser media APIs; About artwork changes retain existing authored card motion. Tokenization, cleanup, reduced motion and SSR continuity remain review criteria, not certified existing behavior.
 
 ## Established architecture from reviewed files
 
@@ -32,7 +32,7 @@ Six fresh live core-page attempts failed with ERR_CONNECTION_CLOSED. No current 
 - Match original and clone scroll/camera phases before comparing tunnel optics.
 - Verify loader progress against actual asset readiness rather than elapsed-time assumptions.
 - Exercise forward/reverse/fast input, resize, reentry, navigation, visibility and context restoration.
-- Inspect project background videos' desktop/mobile selection, offscreen pausing and reduced motion (LP-004).
+- Extend the passed LP-004 media lifecycle checks to all gallery variants and actual OS-background behavior.
 - Verify focus containment/restoration, live preference changes and the shared master-mute/gesture state.
 - Distinguish software rendering, injected visibility, emulated touch and physical hardware measurements.
 
@@ -40,4 +40,20 @@ No original animation durations, easing curves, FPS or performance parity values
 
 ## Recorded gate outcomes
 
-Home-motion fails on pointer cancellation (LP-006). Existing browser gate passes both viewport runs with zero console/page/HTTP errors and a passing desktop showreel keyboard focus test. This is evidence of that specific behavior, not live motion parity. See validation-report.md and raw JSON/logs.
+The original Home cancellation failure is retained. After the release-only activity-clock repair, the **unchanged full Home browser gate passes** at 1440. The existing broad browser gate passed earlier; its date/build scope remains in validation-report.md. Neither result proves original motion parity.
+
+## Implemented release-clock repair
+
+Full HeroCrossesStage and HomeConnectorPhysics source was read before changing it. The delivered cancel event cleared interaction and influencedPieces reached zero, but the activity envelope decayed using capped collision time: about 96 frames advanced during a 90-second trace, leaving energy 0.00003. Evidence: `data/implementation-01/cancellation-before.json`.
+
+The repair passes raw elapsed frame time into physics and uses it **only for released/no-pointer activity decay**. Collision stepping still clamps at 50 ms and substeps at 1/120; held-input decay/gain remains the old behavior. The first broader all-input clock repair failed the unchanged hover test and was superseded, not hidden. No scheduler, renderer, camera, event deadline or existing browser assertion was changed.
+
+`npm run test:motion` now includes the pointer regression: deltas from 1/240 through 2 seconds; finite/monotonic/exact-zero release; identical collision positions for a one-second versus capped-50ms frame; held-pointer energy equivalence. Full numerical suite and unchanged Home browser gate pass. Home report and hero renders are under `evidence/implementation-01/home-motion/`. This is functional correctness in the tested environment, not recovered original physics or hardware performance.
+
+## Project preview lifecycle
+
+ProjectPreviewVideo keeps SSR/poster continuity, assigns only the viewport-selected source when visible/playable, pauses for live reduced motion, offscreen, hidden document and open shared modal, and removes its observer/listeners on cleanup. No independent RAF or scroll controller was added. Actual desktop/mobile playback and Enter/Escape modal continuity pass in `project-preview-browser.json`; hidden-document code exists but real OS-background delivery was not exercised.
+
+## Mobile client loop and reduced-motion continuity
+
+Historical 390px reference shows roughly three marks across. The new mobile-only content-sized duplicate sets retain the existing CSS duration/direction and -50% seam. Actual normal→reduced→normal checks pass at 390/375/1440: equal normal duplicate widths, restored three-across mobile width, no document overflow, and no animation under reduced motion. Reduced mode uses a static three-column wrapping first copy so no frozen offscreen brands are lost. This is functional/reference-informed responsive work, not recovery of original loop timings.

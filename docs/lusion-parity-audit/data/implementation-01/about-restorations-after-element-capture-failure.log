@@ -1,0 +1,10 @@
+file:///home/user/Website-Cloner-JP/docs/lusion-parity-audit/harness/capture-about-restorations.mjs:22
+      const shot=await Promise.race([cdp.send('Page.captureScreenshot',{format:'jpeg',quality,captureBeyondViewport:false,fromSurface:true}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Native viewport capture exceeded 30000ms')),30000)})]);
+                                                                                                                                                                                                  ^
+
+Error: Native viewport capture exceeded 30000ms
+    at Timeout.<anonymous> (file:///home/user/Website-Cloner-JP/docs/lusion-parity-audit/harness/capture-about-restorations.mjs:22:195)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+
+Node.js v22.22.3

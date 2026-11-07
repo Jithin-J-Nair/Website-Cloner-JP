@@ -1,0 +1,8 @@
+
+> lusion-studio-reconstruction@1.0.0 typecheck
+> tsc --noEmit
+
+src/components/pages/LusionProjectDetailView.tsx(103,77): error TS2339: Property 'fontSizeEm' does not exist on type '{ index: number; type: string; basePath: string; desktopSrc: string; mobileSrc: string; hasDedicatedMobileVariant: boolean; declaredWidth: number; declaredHeight: number; actualWidth: number; ... 6 more ...; text?: undefined; } | ... 8 more ... | { ...; }'.
+  Property 'fontSizeEm' does not exist on type '{ index: number; type: string; basePath: string; desktopSrc: string; mobileSrc: string; hasDedicatedMobileVariant: boolean; declaredWidth: number; declaredHeight: number; actualWidth: number; ... 4 more ...; hasAudio?: undefined; }'.
+src/components/pages/LusionProjectDetailView.tsx(104,17): error TS2339: Property 'text' does not exist on type '{ index: number; type: string; basePath: string; desktopSrc: string; mobileSrc: string; hasDedicatedMobileVariant: boolean; declaredWidth: number; declaredHeight: number; actualWidth: number; ... 6 more ...; text?: undefined; } | ... 8 more ... | { ...; }'.
+  Property 'text' does not exist on type '{ index: number; type: string; basePath: string; desktopSrc: string; mobileSrc: string; hasDedicatedMobileVariant: boolean; declaredWidth: number; declaredHeight: number; actualWidth: number; ... 4 more ...; hasAudio?: undefined; }'.

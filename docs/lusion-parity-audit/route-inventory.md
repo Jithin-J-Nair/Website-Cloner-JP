@@ -82,3 +82,11 @@ Two captured launch hrefs are empty (Soda Experience, Max Mara). Current code pr
 Home: hero → reel → featured → goal/tunnel → closing CTA → footer → next-page portal is the captured sequence, not a fresh live observation. About opening, team, clients, recognition, expertise, closing/footer require full matched-state review. Each project gallery, footer and navigation must be inspected independently. Initial viewport census does not close those requirements.
 
 Extra existing `/work`, `/labs`, `/contact` and `/design-system` surfaces are preserved. Their existence does not add them to the captured 20-route first-party inventory.
+
+## Implementation verification addendum
+
+Captured implementation remains authorized despite current-live access limits. Both all-route 120-state local-checkpoint runs passed in their recorded build scope. The final mobile/gallery patch affects only About, Of The Oak and Worldcoin; see its separate 18-state follow-up rather than implying that it is a third full-site run.
+
+The complete rendered SSR content/gallery-order checker independently traverses all 17 details: titles and descriptions, captured paragraph text, services, links, media type/index ordering, image sources, launch semantics and next chain. It exposed two omitted text panels (Of The Oak index 4 and Worldcoin index 4), which are now actual paragraphs rather than duplicate fallback images. All 17 pass after the repair. Four real browser captures separately verify visible restored paragraphs at 1440×900 and 390×844; this does not close gallery visual fidelity.
+
+The old phase-g screenshot set includes historical Atlas Motion/Everswap detail-shaped capture paths, but its declared local-bundle provenance is not a successful current-live URL/redirect/ownership inspection. Those older labels are not silently promoted into canonical route data, launch destinations or verified live first-party pages. The 20-route frozen manifest is unchanged; current-live classification of the two extra entries remains open.

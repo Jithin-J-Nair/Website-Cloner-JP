@@ -5,9 +5,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/frontend-design-direction/SKILL.md",
     "sha256": "71a40f7bc4a28da01b54527fe5590f6055c93adc630e6ceee8c892b35c980893",
     "readEvidence": "Prior full read, exact byte match verified against master snapshot",
-    "appliedTo": "Applied to evidence discipline, not visual redesign",
-    "filesOrComponents": "README.md; harness/capture-route-matrix.mjs",
-    "verification": "Reference unavailable explicitly blocks parity scores; local evidence only"
+    "appliedTo": "Applied captured-reference evidence discipline and observed recognition/artwork categories",
+    "filesOrComponents": "AboutRecognition; AboutExpertiseCards; AboutPageView; visual-difference-register.md",
+    "verification": "E05\u2013E08 historical panels preserved with provenance; actual mark assets restored; exact vectors/phase/current-live parity not claimed."
   },
   {
     "skill": "design-system",
@@ -15,9 +15,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/design-system/SKILL.md",
     "sha256": "1969e4cb6cd13cdafff5f84353047d6e55cebc24e1a595ec48e6e2c666f3d8b1",
     "readEvidence": "Full read_file output in current task, not truncated",
-    "appliedTo": "Evaluated audit mode; token extraction/rendered visual audit pending",
-    "filesOrComponents": "No production styling changed",
-    "verification": "Do not generate a replacement visual identity"
+    "appliedTo": "Applied audit mode to route-owned recognition separators and mark sizing; no new design identity",
+    "filesOrComponents": "AboutPageStyles; AboutRecognition; mobile client wall",
+    "verification": "Reference-informed full-width rules/marks; normal 1920 review and six-size rerun; no global theme/font change. 390px source inspected; mobile 72px RED \u2192 130px GREEN; desktop unchanged; preference-cycle test PASS."
   },
   {
     "skill": "make-interfaces-feel-better",
@@ -45,9 +45,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/frontend-patterns/SKILL.md",
     "sha256": "a5b971eb9e74cd763c7e3308bfd888e0d9cf69f8b88477659889d77182479740",
     "readEvidence": "Full read_file output in current task, not truncated",
-    "appliedTo": "Applied to architecture review only",
-    "filesOrComponents": "StudioShell, SmoothScrollProvider, project pages (reviewed)",
-    "verification": "Found existing framer-motion examples; preserve composition and existing stack"
+    "appliedTo": "Applied composition and verified artwork restoration",
+    "filesOrComponents": "ProjectPreviewVideo; AboutPageView; AboutExpertiseCards; AboutRecognition; LusionProjectDetailView text panels",
+    "verification": "Actual bundled logos/card ink; compatible existing React architecture; no new renderer/engine/dependency. Mobile three-across layout and captured gallery text rendered/verified."
   },
   {
     "skill": "react-patterns",
@@ -55,9 +55,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/react-patterns/SKILL.md",
     "sha256": "f3208d44a5d553038c42e046cec4dc16e4a3d90a9dbf931f883a2e21919a64a9",
     "readEvidence": "Full read_file output in current task, not truncated",
-    "appliedTo": "Applied to lifecycle/source review only",
-    "filesOrComponents": "LusionProjectDetailView, StudioShell, SmoothScrollProvider (reviewed)",
-    "verification": "LP-004 identified; component implementation not yet changed"
+    "appliedTo": "Applied to browser-media lifecycle and cleanup",
+    "filesOrComponents": "ProjectPreviewVideo",
+    "verification": "Observer, visibility/media listeners and pending-play cleanup; focused real-browser test passes."
   },
   {
     "skill": "react-performance",
@@ -65,9 +65,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/react-performance/SKILL.md",
     "sha256": "ac76e8694d4f802a7bccc3c07a73ac68ace6d82a65ea10f10d8b7384dda61a8f",
     "readEvidence": "Full read_file output in current task, not truncated",
-    "appliedTo": "Applied to performance-risk review, not an optimization claim",
-    "filesOrComponents": "ProjectMediaCard (reviewed)",
-    "verification": "Desktop-only background video and eager autoplay/preload require browser profiling"
+    "appliedTo": "Applied to preview loading/playback control",
+    "filesOrComponents": "ProjectPreviewVideo",
+    "verification": "One viewport-selected source, preload none, offscreen/modal/reduced-motion pause. Not a hardware benchmark."
   },
   {
     "skill": "nextjs-turbopack",
@@ -85,9 +85,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/motion-foundations/SKILL.md",
     "sha256": "ac0dd6de088e8cf2bff57230b365469e893c5f3a9578815a7f113689d0401972",
     "readEvidence": "Prior full read, exact byte match verified against master snapshot",
-    "appliedTo": "Compatibility evaluation only; no new DOM motion applied",
-    "filesOrComponents": "motion-and-interaction-audit.md",
-    "verification": "Keep installed framer-motion; explicit exception to motion/react import rule"
+    "appliedTo": "Applied to preserving interaction invariants and reduced motion",
+    "filesOrComponents": "home-free-body-physics; HeroCrossesStage; ProjectPreviewVideo",
+    "verification": "Release activity uses elapsed time, bounded collision and held-pointer clocks unchanged. Original Home browser gate passes."
   },
   {
     "skill": "motion-patterns",
@@ -135,9 +135,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/e2e-testing/SKILL.md",
     "sha256": "b0e00e7e17cb259101139900816c5528aed18dd10bcf5f9cb42cfc35baf8a755",
     "readEvidence": "Full read_file output in current task, not truncated",
-    "appliedTo": "Applied to browser evidence collection and artifact preservation",
-    "filesOrComponents": "harness/capture-route-matrix.mjs; scripts/phase-c-home-validate.mjs",
-    "verification": "Observable route/title/overflow/errors recorded; browser output redirect changes no assertions"
+    "appliedTo": "Applied observable browser regressions and independent preserved artifacts",
+    "filesOrComponents": "test-project-preview-browser; validate-captured-visuals; capture-about-restorations",
+    "verification": "Two all-route 120-state gates PASS; final affected 18-state gate PASS; six-size normal captures; four visible gallery-text renders; individual failed attempts retained and corrected reruns explicit."
   },
   {
     "skill": "browser-qa",
@@ -155,9 +155,9 @@
     "source": "master@96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af:skills/react-testing/SKILL.md",
     "sha256": "51c18b4e28285bb876ef469e47c6f53108b5a9f900950a60e897c3c24826a65e",
     "readEvidence": "Full read_file output in current task, not truncated",
-    "appliedTo": "Evaluated; React component-test implementation pending",
-    "filesOrComponents": "None",
-    "verification": "No test-runner dependency added; JS boundary regression is not labeled an RTL/component test"
+    "appliedTo": "Applied test-contract alignment and native browser/pure behavior coverage, not an RTL component suite",
+    "filesOrComponents": "test-about-portrait; test-about-source-lifecycle-extra; test-home-pointer-decay; test-project-preview-browser",
+    "verification": "Original source-team tests unchanged; About and motion suites plus actual media playback pass. No RTL runner/dependency claimed. Complete rendered SSR content/order check passes all 17 details; actual text panels verified at desktop/mobile."
   },
   {
     "skill": "repo-scan",

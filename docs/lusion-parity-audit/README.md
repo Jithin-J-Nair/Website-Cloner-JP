@@ -1,66 +1,63 @@
-# Operation Lusion — forensic reconstruction checkpoint
+# Operation Lusion — reconstruction and verification checkpoint
 
-**Date:** 2026-11-07. **Status: incomplete; live-reference access blocks fidelity acceptance.** This folder is a reproducible repository/browser checkpoint, not a finished reconstruction or pixel-perfect certificate.
+**2026-11-07 · Captured-reference implementation authorized; reconstruction remains incomplete.** Current-live parity is unverified. This is implementation work with recorded regressions, not a pixel-perfect certificate.
 
-## What actually changed
+## Latest implementation
 
-1. Fixed application validator boundaries: ESLint/TypeScript no longer traverse ignored `temp` research copies or the read-only `skills` library. Application source/tests and strict rules remain checked. Regression reproduced RED before the fix, then GREEN.
-2. Corrected QA's hardcoded 22-route success message to derive coverage from the manifest's actual **20** routes; no route or security assertion removed.
-3. Added an optional browser-gate output directory so reruns preserve earlier phase-d captures. Default behavior and all pass/fail assertions are unchanged.
-4. Added a clone-only, six-viewport / 20-route initial-state browser census, raw diagnostics, screenshots and a route/skill/defect ledger.
+- Repaired Home pointer-release/cancellation activity timing without altering capped collision stepping, held-pointer response, camera, render scheduling or the existing browser assertions. The **unchanged full Home-motion browser gate passes**.
+- Replaced About's text-only client tiles with the **15 verified bundled SVG marks**, including the recorded Coca-Cola European Partners label. The frozen manifest is unchanged.
+- Restored expertise card-back linework from the bundled 628×876 raster. A deterministic build-time generator produces white-alpha ink; existing fan/flip interpolation remains unchanged.
+- Added responsive project preview-video loading/playback lifecycle: one selected desktop/mobile source, offscreen/reduced-motion/modal pause, existing keyboard-accessible modal and still fallback preserved.
+- Replaced font-dependent recognition glyphs with reference-informed SVGs and extended award separators to the viewport edges within the section's clipping boundary. Exact original vector control points are not claimed.
+- Corrected the mobile client wall to approximately three marks across, with the historical 390px heading/description treatment and an all-content-visible reduced-motion grid.
+- Restored the two omitted captured text panels in Of The Oak and Worldcoin galleries, preserving exact copy, declared em sizing, gallery ordering and theme.
+- Corrected obsolete About/asset test assumptions while preserving the original source-team loader/security/recovery/disposal test unchanged. Added release-clock and real-browser media tests.
 
-**No production rendering code, font, model, route data, scene, physics or content was changed.** The requested full reconstruction remains unfinished. Functional test failures and source/inspection gaps are explicitly recorded rather than hidden by a successful build.
+**All three previously outstanding gates passed in the implementation batch:** About tests, asset tests and the unchanged Home-motion browser gate. Their original failures and the failed first clock-repair attempt remain in `data/`. Full-section fidelity and current-live acceptance are separate, unfinished work. A second 120-state gate with console/network diagnostics also passed; the final three affected routes are rechecked separately after the mobile/gallery fixes.
 
-## Baseline safety and preview
+## Verification scope
 
-- Fixed working branch: `arena/53eb1ea0-website-cloner-jp`.
-- Initial local head was `8e7875f5d2f4615fb244bf4ec1c8509a66956619`; fetched branch ancestry proved a same-branch fast-forward to **5051f5b2a5fc479679f7d238f3d81e647e1beecf** (304 ahead, 0 behind).
-- Authoritative skills: read-only master snapshot **96d3cd3cc51f02dad3a5e4c8705d8e4aa582e2af**, not merged into the app branch.
-- Prior untracked ECC research, About comparison reports, captures and experimental implementation were preserved. No reset, force push, branch switch, master overwrite or PR merge.
-- Port **3000** now serves the repository root's successfully rebuilt production application, including `/about`; the isolated older serving process was deliberately stopped only after the build and census succeeded. Its 5051 application baseline is identical to the untouched source in the root build.
-- Locked dependencies installed with npm ci --legacy-peer-deps; installed Next 16.4.3 now matches the lockfile. No dependency/lockfile edit.
-- Research artifacts and repair code in this checkpoint are separate from the preserved earlier untracked reports. See `data/branch-safety.json`.
-
-## Evidence available
-
-**120 initial screenshots:** 20 captured routes × 1920×1080, 1440×900, 1366×768, 1024×1366, 390×844, 375×812. All 120 navigations returned 200, all titles matched, and no horizontal document overflow, console/page error, warning, failed request or HTTP ≥400 response was observed in the sampled initial state. All 20 unique observed internal destination paths returned 200.
-
-- [Raw route/viewport/state matrix](evidence/clone-initial/matrix.json)
-- [Census summary](data/clone-census-summary.json)
-- [Six overview sheets](evidence/clone-initial/overviews/)
-- [Unscored comparison matrix](data/comparison-status.json)
-
-All six overview sheets were visually inspected. That is a low-resolution initial-state review, not independent inspection of every full-resolution screenshot, every section, every media identity or animation. The matrix records actual DOM/media diagnostics rather than inferring coverage from a build. A shared post-capture checker asserts route/viewport completeness, unique states, HTTP/title/H1/screenshot records, no recorded errors/failed requests and no horizontal overflow. It passed against the saved matrix; negative fixtures also proved it rejects missing/duplicate states, bad HTTP, console errors, overflow, title mismatch and capture exceptions. These are clone smoke criteria, not source parity. The screenshots use SwiftShader and emulated mobile input, DPR 1 / zoom 1. Animation phase was not normalized to a source session.
-
-## Live source blocker
-
-Six actual Chromium visits to the live Home/About/Projects pages at desktop/mobile sizes failed with ERR_CONNECTION_CLOSED. No live source screenshot was captured; other live detail routes and Atlas Motion/Everswap destinations remain unverified. The sandbox allowlist excludes lusion.co. This does **not** establish a public-site outage. The 2026-09-23 captured manifest is a provisional baseline, not promoted to current live truth.
-
-**User decision recorded:** keep current-live verification mandatory. Continue local source forensics and investigate failures, but defer source-dependent visual changes until permitted live-browser access is available. Captured-reference-only reconstruction was not authorized.
-
-## Sequential review roles — no simulated subagents
-
-| Responsibility | Work actually performed | Findings / remaining scope |
+| Evidence | What it establishes | What it does not establish |
 | --- | --- | --- |
-| Visual/UI | Established evidence contract; inspected six clone overview sheets | Source comparison blocked; every-section typography/layout review incomplete |
-| Motion/interaction | Reviewed shell/scroll/transition ownership and four QA/motion scripts; ran numerical and browser motion gates | Framer Motion import adaptation documented; pointer-cancel gate fails; full transition/motion evidence incomplete |
-| 3D/graphics | Checked installed versions, hero model load path and delivered high/low asset hashes | Full material/camera/lifecycle/resource review pending; no shader parity verdict |
-| Content/routes | Parsed manifest, enumerated 20 routes/17 cards/17 detail schemas, checked route/title HTTP and internal destinations | Live 19-card inventory and Atlas/Everswap unknown; full per-project content/gallery audit pending |
-| Responsive/performance | Captured all six sizes, checked initial overflow and media metadata; inspected detail media component | Background mobile-video/lifecycle inconsistency under investigation; no hardware/GPU/physical-phone certification |
-| QA/accessibility | Reproduced/fixed validation boundaries; preserved assertions; ran existing gates and negative-route/security checks | Three known test failures remain; existing desktop showreel keyboard/focus gate passes; full touch/assistive-technology work incomplete |
+| [All-route paired matrix](evidence/implementation-01/visual-report.json) | 20 routes × six sizes, 120 states, zero failures; initial static-UI changed fraction 0 in every pair | Compares local 5051 checkpoint, **not original Lusion**; canvas/video hidden identically for raster gate |
+| [Final affected-route matrix](evidence/implementation-05/visual-report.json) | 18 states: About / Of The Oak / Worldcoin × six sizes after the last scoped fixes; zero gate failures | Not another full 120-state run or original-site parity |
+| Unmasked paired JPGs in the same folder | Reviewable initial renders and selected About sections | Not source-matched camera/animation phases; early client panels were premature lazy-image captures |
+| [Home report](evidence/implementation-01/home-motion/report.json) | Actual hover/release/cancel, reverse scroll, reel/featured/downstream scenes and modal checks at 1440 | No hardware GPU/FPS or original motion-curve certification |
+| [Project media report](data/implementation-01/project-preview-browser.json) | Actual desktop/mobile source switching/playback, live reduced motion, Enter/Escape modal continuity, offscreen pause | OS-background/physical-phone/speaker behavior not tested |
+| [Settled About follow-up](evidence/implementation-04/report.json) | Six sizes; all client SVGs decoded; normal card poses/recognition structure; mobile three-across geometry and live reduced-motion layout checked separately | Capture success is not source parity; marquee phase/vertical framing differs |
+| [All detail content](data/implementation-01/project-content-browserless.json) + [visible text](evidence/project-gallery-text/report.json) | 17 independent rendered SSR content/metadata/gallery-order checks; two restored panels visible in desktop/mobile browsers | Not full-gallery image identity, layout or original motion acceptance |
 
-These are six sequential responsibilities handled by the same agent, not six independently executed specialist agents. Their review scopes are deliberately limited to work actually done.
+Six viewports: **1920×1080, 1440×900, 1366×768, 1024×1366, 390×844, 375×812**, DPR 1 / zoom 1, Chromium SwiftShader and emulated mobile input. Static UI, still imagery, functional motion and hardware performance are deliberately separate verdicts.
 
-## Audit documents
+## Branch and preview safety
 
-1. [Route inventory](route-inventory.md)
-2. [Defect register](visual-difference-register.md)
-3. [Motion/interaction](motion-and-interaction-audit.md)
-4. [Three.js/graphics](threejs-and-graphics-audit.md)
-5. [ECC skill usage](ecc-skill-usage.md)
-6. [Validation report](validation-report.md)
-7. [Remaining gaps](remaining-gaps.md)
+- Work remains on `arena/53eb1ea0-website-cloner-jp`; no master edit, branch switch, force push or PR merge.
+- Port **3000** serves the latest rebuilt implementation, including `/about`.
+- Port **3001** serves the preserved read-only **5051f5b** production checkpoint under `temp/deep-comparison/clone`. It is not silently substituted for the latest implementation.
+- Initial ancestry, dependency installation, validator-boundary repair and initial census are preserved in the earlier commits and audit data. No dependency or lockfile upgrade was introduced by this implementation batch.
+- Unrelated research, prior audits, assets and experiments are preserved. Fonts retain their existing licensing restrictions.
 
-## Resume sequence
+## Source policy
 
-Resolve live-access scope → complete supporting references and source forensics → inspect live route/card destinations → capture matched original/clone section and interaction states → prioritize visual issues → surgical changes with targeted tests and before/after renders → repeat all-route validation and parity review. Existing functional test failures can be diagnosed without inventing source visuals; do not alter physics or security behavior merely to silence a gate.
+Six actual Chromium visits to live Home/About/Projects at desktop/mobile sizes failed with `ERR_CONNECTION_CLOSED`; the sandbox allowlist excludes lusion.co. This does **not** establish a public-site outage. No successful current-live screenshot was captured.
+
+The user's later authorization explicitly permits implementation using the captured manifest, verified assets, reference screenshots and supplied About recording. This supersedes the earlier live-only implementation restriction. **Do not block captured implementation on live access; do not present captured implementation as current-live parity.** Atlas Motion/Everswap destinations and the reported current 19-card archive remain unverified; no routes were invented for them.
+
+## Sequential specialist responsibilities
+
+All reviews below are sequential work by one agent, not fabricated independent subagents.
+
+| Role | Completed scope | Remaining scope |
+| --- | --- | --- |
+| Visual/UI | Captured About artwork/recognition comparison; source-backed artwork restoration; six initial overview review | Source-normalized all-section typography, spacing, imagery and composition |
+| Motion | Full Hero/physics read; reproduced cancellation trace; numerical RED→GREEN and unchanged browser gate | Original timing/camera curves, every global flow and all forward/reverse/touch combinations |
+| 3D/graphics | Verified cross/LOD identity; preserved real plume/team geometry; clock fix keeps collision cap and held-input behavior | Full scene/material/GLSL/resource profiling and matched original graphics |
+| Content/routes | Parsed canonical manifest; all 20 routes HTTP/title/assets; 371 unique detail media references present | Media identity/gallery ordering and unknown external destinations |
+| Responsive/performance | 120-state paired static gate; tested responsive preview lifecycle | Physical-device/GPU/thermal budgets and full-section performance |
+| QA/accessibility | Preserved security tests; real keyboard modal test; live reduced-motion and asset/route checks | Full every-route keyboard/touch/menu/contact/newsletter/screen-reader review |
+
+## Required reports
+
+[Routes](route-inventory.md) · [Defects](visual-difference-register.md) · [Motion](motion-and-interaction-audit.md) · [Graphics](threejs-and-graphics-audit.md) · [ECC skills](ecc-skill-usage.md) · [Validation](validation-report.md) · [Remaining work](remaining-gaps.md)
+
+Continue evidence-backed section and graphics fixes, record actual tests and settled renders, and keep unmeasured parity scores unverified. Build success, a screenshot or local-checkpoint raster equality cannot close the full reconstruction.

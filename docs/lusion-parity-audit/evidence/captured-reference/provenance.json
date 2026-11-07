@@ -1,0 +1,26 @@
+[
+  {
+    "file": "E05-historical-panel.jpg",
+    "copiedFrom": "docs/validation/comparison-audit-2026-11-07/evidence/E05.jpg",
+    "sha256": "67870e14f94e3ac2645fdc611dbc7ab34680f2516a140e4e2fc26517c1f0209a",
+    "interpretation": "Historical source recording/reference LEFT; prior PR16 clone RIGHT, neither a fresh source session nor current rebuilt implementation. Unknown source CSS viewport/progress prevents normalized pixel-difference scoring."
+  },
+  {
+    "file": "E06-historical-panel.jpg",
+    "copiedFrom": "docs/validation/comparison-audit-2026-11-07/evidence/E06.jpg",
+    "sha256": "035f8d71a11dc1b402bbd1b29f5df4743da864732a3274dd9194aae681d6786b",
+    "interpretation": "Historical source recording/reference LEFT; prior PR16 clone RIGHT, neither a fresh source session nor current rebuilt implementation. Unknown source CSS viewport/progress prevents normalized pixel-difference scoring."
+  },
+  {
+    "file": "E07-historical-panel.jpg",
+    "copiedFrom": "docs/validation/comparison-audit-2026-11-07/evidence/E07.jpg",
+    "sha256": "bcf398f8daf12bc45659bf1357b20334e49ee220ddeb8156ff923c5dcad48739",
+    "interpretation": "Historical source recording/reference LEFT; prior PR16 clone RIGHT, neither a fresh source session nor current rebuilt implementation. Unknown source CSS viewport/progress prevents normalized pixel-difference scoring."
+  },
+  {
+    "file": "E08-historical-panel.jpg",
+    "copiedFrom": "docs/validation/comparison-audit-2026-11-07/evidence/E08.jpg",
+    "sha256": "633f8e252cc2976cab67b98a37ba79adcbe43ebbd0b3e3830389929cea4d0bf8",
+    "interpretation": "Historical source recording/reference LEFT; prior PR16 clone RIGHT, neither a fresh source session nor current rebuilt implementation. Unknown source CSS viewport/progress prevents normalized pixel-difference scoring."
+  }
+]

@@ -1,77 +1,79 @@
 # Validation report — 2026-11-07
 
-## Verdict
+## Verdict and reference scope
 
-**Buildable and initial-route smoke checks pass; not all existing regression gates pass. Visual/motion parity with the current live source is unverified.** No application-rendering change was made to obtain these results.
+**The three previously outstanding regression gates now pass:** About source/portrait tests, asset-route tests and the unchanged full Home-motion browser gate. Implementation is buildable, and the all-route/six-viewport local-checkpoint static regression completed with no failures. **Full reconstruction and current-live visual/motion parity are not accepted.**
 
-## Reproduced validation-boundary defect
+Captured-reference implementation is explicitly authorized by the user's later instruction. Earlier live-only restrictions are superseded. Six failed live-browser core-route attempts remain recorded; current-live differences and unknown Atlas Motion/Everswap destinations are unverified.
 
-The initial workspace lint/typecheck/build failed because ignored research included duplicate generated Next bundles and upstream ECC Remotion examples. Lint reported 5,409 errors / 25,456 warnings; TypeScript entered two unrelated research trees. The build's compilation succeeded before research type errors failed the gate. This does not prove a clean 5051 checkout was broken.
+## Implementation batch results
 
-A new regression deliberately reproduced the inclusion defect before changing configuration. Then only `temp` and `skills` were excluded from ESLint/TypeScript roots. Regression verifies src/tests remain checked, strict/noEmit remain enabled and hooks/no-explicit-any stay enabled. No build-error bypass, lint-rule suppression, application/test exclusion or fixture dependency installation was used.
+All paths below are relative to this audit directory unless specified otherwise.
 
-## Results
-
-| Command / check | Outcome | Evidence / precise scope |
+| Check | Actual result | Evidence / limits |
 | --- | --- | --- |
-| Locked npm ci --legacy-peer-deps | PASS | data/npm-ci.log; no dependency/lockfile edit; 13 advisories remain |
-| Boundary regression before repair | EXPECTED FAIL | data/boundaries-before.log; test was written before config repair |
-| node scripts/test-validation-boundaries.mjs after repair | PASS | data/after-boundaries.log; 1.50 s in recorded batch |
-| npm run lint | PASS, **2 warnings** | data/after-lint.log and final-lint.log; zero errors, not warning-free |
-| npm run typecheck | PASS | data/after-typecheck.log |
-| npm run test:motion | PASS | data/after-test-motion.log; numerical/model/source assertions, not animation parity |
-| npm run qa | PASS | data/after-qa.log, final-qa.log; 20 captured routes, two negative routes, asset/security/content/title checks |
-| npm run build + postbuild | PASS | data/after-build.log; 14.18 s recorded, not a universal performance promise |
-| 20 routes × 6 viewport census | PASS initial smoke criteria | 120 screenshots and raw matrix; data/clone-census-summary.json |
-| node docs/lusion-parity-audit/harness/check-route-matrix.mjs | PASS | data/census-check.log; shared checker also appended to future capture runs |
-| Checker negative fixtures | PASS | Missing/duplicate states, bad HTTP, console error, overflow, title mismatch and capture exception each rejected in an in-memory fixture run; no evidence file mutated |
-| npm run validate:home-motion | **FAIL** | 261.59 s; timeout at line 100 after rapid motion + pointercancel, waiting for zero offset energy; LP-006 |
-| LUSION_VALIDATION_OUT_DIR=docs/lusion-parity-audit/evidence/browser-gate npm run validate:browser | PASS | 270.32 s; unchanged assertions; data/browser-validation.log; phase-d-browser-report.json |
-| npm run test:about-portrait | **FAIL** | Old 16K/24K procedural portrait source-string assertion at line 61; numerical geometry checks before it complete; LP-007 |
-| npm run test:assets | **FAIL: 17 pass / 1 fail** | Atlas Motion synthesized fallback expected 200 but receives 404; other security/range/HEAD checks pass; LP-008 |
-| Changed-file ESLint + git diff --check | PASS | Harness/validator changes checked after the final additions |
-| Current live browser reconnaissance | BLOCKED | Six core-route desktop/mobile attempts ERR_CONNECTION_CLOSED; data/live-access.json |
-| Current live visual/motion comparison | NOT RUN | No successful current source capture; all fidelity scores null/unverified |
+| Full unchanged `validate:home-motion` | **PASS**, exit 0 | `data/implementation-01/home-motion-browser-refined.log`; report/hero PNGs in `evidence/implementation-01/home-motion/`. Hover, throw/release/cancel, reverse seek, reel, featured, downstream scenes, modal and errors/assets assertions retained |
+| Full `test:motion`, including pointer regression | **PASS**, exit 0 | `data/implementation-01/motion-unit.log`; pure/source/model tests, not original animation parity |
+| `test:about-portrait` | **PASS**, exit 0 | `data/implementation-01/about-final.log`; original source-team security/stale/recovery/disposal suite remains unchanged; extra lifecycle suite is a separate file |
+| `test:assets` | **PASS**, 20 / 0 | `data/implementation-01/assets-test.log`; unknown Atlas/Everswap rejection, canonical approved fallback, traversal/symlink/font/MIME/CSP/range/HEAD preserved |
+| Real preview-media browser test | **PASS**, exit 0 | `project-preview-browser.json` and log in `data/implementation-01/`; actual desktop/mobile playback, live reduced motion, Enter/Escape modal pause/resume, offscreen pause, errors [] |
+| `qa` | **PASS**, exit 0 | `data/implementation-01/qa-final.log`: 20 captured routes + negative routes + asset security + 46/46 scene assets |
+| `typecheck` | **PASS**, exit 0 | `data/implementation-01/typecheck.log` |
+| `lint` | **PASS**, **one existing warning** | `data/implementation-01/final-lint.log`; StudioFooter unused expression, not warning-free |
+| `build` + prebuild/postbuild | **PASS**, exit 0 | `data/implementation-01/final-build.log`; prebuild deterministically derives card ink from tracked source; latest build ID in `final-build-id.txt` |
+| 20 routes × six sizes paired static gate | **PASS**, 120 states, failures [] | `evidence/implementation-01/visual-report.json`; child exit 0 / 473.74 s in `visual-test-exits.json` |
+| Detail media presence census | **371 unique references, 0 missing** | `data/implementation-01/detail-asset-presence.json`; presence is not image identity or gallery acceptance |
+| Second full all-route gate with console/network diagnostics | **PASS**, 120 states / 0 failures | `evidence/implementation-03/visual-report.json`, exit 0 / 548.83 s. Its build ID is stored in the report. Before final LP-013/014 scoped fixes, not silently relabeled as their final build |
+| Final affected-route gate | **PASS**, 18 states / 0 failures | `evidence/implementation-05/visual-report.json`: About + Of The Oak + Worldcoin × six sizes, final mobile/gallery build, console/HTTP/request/page diagnostics and static gate |
+| Final settled About normal renders | **PASS**, six sizes | `evidence/implementation-04/report.json`, 22.44 s; decoded SVGs, normal card backs/fronts, mobile geometry and recognition structure |
+| Mobile client layout / live preference cycle | **PASS**, 390 / 375 / 1440 | `client-layout-red.*` then `client-layout-browser.json` and GREEN log: normal→reduce→normal, three-across mobile, static content unclipped, duplicate loop widths |
+| All 17 complete SSR detail-content checks | **PASS** | `project-content-browserless.json`, latest explicit exit `project-content-final-exit.json`; paragraphs/services/links/metadata/gallery types+order and next chain. Not visual acceptance |
+| Restored gallery paragraphs, real browser | **PASS**, four states | `evidence/project-gallery-text/report.json`: both projects at desktop/mobile, actual visible exact text and declared em size |
+| Broader unchanged `validate:browser` rerun | **PASS**, exit 0 / 286.74 s | `browser-final.log`, captures/report under `evidence/implementation-01/browser-final`; ran before final mobile/text patches, which have separate affected-route checks |
 
-`after-tests.json`, `browser-tests.json` and `additional-tests.json` retain individual subprocess exits. Their collecting Python processes exiting zero is **not** interpreted as every child test passing.
+The original failures remain in historical data. The first all-input elapsed-clock repair passed units but failed unchanged Home hover; that failed log remains `home-motion-browser.log`. The refined release-only repair passes the same browser gate. No existing timeout, scheduler, assertion or collision cap was weakened.
 
-## Existing warnings
+## What the paired image gate actually means
 
-- LusionProjectDetailView.tsx:85: unused `highlight` parameter.
-- StudioFooter.tsx:174: unused expression.
+- Baseline is the **preserved local 5051 application**, not original Lusion.
+- 20 canonical routes × **1920×1080, 1440×900, 1366×768, 1024×1366, 390×844, 375×812**.
+- DPR 1, reduced motion, seeded initialization, paused media. Canvas/video are hidden on **both** sides solely for the static raster gate; unmasked JPGs are retained separately.
+- Every initial pair had **0 pixels exceeding the channel-delta-24 threshold**. That is not a literal all-channel pixel equality claim, and it is not original-site parity.
+- HTTP 200, exact captured title, nonempty H1 and no horizontal overflow accompany each pair. The second full and final affected-route runs additionally record console/HTTP/request diagnostics. Both record zero warnings/errors and 36 About initialization asset-request aborts each (three URLs × two sides × six sizes). Abort URLs are retained separately, not falsely reported as zero failed requests or proof of completed asset loading. About loader/recovery tests and scene-asset HTTP QA provide separate evidence.
+- Initial-state coverage does not cover every gallery, footer, hover, menu, external URL, transition or animation phase.
 
-No unrelated source cleanup was performed solely to remove warnings.
+The vector/separator follow-up selected only About (six states). A second full 120-state run then passed with console/HTTP/request diagnostics. Subsequent LP-013/014 changes affect only About and two detail pages, so their final-build gate is 18 states. These distinct runs and build scopes are not conflated.
 
-## Initial-state census
+## Settled evidence and capture failures
 
-Six CSS viewport sizes, zoom 1, DPR 1, emulated touch/mobile at 390/375, Chromium SwiftShader. Browser waits for main visibility, preloader removal and fonts, then two animation frames. It does **not** normalize animation/camera progress against Lusion. All 120 sampled states: HTTP 200; exact captured title; no document horizontal overflow, console/page error, warning, failed request or HTTP ≥400 response. All 20 unique internal paths observed in anchors returned 200.
+Early paired client panels were taken immediately after scrolling and contain unloaded lazy SVGs. They remain preserved but are **not accepted artwork-review evidence**. The dedicated restoration harness explicitly loads/decodes all 32 images (15 unique sources) before capture. The initial settled 1920 brand wall was inspected and contains all expected marks, not text substitutes.
 
-Recorded evidence includes H1/description/canonical, links, image completion/natural dimensions, video source/readiness/playback state, Canvas dimensions and Home telemetry. These are diagnostics, not proof that lazy galleries fully loaded or media identity matches the source. The checker asserts completeness, uniqueness, status/title/H1/screenshot records, no recorded errors/failed responses and no overflow. No initial-state record is advertised as a footer/menu/hover/motion-phase test.
+Two normal full-viewport Playwright capture attempts timed out despite fonts being ready. A raw native-CDP diagnostic captured the recognition viewport in **948 ms** under the same 30-second deadline. A subsequent sequence after an oversized element capture also timed out; oversized element capture can change the emulated viewport. The revised harness uses only viewport-sized native captures, with separate upper/lower/middle states rather than resizing the viewport. It asserts actual output dimensions and keeps the same deadline. No production clock/RAF is paused or replaced; no canvas/video is masked in these restoration captures.
 
-All six overview sheets were inspected; all 120 full-resolution images were not independently reviewed. No automatic source-image difference metric was fabricated. `data/comparison-status.json` keeps all 12 category scores null across the 120 cases. Null does not mean missing (0) or verified (5).
+The first viewport then completed all brand/recognition/card structure checks, but the serverless **single-process Chromium** closed during next-context creation. The same context-reuse failure occurred in the About-only paired follow-up. Logs and partial reports are preserved with `*-context-reuse-failure*` names. The harness now launches a fresh browser per viewport; this is process isolation, not an application workaround or a weaker assertion. Session-storage initialization is restricted to HTTP documents rather than forbidden `about:blank` storage access. Fresh-browser isolation subsequently passed all six normal states and the six-state paired follow-up. The later final mobile patch also passed six normal states and the affected 18-state paired gate.
 
-## Existing browser gate coverage
+No application GPU/performance root cause is asserted from these screenshot/context failures. Native CDP stills do not certify motion or hardware FPS.
 
-At 1440×900 and 390×844: six Home section snapshots plus About/archive/Oryzo/Porsche/Spaace initial states. Desktop ShowreelModal Enter, Tab/Shift+Tab containment, Escape and focus restoration pass. Hero Canvas exists with positive measured dimensions; that assertion alone does not establish nonblank original graphics or material correctness.
+## Preserved initial/historical verification
 
-Actual totals: zero console errors, page exceptions or HTTP ≥400 failures. Output includes 23 PNG captures and ten composites against **historical phase-a** imagery. Those composites are not today's live-source observations or normalized animation comparisons. Screenshots and report are in `evidence/browser-gate/`; earlier phase-d evidence was not overwritten. The output override changes no assertion, timeout, route list or reference path.
+The pre-implementation validation narrative is retained in `data/historical-validation-checkpoint.md`. It includes the original RED validator-boundary reproduction, initial 120-state route census and the earlier passing broad browser gate. Those historical results are not relabeled as latest-build acceptance.
 
-## Tests not run / remaining limitations
+The initial saved-matrix checker and negative fixtures rejected missing/duplicate states, bad HTTP, errors, overflow, title mismatch and capture exceptions. The original About source-team test file is byte-identical to its committed baseline; stale procedural source assertions were corrected separately, not by replacing original geometry or deleting security checks.
 
-The About accessibility/budget/capture commands and phase-e audit were not run in this checkpoint. Their output ownership and complete implementation review must precede invocation so earlier evidence is not overwritten. Full every-route menu/contact/newsletter, keyboard/touch/reduced-motion, complete galleries/footers, media lifecycle, reverse scroll, scene disposal and source-matched motion remain unfinished.
+## Remaining acceptance
 
-The initial 120-state census ran against the isolated 5051 production snapshot. After successful root build it was deliberately replaced on port 3000 with the latest root production server. The root HTTP QA and existing browser/motion gates then ran against that server. Source, public/media and dependency files are unchanged relative to 5051, so this is not a silent baseline substitution.
+- Full captured-reference, phase-matched every-section visual/3D/motion comparison and project gallery/media identity.
+- Complete all-route menu/contact/newsletter/audio/cursor/loading/footer and keyboard/touch/reduced-motion flows.
+- Original camera/easing/lighting/material behavior; physical phone/GPU/resource/thermal/speaker/OS-background performance.
+- The 13 dependency advisories (2 low / 11 moderate) remain; no blind audit fix or lockfile change.
+- No commercial-font permission or exact original font metrics are inferred.
 
-No GPU/physical-phone/OS-background/speaker/thermal/hardware-4K60 benchmark or current-live source parity is certified. Existing functional failures are not dismissed as software-renderer artifacts without diagnosis.
+Build success, source regex, a nonempty buffer, a screenshot or local static-raster equality does not close these items. Unmeasured scores remain unverified.
 
-## Stored-log formatting
+## Final scoped fixes and honest exit accounting
 
-Stored text logs normalize line endings and remove terminal progress-line trailing whitespace / extra EOF blank lines for clean Git diffs. Command output, assertion failures and exit-status records are otherwise retained; this is not suppression of a failed gate. Initial raw workspace logs remain in the ignored temp/lusion-parity directory.
+The SSR checker found actual missing text panels in Of The Oak / Worldcoin: media `type: text` fell through to image rendering. Both exact captured paragraphs are now native, noninteractive text panels, with four real browser renders. The original RED content/type mismatch is preserved.
 
-## Follow-up after the reference-scope decision
+A later checker attempt failed because it compared H1 to raw `title` rather than the existing canonical display titles (Porsche spacing; Spaace subtitle). It now independently uses captured `meta.title` without its Lusion prefix. This changes no application title and is not removal of a content assertion. All 17 then passed; the final command's exit 0 is separate. The `final-scoped-test-exits.json` collector therefore correctly remains exit-failure history for that first checker attempt; its failure log points to `project-content-h1-expectation-failure.log`. Other children passed. `project-content-final-exit.json` records the corrected rerun.
 
-The user selected **Keep current-live verification mandatory**. No captured-reference-only visual reconstruction is authorized. Local investigation continued without changing application code.
-
-`node scripts/test-home-pointer-decay.mjs` **passes** (data/pointer-decay-test.log). The full 287-line HomeConnectorPhysics module was read. This diagnostic seeds maximum interaction energy in a two-body, no-pointer numerical setup and verifies finite coordinates, monotonic nonnegative decay and exact zero within six simulated seconds. Four frame deltas (1/240, 1/120, 1/60, 1/20) each reach zero at 4.8 simulated seconds. It does not replace, weaken or bypass the failing browser gate, exercise React event dispatch, use the full 23-body scene, or measure wall-clock recovery/GPU FPS.
-
-The browser integration failure remains LP-006. Next discrimination is actual pointer-event/ray state versus advancing frame/physics steps during the unchanged failing scenario. Partial HeroCrossesStage review identified the event handlers, frame delta cap and software idle scheduling; those policies were **not modified**. No renderer performance cause is established by this isolated passing test. Changed-file ESLint and Git diff whitespace checks pass.
+Final `test:assets`, About, motion, QA and real preview-media commands all exit 0 in `final-regressions.log`. No collector's overall success is used to conceal a child failure.
