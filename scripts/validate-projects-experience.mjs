@@ -113,6 +113,7 @@ try {
           overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
         };
       }, project.launchCta?.label || "Launch Project");
+      fs.writeFileSync(path.join(out, `${project.id}-debug.json`), JSON.stringify(state, null, 2));
 
       assert.ok(state.title, `project heading is present: ${project.id}`);
       assert.equal(state.nextHref, project.nextProject.href, `next-project chain matches live order: ${project.id}`);
