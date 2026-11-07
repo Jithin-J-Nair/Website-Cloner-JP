@@ -73,6 +73,8 @@ const unavailableLaunchDestinations = details
   .filter(project => !project.launchCta?.href?.trim() && !project.launchCta?.isVimeoOverlay)
   .map(project => project.id);
 assert.deepEqual(unavailableLaunchDestinations, ["soda_experience", "maxmara_bearings_gifts"], "only the two live labels without exposed destinations stay non-navigating");
+const atlas = details.find(project => project.id === "atlas_motion");
+assert.ok(atlas?.links.some(link => link.label === "Launch Project" && link.href === "https://atlasmotion.com/"), "Atlas links block repeats the live Launch Project destination");
 
 const byId = new Map(details.map(project => [project.id, project]));
 for (const project of projects) {

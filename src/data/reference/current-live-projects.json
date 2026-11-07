@@ -124,7 +124,12 @@
           "WebGL",
           "Animation"
         ],
-        "links": [],
+        "links": [
+          {
+            "label": "Launch Project",
+            "href": "https://atlasmotion.com/"
+          }
+        ],
         "mediaCount": 7,
         "media": [
           {
