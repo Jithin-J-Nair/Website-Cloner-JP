@@ -30,7 +30,9 @@ assert.match(aboutView, /createAboutWordmarkSweep\(\)/, 'About constructs one sh
 assert.match(aboutView, /wordmarkSweep\.uniforms\.uPhase\.value = sweep\.deformation/, 'scroll playhead controls the wordmark shader deformation');
 assert.match(aboutView, /wordmarkSweep\.uniforms\.uOpacity\.value = sweep\.opacity/, 'wordmark visibility follows the same scroll playhead');
 assert.match(wordmarkSweep, /geometry = new THREE\.PlaneGeometry\(2, 2, 160, 12\)/, 'wordmark uses a single subdivided surface instead of independently rotating letters');
-assert.match(wordmarkSweep, /p\.x\+=\(uv\.y-\.5\)\*\.86\*pow\(sin\(x\*3\.14159265\),4\.\)\*fold/, 'wordmark folds continuously across the full letter surface');
+assert.match(wordmarkSweep, /float fold=\.28\*smoothstep\(\.05,\.90,uPhase\)/, 'wordmark deformation remains deliberately restrained');
+assert.match(wordmarkSweep, /pow\(x,mix\(1\.,1\.08,fold\)\)/, 'letter spacing remains close to the original wordmark proportions');
+assert.match(wordmarkSweep, /p\.x\+=\(uv\.y-\.5\)\*\.22\*pow\(curve,4\.\)\*fold/, 'wordmark keeps a subtle continuous surface bend');
 fs.mkdirSync('temp',{recursive:true});
 const dir=fs.mkdtempSync(path.resolve('temp/about-camera-'));
 try {
