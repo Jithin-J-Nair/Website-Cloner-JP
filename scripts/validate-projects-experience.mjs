@@ -87,14 +87,20 @@ try {
           .find(node => node.textContent?.trim().toLowerCase().includes(launchLabel.toLowerCase()));
         const firstStage = element.querySelector(":scope > section");
         const stickyColumn = firstStage?.querySelector(":scope > div:first-child");
-        const media = [...element.querySelectorAll("figure, video, div[role='button'] > img")];
+        const media = [...element.querySelectorAll("figure, video, div[role='button'] > img, [data-project-media-type='text']")];
         const emptyLinks = [...element.querySelectorAll("a")].filter(anchor => !anchor.getAttribute("href")?.trim());
         return {
           title: heading?.textContent?.trim() || "",
           nextHref: next?.getAttribute("href") || "",
           nextTitle: next?.textContent?.trim() || "",
           mediaCount: media.length,
-          mediaSources: media.map(node => node.getAttribute("src") || node.querySelector("img")?.getAttribute("src") || ""),
+          mediaSources: media.map(node => {
+            const source = node.getAttribute("src") || node.querySelector("img")?.getAttribute("src");
+            if (source) return source;
+            return node.getAttribute("data-project-media-type") === "text"
+              ? `text:${node.getAttribute("data-project-media-index")}`
+              : "";
+          }),
           stickyPosition: stickyColumn ? getComputedStyle(stickyColumn).position : "missing",
           launchFound: !!launch,
           launchUnavailable: launch?.getAttribute("data-launch-unavailable") === "true",
