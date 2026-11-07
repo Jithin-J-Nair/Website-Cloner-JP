@@ -22,7 +22,7 @@ Commercial fonts remain blocked. This permission exception does not include
 unrelated scene models, portfolio footage or sound stems. It is not authorization to merge or deploy the application. The original
 manifest classifications/checksums remain provenance records, not license grants.
 
-This directory (`public/assets/`) stages local verification and open-license typography assets for the reference-faithful reconstruction of `https://lusion.co/`.
+This directory (`public/assets/`) stages open-license typography and original clean-room vector artwork for the reference-faithful reconstruction of `https://lusion.co/`.
 
 ## Licensing Categories & Strict Compliance Summary
 
@@ -34,6 +34,7 @@ This directory (`public/assets/`) stages local verification and open-license typ
    - `fonts/IBMPlexMono-Regular.{woff,woff2}`, `fonts/IBMPlexMono-Medium.{woff,woff2}` — **SIL Open Font License 1.1** (verified via embedded SFNT `nameID[13]`; see `fonts/OFL-IBMPlexMono.txt`).
    - `fonts/InstrumentSans-Variable.woff2`, `fonts/InstrumentSans-VariableItalic.woff2` — **SIL Open Font License 1.1** (metric-matched open-license replacement for `Aeonik`; see `fonts/OFL-InstrumentSans.txt`).
    - `fonts/capability-icons/{strategy,creative,tech,production}.svg` — **MIT** original geometric vector icons replacing `LusionMono` icon codepoints.
+   - `images/cards/back-ink.svg` — original clean-room abstract linework texture authored for this reconstruction; it is not copied or derived from the proprietary bundled `images/cards/back.png`.
 
 3. **Standard Permissive Shader Lookup Textures:**
    - `textures/LDR_RGB1_0.png` — **CC0-1.0** blue-noise dither texture.

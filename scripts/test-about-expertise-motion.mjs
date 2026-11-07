@@ -46,7 +46,10 @@ try {
  const cardsSource = fs.readFileSync("src/components/pages/AboutExpertiseCards.tsx", "utf8");
  assert.match(pageStyles, /#about \{ --about-blue: #3733e8;/i, "About expertise section uses its route-owned live blue");
  assert.match(cardsSource, /M420 30C650 110 1000 110 1230 65C1500 20 1490 270 1170 610/, "the expertise flourish is one authored diagonal stroke");
- assert.match(cardsSource, /className="about-card-back-art" src="\/assets\/images\/cards\/back-ink\.png" width=\{628\} height=\{876\}/, "card backs retain the source-derived 628 by 876 line art");
+ assert.ok(cardsSource.includes('className="about-card-back-art" src="/assets/images/cards/back-ink.svg" width={628} height={876}'), "card backs use original clean-room 628 by 876 line art");
+ const cardBack = fs.readFileSync("public/assets/images/cards/back-ink.svg", "utf8");
+ assert.match(cardBack, /viewBox="0 0 628 876"/, "clean-room card texture preserves the source card proportions");
+ assert.ok(cardBack.includes("micro-grid") && cardBack.includes('stroke="#fff"'), "card texture contains original vector linework");
 
  assert.notEqual(pose(.5,0).flip,pose(.5,3).flip,'authored stagger, not four simultaneous copies');
  console.log('PASS card poses: finite, bounded, continuous, monotonic, deterministic, reversible; aligned settled fronts; stagger; malformed scroll fallback. Not a reference-timing assertion.');

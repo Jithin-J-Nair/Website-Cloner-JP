@@ -1,19 +1,64 @@
 #!/usr/bin/env node
-/** Retain the verified card's linework; remove only its baked blue background
- * so existing route-owned blue/perspective/flip styling remains authoritative. */
-import fs from 'node:fs';
-import { createHash } from 'node:crypto';
-import sharp from 'sharp';
-const source = 'media-bundle/images/cards/back.png';
-const output = 'public/assets/images/cards/back-ink.png';
-const { data, info } = await sharp(source).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-for (let i = 0; i < data.length; i += 4) {
-  const ink = Math.max(0, Math.min(1, (Math.min(data[i], data[i + 1]) - 34) / 221));
-  data[i + 3] = Math.round(data[i + 3] * ink);
-  data[i] = data[i + 1] = data[i + 2] = 255;
-}
-fs.mkdirSync('public/assets/images/cards', { recursive: true });
-await sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toFile(output);
-const hash = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-console.log(JSON.stringify({ source, sourceSha256: hash(source), output, outputSha256: hash(output), width: info.width, height: info.height,
-  treatment: 'Original raster linework, white ink alpha from minimum red/green above baked-blue channel level 34; no redrawing or new ornament.' }, null, 2));
+/**
+ * Generate the original clean-room About expertise card-back texture.
+ * This script deliberately does not read, transform, or derive from
+ * media-bundle/images/cards/back.png or any other reference artwork.
+ */
+import fs from "node:fs";
+import { createHash } from "node:crypto";
+
+const output = "public/assets/images/cards/back-ink.svg";
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="628" height="876" viewBox="0 0 628 876" fill="none">
+  <title>Original abstract linework card texture</title>
+  <defs>
+    <pattern id="micro-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="0.8" fill="#fff" fill-opacity=".28"/>
+      <circle cx="18" cy="19" r="0.55" fill="#fff" fill-opacity=".2"/>
+      <path d="M0 27.5H28M27.5 0V28" stroke="#fff" stroke-opacity=".075" stroke-width=".5"/>
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".12"/>
+      <stop offset=".48" stop-color="#fff" stop-opacity=".56"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".16"/>
+    </linearGradient>
+    <clipPath id="card-clip"><rect width="628" height="876" rx="2"/></clipPath>
+  </defs>
+  <g clip-path="url(#card-clip)">
+    <rect width="628" height="876" fill="url(#micro-grid)"/>
+    <g stroke="#fff" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" opacity=".52">
+      <path d="M-72 112C18 14 91 28 142 110S226 246 302 160 420 14 493 78 594 206 704 96"/>
+      <path d="M-76 148C17 50 94 63 150 145S235 281 310 195 426 50 500 114 601 241 704 132"/>
+      <path d="M-80 184C13 86 98 98 158 180S242 316 318 230 433 86 507 150 608 277 706 168"/>
+      <path d="M-78 220C15 122 101 134 165 216S250 352 326 266 440 122 514 186 614 313 706 204"/>
+      <path d="M-66 556C22 464 108 472 166 548S252 678 332 600 446 466 518 526 612 646 700 548"/>
+      <path d="M-70 592C18 500 104 508 172 584S258 714 338 636 452 502 524 562 618 682 704 584"/>
+      <path d="M-74 628C14 536 100 544 178 620S264 750 344 672 458 538 530 598 624 718 708 620"/>
+      <path d="M-78 664C10 572 96 580 184 656S270 786 350 708 464 574 536 634 630 754 712 656"/>
+    </g>
+    <g stroke="#fff" stroke-width=".72" stroke-linecap="round" opacity=".32">
+      <path d="M54 -40C164 80 122 190 246 280S414 365 354 470 244 615 342 740 490 835 594 930"/>
+      <path d="M88 -40C198 80 156 190 280 280S448 365 388 470 278 615 376 740 524 835 628 930"/>
+      <path d="M122 -40C232 80 190 190 314 280S482 365 422 470 312 615 410 740 558 835 662 930"/>
+      <path d="M-40 356C80 300 168 340 240 394S374 494 480 438 594 380 680 420"/>
+      <path d="M-42 388C78 332 166 372 238 426S372 526 478 470 592 412 678 452"/>
+      <path d="M-44 420C76 364 164 404 236 458S370 558 476 502 590 444 676 484"/>
+    </g>
+    <g fill="none" stroke="url(#fade)" stroke-width="2">
+      <path d="M-40 300C86 228 176 250 254 318S396 414 500 338 604 264 680 302"/>
+      <path d="M-40 720C86 648 176 670 254 738S396 834 500 758 604 684 680 722"/>
+    </g>
+    <g fill="#fff" opacity=".46">
+      <circle cx="92" cy="302" r="2.2"/><circle cx="116" cy="316" r="1.1"/><circle cx="144" cy="334" r="1.6"/>
+      <circle cx="492" cy="270" r="1.7"/><circle cx="520" cy="288" r="1.1"/><circle cx="548" cy="304" r="2"/>
+      <circle cx="72" cy="748" r="1.5"/><circle cx="104" cy="766" r="1"/><circle cx="138" cy="782" r="1.8"/>
+      <circle cx="478" cy="710" r="1.8"/><circle cx="510" cy="728" r="1.1"/><circle cx="542" cy="744" r="1.6"/>
+    </g>
+    <g stroke="#fff" stroke-width="1.4" opacity=".38">
+      <path d="M314 18v30m-15-15h30M34 444v22m-11-11h22M574 474v28m-14-14h28M292 832v26m-13-13h26"/>
+    </g>
+  </g>
+</svg>`;
+fs.mkdirSync("public/assets/images/cards", { recursive: true });
+fs.writeFileSync(output, svg, "utf8");
+const sha256 = createHash("sha256").update(svg).digest("hex");
+console.log(JSON.stringify({ output, sha256, width: 628, height: 876, origin: "original clean-room SVG" }, null, 2));

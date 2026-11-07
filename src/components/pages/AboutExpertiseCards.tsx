@@ -15,11 +15,10 @@ function CapabilityGlyph({ index }: { index: number }) {
   return <svg aria-hidden="true" viewBox="0 0 18 21" className="about-card-glyph"><path fill="currentColor" fillRule="evenodd" d={paths[index]} /></svg>;
 }
 
-/** Linework derived from the verified bundled back.png, not a substitute drawing.
- * The transparent ink preserves the route-owned blue surface and exact source art. */
+/** Original clean-room linework texture; not copied or derived from the bundled reference back.png. */
 function CardBack() {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img className="about-card-back-art" src="/assets/images/cards/back-ink.png" width={628} height={876} alt="" aria-hidden="true" />;
+  return <img className="about-card-back-art" src="/assets/images/cards/back-ink.svg" width={628} height={876} alt="" aria-hidden="true" />;
 }
 
 export function AboutExpertiseCards({ sectionRef, reducedMotion }: {

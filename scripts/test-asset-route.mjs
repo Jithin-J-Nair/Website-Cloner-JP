@@ -148,6 +148,15 @@ try {
     oflFont.status === 200 && oflFont.body.length > 1000,
     `got ${oflFont.status}`
   );
+  const cardBack = await rawGet("/assets/images/cards/back-ink.svg");
+  check(
+    "Serves original clean-room About card-back SVG with strict headers",
+    cardBack.status === 200 &&
+      String(cardBack.headers["content-type"]).includes("image/svg+xml") &&
+      String(cardBack.headers["content-security-policy"]).includes("sandbox") &&
+      cardBack.body.toString("utf8").includes('viewBox="0 0 628 876"'),
+    `status=${cardBack.status} content-type=${cardBack.headers["content-type"]}`
+  );
 
   // 4. Unlisted extension / file block
   const secretJson = await rawGet("/assets/secret.json");
