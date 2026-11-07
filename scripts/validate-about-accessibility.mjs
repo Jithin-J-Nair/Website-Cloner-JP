@@ -81,15 +81,27 @@ try {
       const recognition = page.locator("#about-recognition-window");
       await recognition.scrollIntoViewIfNeeded();
       await recognition.focus();
-      // Tab traversal above visits article links and can leave this region at
-      // its lower boundary. PageDown needs a known nonterminal starting point.
-      await recognition.evaluate(el => { el.scrollTop = 0; });
-      const scrollBefore = await recognition.evaluate(el => el.scrollTop);
+      const scrollBefore = await page.evaluate(() => window.scrollY);
       await page.keyboard.press("PageDown");
-      await page.waitForFunction(before => document.querySelector('#about-recognition-window').scrollTop > before, scrollBefore, {timeout:5000});
-      const scrollAfter = await recognition.evaluate(el => el.scrollTop);
-      assert.ok(scrollAfter > scrollBefore, "PageDown scrolls the focused recognition region");
-      report.checks.push("recognition region scrolls from keyboard focus");
+      await page.waitForFunction(before => window.scrollY > before, scrollBefore, { timeout: 5000 });
+      const scrollAfter = await page.evaluate(() => window.scrollY);
+      assert.ok(scrollAfter > scrollBefore, "PageDown follows the full-flow recognition content through document scrolling");
+      const recognitionFlow = await recognition.evaluate(element => ({
+        clientHeight: element.clientHeight,
+        scrollHeight: element.scrollHeight,
+        overflowY: getComputedStyle(element).overflowY,
+        awards: element.querySelectorAll(".about-source-award-group").length,
+        articles: element.querySelectorAll(".about-source-articles a[href]").length,
+        talks: element.querySelectorAll(".about-source-talks li").length,
+      }));
+      assert.ok(recognitionFlow.scrollHeight <= recognitionFlow.clientHeight + 1, "recognition is not nested in a clipped scroll window");
+      assert.equal(recognitionFlow.overflowY, "visible");
+      assert.deepEqual(
+        { awards: recognitionFlow.awards, articles: recognitionFlow.articles, talks: recognitionFlow.talks },
+        { awards: 7, articles: 3, talks: 5 },
+        "all recognition content remains present and keyboard-reachable in normal page flow"
+      );
+      report.checks.push("full-flow recognition remains keyboard reachable without nested clipping");
 
       const who = page.locator("#about-who");
       const unit = width === 390 ? height : width;
@@ -120,7 +132,10 @@ try {
             expertiseReduced: document.querySelector("#about-capability")?.getAttribute("data-reduced"),
             ringDisplay: ring ? getComputedStyle(ring).display : "missing",
             titleAnimation: letter ? getComputedStyle(letter).animationName : "missing",
-            regionOverflow: region ? region.scrollHeight > region.clientHeight : false,
+            regionOverflow: region ? region.scrollHeight > region.clientHeight + 1 : false,
+            awardGroups: region?.querySelectorAll(".about-source-award-group").length ?? 0,
+            articles: region?.querySelectorAll(".about-source-articles a[href]").length ?? 0,
+            talks: region?.querySelectorAll(".about-source-talks li").length ?? 0,
           };
         });
         assert.ok(reduced.scene && reduced.scene.reducedMotion === true, "scene runtime observes reduced motion");
@@ -129,8 +144,13 @@ try {
         assert.equal(reduced.expertiseReduced, "true");
         assert.equal(reduced.ringDisplay, "none");
         assert.equal(reduced.titleAnimation, "none");
-        assert.equal(reduced.regionOverflow, true, "recognition contents remain available in its scroll region");
-        report.checks.push("reduced-motion mode: static team/CTA, 8K portrait, no chromatic ring, complete recognition content");
+        assert.equal(reduced.regionOverflow, false, "recognition content is not trapped in a nested scroll viewport");
+        assert.deepEqual(
+          { awards: reduced.awardGroups, articles: reduced.articles, talks: reduced.talks },
+          { awards: 7, articles: 3, talks: 5 },
+          "reduced-motion users retain the complete full-flow recognition content"
+        );
+        report.checks.push("reduced-motion mode: static team/CTA, 8K portrait, no chromatic ring, full-flow recognition content");
       } else {
         const normal = await page.evaluate(() => window.__aboutProbe && window.__aboutProbe());
         assert.ok(normal && [8192, 16384, 24576].includes(normal.portraitPoints));
