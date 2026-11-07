@@ -89,9 +89,7 @@ export function AboutPageStyles() {
       #about #about-clients .about-client-marquee-set { flex: none; width: auto; }
       #about #about-clients .about-client-logo-tile { flex: 0 0 33.333333vw; width: 33.333333vw; }
       #about #about-clients .about-client-logo-tile { height: 28vw; }
-      #about .about-client-wordmark { font-size: 3.2vw; }
-      #about .about-client-wordmark[data-brand="Porsche"] { font-size: 2.5vw; }
-      #about .about-source-recognition { padding: 20vw 5vw 12vw; }
+          #about .about-source-recognition { padding: 20vw 5vw 12vw; }
       #about .about-narrative-layout #about-who-desc-top, #about .about-narrative-layout #about-who-desc-bottom { font-size: clamp(20px,4.6vw,35px); }
       #about .about-narrative-layout #about-who-desc-top { top: 10vh; }
       #about .about-narrative-layout #about-who-desc-bottom { bottom: 12vh; }

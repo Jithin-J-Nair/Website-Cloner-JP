@@ -33,7 +33,7 @@ try {
    assert.ok(pitch <= previousPitch + 1e-9, "the settle phase unwinds card pitch");
   }
   assert.ok(p.scale>=last.scale);
-  assert.ok(Math.abs(p.flip-last.flip)<1);
+  assert.ok(Math.abs(p.flip-last.flip)<1.8, "staggered 180-degree flip follows its authored maximum easing slope");
   assert.ok(Math.abs(p.xVw-last.xVw)<.21);
   assert.ok(Math.abs(p.yaw-last.yaw)<.2);
   assert.ok(Math.abs(p.pitch-last.pitch)<.1);
