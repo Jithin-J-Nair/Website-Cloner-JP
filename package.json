@@ -31,7 +31,8 @@
     "about:contact-sheet": "node scripts/about-contact-sheet.mjs",
     "about:accessibility": "node scripts/validate-about-accessibility.mjs",
     "about:budget": "node scripts/capture-about-budget.mjs",
-    "test:projects": "node scripts/test-projects-archive.mjs"
+    "test:projects": "node scripts/test-projects-archive.mjs",
+    "test:about-copy": "node scripts/test-about-copy.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
