@@ -637,6 +637,7 @@ export function StudioHud() {
           ref={menuRef}
           aria-label="Primary Navigation"
           aria-hidden={!navMenuOpen}
+          inert={!navMenuOpen}
           className={`fixed top-[calc(var(--base-padding-y)+3.45rem)] right-[var(--base-padding-x)] z-20 flex flex-col gap-[0.625em] text-black max-[812px]:left-[var(--base-padding-x)] min-[813px]:w-[19.4em] ${
             navMenuOpen ? "--opened pointer-events-auto" : "pointer-events-none"
           }`}

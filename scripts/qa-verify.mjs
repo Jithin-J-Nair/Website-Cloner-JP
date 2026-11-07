@@ -49,6 +49,7 @@ const SHELL_MARKERS = [
   { name: "Lusion vector wordmark (#header-logo)", re: /id="header-logo"/ },
   { name: "Menu toggle (#header-right-menu-btn)", re: /id="header-right-menu-btn"/ },
   { name: "Floating menu (#header-menu)", re: /id="header-menu"/ },
+  { name: "Closed floating menu is removed from sequential focus", re: /<nav id="header-menu"[^>]*aria-hidden="true"[^>]*inert/ },
   { name: "Labs card with Lucy (#header-menu-labs-lucy-svg)", re: /id="header-menu-labs-lucy-svg"/ },
   { name: "Scroll indicator (#scroll-indicator)", re: /id="scroll-indicator"/ },
   { name: "Home hero stage (#home-hero-visual-container)", re: /id="home-hero-visual-container"/ },
