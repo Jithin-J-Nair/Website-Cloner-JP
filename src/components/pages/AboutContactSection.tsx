@@ -172,6 +172,16 @@ export function AboutContactSection() {
             )}
           </div>
 
+          <div className="about-cta-arm" aria-hidden="true">
+            <svg viewBox="0 0 620 430" width="620" height="430" fill="none">
+              <path
+                d="M-48 4C25 10 76 35 125 82l95 91 56-50c23-21 59-20 80 3 20 22 18 55-4 76l-53 52 105 93c22 19 24 53 5 75-19 22-53 24-75 5L224 311l-56 75c-18 25-52 31-77 13-25-19-31-53-13-78l64-88-78-74C18 195-22 177-67 173Z"
+                fill="white"
+              />
+              <path d="M277 123l45-48 44 42-44 46Z" fill="white"/>
+            </svg>
+          </div>
+
           {/* Depth-lit GPU geometric glyph wave; intentional lower-title overlap */}
           <div className="pointer-events-none absolute inset-0 z-20">
             <AboutContactField />
