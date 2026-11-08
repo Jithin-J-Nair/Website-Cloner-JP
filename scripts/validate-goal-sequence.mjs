@@ -288,6 +288,10 @@ try {
     }
     assert.ok(telemetry.sceneState.trussLoaded && telemetry.sceneState.shardsLoaded);
     forward.set(point.name, { state: telemetry.sceneState, hash: pixels.hash });
+    if(point.name==='16b-fragments') {
+      const pill=await page.locator('#end-bottom').boundingBox();
+      assert.ok(pill&&pill.y>height*.7&&pill.y+pill.height<height,'continue pill is pinned during breakthrough, not delayed until CTA');
+    }
     report.states.push({ ...point, telemetry, pixels });
     if (process.env.GOAL_CAPTURE !== '0') await page.screenshot({ path: path.join(out, `${point.name}.png`), timeout: 60000 });
   }
@@ -300,13 +304,39 @@ try {
     const expected = forward.get(point.name);
     if (reducedMotion !== 'reduce' && point.name === '17-wait') {
       // The existing CTA idle is deliberately time-based, unlike the scroll-driven fall.
-      const { astronautMatrix: actualIdle, ...actual } = telemetry.sceneState;
-      const { astronautMatrix: expectedIdle, ...stable } = expected.state;
+      const { astronautMatrix: actualIdle, bakedFrame: actualFrame, endTime: actualTime, ...actual } = telemetry.sceneState;
+      const { astronautMatrix: expectedIdle, bakedFrame: expectedFrame, endTime: expectedTime, ...stable } = expected.state;
       assert.ok(actualIdle.every(Number.isFinite) && expectedIdle.every(Number.isFinite));
+      assert.ok([actualFrame,expectedFrame].every(frame=>frame>=140&&frame<=287));
+      assert.ok(actualTime>=8&&expectedTime>=8,'only the explicitly time-based end clock/palette vary; native phase/root/camera contracts remain strict');
       assert.deepEqual(actual, stable);
     } else assert.deepEqual(telemetry.sceneState, expected.state, `reversible state: ${point.name}`);
     if (reducedMotion === 'reduce') assert.equal(pixels.hash, expected.hash, `reversible GPU pixels: ${point.name}`);
   }
+  const endY=layout.ranges.astronautWait.pixelFrom+layout.ranges.astronautWait.pixelCount*.42;
+  const endState=(await go(endY)).sceneState;
+  assert.ok(endState.endLoaded&&endState.visorAtlasReady,'reference gem, sticker and visor assets load');
+  assert.equal(endState.endDiamondCount,64);assert.equal(endState.endStickerCount,26);assert.equal(endState.ctaReveal,1);
+  const endLayout=await page.evaluate(()=>{
+    const link=document.getElementById('end-section-title-link'), rect=link.getBoundingClientRect();
+    const outer=document.getElementById('end-section-outer').getBoundingClientRect();
+    const content=getComputedStyle(document.getElementById('end-section-content'));
+    return {left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom,outerTop:outer.top,opacity:content.opacity,
+      href:link.getAttribute('href'),tabIndex:link.tabIndex,hit:document.elementFromPoint(innerWidth*.5,rect.top+rect.height*.25)?.closest('a')?.id};
+  });
+  assert.ok(endLayout.left>=0&&endLayout.right<=width&&endLayout.top>0&&endLayout.bottom<height,'CTA stays inside the pinned viewport');
+  assert.ok(Math.abs(endLayout.outerTop)<2&&Number(endLayout.opacity)>.99);
+  assert.ok(endLayout.href.startsWith('mailto:')&&endLayout.tabIndex===0&&endLayout.hit==='end-section-title-link');
+  if(process.env.GOAL_CAPTURE==='1')await page.screenshot({path:path.join(out,'18-contact.png')});
+  if(reducedMotion!=='reduce') {
+    const rendered=await page.evaluate(()=>window.__goalAstronautTelemetry.renderCount);
+    await page.waitForFunction(count=>window.__goalAstronautTelemetry.renderCount>count+2,rendered,{timeout:30000});
+    const live=await page.evaluate(()=>window.__goalAstronautTelemetry.sceneState);
+    assert.ok(live.endTime>endState.endTime+.2,'gem/sticker motion continues without scrolling');
+    assert.ok(Math.abs(live.bakedFrame-endState.bakedFrame)>2,'captured wave animation continues without scrolling');
+    report.liveEndAnimation=true;
+  }
+  report.endContact={state:endState,layout:endLayout};
   report.reversible = true;
   // Probe both sides of every formerly discontinuous branch in CSS-pixel scroll units.
   const outFactor = width < 1200 ? 2.55 : 1.42;

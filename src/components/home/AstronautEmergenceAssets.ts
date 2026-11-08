@@ -31,6 +31,7 @@ export interface LoadedAstronautRig {
   visorMaterial: THREE.MeshPhysicalMaterial | null;
   visorEarthUniform: { value: number };
   visorAnchorLocal: THREE.Vector3;
+  visorOrientationLocal?: THREE.Quaternion;
   drawCalls: number;
   triangles: number;
   /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
@@ -650,7 +651,8 @@ export function createCapturedPoseSampler(
   animation: ParsedBufData,
   bones: THREE.Bone[],
   skeleton: THREE.Skeleton,
-  visorAnchorLocal: THREE.Vector3
+  visorAnchorLocal: THREE.Vector3,
+  visorOrientationLocal?: THREE.Quaternion
 ): (frame: number, influence: number, blendFrame?: number, blendWeight?: number) => void {
   const boneCount = bones.length;
   const frameCount = animation.header.vertexCount / boneCount;
@@ -705,6 +707,7 @@ export function createCapturedPoseSampler(
     skeleton.update();
     visorAnchorLocal.copy(sourceVisorAnchor).applyMatrix4(bones[0].matrix);
     visorAnchorLocal.y -= 0.9;
+    visorOrientationLocal?.copy(bones[0].quaternion);
   };
 }
 
@@ -858,14 +861,15 @@ export async function loadLusionAstronautParts(
       modelRoot.add(mesh);
     });
     const visorAnchorLocal = new THREE.Vector3(-0.076, 0.80, 0.132);
-    const sampleBakedPose = createCapturedPoseSampler(animation, bones, skeleton, visorAnchorLocal);
+    const visorOrientationLocal = new THREE.Quaternion();
+    const sampleBakedPose = createCapturedPoseSampler(animation, bones, skeleton, visorAnchorLocal, visorOrientationLocal);
     // Keep the source bind silhouette until the downstream timeline explicitly samples it.
     sampleBakedPose(0, 0);
     // Skeleton.update reads matrixWorld; do not let parent transforms enter the baked palette.
     for (const bone of bones) bone.matrixWorldAutoUpdate = false;
     return {
       root, modelRoot, bones: {}, restQuats: {}, materials: partMaterials,
-      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose, sampleCapturedRoot,
+      visorMaterial, visorEarthUniform, visorAnchorLocal, visorOrientationLocal, drawCalls: 4, triangles, sampleBakedPose, sampleCapturedRoot,
     };
   };
   const primary = buildCapturedRig();

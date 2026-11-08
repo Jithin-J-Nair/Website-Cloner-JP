@@ -8,6 +8,7 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { advanceCinematicProgress, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
 import { createGoalReferenceWorlds, createGoalGlassAnimationTextures, goalWorldRatios, sampleGoalBrownian, GOAL_WORLD_SCALE } from "./GoalReferenceWorlds";
+import { createGoalReferenceEnd, createGoalReferenceVisor } from "./GoalReferenceEnd";
 import { GoalReferenceBloomPass } from "./GoalReferenceBloomPass";
 import { glassVertex, glassFragment } from "./GoalReferenceShaders";
 import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
@@ -33,8 +34,6 @@ import {
   type SuitJointPose,
 } from "@/components/home/AstronautEmergenceAssets";
 import {
-  buildDiamondsAndPopStickers,
-  buildVisorLedMatrix,
   createGoalPlaybackPath,
   evaluateSuitWavePose,
   SUIT_POSE_CORRIDOR_FLY,
@@ -93,6 +92,12 @@ declare global {
         bakedFrame: number;
         astronautMatrix: number[];
         cameraMatrix: number[];
+        endLoaded: boolean;
+        endDiamondCount: number;
+        endStickerCount: number;
+        endTime: number;
+        visorAtlasReady: boolean;
+        ctaReveal: number;
         nativeWorldsReady: boolean;
         worldError: string | null;
         blackInstances: number;
@@ -228,6 +233,11 @@ export function GoalTunnelSection() {
 
     const showStaticFallback = () => {
       goalEl.dataset.staticFallback = "true";
+      document.getElementById("home-end-bottom")?.style.removeProperty("position");
+      document.querySelector<HTMLElement>("#home #end-section")?.style.removeProperty("--home-end-reveal");
+      document.querySelectorAll<HTMLElement>("#home [data-home-end-roll]").forEach(letter => { letter.style.transform = ""; });
+      const contact = document.querySelector<HTMLAnchorElement>("#home #end-section-title-link");
+      if (contact) { contact.style.pointerEvents = "auto"; contact.tabIndex = 0; }
       if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "flex";
       // Never leave a 35-screen empty cinematic when rendering is unavailable.
       tunnelEl.style.display = "none";
@@ -372,7 +382,7 @@ export function GoalTunnelSection() {
     const nativeLightMask = { value: 0 };
     let mainAstro: LoadedAstronautRig | null = null;
     const clones: LoadedAstronautRig[] = [];
-    const visorLed = buildVisorLedMatrix(track);
+    const visorLed = createGoalReferenceVisor(track);
 
     const glbPromise = forceAssetFailure
       ? Promise.reject(new Error("Simulated astronaut asset failure (?simulateGlbError=1)"))
@@ -408,7 +418,7 @@ export function GoalTunnelSection() {
     let numShards = 0;
     let framesPerShard = 0;
 
-    const endDecor = buildDiamondsAndPopStickers(track, isMobileInit);
+    const endDecor = createGoalReferenceEnd(track, isMobileInit);
     endDecor.group.visible = false;
     scene.add(endDecor.group);
 
@@ -632,6 +642,10 @@ export function GoalTunnelSection() {
     let playbackRuns = 0;
     let playbackTimeOrigin = 0;
     let cinematicTimeOffset = 0;
+    let idleEpoch: number | null = null;
+    let lastEndReveal = -1;
+    const endWords = Array.from(document.querySelectorAll<HTMLElement>("#home [data-home-end-word]"))
+      .map(word => Array.from(word.querySelectorAll<HTMLElement>("[data-home-end-roll]")));
     let frameClock = performance.now();
     let userPaused = false;
     let pipelineReady = Boolean(reducedMotion), pipelineWarmed = false;
@@ -709,6 +723,7 @@ export function GoalTunnelSection() {
         tunnelProgress: 0, shatterProgress: 0, waitProgress: 0, bakedFrame: 0,
         astronautMatrix: new Array<number>(16).fill(0),
         cameraMatrix: new Array<number>(16).fill(0),
+        endLoaded: false, endDiamondCount: 0, endStickerCount: 0, endTime: 0, visorAtlasReady: false, ctaReveal: 0,
         nativeWorldsReady: false, worldError: null, blackInstances: 0, whiteInstances: 0, blackOffset: 0, bloomTechnique: "emergence",
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
         corridorTravel: 0, corridorVisible: false, corridorClipped: false,
@@ -1011,6 +1026,7 @@ export function GoalTunnelSection() {
       if (sy < activeStart || sy > activeEnd) {
         audioJourney.update(IDLE_JOURNEY);
         overlayEl.style.visibility = "hidden";
+        document.getElementById("home-end-bottom")?.style.removeProperty("position");
         if (titleHeadingEl) {
           titleHeadingEl.style.transform = "";
           titleHeadingEl.style.opacity = "1";
@@ -1040,8 +1056,34 @@ export function GoalTunnelSection() {
       const shatterEnd = m.endTop;
       const tShatter = clamp01((sy - shatterStart) / Math.max(1, shatterEnd - shatterStart));
       const tWait = clamp01((sy - m.endTop) / Math.max(1, m.endHeight));
+      if (tShatter < 1) idleEpoch = null;
+      else if (idleEpoch === null) idleEpoch = elapsedSec;
+      const idleSeconds = reducedMotion ? tWait * 2.45 : Math.max(0, elapsedSec - (idleEpoch ?? elapsedSec));
+      const endEl = document.getElementById("end-section");
+      const endReveal = smoothstep(.005, .08, tWait);
+      const endLink = document.getElementById("end-section-title-link");
+      if (endReveal !== lastEndReveal) {
+        endEl?.style.setProperty("--home-end-reveal", String(endReveal));
+        if (endLink) { endLink.style.pointerEvents = endReveal > .75 ? "auto" : "none"; endLink.tabIndex = endReveal > .75 ? 0 : -1; }
+      }
+      // Don't invalidate an off-screen text subtree on every tunnel frame.
+      if (endReveal > 0 || lastEndReveal > 0) endWords.forEach((letters, word) => {
+        const cycle = Math.floor(idleSeconds / 2), phase = idleSeconds % 2;
+        const selected = (cycle * 7 + word * 3) % letters.length;
+        letters.forEach((letter, index) => {
+          const stagger = .15 * (word / 2 + index / Math.max(1, letters.length - 1));
+          const reveal = reducedMotion ? 1 : smoothstep(stagger, stagger + .7, endReveal);
+          const roll = reducedMotion || index !== selected ? 0 : smoothstep(word * .1, word * .1 + .8, phase);
+          letter.style.transform = `translateY(${((1 - reveal - roll) * 50).toFixed(3)}%)`;
+        });
+      });
+      lastEndReveal = endReveal;
       const footerWipingMost = sy > m.endTop + m.endHeight - H * 0.45;
       const endBottomEl = document.getElementById("end-bottom");
+      const endPill = document.getElementById("home-end-bottom");
+      // The reference pill is already pinned during the glass breakthrough;
+      // hand it back to the sticky CTA at arrival without a viewport-position jump.
+      if (endPill) endPill.style.position = tShatter > .18 && tWait <= .001 ? "fixed" : "absolute";
       if (endBottomEl) {
         const footerEnter = smoothstep(
           m.endTop + m.endHeight - H * 0.96,
@@ -1091,7 +1133,10 @@ export function GoalTunnelSection() {
         const offset = tTunnel >= .815 ? 60 * (1 - ratios.white) : Math.sin(ratios.black * 10 + (reducedMotion ? 1 : playing() ? elapsedSec : ratios.black * 10 + ratios.white * 3)) * 7.5 * smoothstep(0, .2, ratios.black);
         const expectedFov = m.isMobile ? 54 : 45;
         const frameFraction = lerp(1, m.imgOutHeight / H, tOutPull);
-        const baseFov = 2 * Math.atan(Math.tan(expectedFov * Math.PI / 360) / frameFraction) * 180 / Math.PI;
+        const apertureFov = 2 * Math.atan(Math.tan(expectedFov * Math.PI / 360) / frameFraction) * 180 / Math.PI;
+        // After leaving the monitor, use the wider portrait framing observed in
+        // the recording. Keep the approved tunnel/aperture camera unchanged.
+        const baseFov = lerp(apertureFov, m.isMobile ? 76 : 60, smoothstep(.75, 1, tShatter));
         // Reference dolly compensates distance, not an independently banked camera.
         const dolly = Math.tan(baseFov * Math.PI / 720) / Math.tan((baseFov + offset) * Math.PI / 720) - 1;
         camera.near = GOAL_WORLD_SCALE; camera.far = 200 * GOAL_WORLD_SCALE; camera.fov = baseFov; camera.aspect = W / H; camera.up.set(0, 1, 0);
@@ -1370,12 +1415,9 @@ export function GoalTunnelSection() {
         paused: playbackState === "paused" || blockedByChrome() || !docVisible,
       });
 
-      // 4. Faceted Glass Diamonds + Star Flares + 18 Die-Cut Pop-Art Stickers (`Frames 17–20`)
-      const waitVis = smoothstep(0.92, 0.99, tShatter);
-      endDecor.group.visible = waitVis > 0.01;
-      if (endDecor.group.visible) {
-        endDecor.update(elapsedSec, tWait * 0.85, Boolean(reducedMotion), pxParallax, pyParallax);
-      }
+      // Reference gems/stickers grow during the first fifth of the wait range,
+      // rise through the viewport and wrap independently. No emissive sticker glow.
+      endDecor.update(8 + idleSeconds, tWait, W / H);
 
       // -----------------------------------------------------------------------
       // E. Licensed Rigged Astronaut Choreography + Visor Reflection + LED Emoticon
@@ -1391,7 +1433,6 @@ export function GoalTunnelSection() {
         let rz = 0;
         let visorFlareAmt = 0;
         let ledVisorOpacity = 0;
-        let ledVisorSmile = 1;
 
         // Crossfade curved Earth cloud reflection inside visor (`detail_01`: 1.0 -> `detail_04/05`: 0.0!)
         mainAstro.visorEarthUniform.value = earthVis;
@@ -1452,8 +1493,7 @@ export function GoalTunnelSection() {
           rz = 0;
           aScale = 1.0;
 
-          ledVisorOpacity = smoothstep(0.13, 0.24, tWait);
-          ledVisorSmile = smoothstep(0.22, 0.36, tWait);
+          ledVisorOpacity = smoothstep(0, .06, tWait);
         }
 
         if (!reducedMotion && inEmergencePhase && uEmergence > 0.32) {
@@ -1475,7 +1515,7 @@ export function GoalTunnelSection() {
         applySuitJointPose(mainAstro, jointPose);
         const motionTime = nativeRatios.black * 10 + nativeRatios.white * 3;
         const loopFrame = (motionTime * 30 * .75) % 89;
-        const idleFrame = 140 + ((tShatter > .9 ? (tShatter - .9) * 2 : 0) + tWait * 5) * 30 % 147;
+        const idleFrame = 140 + (tShatter < 1 ? Math.max(0, tShatter - .9) * 60 : 6 + idleSeconds * 60) % 147;
         const bakedFrame = tShatter < .5 ? loopFrame : idleFrame;
         const transitionFrame = lerp(90, 139, clamp01((tOutPull + tShatter - .9) / 1.1) ** 4);
         const transitionWeight = clamp01(tShatter / .1) * (1 - clamp01((tShatter - .9) / .1));
@@ -1483,7 +1523,10 @@ export function GoalTunnelSection() {
         if (window.__goalAstronautTelemetry) {
           window.__goalAstronautTelemetry.sceneState.bakedFrame = bakedFrame;
         }
-        if (mainAstro.sampleBakedPose) visorLed.mesh.position.copy(mainAstro.visorAnchorLocal);
+        if (mainAstro.sampleBakedPose) {
+          visorLed.mesh.position.copy(mainAstro.visorAnchorLocal);
+          if (mainAstro.visorOrientationLocal) visorLed.mesh.quaternion.copy(mainAstro.visorOrientationLocal);
+        }
         mainAstro.root.position.set(ax, ay, az);
         mainAstro.root.rotation.set(rx, ry, rz);
         if (!inEmergencePhase && mainAstro.sampleCapturedRoot) {
@@ -1508,17 +1551,8 @@ export function GoalTunnelSection() {
         mainAstro.root.scale.setScalar(aScale);
         mainAstro.root.updateMatrixWorld(true);
 
-        // Curved Visor LED Emoticon Matrix (`Frames 18–20`)
-        if (ledVisorOpacity > 0.005) {
-          visorLed.mesh.visible = true;
-          visorLed.material.uniforms.uOpacity.value = ledVisorOpacity;
-          visorLed.material.uniforms.uSmile.value = ledVisorSmile;
-          const blinkCycle = reducedMotion ? 0 : (elapsedSec % 3.8);
-          visorLed.material.uniforms.uBlink.value =
-            blinkCycle > 3.55 ? Math.sin(((blinkCycle - 3.55) / 0.25) * Math.PI) : 0;
-        } else {
-          visorLed.mesh.visible = false;
-        }
+        // Animated reference atlas follows the sampled head, not a screen-aligned smiley.
+        visorLed.update(idleSeconds, ledVisorOpacity);
 
         if (visorFlareAmt > 0.004 && mainAstro.bones.Head) {
           optics.visorFlareMesh.visible = true;
@@ -1644,6 +1678,9 @@ export function GoalTunnelSection() {
         state.tunnelProgress = tTunnel;
         state.shatterProgress = tShatter;
         state.waitProgress = tWait;
+        state.endLoaded = endDecor.loaded; state.endDiamondCount = endDecor.diamondCount;
+        state.endStickerCount = endDecor.stickerCount; state.endTime = 8 + idleSeconds;
+        state.visorAtlasReady = visorLed.loaded; state.ctaReveal = endReveal;
         mainAstro?.root.matrixWorld.toArray(state.astronautMatrix);
         camera.matrixWorld.toArray(state.cameraMatrix);
         state.nativeWorldsReady = worlds.blackReady && worlds.whiteReady; state.worldError = worlds.error;
@@ -1681,7 +1718,7 @@ export function GoalTunnelSection() {
       pipelineReady = false;
       if (window.__goalAstronautTelemetry) window.__goalAstronautTelemetry.pipelineReady = false;
       pipelineWarmPromise = (async () => {
-        await Promise.all([worlds.ready, glbPromise, glassPromise]);
+        await Promise.all([worlds.ready, glbPromise, glassPromise, endDecor.ready, visorLed.ready]);
         if (unmounted || contextLost || worlds.error || !composer || !referenceBloom || !outputPass || !bloomPass) return;
         const canvasVisibility = hostEl.style.visibility;
         restoreWarmCanvas = () => { hostEl.style.visibility = canvasVisibility; restoreWarmCanvas = () => {}; };
@@ -1708,10 +1745,12 @@ export function GoalTunnelSection() {
           for (const clone of clones) clone.root.visible = true;
           worlds.update(.4, 0, 1, true); worlds.blackUniforms.u_resolution.value.set(8, 8);
           worlds.renderFeedback(glRenderer, camera, true); composer.render(0);
+          // Exercise the folded vertex path too, not only the straight shaft.
+          worlds.update(.78, 0, 1, true); worlds.renderFeedback(glRenderer, camera, true); composer.render(0);
           for (const clone of clones) clone.root.visible = false;
           worlds.update(.93, 0, 1, true); composer.render(0);
           worlds.update(1, .5, 1, true); worlds.setMonitorClip(true); worlds.monitorStencilMask.visible = true; composer.render(0);
-          worlds.setMonitorClip(false); worlds.monitorStencilMask.visible = false; endDecor.group.visible = true; visorLed.mesh.visible = true;
+          worlds.setMonitorClip(false); worlds.monitorStencilMask.visible = false; endDecor.update(8, .2, 1); visorLed.update(0, 1);
           if (shardsMesh && glassRefractionTarget) {
             glRenderer.setRenderTarget(glassRefractionTarget); glRenderer.setClearColor(0, 1); glRenderer.clear();
             (shardsMesh.material as THREE.ShaderMaterial).uniforms.u_backgroundTexture.value = glassRefractionTarget.texture;

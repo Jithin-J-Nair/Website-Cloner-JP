@@ -71,3 +71,8 @@ Rendered comparisons and browser reports are stored under ignored `temp/`, not c
 - An additional run of the **previous About production build's** asset-route suite reported **18 passes / 3 failures**: the About card SVG viewBox assertion and the Atlas Motion/Everswap catalog rejection assertions. These predate this Home build; their tests, routes and assets are unchanged. No assertion was relaxed and no unrelated route/catalog change was made to hide them.
 
 No pixel-exact parity, physical mobile performance, hardware-GPU smoothness or recovery of random source motion is claimed. The source depth-based 16-tap motion-blur post-effect is not ported in this change; motion is reconstructed through the captured geometry/root/rig trajectories and source-shaped travel/deformation. The pre-existing Home end stickers/diamond implementation remains outside this tunnel/glass replacement. Structural/unit tests are not visual-parity proof.
+
+
+## Subsequent end-stage task
+
+The later astronaut/“Let's work together” reconstruction replaces the previously retained end decorations and CTA wait behavior. See `home-end-reconstruction.md` for its reference comparison, new assets/motion and current validation limitations. The completed verification above describes the earlier tunnel revision, not a new certification of all subsequent changes.

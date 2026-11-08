@@ -10,8 +10,8 @@ import * as THREE from 'three';
 fs.mkdirSync('temp', { recursive: true });
 const dir = fs.mkdtempSync(path.resolve('temp/goal-unit-'));
 try {
-  for (const name of ['lib/lusion-buf-loader', 'components/home/GoalDownstreamScenes', 'components/home/AstronautEmergenceAssets', 'components/home/GoalReferenceShaders', 'components/home/GoalReferenceWorlds', 'components/home/GoalReferenceBloomPass']) {
-    const source = fs.readFileSync(`src/${name}.ts`, 'utf8').replaceAll('@/lib/lusion-buf-loader', './lusion-buf-loader.mjs').replaceAll('./GoalReferenceShaders', './GoalReferenceShaders.mjs');
+  for (const name of ['lib/lusion-buf-loader', 'components/home/GoalDownstreamScenes', 'components/home/AstronautEmergenceAssets', 'components/home/GoalReferenceShaders', 'components/home/GoalReferenceWorlds', 'components/home/GoalReferenceBloomPass', 'components/home/GoalReferenceEnd', 'components/home/GoalReferenceEndShaders']) {
+    const source = fs.readFileSync(`src/${name}.ts`, 'utf8').replaceAll('@/lib/lusion-buf-loader', './lusion-buf-loader.mjs').replaceAll('./GoalReferenceShaders', './GoalReferenceShaders.mjs').replaceAll('./GoalReferenceWorlds', './GoalReferenceWorlds.mjs').replaceAll('./GoalReferenceEndShaders', './GoalReferenceEndShaders.mjs');
     const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
     fs.writeFileSync(path.join(dir, `${path.basename(name)}.mjs`), compiled);
   }
@@ -19,6 +19,8 @@ try {
   const { createGlassFrameSampler, createGoalPlaybackPath } = await import(pathToFileURL(path.join(dir, 'GoalDownstreamScenes.mjs')));
   const { createCapturedPoseSampler, createCapturedRootSampler, applyCapturedDualQuaternionSkinning } = await import(pathToFileURL(path.join(dir, 'AstronautEmergenceAssets.mjs')));
   const { createGoalBlackGeometry, createGoalWhiteGeometry, createGoalGlassAnimationTextures, goalBlackTravelOffset, goalWorldRatios, sampleGoalBrownian } = await import(pathToFileURL(path.join(dir, 'GoalReferenceWorlds.mjs')));
+  const { createGoalDiamondGeometry, createGoalStickerGeometry, createGoalEndRandom } = await import(pathToFileURL(path.join(dir, 'GoalReferenceEnd.mjs')));
+  const { GOAL_STICKER_RECTS, GOAL_DIAMOND_PLANES } = await import(pathToFileURL(path.join(dir, 'GoalReferenceEndShaders.mjs')));
   const { GoalReferenceBloomPass } = await import(pathToFileURL(path.join(dir, 'GoalReferenceBloomPass.mjs')));
   const load = (name) => {
     const data = fs.readFileSync(`media-bundle/models/tunnels/${name}.buf`);
@@ -87,6 +89,32 @@ try {
   assert.deepEqual([...noiseP.toArray(),...noiseQ.toArray()],noiseState);
   assert.ok(Math.abs(noiseQ.length()-1)<1e-8);
   console.log('PASS: native 96/456 grid instances, encoded attributes, immutable cache, 16+16 blue blocks, fold ratios and deterministic FBM');
+
+  const diamondSource = load('diamond'), gems = createGoalDiamondGeometry(diamondSource), gemsAgain = createGoalDiamondGeometry(diamondSource);
+  assert.equal(gems.instanceCount,64); assert.equal(GOAL_DIAMOND_PLANES.length,25*4);
+  for (const name of ['position','normal','thickness']) {
+    assert.deepEqual(gems.getAttribute(name).array,diamondSource.geometry.getAttribute(name).array);
+    assert.notEqual(gems.getAttribute(name).array,diamondSource.geometry.getAttribute(name).array);
+  }
+  assert.deepEqual(gems.getAttribute('a_instancePosition').array,gemsAgain.getAttribute('a_instancePosition').array);
+  assert.equal(gems.getAttribute('a_instancePosition').getZ(0),11);
+  assert.equal(gems.getAttribute('a_instancePosition').getZ(63),19);
+  const axis=new THREE.Vector3();
+  for(let i=0;i<64;i++) {
+    axis.fromBufferAttribute(gems.getAttribute('a_instanceRotationAxis'),i);
+    assert.ok(Math.abs(axis.length()-1)<1e-6);
+  }
+  const randomA=createGoalEndRandom('diamonds-3'),randomB=createGoalEndRandom('diamonds-3');
+  for(let i=0;i<1000;i++){const value=randomA();assert.equal(value,randomB());assert.ok(value>=0&&value<1);}
+  const decals=createGoalStickerGeometry(); assert.equal(decals.instanceCount,26);
+  assert.equal(GOAL_STICKER_RECTS.length,26);
+  GOAL_STICKER_RECTS.forEach((r,i)=>{
+    assert.ok(r.x>=0&&r.y>=0&&r.x+r.w<=1465&&r.y+r.h<=1024);
+    assert.ok(Math.abs(decals.getAttribute('instanceUvInfo').getX(i)-r.x/1465)<1e-7);
+    assert.ok(Math.abs(decals.getAttribute('instanceUvInfo').getW(i)-r.h/1024)<1e-7);
+  });
+  gems.dispose();gemsAgain.dispose();decals.dispose();
+  console.log('PASS: 64 captured faceted gems, 25 refractive planes, seeded placements/unit axes, 26 exact nonuniform sticker atlas rectangles');
 
   // Exercise the actual pass scheduling on both even/odd FFT stage totals.
   // This tests target ownership/normalization, not GPU shader correctness or parity.

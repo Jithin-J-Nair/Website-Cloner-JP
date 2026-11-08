@@ -22,6 +22,14 @@ function SplitLetters({ text }: { text: string }) {
   );
 }
 
+function HomeEndWord({ text }: { text: string }) {
+  return <span data-home-end-word aria-hidden="true" className="inline-block whitespace-nowrap">
+    {Array.from(text).map((letter, i) => <span key={i} className="home-end-letter">
+      <span data-home-end-roll><span>{letter}</span><span>{letter}</span></span>
+    </span>)}
+  </span>;
+}
+
 /**
  * Shared Lusion End-Section CTA (`#end-section`)
  * - `theme="blue-flip"`: Royal-blue `#1736ff` full-bleed sticky stage with 4 quadrant `+` crosshairs,
@@ -125,127 +133,74 @@ export function ContactCtaSection({
 
   if (theme === "home-dark") {
     return (
-      <SurfaceSection
-        id={sectionId}
-        surface="void"
-        webglMode="contact-beacon"
-        className="relative z-[20] w-full !bg-transparent py-0 text-[#ffffff]"
-      >
+      <SurfaceSection id={sectionId} surface="void" webglMode="contact-beacon"
+        className="relative z-[20] w-full !bg-transparent py-0 text-white">
         <style>{`
-          .home-end-cta-shell {
-            min-height: 248vh;
+          #home .home-end-cta-shell { height: 248vh; }
+          #home .home-end-cta-pad { position: sticky; top: 0; height: 100svh; }
+          #home .home-end-copy { opacity: var(--home-end-reveal, 1); }
+          #home #end-section-content { left: 50%; top: calc(50% - 3em); transform: translate(-50%, calc(-50% + (1 - var(--home-end-reveal, 1)) * 32px)); }
+          #home .home-end-letter { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+          #home [data-home-end-roll], #home [data-home-end-roll] > span { display: block; line-height: 1; }
+          #home .home-end-line { position: absolute; height: .07em; background: white; transform: scaleX(0); transform-origin: left; transition: transform .7s cubic-bezier(.65,0,.35,1); pointer-events: none; }
+          #home .home-end-line-top { left: .05em; top: .85em; width: calc(100% - .05em); }
+          #home .home-end-line-left { left: .25em; bottom: .1em; width: .82em; }
+          #home .home-end-line-right { left: 1.78em; bottom: .1em; width: 2.45em; }
+          #home #end-section-title-link:hover .home-end-line, #home #end-section-title-link:focus-visible .home-end-line { transform: scaleX(1); }
+          @media (max-width: 560px) {
+            #home #end-section-content { top: 40%; }
+            #home #end-section-content-crosses { left: var(--base-padding-x); right: var(--base-padding-x); }
           }
-          .home-end-cta-pad {
-            padding-top: 124vh;
-            padding-bottom: 28vh;
-          }
+          @media (prefers-reduced-motion: reduce) { #home .home-end-line { transition: none; } }
           #home-goal[data-static-fallback="true"] + #end-section { background: #000 !important; }
-          #home-goal[data-static-fallback="true"] + #end-section .home-end-cta-shell { min-height: 100vh; padding-top: 10vh; }
-          #home-goal[data-static-fallback="true"] + #end-section .home-end-cta-pad { padding-top: 16vh; padding-bottom: 16vh; }
-          @media (max-width: 819px) {
-            .home-end-cta-shell {
-              min-height: 218vh;
-            }
-            .home-end-cta-pad {
-              padding-top: 108vh;
-              padding-bottom: 24vh;
-            }
-          }
+          #home-goal[data-static-fallback="true"] + #end-section .home-end-cta-shell { height: 100svh; }
+          @media (max-width: 819px) { #home .home-end-cta-shell { height: 218vh; } }
         `}</style>
-
-        <div className="home-end-cta-shell relative flex w-full flex-col justify-between bg-transparent pt-[26vh]">
-          <div
-            id="end-section-outer"
-            className="home-end-cta-pad relative mx-auto flex w-full flex-col items-center justify-center px-[var(--base-padding-x)]"
-          >
-            {/* Symmetric Quadrant + Center Registration Crosshairs matching Reference Frames 19 & 20 */}
-            <div
-              id="end-section-content-crosses"
-              aria-hidden="true"
-              className="pointer-events-none relative mx-auto mb-10 flex w-full items-center justify-between px-[1vw] text-white/90"
-            >
-              <span className="lusion-plus-cross" />
-              <span className="lusion-plus-cross" />
+        <div className="home-end-cta-shell relative w-full bg-transparent">
+          <div id="end-section-outer" className="home-end-cta-pad mx-auto w-full px-[var(--base-padding-x)]">
+            <div id="end-section-content-crosses" aria-hidden="true"
+              className="home-end-copy pointer-events-none absolute inset-x-[20.6%] top-[21vh] bottom-[23.1vh] text-white/90">
+              <span className="lusion-plus-cross absolute left-0 top-0" />
+              <span className="lusion-plus-cross absolute right-0 top-0" />
+              <span className="lusion-plus-cross absolute left-0 bottom-0" />
+              <span className="lusion-plus-cross absolute right-0 bottom-0" />
+              <span className="lusion-plus-cross absolute left-1/2 bottom-0" />
             </div>
-
-            <div id="end-section-content" className="relative z-20 w-full text-center">
+            <div id="end-section-content" className="home-end-copy absolute inset-x-0 top-[20.5vh] z-20 w-full text-center">
               <div id="end-section-subtitle" className="overflow-hidden">
-                <p
-                  id="end-section-subtitle-text"
-                  className="mx-auto max-w-[26ch] font-sans text-[clamp(0.84rem,1.06vw,1.08rem)] font-normal uppercase leading-[1.35] tracking-[0.04em] text-white sm:max-w-none sm:whitespace-nowrap"
-                >
+                <p id="end-section-subtitle-text"
+                  className="mx-auto max-w-[26ch] font-sans text-[clamp(0.65rem,0.92vw,1rem)] font-normal uppercase leading-[1.35] tracking-[0.02em] text-white sm:max-w-none sm:whitespace-nowrap">
                   {LUSION_GLOBAL_CHROME.endSection.subtitle}
                 </p>
               </div>
-
-              <div id="end-section-title" className="group relative mx-auto mt-5 w-fit">
-                <a
-                  id="end-section-title-link"
-                  href={`mailto:${LUSION_GLOBAL_CHROME.footer.businessEmail}`}
-                  onClick={handleEmailTrigger}
-                  onMouseEnter={() => soundEngine.playHover()}
-                  className="block font-sans text-[17.2vw] font-normal leading-[0.98] tracking-[-0.03em] text-white drop-shadow-[0_6px_28px_rgba(0,0,0,0.45)] sm:text-[8.2vw] min-[1800px]:text-[9.5rem]"
-                >
-                  Let&apos;s work
-                  <br />
-                  together!
+              <div id="end-section-title" className="group relative mx-auto mt-[5.1vh] w-fit">
+                <a id="end-section-title-link" href={`mailto:${LUSION_GLOBAL_CHROME.footer.businessEmail}`}
+                  onClick={handleEmailTrigger} onMouseEnter={() => soundEngine.playHover()}
+                  aria-label="Let's work together!"
+                  className="block font-sans text-[19.5vw] font-normal leading-[1] tracking-[-0.006em] text-white sm:text-[10vw]">
+                  <span className="relative block"><HomeEndWord text="Let's" />{" "}<HomeEndWord text="work" />
+                    <span aria-hidden="true" className="home-end-line home-end-line-top" /></span>
+                  <span className="relative block"><HomeEndWord text="together!" />
+                    <span aria-hidden="true" className="home-end-line home-end-line-left" />
+                    <span aria-hidden="true" className="home-end-line home-end-line-right" /></span>
                 </a>
-                <span id="end-section-title-top-decoration" aria-hidden="true" className="sr-only" />
-                <span id="end-section-title-bottom-left-decoration" aria-hidden="true" className="sr-only" />
-                <span id="end-section-title-bottom-right-decoration" aria-hidden="true" className="sr-only" />
               </div>
-
-              {copiedNotice && (
-                <p
-                  role="status"
-                  className="mt-5 font-mono text-xs uppercase tracking-[0.08em] text-[#c1ff00]"
-                >
-                  {LUSION_GLOBAL_CHROME.footer.businessEmail} copied to clipboard
-                </p>
-              )}
-
-              {/* Lower Quadrant + Center Registration Crosshairs (`Frames 19 & 20`) */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none mx-auto mt-16 flex w-full items-center justify-between px-[1vw] text-white/90"
-              >
-                <span className="lusion-plus-cross" />
-                <span className="lusion-plus-cross" />
-                <span className="lusion-plus-cross" />
-              </div>
+              {copiedNotice && <p role="status" className="mt-5 font-mono text-xs uppercase tracking-[0.08em] text-[#c1ff00]">
+                {LUSION_GLOBAL_CHROME.footer.businessEmail} copied to clipboard
+              </p>}
             </div>
-          </div>
-
-          {/* Sticky Bottom White Pill (`#end-bottom` — visible throughout `#end-section` wait & CTA, stops cleanly before `#footer-section`) */}
-          <div className="pointer-events-none sticky bottom-7 z-30 flex w-full justify-center pb-8">
-            <a
-              id="end-bottom"
-              href="#footer-section"
-              onClick={(e) => {
-                e.preventDefault();
-                soundEngine.playClick();
+            <div id="home-end-bottom" className="pointer-events-none absolute inset-x-0 bottom-[7vh] z-30 flex w-full justify-center">
+              <a id="end-bottom" href="#footer-section" onClick={(e) => {
+                e.preventDefault(); soundEngine.playClick();
                 document.getElementById("footer-section")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-              }}
-              className="pointer-events-auto inline-flex h-[3.1rem] min-w-[238px] items-center justify-between gap-4 rounded-full bg-white px-6 !text-black shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:scale-[1.03]"
-            >
-              <span aria-hidden="true" className="text-xs leading-none text-black/80">
-                ↓
-              </span>
-              <span
-                id="end-bottom-text-container"
-                className="relative h-[1.1rem] overflow-hidden whitespace-nowrap font-sans text-[0.74rem] font-medium uppercase leading-[1.1rem] tracking-[0.06em]"
-              >
-                <span className="lusion-ticker-line block">
-                  <span className="block">{LUSION_GLOBAL_CHROME.endSection.bottomTickerText}</span>
-                  <span className="block" aria-hidden="true">
-                    {LUSION_GLOBAL_CHROME.endSection.bottomTickerText}
-                  </span>
+              }} className="pointer-events-auto inline-flex h-[3.1rem] min-w-[238px] items-center justify-between gap-4 rounded-full bg-white px-6 !text-black transition-transform duration-300 hover:scale-[1.03]">
+                <span aria-hidden="true" className="text-xs text-black/80">↓</span>
+                <span id="end-bottom-text-container" className="relative overflow-hidden whitespace-nowrap font-sans text-[0.74rem] font-normal uppercase leading-[1.1rem]">
+                  {LUSION_GLOBAL_CHROME.endSection.bottomTickerText}
                 </span>
-              </span>
-              <span aria-hidden="true" className="text-xs leading-none text-black/80">
-                ↓
-              </span>
-            </a>
+                <span aria-hidden="true" className="text-xs text-black/80">↓</span>
+              </a>
+            </div>
           </div>
         </div>
       </SurfaceSection>

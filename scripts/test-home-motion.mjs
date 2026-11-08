@@ -93,6 +93,13 @@ try {
   // implementation assertions, not evidence of reference-video similarity.
   assert.ok(goalSource.includes('createGoalReferenceWorlds(track)') && !goalSource.includes('buildVortexHypercubeLattice') && !goalSource.includes('buildTunnelGlazing'),
     'the live owner uses captured architecture, not the old decorative worlds');
+  const nativeEnd=fs.readFileSync('src/components/home/GoalReferenceEnd.ts','utf8');
+  assert.ok(goalSource.includes('createGoalReferenceEnd(track, isMobileInit)')&&!goalSource.includes('buildDiamondsAndPopStickers')&&!goalSource.includes('buildVisorLedMatrix'),
+    'Home end stage must use captured assets, not the removed canvas sticker / synthetic gem / visor approximations');
+  assert.ok(nativeEnd.includes('diamond.buf')&&nativeEnd.includes('stickers_low.png')&&nativeEnd.includes('astronaut/face.png')&&nativeEnd.includes('blendSrcAlpha: THREE.ZeroFactor'),
+    'native illustration alpha is coverage, not a full-plate bloom mask');
+  assert.ok(goalSource.includes('idleSeconds * 60')&&goalSource.includes('visorOrientationLocal')&&goalSource.includes('endWords.forEach'),
+    'the captured idle, sampled head card and individual glyph rolls share the existing animation owner');
   assert.ok(nativeWorlds.includes('GRID_SIZE: 20') && nativeWorlds.includes('instanceGridIds') && nativeWorlds.includes('a_instanceId'),
     'encoded grid placement and 16-block corridor instancing are retained');
   assert.ok(nativeShaders.includes('vec4 b=vec4(2.*a,ada-1.)/(1.+ada)') && nativeShaders.includes('pos=c.xyz/(1.-c.w)'),
