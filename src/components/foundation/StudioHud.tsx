@@ -403,6 +403,7 @@ export function StudioHud() {
 
       <header
         id="header"
+        style={pathname === "/about" ? { paddingBlock: "clamp(15px, 3vw, 43px)" } : undefined}
         className={`pointer-events-none fixed top-0 left-0 z-[52] w-full px-[var(--base-padding-x)] py-[var(--base-padding-y)] text-[clamp(1rem,1vw,1.5rem)] transition-colors duration-300 ${
           navMenuOpen ? "--menu-opened" : ""
         }`}
@@ -434,7 +435,7 @@ export function StudioHud() {
           <TransitionLink
             href="/"
             transitionLabel="Home"
-            aria-label="JITHIN Home"
+            aria-label={pathname === "/about" ? "LUSION Home" : "JITHIN Home"}
             id="header-logo"
             style={logoColorStyle}
             onClick={() => setNavMenuOpen(false)}
@@ -447,8 +448,8 @@ export function StudioHud() {
                 JITHIN
               </span>
             ) : pathname === "/about" ? (
-              <span className="font-sans text-[1.65rem] min-[813px]:text-[2.2rem] font-normal leading-none tracking-[-0.025em] text-current">
-                JITHIN
+              <span className="font-sans text-[1.65rem] min-[813px]:text-[1.85rem] font-medium leading-none tracking-[-0.025em] text-current">
+                LUSION
               </span>
             ) : (
               <span className="font-sans text-[1.16rem] font-medium leading-none tracking-[-0.075em] text-current">

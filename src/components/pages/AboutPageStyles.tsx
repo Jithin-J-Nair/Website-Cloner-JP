@@ -42,6 +42,7 @@ export function AboutPageStyles() {
     #about .about-source-articles a > span { opacity: 0; transition: opacity .2s; }
     #about .about-source-articles a:hover > span, #about .about-source-articles a:focus-visible > span { opacity: 1; }
     #about .about-source-talks li { display: flex; justify-content: space-between; gap: 24px; padding-block: .2vw; }
+    #about .about-card-back-art { filter: url(#about-card-back-colors); }
     #about .about-card-back { box-shadow: inset 0 0 0 2px #fff; }
     #about .about-playing-expertise { --about-expertise-blue: var(--about-blue); }
     #about .about-expertise-stage { background: var(--about-blue); }

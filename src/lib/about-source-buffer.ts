@@ -18,7 +18,7 @@ export function decodeAboutSourceBuffer(buffer: ArrayBuffer) {
   for (const attr of header.attributes) {
     const { id, componentSize: components, storageType: type } = attr;
     if (Object.hasOwn(attributes, id)) throw new Error("Duplicate About attribute");
-    if (!["position", "nShade", "CP", "indices", "Cd"].includes(id)
+    if (!["position", "nShade", "CP", "indices", "Cd", "uv", "normal", "orient", "boneWeights", "boneIndices", "char", "piece"].includes(id)
       || !Number.isInteger(components) || components < 1 || components > 4) throw new Error("Unsupported About attribute");
     const bytes = type === "Float32Array" ? 4 : type === "Uint16Array" || type === "Int16Array" ? 2 : type === "Uint8Array" ? 1 : 0;
     const count = (id === "indices" ? header.indexCount : header.vertexCount) * components;
@@ -31,11 +31,14 @@ export function decodeAboutSourceBuffer(buffer: ArrayBuffer) {
       if (attr.needsPack) {
         const range = attr.packedComponents?.[i % components];
         if (!range || !Number.isFinite(range.from + range.delta)) throw new Error("Invalid About quantization");
-        value = range.from + range.delta * (type === "Int16Array" ? (value + 32768) / 65535 : value / (bytes === 1 ? 255 : 65535));
+        value = range.from + range.delta * (type === "Int16Array" ? (value + 32768) / 65536 : value / (bytes === 1 ? 256 : 65536));
       }
       if (!Number.isFinite(value)) throw new Error("Nonfinite About vertex");
       data[i] = value;
     }
+    if (id === "indices" && (components !== 1 || data.some(index => !Number.isInteger(index) || index < 0 || index >= header.vertexCount))) throw new Error("Invalid About index");
+    const requiredSize: Record<string, number> = { position: 3, uv: 2, normal: 3, orient: 4, boneWeights: 2, boneIndices: 2, char: 1, piece: 1 };
+    if (requiredSize[id] && components !== requiredSize[id]) throw new Error("Invalid About attribute width");
     attributes[id] = data; offset += count * bytes;
   }
   if (offset !== buffer.byteLength || !attributes.position) throw new Error("Invalid About attribute layout");

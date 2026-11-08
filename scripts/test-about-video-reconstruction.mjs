@@ -20,6 +20,10 @@ try {
     await page.goto(`${base}/about`,{waitUntil:'networkidle',timeout:120000});
     if(process.env.EXPECTED_BUILD_SHA)assert.equal(await page.locator('#about').getAttribute('data-build-commit'),process.env.EXPECTED_BUILD_SHA,'preview is serving the current commit');
     await page.waitForFunction(()=>!!window.__aboutProbe);
+    await page.waitForFunction(()=>document.querySelector('#about-who')?.dataset.landscapeSourceState==='ready',null,{timeout:120000});
+    assert.equal(await page.locator('#about-who').getAttribute('data-scene-state'),'ready');
+    assert.equal(await page.evaluate(()=>window.__aboutProbe().explorer),'source-rig','the archived humanoid, not a substitute astronaut, is active');
+    assert.ok(await page.locator('.about-card-back-art').evaluateAll(es=>es.every(e=>e.getAttribute('src')==='/about/scene/card-back.png')));
     const seek = async y => {
       await page.evaluate(y=>window.__lusionInspector.scrollManager.scrollToPixel(y),y);
       await page.waitForTimeout(800);

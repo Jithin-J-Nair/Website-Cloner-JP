@@ -15,10 +15,10 @@ function CapabilityGlyph({ index }: { index: number }) {
   return <svg aria-hidden="true" viewBox="0 0 18 21" className="about-card-glyph"><path fill="currentColor" fillRule="evenodd" d={paths[index]} /></svg>;
 }
 
-/** Original clean-room linework texture; not copied or derived from the bundled reference back.png. */
+/** Archived About card artwork, delivered only through the About allowlist. */
 function CardBack() {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img className="about-card-back-art" src="/assets/images/cards/back-ink.svg" width={628} height={876} alt="" aria-hidden="true" />;
+  return <img className="about-card-back-art" src="/about/scene/card-back.png" width={628} height={876} alt="" aria-hidden="true" />;
 }
 
 export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
@@ -118,6 +118,11 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   return (
     <section id="about-capability" ref={sectionRef} className="about-playing-expertise" data-reduced={reducedMotion} aria-labelledby="about-expertise-heading">
       <div className="about-expertise-stage">
+        <svg width="0" height="0" aria-hidden="true" className="absolute"><defs>
+          <filter id="about-card-back-colors" colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix" values=".913 0 .087 0 0  0 .93 .07 0 0  .105 0 .895 0 0  0 0 0 1 0" />
+          </filter>
+        </defs></svg>
         <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none" aria-hidden="true">
           <path d="M390 510C690 510 1220 240 1150 -120" stroke="currentColor" strokeWidth="24" strokeLinecap="round" />
         </svg>

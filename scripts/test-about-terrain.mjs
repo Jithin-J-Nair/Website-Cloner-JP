@@ -38,11 +38,15 @@ try {
   assert.match(source, /vec3 sand = vec3\(\.32, \.35, \.36\)/, 'regolith keeps a grey base under a localized light pool');
   assert.match(source, /p\.x < 0\. \? 1\.22 : \.78/, 'left and right flanks retain the measured light/dark split');
   const about = fs.readFileSync('src/components/pages/AboutPageView.tsx', 'utf8');
-  assert.match(about, /terrainHeightAt\(-\.35, -1\.8\)/, 'procedural explorer feet use the shared terrain sampler');
-  assert.match(about, /terrainHeightAt\(rx, rz\)/, 'grounded pebbles use the same terrain sampler');
-  assert.match(about, /hGrid\[j \* \(C_GRID \+ 1\) \+ i\] = terrainHeightAt\(x, z\)/, 'topographic contours use the same terrain sampler');
-  assert.match(about, /ROCK_COUNT = 224, FLOATING_ROCK_COUNT = 16/, 'the basin has a small suspended-rock population and grounded pebbles');
-  assert.match(about, /about-wide-chromatic-ring/, 'the wide pullback has its own clean-room chromatic edge layer');
+  // Retain the procedural module's standalone regression coverage, but assert
+  // it is no longer the scene shown to users. Active source-world tests exercise
+  // the real terrain, rig, spline and animation rather than this retired field.
+  assert.doesNotMatch(about, /terrainHeightAt|createAboutTerrainMaterial|createAboutGroundClasts/);
+  assert.match(about, /createAboutReferenceWorld/);
+  const world = fs.readFileSync('src/components/three/AboutReferenceWorld.ts', 'utf8');
+  assert.match(world, /model\("terrain"\)/);
+  assert.match(world, /terrain_shadow_light_height\.webp/);
+  assert.match(world, /landscape\.rotation\.y = Math\.PI/, 'preserve handedness and the native camera’s screen-right');
   let disposed = 0;
   a.addEventListener('dispose', () => disposed++);
   b.addEventListener('dispose', () => disposed++);

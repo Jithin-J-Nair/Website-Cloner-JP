@@ -16,7 +16,7 @@ for(const [asset,relative]of Object.entries(sources)){
  assert.deepEqual(Buffer.from(await response.arrayBuffer()),bytes);assert.equal(response.headers.get('x-content-type-options'),'nosniff');assert.equal(response.headers.get('cross-origin-resource-policy'),'same-origin');assert.match(response.headers.get('content-security-policy'),/sandbox/);
  assert.equal((await GET(new Request(`http://test/about/scene/${asset}`,{headers:{'if-none-match':response.headers.get('etag')}}),{params:Promise.resolve({asset})})).status,304);
 }
-for(const asset of ['../../package.json','__proto__','Aeonik-Regular.woff2','terrain_lines.buf','person.buf','team.json','jithin-portrait.ply'])assert.equal((await GET(new Request('http://test/about/scene/forbidden'),{params:Promise.resolve({asset})})).status,404);
+for(const asset of ['../../package.json','__proto__','Aeonik-Regular.woff2','terrain_lines.buf','person_walk.buf','team.json','jithin-portrait.ply'])assert.equal((await GET(new Request('http://test/about/scene/forbidden'),{params:Promise.resolve({asset})})).status,404);
 assert.throws(()=>decode(new ArrayBuffer(4_000_001)));assert.throws(()=>decode(new Uint8Array(30).fill(255).buffer));
 assert.equal(fs.existsSync('public/about-media/jithin-portrait.ply'),false);
 for(const file of ['AboutPhotoPortrait','AboutPortraitSurface','AboutBodyContours'])assert.equal(fs.existsSync(`src/components/three/${file}.ts`),false);

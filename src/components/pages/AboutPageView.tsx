@@ -5,10 +5,9 @@ import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
 import { aboutScenePose, aboutWordmarkSweepPose, aboutLetteringPose } from "@/lib/about-scene-motion";
-import { createAboutPlume } from "@/components/three/AboutPlume";
-import { createAboutExplorer } from "@/components/three/AboutExplorer";
-import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
-import { createAboutTerrainMaterial, createAboutGroundClasts, attachAboutGroundFlow, terrainHeightAt } from "@/components/three/AboutTerrain";
+import { createAboutScenePost } from "@/components/three/AboutScenePost";
+import { createAboutReferenceWorld } from "@/components/three/AboutReferenceWorld";
+import { aboutEditorialProgress, aboutEditorialWordPose } from "@/lib/about-editorial-motion";
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
@@ -162,7 +161,7 @@ function AboutWhoExperience({
     const hostEl = canvasHostRef.current;
     if (!sectionEl || !hostEl) return;
 
-    let contextLost = false, disposed = false;
+    let contextLost = false, disposed = false, assetsFailed = false;
     const fallback = (reason: string) => {
       sectionEl.dataset.sceneState = reason;
       if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "flex";
@@ -181,12 +180,13 @@ function AboutWhoExperience({
     }
 
     const glRenderer = renderer;
+    if (!glRenderer.extensions.has("EXT_color_buffer_float")) {
+      glRenderer.dispose(); fallback("unavailable"); return;
+    }
     if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "none";
-    sectionEl.dataset.sceneState = "ready";
     const ctx = glRenderer.getContext(), debug = ctx.getExtension("WEBGL_debug_renderer_info");
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
-    const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 7000 : 12000;
     glRenderer.setClearColor(0x000302, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -194,7 +194,11 @@ function AboutWhoExperience({
     glRenderer.domElement.style.width = "100%";
     glRenderer.domElement.style.height = "100%";
     glRenderer.domElement.style.display = "block";
+    glRenderer.domElement.style.opacity = "0";
+    glRenderer.domElement.style.transition = reducedMotion ? "none" : "opacity .25s";
     hostEl.appendChild(glRenderer.domElement);
+    const openingSvg = heroWordmarkRef.current?.querySelector("svg");
+    const manifestoLogoLine = manifestoOverlayRef.current?.querySelector<HTMLSpanElement>("h2 > span:nth-child(2)");
 
     const disposables: Array<{ dispose: () => void }> = [];
     const track = <T extends { dispose: () => void }>(item: T): T => {
@@ -203,322 +207,22 @@ function AboutWhoExperience({
     };
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0d0c0f, 0.016);
+    const sceneOverlay = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 16 / 10, .1, 220);
 
-    const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);
-
-    // Moody monochrome lunar lighting matching 'about-01' & 'about-02'
-    const ambient = new THREE.AmbientLight(0xd4d9dd, .58);
-    scene.add(ambient);
-
-    const overheadBeamLight = new THREE.SpotLight(0xf1f5f9, 36, 52, Math.PI * 0.22, 0.85, 1.3);
-    overheadBeamLight.position.set(0, 24, 1.5);
-    overheadBeamLight.target.position.set(0, 0, 2.5);
-    scene.add(overheadBeamLight);
-    scene.add(overheadBeamLight.target);
-
-    const coolRimLight = new THREE.DirectionalLight(0xe5edf1, 1.8);
-    coolRimLight.position.set(-8, 14, 10);
-    scene.add(coolRimLight);
-
-    // -------------------------------------------------------------------------
-    // 1. Original GPU filament field: instanced grains and seeded fine silver dust
-    // -------------------------------------------------------------------------
-    const plume = track(createAboutPlume(count));
-    const sphereStorm = plume.group, stormMat = plume.material;
-    // GPU-displaced points have a CPU sorting centre at the origin. Render the
-    // transparent background first, not over the fine plume after its draw.
-    sphereStorm.renderOrder = 1;
-    scene.add(sphereStorm);
-
-    // Soft Volumetric Core Haze & Vertical God-Ray Shaft ('about-01' & 'about-02'!)
-    const godRayMat = track(
-      new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide,
-        uniforms: {
-          uOpacity: { value: 0 },
-          uCyanCore: { value: 0.25 },
-          uOpening: { value: 1 },
-          uWide: { value: 0 },
-        },
-        vertexShader: `
-          varying vec2 vUv;
-          void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: `
-          varying vec2 vUv;
-          uniform float uOpacity;
-          uniform float uCyanCore;
-          uniform float uOpening;
-          uniform float uWide;
-          void main() {
-            // A finite overhead emitter and widening cone, not a laser joining
-            // the cloud to the ground. Its top naturally enters the wide shot.
-            float x = (vUv.x - .5) * 144.;
-            float y = vUv.y * 56. - 2.5;
-            // Opening needs only a compact cloud veil. Avoid evaluating every
-            // shaft/emitter Gaussian over the entire screen while their weight
-            // is exactly zero; the later pullback still uses the full material.
-            if (uOpening > .999) {
-              float haze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
-              vec3 openingColor = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore) * haze * .15;
-              float fade = smoothstep(-2.5, 0., y) * (1. - smoothstep(42., 53.5, y));
-              gl_FragColor = vec4(openingColor, uOpacity * fade);
-              #include <tonemapping_fragment>
-              #include <colorspace_fragment>
-              return;
-            }
-            float coneWidth = mix(3., .30, smoothstep(8., 35.2, y));
-            float beam = exp(-pow(x / coneWidth, 2.)) * smoothstep(6., 10., y)
-              * (1. - smoothstep(35.3, 36.4, y));
-            float emitter = exp(-pow(x / .42, 2.) - pow((y - 35.2) / .42, 2.));
-            float halo = exp(-pow(x / mix(.9, 1.8, uWide), 2.)
-              - pow((y - 35.2) / mix(2.6, 4.8, uWide), 2.));
-            float cloudHaze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
-            float wideHaze = exp(-pow(x / 18., 2.)) * mix(.008, .012, uWide);
-            float beamVeil = exp(-pow(x / (coneWidth * 2.4), 2.))
-              * smoothstep(4., 11., y) * (1. - smoothstep(35.3, 37., y));
-            float atmosphere = exp(-pow(x / 22., 2.) - pow((y - 19.) / 20., 2.));
-            float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(42., 53.5, y));
-            vec3 col = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore)
-              * ((beam * .12 + beamVeil * .025 + emitter * 3. + halo * .12
-                + atmosphere * .075 * uWide + wideHaze) * (1. - uOpening)
-                + cloudHaze * mix(.15, .09, 1. - uOpening));
-            gl_FragColor = vec4(col, uOpacity * vertFade);
-            #include <tonemapping_fragment>
-            #include <colorspace_fragment>
-          }
-        `,
-      })
-    );
-    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(144.0, 56.0)), godRayMat);
-    godRayPlane.position.set(-.35, 25.5, -2.5);
-    godRayPlane.renderOrder = -1;
-    scene.add(godRayPlane);
-
-    // -------------------------------------------------------------------------
-    // 2. Sculpted 3D Crater Basin & Mountain Ridge Terrain ('about-02', 'about-03', 'about-04')
-    // -------------------------------------------------------------------------
-    const GRID = software || tier === "low" ? 176 : window.innerWidth < 820 ? 224 : 320;
-    const SPAN = 144;
-    const terrainGeo = track(new THREE.PlaneGeometry(SPAN, SPAN, GRID, GRID));
-    terrainGeo.rotateX(-Math.PI * 0.5);
-    const tPos = terrainGeo.attributes.position as THREE.BufferAttribute;
-    // Spend vertices near the subject, not on the dark fading perimeter.
-    // The software tier keeps its former triangle budget while the domain
-    // expands for the distant shot. Height/contact/contours still share one field.
-    const warp = (v: number) => {
-      const t = v / (SPAN * .5);
-      return t * 36 + Math.pow(t, 5) * 36;
-    };
-    for (let i = 0; i < tPos.count; i++) {
-      const x = warp(tPos.getX(i)), z = warp(tPos.getZ(i));
-      tPos.setXYZ(i, x, terrainHeightAt(x, z), z);
-    }
-    terrainGeo.computeVertexNormals();
-
-    const terrainMat = track(createAboutTerrainMaterial());
-    const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
-    terrainMesh.renderOrder = -2;
-    scene.add(terrainMesh);
-
-    // -------------------------------------------------------------------------
-    // 3. 36 Glowing 3D Topographic Elevation Contour Lines ('about-03' & 'about-04')
-    // -------------------------------------------------------------------------
-    const contourSegments: number[] = [];
-    const C_GRID = 168;
-    const step = SPAN / C_GRID;
-    // Marching-squares iso-contour extraction across the exact 3D 'terrainHeightAt' grid!
-    const hGrid = new Float32Array((C_GRID + 1) * (C_GRID + 1));
-    for (let j = 0; j <= C_GRID; j++) {
-      for (let i = 0; i <= C_GRID; i++) {
-        const x = -SPAN * 0.5 + i * step;
-        const z = -SPAN * 0.5 + j * step;
-        hGrid[j * (C_GRID + 1) + i] = terrainHeightAt(x, z);
-      }
-    }
-
-    const NUM_LEVELS = 36;
-    for (let lv = 0; lv < NUM_LEVELS; lv++) {
-      const iso = -1.2 + lv * 0.34;
-      for (let j = 0; j < C_GRID; j++) {
-        for (let i = 0; i < C_GRID; i++) {
-          const i00 = hGrid[j * (C_GRID + 1) + i];
-          const i10 = hGrid[j * (C_GRID + 1) + i + 1];
-          const i01 = hGrid[(j + 1) * (C_GRID + 1) + i];
-          const i11 = hGrid[(j + 1) * (C_GRID + 1) + i + 1];
-
-          const x0 = -SPAN * 0.5 + i * step;
-          const z0 = -SPAN * 0.5 + j * step;
-          const pts: Array<[number, number]> = [];
-
-          if ((i00 < iso) !== (i10 < iso)) {
-            const t = (iso - i00) / (i10 - i00);
-            pts.push([x0 + t * step, z0]);
-          }
-          if ((i10 < iso) !== (i11 < iso)) {
-            const t = (iso - i10) / (i11 - i10);
-            pts.push([x0 + step, z0 + t * step]);
-          }
-          if ((i01 < iso) !== (i11 < iso)) {
-            const t = (iso - i01) / (i11 - i01);
-            pts.push([x0 + t * step, z0 + step]);
-          }
-          if ((i00 < iso) !== (i01 < iso)) {
-            const t = (iso - i00) / (i01 - i00);
-            pts.push([x0, z0 + t * step]);
-          }
-
-          if (pts.length >= 2) {
-            contourSegments.push(
-              pts[0][0],
-              iso + 0.045,
-              pts[0][1],
-              pts[1][0],
-              iso + 0.045,
-              pts[1][1]
-            );
-          }
-        }
-      }
-    }
-
-    const contourGeo = track(new THREE.BufferGeometry());
-    contourGeo.setAttribute("position", new THREE.Float32BufferAttribute(contourSegments, 3));
-    const contourMat = track(
-      new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        uniforms: {
-          uOpacity: { value: 0 },
-          uTime: { value: 0 },
-          uTeamPhase: { value: 0 },
-        },
-        vertexShader: `
-          varying vec3 vPosW;
-          void main() {
-            vec4 wp = modelMatrix * vec4(position, 1.0);
-            vPosW = wp.xyz;
-            gl_Position = projectionMatrix * viewMatrix * wp;
-          }
-        `,
-        fragmentShader: `
-          uniform float uOpacity;
-          uniform float uTime;
-          uniform float uTeamPhase;
-          varying vec3 vPosW;
-          void main() {
-            float wave = 0.55 + 0.45 * sin(vPosW.y * 2.4 - uTime * 1.4 + vPosW.x * 0.15);
-            float distFade = 1.0 - smoothstep(10.0, 29.0, length(vPosW.xz - vec2(0.0, 4.0)));
-            // In 'about-04-team-hologram', upper sky becomes pure deep '#000000' while lower-foreground ridges glow electric ice-blue!
-            float lowerBand = smoothstep(2.2, 8.8, vPosW.z);
-            float teamMask = mix(1.0, lowerBand, uTeamPhase);
-            float ridgeGlow = smoothstep(-0.8, 3.2, vPosW.y) * 0.75 + 0.25;
-            vec3 baseCol = mix(vec3(0.48, 0.56, 0.68), vec3(0.95, 0.98, 1.0), wave);
-            vec3 causticCol = mix(vec3(0.42, 0.76, 1.0), vec3(0.92, 0.98, 1.0), pow(wave, 1.4)) * 1.28;
-            vec3 col = mix(baseCol, causticCol, uTeamPhase);
-            gl_FragColor = vec4(col, uOpacity * distFade * ridgeGlow * teamMask * (0.45 + wave * 0.55));
-          }
-        `,
-      })
-    );
-    const contourLines = new THREE.LineSegments(contourGeo, contourMat);
-    contourLines.visible = false;
-    scene.add(contourLines);
-
-    // -------------------------------------------------------------------------
-    // 4. Lone White Explorer / Astronaut Figure Standing on Valley Floor ('about-02')
-    // -------------------------------------------------------------------------
-    const explorer = track(createAboutExplorer());
-    const explorerGroup = explorer.group;
-    // Feet, not the centre of a capsule, are anchored to the same basin function.
-    explorerGroup.position.set(-.35, terrainHeightAt(-.35, -1.8) + .012, -1.8);
-    scene.add(explorerGroup);
-    // Reuse the project's permitted NASA suit, never a captured Lusion model.
-    // The procedural suit and contact shadow remain a zero-network fallback.
-    const licensedExplorer = track(upgradeAboutExplorer(explorerGroup, () => ensureLoop()));
-
-    // -------------------------------------------------------------------------
-    // 5. One instanced draw: 48 suspended stones and 272 grounded grains.
-    // -------------------------------------------------------------------------
-    const ROCK_COUNT = 224, FLOATING_ROCK_COUNT = 16;
-    const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
-    const rockMat = track(
-      new THREE.MeshStandardMaterial({
-        color: 0x747d85,
-        roughness: 0.86,
-        metalness: 0.12,
-        flatShading: true,
-      })
-    );
-    const rocksMesh = track(new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT));
-    const rockDummy = new THREE.Object3D();
-    const rockSeeds = Array.from({ length: ROCK_COUNT }, (_, i) => {
-      const floating = i < FLOATING_ROCK_COUNT;
-      const ang = (i * 2.39996) % (Math.PI * 2);
-      const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
-      const rx = floating ? Math.cos(ang) * rad : Math.sin(i * 7.31) * (2 + ((i * 37) % 100) * .095);
-      const rz = floating ? 3.5 + Math.sin(ang) * rad * .72 : -11 + ((i * 43) % 100) * .39;
-      const scale = floating ? .20 + ((i * 19) % 10) * .045 : .04 + Math.pow(((i * 17) % 100) / 100, 4) * .32;
-      // Half-embed small clasts instead of lifting every size eight centimetres
-      // above the floor. Concentrate the same population on the visible basin.
-      const ry = floating
-        ? 1.5 + ((i * 43) % 100) / 100 * 13.5
-        : terrainHeightAt(rx, rz) + scale * .24 * .58 * .55;
-      return {
-        x: rx,
-        y: ry,
-        z: rz,
-        floating,
-        scale,
-        phase: i * 0.73,
-      };
-    });
-    // Seed rest transforms once. GPU flow transports the grounded population;
-    // only the sixteen freely suspended rocks need CPU pose updates.
-    for (let i = 0; i < ROCK_COUNT; i++) {
-      const rs = rockSeeds[i];
-      rockDummy.position.set(rs.x, rs.y, rs.z);
-      rockDummy.rotation.set(rs.phase, rs.phase * 1.4, 0);
-      rockDummy.scale.set(rs.scale * .7, rs.scale * (rs.floating ? .58 : .3), rs.scale * .5);
-      rockDummy.updateMatrix(); rocksMesh.setMatrixAt(i, rockDummy.matrix);
-      rocksMesh.setColorAt(i, new THREE.Color(rs.floating ? 0xb3bdc4 : 0x4e5458));
-    }
-    rocksMesh.instanceMatrix.needsUpdate = true;
-    scene.add(rocksMesh);
-
-    // Angular sediment is actual contact-anchored geometry, not black polka dots.
-    // One bounded GPU-advected instanced draw; the aura carries grains outward and upward.
-    const sediment = createAboutGroundClasts(software ? 1100 : window.innerWidth < 820 ? 1600 : 3200);
-    const sedimentGeo = track(new THREE.IcosahedronGeometry(1, 0));
-    const sedimentMaterial = track(rockMat.clone());
-    const groundFlow = attachAboutGroundFlow(sedimentGeo, sedimentMaterial, sediment, Math.floor(sediment.length * .7));
-    const rockFlow = attachAboutGroundFlow(rockGeo, rockMat, rockSeeds.map(seed => ({
-      x: seed.x, y: seed.y, z: seed.z, size: seed.scale * .24, aspect: .3, angle: seed.phase,
-    })), FLOATING_ROCK_COUNT);
-    const sedimentMesh = track(new THREE.InstancedMesh(sedimentGeo, sedimentMaterial, sediment.length));
-    sedimentMesh.frustumCulled = false;
-    for (let i = 0; i < sediment.length; i++) {
-      const stone = sediment[i];
-      rockDummy.position.set(stone.x, stone.y, stone.z);
-      rockDummy.rotation.set(0, stone.angle, .12 * Math.sin(stone.angle));
-      rockDummy.scale.set(stone.size, stone.size * stone.aspect, stone.size * (1.1 + .3 * Math.sin(stone.angle)));
-      rockDummy.updateMatrix(); sedimentMesh.setMatrixAt(i, rockDummy.matrix);
-      sedimentMesh.setColorAt(i, new THREE.Color().setScalar(.36 + .3 * (i % 17) / 16));
-    }
-    sedimentMesh.instanceMatrix.needsUpdate = true;
-    scene.add(sedimentMesh);
-    const wordmarkSweep = track(createAboutWordmarkSweep());
-    scene.add(wordmarkSweep.mesh);
+    const referenceWorld = track(createAboutReferenceWorld(glRenderer,
+      software || window.innerWidth < 820 || tier === "low", reducedMotion,
+      () => ensureLoop(), state => {
+        if (disposed) return;
+        sectionEl.dataset.landscapeSourceState = state;
+        if (state === "ready") { sectionEl.dataset.sceneState = "ready"; glRenderer.domElement.style.opacity = "1"; }
+        if (state === "unavailable") { assetsFailed = true; fallback("unavailable"); }
+      }));
+    scene.add(referenceWorld.group);
+    const wordmarkSweep = track(createAboutWordmarkSweep(() => ensureLoop()));
+    sceneOverlay.add(wordmarkSweep.mesh);
     document.fonts.ready.then(() => {
-      if (!disposed) { wordmarkSweep.repaint(); ensureLoop(); }
+      if (!disposed) { wordmarkSweep.repaint(); resize(); ensureLoop(); }
     });
 
     // Authorized source roster points and captured topographic contours. This
@@ -534,6 +238,7 @@ function AboutWhoExperience({
     }));
     sourceTeamRef.current = sourceTeam;
     scene.add(sourceTeam.group);
+    const scenePost = track(createAboutScenePost(glRenderer, scene, camera, sceneOverlay, referenceWorld.renderMotion));
     void sourceTeam.setMember(memberRef.current, reducedMotion);
 
     // -------------------------------------------------------------------------
@@ -548,9 +253,6 @@ function AboutWhoExperience({
     const pointerTarget = new THREE.Vector2();
     let rafId = 0;
     const pointerNDC = new THREE.Vector2(0, 0);
-    const raycaster = new THREE.Raycaster();
-    const pointerPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-    const pointerWorld = new THREE.Vector3(0, 8.35, 0);
     let pointerActive = 0;
 
 
@@ -585,9 +287,16 @@ function AboutWhoExperience({
       const dpr = Math.min(tier === "low" ? 1 : 1.5, cinematicRenderDpr(W, H, window.devicePixelRatio || 1, software, reducedMotion));
       glRenderer.setPixelRatio(dpr);
       glRenderer.setSize(W, H, false);
+      scenePost.resize(W, H, dpr);
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
-      stormMat.uniforms.uPixelRatio.value = dpr;
+      if (manifestoLogoLine) {
+        const range = document.createRange(); range.selectNodeContents(manifestoLogoLine);
+        const rect = range.getBoundingClientRect();
+        const capHeight = rect.width * .200956762;
+        const parentShift = manifestoOverlayRef.current ? new DOMMatrixReadOnly(getComputedStyle(manifestoOverlayRef.current).transform).m41 : 0;
+        wordmarkSweep.layout(W, H, { x: rect.left - parentShift, y: rect.top + (rect.height - capHeight) * .56, width: rect.width / .92, height: capHeight });
+      } else wordmarkSweep.layout(W, H);
       syncInspector();
     };
 
@@ -611,109 +320,17 @@ function AboutWhoExperience({
 
       // -----------------------------------------------------------------------
       // One scroll-owned pose: close volume → basin → distant basin → editorial.
-      // Positions are still-led original framing; live-source timing is unverified.
+      // The archived spline overrides this safe initial pose once its data arrives.
       // -----------------------------------------------------------------------
-      const pose = aboutScenePose(u, isMobile);
-      const tPullback = pose.pullback;
-      const tTeamPhase = pose.team;
-      const { x: camX, y: camY, z: camZ, lookY } = pose;
-
-      camera.fov = isMobile ? 54 : 45;
-      camera.position.set(camX, camY, camZ);
-      camera.lookAt(0, lookY, 0);
+      const tTeamPhase = aboutScenePose(u, isMobile).team;
+      // Native opening pose until the required spline arrives, not the retired
+      // invented camera path. The canvas reveals only after required data loads.
+      camera.fov = isMobile ? 70 : 60;
+      camera.position.set(0, 7.29944, 5.00107);
+      camera.lookAt(0, 7.29944, 0);
       camera.updateProjectionMatrix();
 
-      // Update 3D pointer projection for live sphere repulsion
-      if (pointerActive > 0.01) {
-        raycaster.setFromCamera(pointerNDC, camera);
-        raycaster.ray.intersectPlane(pointerPlane, pointerWorld);
-      }
-
-      // 1. Sphere storm uniforms
-      const stormVis = 1 - smoothstep(3.35, 4.45, u);
-      sphereStorm.visible = stormVis > 0.01;
-      sphereStorm.position.y = isMobile ? 0 : smoothstep(1.7, 3.15, u) * 2;
-      if (sphereStorm.visible) {
-        stormMat.uniforms.uTime.value = reducedMotion ? 0.5 : elapsedSec;
-        stormMat.uniforms.uCompact.value = tPullback;
-        // Focus follows the existing camera, rather than leaving distant grains
-        // defocused and oversized as if the opening shot were still active.
-        stormMat.uniforms.uFocusDistance.value = Math.hypot(camX + .35, camY - 8.4 - sphereStorm.position.y, camZ);
-        stormMat.uniforms.uMobile.value = isMobile ? 1.0 : 0.0;
-        stormMat.uniforms.uPointer.value.copy(pointerWorld);
-        stormMat.uniforms.uPointerStrength.value = pointerActive;
-        stormMat.uniforms.uCyanBoost.value = isMobile ? .16 : 0;
-        stormMat.uniforms.uOpacity.value = stormVis;
-      }
-
-      // 2. Vertical volumetric God-Ray column & Valley Terrain & Explorer & Floating Rocks ('about-02')
-      const landscapeVis = smoothstep(0.30, 1.05, u);
-      const darkHudFade = 1 - smoothstep(3.65, 5.65, u);
-      const atmosphereVis = Math.max(landscapeVis, (1 - landscapeVis) * .34) * stormVis;
-      godRayPlane.visible = atmosphereVis > 0.01;
-      godRayMat.uniforms.uOpacity.value = atmosphereVis * 0.85;
-      godRayMat.uniforms.uOpening.value = 1 - landscapeVis;
-      godRayMat.uniforms.uWide.value = smoothstep(30, 65, camZ);
-      godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : 0;
-
-      // The reference opening already has a readable, near-black basin rim behind
-      // the silver plume. Reveal the terrain silhouette independently from the
-      // astronaut and god-ray beat: the world should not begin as a floating
-      // particle-only void. The full landscape, explorer and shaft still arrive
-      // on the later pullback cue.
-      const terrainReveal = lerp(.04, 1, smoothstep(.12, .92, u));
-      // Team mode returns to black to preserve portrait contrast.
-      const narrativeGround = (1 - tTeamPhase) * .45;
-      const terrainVis = terrainReveal * Math.max(darkHudFade, narrativeGround);
-      // Do not shade a full terrain pass at four-percent opacity behind the
-      // opening lettering. It enters with the existing pullback reveal.
-      terrainMesh.visible = terrainVis > .05;
-      terrainMat.uniforms.uOpacity.value = terrainVis;
-      terrainMat.uniforms.uValleyBrightness.value = lerp(.16, 1, darkHudFade);
-
-      const explorerVis = landscapeVis * (1 - smoothstep(3.3, 4.3, u));
-      explorerGroup.visible = explorerVis > 0.02;
-      // Scale here, not just at mount: this authoritative render assignment
-      // otherwise silently overwrites the corrected historical-frame size.
-      // The feet remain fixed throughout both basin camera distances.
-      explorerGroup.scale.setScalar(isMobile ? 1.0 : 1.33);
-      if (explorerGroup.visible) {
-        explorer.pose(elapsedSec, pointerNDC.x, pointerNDC.y, reducedMotion);
-        licensedExplorer.pose(pointerNDC.x, pointerNDC.y, reducedMotion);
-      }
-
-      rocksMesh.visible = explorerVis > 0.02;
-      sedimentMesh.visible = rocksMesh.visible;
-      groundFlow.uGroundTime.value = elapsedSec;
-      groundFlow.uGroundMotion.value = reducedMotion ? 0 : 1;
-      rockFlow.uGroundTime.value = elapsedSec;
-      rockFlow.uGroundMotion.value = reducedMotion ? 0 : 1;
-      if (rocksMesh.visible) {
-        for (let i = 0; i < FLOATING_ROCK_COUNT; i++) {
-          const rs = rockSeeds[i];
-          const bob = rs.floating && !reducedMotion ? Math.sin(elapsedSec * 0.9 + rs.phase) * 0.22 : 0;
-          rockDummy.position.set(rs.x, rs.y + bob, rs.z);
-          rockDummy.rotation.set(
-            rs.phase + (reducedMotion ? 0 : elapsedSec * 0.25),
-            rs.phase * 1.4 + (reducedMotion ? 0 : elapsedSec * 0.18),
-            0
-          );
-          rockDummy.scale.setScalar(rs.scale * 0.58);
-          rockDummy.updateMatrix();
-          rocksMesh.setMatrixAt(i, rockDummy.matrix);
-        }
-        rocksMesh.instanceMatrix.addUpdateRange(0, FLOATING_ROCK_COUNT * 16);
-        rocksMesh.instanceMatrix.needsUpdate = true;
-      }
-
-      // 3. 36 Topographic Elevation Contour Lines ('about-03' & 'about-04')
-      const contourVis = smoothstep(3.75, 4.85, u);
-      contourLines.visible = contourVis > 0.01 && u < 4.8;
-      if (contourLines.visible) {
-        contourMat.uniforms.uOpacity.value = contourVis * lerp(.42, .12, tTeamPhase);
-        contourMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
-        contourMat.uniforms.uTeamPhase.value = tTeamPhase;
-      }
+      referenceWorld.update(camera, u, elapsedSec, isMobile, pointerNDC);
 
       // Source portrait and terrain share one camera-aligned stage. Terrain
       // does not rotate with the head and is not disguised as a shirt/torso.
@@ -721,7 +338,7 @@ function AboutWhoExperience({
       if (teamVisible && !teamWasVisible) teamAssemblyStart = elapsedSec;
       teamWasVisible = teamVisible;
       sourceTeam.update(camera, elapsedSec, tTeamPhase,
-        smoothstep(4.7, 5.1, u) * (1 - tTeamPhase), pointerNDC,
+        smoothstep(5.25, 6.125, u) * (1 - tTeamPhase), pointerNDC,
         window.innerWidth, window.innerHeight, glRenderer.getPixelRatio(), reducedMotion,
         reducedMotion ? 1.2 : 1.2 * smoothstep(0, 1.1, Math.max(0, elapsedSec - teamAssemblyStart)));
 
@@ -759,9 +376,13 @@ function AboutWhoExperience({
 
       // A2. Continuous type surface, sharing this renderer and scroll authority.
       const sweep = aboutWordmarkSweepPose(u, isMobile);
-      wordmarkSweep.mesh.visible = sweep.opacity > .005;
-      wordmarkSweep.uniforms.uOpacity.value = sweep.opacity;
+      const sourceLogo = wordmarkSweep.ready && referenceWorld.ready && !isMobile;
+      wordmarkSweep.mesh.visible = sourceLogo && u < 4.35;
+      wordmarkSweep.uniforms.uOpacity.value = 1 - smoothstep(3.65, 4.35, u);
+      if (openingSvg) openingSvg.style.opacity = sourceLogo ? "0" : "1";
+      if (manifestoLogoLine) manifestoLogoLine.style.opacity = sourceLogo ? "0" : "1";
       wordmarkSweep.uniforms.uPhase.value = sweep.deformation;
+      wordmarkSweep.uniforms.uSlideX.value = -Math.min(1.25, aboutEditorialProgress(u)) * W;
       wordmarkSweep.uniforms.uAspect.value = W / H;
       if (sweepWordmarkRef.current) {
         sweepWordmarkRef.current.style.opacity = String(sweep.opacity);
@@ -775,7 +396,7 @@ function AboutWhoExperience({
         const manVis = lettering.manifesto;
         manifestoOverlayRef.current.style.opacity = String(manVis);
         manifestoOverlayRef.current.style.visibility = manVis > 0.005 ? "visible" : "hidden";
-        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(isMobile ? 1.95 : 1.1, isMobile ? 2.42 : 1.6, u))}vw, 0, 0)`;
+        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(isMobile ? 1.95 : 1.1, isMobile ? 2.42 : 1.6, u)) - (isMobile ? 0 : Math.min(1.25, aboutEditorialProgress(u)) * 100)}vw, 0, 0)`;
       }
 
       // C. Studio Narrative HUD: each word owns a deterministic scroll window.
@@ -784,11 +405,17 @@ function AboutWhoExperience({
         const exit = smoothstep(5.82, 6.42, u);
         const narVis = lettering.narrative;
         narrativeOverlayRef.current.style.opacity = "1";
-        narrativeOverlayRef.current.style.visibility = narVis > 0.005 ? "visible" : "hidden";
-        narrativeOverlayRef.current.style.transform = `translate3d(${(1 - smoothstep(4.42, 4.9, u)) * 105 - 58 * exit}vw,0,0)`;
+        narrativeOverlayRef.current.style.visibility = (isMobile ? narVis > .005 : u > 3.5 && u < 7) ? "visible" : "hidden";
+        narrativeOverlayRef.current.style.transform = isMobile ? `translate3d(${(1 - smoothstep(4.42, 4.9, u)) * 105 - 58 * exit}vw,0,0)` : "none";
         for (let i = 0; i < narrativeWordRefs.current.length; i++) {
           const word = narrativeWordRefs.current[i];
           if (!word) continue;
+          if (!isMobile) {
+            const pose = aboutEditorialWordPose(u, i);
+            word.style.opacity = String(pose.opacity);
+            word.style.transform = `translate3d(${pose.xVw}vw,0,0) translate3d(${pose.xEm}em,0,0)`;
+            continue;
+          }
           const stagger = i * 0.014;
           const enter = smoothstep(4.45 + stagger, 4.69 + stagger, u);
           const leave = 1 - smoothstep(5.82 + stagger * .65, 6.12 + stagger * .65, u);
@@ -805,18 +432,18 @@ function AboutWhoExperience({
         teamOverlayRef.current.dataset.teamActive = tTeamPhase > .985 ? "true" : "false";
       }
 
-      glRenderer.render(scene, camera);
+      scenePost.render(u);
       frames++;
     };
 
     const tick = () => {
       rafId = 0;
-      if (!docVisible || disposed || contextLost || chromeBlocked()) return;
+      if (!docVisible || disposed || contextLost || assetsFailed || chromeBlocked()) return;
       const now = performance.now(), elapsed = Math.max(0, (now - lastTime) / 1000), dt = Math.min(.08, elapsed);
       lastTime = now;
       const rect = sectionEl.getBoundingClientRect();
       if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
-      // Analytical shaders/reveals follow active elapsed time even on slow GPUs.
+      // Scene time follows active elapsed time; the GPU integrator bounds substeps.
       // Keep the bounded dt only for damping; ensureLoop resets lastTime after sleep.
       if (!reducedMotion) sceneTime += elapsed;
       frameTimes.push(elapsed * 1000); if (frameTimes.length > 180) frameTimes.shift();
@@ -830,7 +457,7 @@ function AboutWhoExperience({
       if (!reducedMotion) rafId = window.requestAnimationFrame(tick);
     };
     const ensureLoop = () => {
-      if (!rafId && docVisible && !disposed && !contextLost && !chromeBlocked()) {
+      if (!rafId && docVisible && !disposed && !contextLost && !assetsFailed && !chromeBlocked()) {
         lastTime = performance.now();
         rafId = window.requestAnimationFrame(tick);
       }
@@ -861,11 +488,11 @@ function AboutWhoExperience({
     };
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
-      state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x,
+      state: sectionEl.dataset.sceneState, explorer: referenceWorld.status, explorerScale: 1,
       teamYaw: sourceTeam.head.rotation.y, teamPitch: sourceTeam.head.rotation.x,
       teamAsset: sourceTeam.member, teamReady: sourceTeam.ready, teamMorph: sourceTeam.morph,
       teamMember: teamOverlayRef.current?.querySelector("#about-who-team-name")?.textContent?.trim() ?? null,
-      count,
+      count: referenceWorld.count,
       portraitPoints: sourceTeam.count,
       streakCount: 0, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
@@ -1430,7 +1057,7 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="about-video-reconstruction-v6" data-build-commit={process.env.NEXT_PUBLIC_BUILD_SHA ?? "development"} className="relative overflow-x-clip bg-[#0d0c0f] text-white">
+    <main id="about" data-scene-version="about-reference-dynamics-v7" data-build-commit={process.env.NEXT_PUBLIC_BUILD_SHA ?? "development"} className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <AboutPageStyles />
       <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">

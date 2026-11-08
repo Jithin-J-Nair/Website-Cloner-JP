@@ -24,20 +24,38 @@ assert.match(sourceTeam, /if \(disposed \|\| token !== revision\) return/, 'stal
 assert.match(sourceTeam, /morph = reduced \|\| !ready \? 1 : 0/, 'initial and reduced-motion roster states avoid an unnecessary morph');
 assert.match(sourceTeam, /morph = reduced \? 1 : Math\.min\(1, morph \+ dt \/ \.85\)/, 'subsequent team changes use the scene clock for their morph');
 
-// The current LUSION wordmark is a single continuously folded Three.js type
-// surface. Verify its mesh, texture and single shader deformation path.
-assert.match(aboutView, /createAboutWordmarkSweep\(\)/, 'About constructs one shared wordmark sweep scene');
-assert.match(aboutView, /wordmarkSweep\.uniforms\.uPhase\.value = sweep\.deformation/, 'scroll playhead controls the wordmark shader deformation');
-assert.match(aboutView, /wordmarkSweep\.uniforms\.uOpacity\.value = sweep\.opacity/, 'wordmark visibility follows the same scroll playhead');
-assert.match(wordmarkSweep, /geometry = new THREE\.PlaneGeometry\(2, 2, 160, 12\)/, 'wordmark uses a single subdivided surface instead of independently rotating letters');
-assert.match(wordmarkSweep, /float local=smoothstep\(x\*\.66,x\*\.66\+\.34,fold\)/, 'a continuous fold travels from left to right');
-assert.match(wordmarkSweep, /vertical\*cos\(angle\)/, 'fold projects the shared surface edge-on instead of uniformly skewing every glyph');
-assert.match(wordmarkSweep, /sin\(angle\)\*vertical\*\.46/, 'the curl has continuous lateral displacement');
+// The active logo now uses the archived vector silhouette, not canvas text or
+// a planar texture. Verify the actual geometry/morph and post-effects ownership.
+assert.match(aboutView, /createAboutWordmarkSweep\(\(\) => ensureLoop\(\)\)/);
+assert.match(aboutView, /wordmarkSweep\.uniforms\.uPhase\.value = sweep\.deformation/);
+assert.match(aboutView, /sceneOverlay\.add\(wordmarkSweep\.mesh\)/, 'white vector must be excluded from bloom');
+assert.match(wordmarkSweep, /fetch\("\/about\/scene\/logo_text\.buf"/);
+assert.match(wordmarkSweep, /geometry\.setAttribute\("aChar"/);
+assert.match(wordmarkSweep, /uPhase\*2\.2-p\.x-pow/, 'reference per-vertex stagger drives a continuous cubic morph');
+assert.match(wordmarkSweep, /mix\(from,to,t\)/);
+assert.doesNotMatch(wordmarkSweep, /CanvasTexture|fillText|PlaneGeometry/);
 fs.mkdirSync('temp',{recursive:true});
 const dir=fs.mkdtempSync(path.resolve('temp/about-camera-'));
 try {
  fs.writeFileSync(`${dir}/motion.mjs`,ts.transpileModule(fs.readFileSync('src/lib/about-scene-motion.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
  const {aboutScenePose:pose,aboutWordmarkSweepPose:sweep,aboutLetteringPose:lettering}=await import(pathToFileURL(`${dir}/motion.mjs`));
+ fs.writeFileSync(`${dir}/editorial.mjs`,ts.transpileModule(fs.readFileSync('src/lib/about-editorial-motion.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
+ const {aboutEditorialWordPose: wordPose,aboutEditorialProgress: chapter}=await import(pathToFileURL(`${dir}/editorial.mjs`));
+ for(let i=0;i<21;i++){
+  let previous=wordPose(0,i);
+  assert.equal(wordPose(5.25,i).opacity,1);
+  assert.equal(wordPose(5.25,i).xEm,0);assert.equal(wordPose(5.25,i).xVw,0);
+  assert.equal(wordPose(7,i).opacity,0);
+  for(let n=1;n<=7000;n++){
+   const u=n/1000,p=wordPose(u,i);assert.ok(Object.values(p).every(Number.isFinite));assert.ok(p.opacity>=0&&p.opacity<=1);
+   assert.ok(Math.abs(p.opacity-previous.opacity)<.02);assert.ok(Math.abs(p.xEm-previous.xEm)<.2);assert.ok(Math.abs(p.xVw-previous.xVw)<1);
+   assert.deepEqual(wordPose(u,i),p);previous=p;
+  }
+  for(const u of [-1,NaN,Infinity])assert.deepEqual(wordPose(u,i),wordPose(0,i));
+ }
+ assert.equal(chapter(3.5),0);assert.equal(chapter(5.25),1.25);assert.equal(chapter(7),2.5);
+ assert.ok(wordPose(4.5,0).xEm<wordPose(4.5,4).xEm&&wordPose(4.5,4).xEm<wordPose(4.5,7).xEm,'successive lines enter diagonally, not as one flat paragraph');
+ console.log('PASS 147,000 native editorial word samples: finite, bounded, continuous, reversible, malformed-input safe; chapter boundaries and diagonal line entry.');
  for(const mobile of [false,true]){
   const samples=[];
   for(let u=0;u<=11.25;u+=.001){

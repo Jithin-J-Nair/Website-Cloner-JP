@@ -46,10 +46,10 @@ try {
  const cardsSource = fs.readFileSync("src/components/pages/AboutExpertiseCards.tsx", "utf8");
  assert.match(pageStyles, /#about \{ --about-blue: #3733e8;/i, "About expertise section uses its route-owned live blue");
  assert.match(cardsSource, /M390 510C690 510 1220 240 1150 -120/, "the expertise flourish is one authored diagonal stroke");
- assert.ok(cardsSource.includes('className="about-card-back-art" src="/assets/images/cards/back-ink.svg" width={628} height={876}'), "card backs use original clean-room 628 by 876 line art");
- const cardBack = fs.readFileSync("public/assets/images/cards/back-ink.svg", "utf8");
- assert.match(cardBack, /viewBox="0 0 628 876"/, "clean-room card texture preserves the source card proportions");
- assert.ok(cardBack.includes('scale(-1 1)') && cardBack.includes('stroke="white"') && cardBack.includes('M285 399H306V454H285Z'), "card texture contains original vector linework");
+ assert.ok(cardsSource.includes('className="about-card-back-art" src="/about/scene/card-back.png" width={628} height={876}'), "backs use the actual About card artwork, not invented replacement linework");
+ assert.ok(fs.existsSync("media-bundle/images/cards/back.png"));
+ assert.match(cardsSource, /feColorMatrix/, "recolor only the artwork’s blue to the recording’s route-owned blue, retaining white ink");
+ assert.match(pageStyles, /filter: url\(#about-card-back-colors\)/);
 
  assert.equal(pose(.66,0).flip,0,'the first front is broad before the trailing card turns');
  assert.equal(pose(.66,1).flip,0,'the second front precedes the third edge');
