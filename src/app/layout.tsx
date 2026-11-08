@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { StudioShell } from "@/components/foundation/StudioShell";
-import { LUSION_HOME } from "@/data/reference";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -13,36 +12,35 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://lusion.co"),
+  metadataBase: new URL("https://jithinrp.com"),
   alternates: {
     canonical: "/",
   },
   title: {
-    default: LUSION_HOME.meta.title,
-    template: "Lusion - %s",
+    default: "JITHIN",
+    template: "JITHIN - %s",
   },
-  description: LUSION_HOME.meta.description,
+  description: "3D visual storytelling and interactive web experiences by Jithin.",
   keywords: [
-    "Lusion",
+    "JITHIN",
     "Creative Production Studio",
     "WebGL",
     "3D Visual Storytelling",
     "Interactive Web Experiences",
-    "Bristol",
   ],
-  authors: [{ name: "Lusion Creative Studio" }],
+  authors: [{ name: "JITHIN" }],
   openGraph: {
-    title: LUSION_HOME.meta.title,
-    description: LUSION_HOME.meta.description,
+    title: "JITHIN",
+    description: "3D visual storytelling and interactive web experiences by Jithin.",
     type: "website",
-    siteName: "Lusion",
+    siteName: "JITHIN",
     locale: "en_GB",
   },
   twitter: {
     card: "summary_large_image",
-    site: "@lusionltd",
-    title: LUSION_HOME.meta.title,
-    description: LUSION_HOME.meta.description,
+    site: "@jithin",
+    title: "JITHIN",
+    description: "3D visual storytelling and interactive web experiences by Jithin.",
   },
 };
 

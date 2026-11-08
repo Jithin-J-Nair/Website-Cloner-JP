@@ -1,0 +1,6 @@
+{
+  "command": "VISUAL_OUT_DIR=docs/lusion-parity-audit/evidence/implementation-03 node docs/lusion-parity-audit/harness/validate-captured-visuals.mjs",
+  "exitCode": 0,
+  "seconds": 548.83,
+  "scope": "All20 routes x six viewports on final build, with page/console/HTTP/request failure diagnostics and local-baseline static raster gate."
+}

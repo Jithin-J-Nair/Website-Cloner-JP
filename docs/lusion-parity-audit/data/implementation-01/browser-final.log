@@ -1,0 +1,35 @@
+
+> lusion-studio-reconstruction@1.0.0 validate:browser
+> node scripts/phase-c-home-validate.mjs
+
+
+=== Auditing Viewport 1440x900 ===
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-hero--1440x900.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-reel--1440x900.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-featured--1440x900.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-goal-stage1--1440x900.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-goal-stage2--1440x900.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-footer--1440x900.png
+  Verified ShowreelModal Focus Trap: {"initialFocusId":"video-overlay__mobile-close-btn","allTabsTrappedInsideModal":true,"shiftTabInsideModal":true,"closedOnEscape":true,"restoredFocusTag":"BUTTON","tabSequence":[{"tag":"BUTTON","id":"video-overlay__play-btn","insideModal":true},{"tag":"DIV","id":"video-overlay__progress-container","insideModal":true},{"tag":"BUTTON","id":"video-overlay__mute-btn","insideModal":true},{"tag":"BUTTON","id":"video-overlay__mobile-close-btn","insideModal":true},{"tag":"BUTTON","id":"video-overlay__play-btn","insideModal":true}]}
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/about-hero--1440x900.png (<title>Lusion - About Us</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/projects-archive--1440x900.png (<title>Lusion - Our Projects</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/project-oryzo-ai--1440x900.png (<title>Lusion - Oryzo AI</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/project-porsche--1440x900.png (<title>Lusion - Porsche: Dream Machine</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/project-spaace--1440x900.png (<title>Lusion - Spaace - NFT Marketplace</title>)
+
+=== Auditing Viewport 390x844 ===
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-hero--390x844.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-reel--390x844.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-featured--390x844.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-goal-stage1--390x844.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-goal-stage2--390x844.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/home-footer--390x844.png
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/about-hero--390x844.png (<title>Lusion - About Us</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/projects-archive--390x844.png (<title>Lusion - Our Projects</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/project-oryzo-ai--390x844.png (<title>Lusion - Oryzo AI</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/project-porsche--390x844.png (<title>Lusion - Porsche: Dream Machine</title>)
+  Captured docs/lusion-parity-audit/evidence/implementation-01/browser-final/project-spaace--390x844.png (<title>Lusion - Spaace - NFT Marketplace</title>)
+
+Saved Phase D browser report -> docs/lusion-parity-audit/evidence/implementation-01/browser-final/phase-d-browser-report.json
+
+ALL HEADLESS CHROMIUM + WEBGL + FOCUS-TRAP + ZERO-404 CHECKS PASSED (0 console errors, 0 page errors, 0 HTTP>=400 responses).

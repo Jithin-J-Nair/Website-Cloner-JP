@@ -10,18 +10,28 @@ const ease = (start: number, end: number, value: number) => {
 export function expertiseCardPose(progress: number, index: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
   const i = Number.isFinite(index) ? Math.max(0, Math.min(3, Math.round(index))) : 0;
-  const spread = ease(.16, .64, p);
+
+  // Three distinct beats: lift the deck, spread/hold four readable backs,
+  // then peel each face over independently into four nonoverlapping columns.
+  const spread = ease(.12, .32, p);
+  const lift = ease(.04, .32, p);
+  const settle = ease(.55, .88, p);
+  const flip = ease(.49 + i * .035, .65 + i * .035, p);
+  const remaining = 1 - settle;
   return {
-    xVw: spread === 1 ? 0 : (1.5 - i) * 23 * (1 - spread),
-    dropVh: 32 * (1 - ease(.08, .55, p)),
-    z: spread === 1 || i === 0 ? 0 : -i * 3 * (1 - spread),
-    roll: spread === 1 ? 0 : (i - 1.5) * 1.2 * (1 - spread),
-    flip: 180 * (1 - ease(.32 + i * .035, .72 + i * .035, p)),
-    opacity: i === 0 ? 1 : ease(.1, .3, p),
+    xVw: (1.5 - i) * (23 - 18 * spread) * remaining || 0,
+    dropVh: 56 * (1 - lift) + (Math.abs(i - 1.5) - .5) * 2 * spread * remaining,
+    z: (6 - i * 4) * remaining || 0,
+    roll: (i - 1.5) * 8 * spread * remaining || 0,
+    yaw: (i - 1.5) * 5 * spread * remaining || 0,
+    pitch: -4 * spread * remaining || 0,
+    scale: .86 + .09 * spread + .05 * settle,
+    flip: 180 * (1 - flip),
+    opacity: i === 0 ? 1 : ease(.10, .18, p),
   };
 }
 
 export function expertiseHeadingPose(progress: number) {
   const p = Number.isFinite(progress) ? clamp(progress) : 0;
-  return { opacity: 1 - ease(.12, .36, p), yVh: -38 * ease(.1, .42, p) };
+  return { opacity: 1 - ease(.22, .34, p), yVh: 10 - 85 * ease(.04, .34, p) };
 }

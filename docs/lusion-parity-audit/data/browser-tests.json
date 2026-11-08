@@ -1,0 +1,14 @@
+[
+  {
+    "command": "npm run validate:home-motion",
+    "exitCode": 1,
+    "seconds": 261.59,
+    "log": "home-motion-validation.log"
+  },
+  {
+    "command": "npm run validate:browser",
+    "exitCode": 0,
+    "seconds": 270.32,
+    "log": "browser-validation.log"
+  }
+]

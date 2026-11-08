@@ -1,0 +1,16 @@
+PASS About production checks at 1536x810: wordmark, expertise deck, CTA budget/pointer and no browser errors.
+PASS About production checks at 1440x900: wordmark, expertise deck, CTA budget/pointer and no browser errors.
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.waitForURL: Timeout 20000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+============================================================
+    at /home/user/Website-Cloner-JP/scripts/validate-about-wordmark.mjs:453:18 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v22.22.3

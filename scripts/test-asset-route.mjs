@@ -148,20 +148,33 @@ try {
     oflFont.status === 200 && oflFont.body.length > 1000,
     `got ${oflFont.status}`
   );
+  const cardBack = await rawGet("/assets/images/cards/back-ink.svg");
+  check(
+    "Serves original clean-room About card-back SVG with strict headers",
+    cardBack.status === 200 &&
+      String(cardBack.headers["content-type"]).includes("image/svg+xml") &&
+      String(cardBack.headers["content-security-policy"]).includes("sandbox") &&
+      cardBack.body.toString("utf8").includes('viewBox="0 0 628 876"'),
+    `status=${cardBack.status} content-type=${cardBack.headers["content-type"]}`
+  );
 
   // 4. Unlisted extension / file block
   const secretJson = await rawGet("/assets/secret.json");
   check("Blocks non-allowlisted .json file (403)", secretJson.status === 403, `got ${secretJson.status}`);
 
   // 5. Synthesized clean-room SVG delivery + strict CSP & nosniff headers
-  const synthCard = await rawGet("/assets/projects/atlas_motion/home.webp");
+  const unknownCard = await rawGet("/assets/projects/atlas_motion/home.webp");
+  check("Rejects unverified Atlas Motion catalog entry", unknownCard.status === 404, `got ${unknownCard.status}`);
+  const unknownSwap = await rawGet("/assets/projects/everswap/home.webp");
+  check("Rejects unverified Everswap catalog entry", unknownSwap.status === 404, `got ${unknownSwap.status}`);
+  const synthCard = await rawGet("/assets/projects/porsche_dream_machine/home.webp");
   check(
     "Synthesizes approved fallback SVG with strict sandbox CSP + nosniff",
     synthCard.status === 200 &&
       String(synthCard.headers["content-type"]).includes("image/svg+xml") &&
       String(synthCard.headers["content-security-policy"]).includes("sandbox") &&
       synthCard.headers["x-content-type-options"] === "nosniff" &&
-      synthCard.body.toString("utf8").includes("Atlas Motion"),
+      synthCard.body.toString("utf8").includes("Porsche: Dream Machine"),
     `status=${synthCard.status} csp=${synthCard.headers["content-security-policy"]}`
   );
 

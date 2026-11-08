@@ -5,24 +5,47 @@ import * as THREE from "three";
  */
 const flow = `
 vec3 plume(vec4 seed) {
-  // Densely sampled lobes connected by a narrow neck. The previous uniform
-  // cylindrical scatter read as a sparse ribbon rather than suspended matter.
-  float h = (seed.z / 3.14159265 - .5) * mix(3.9, 4.8, uCompact);
-  float phase = h * 1.62 + uTime * .13;
-  float lobe = exp(-pow((h + .6) * 1.2, 2.)) + exp(-pow((h - 1.3) * 1.6, 2.)) * .48;
-  float taper = (.32 + 1.55 * lobe) * (1. - .20 * smoothstep(1.2, 2.6, abs(h)));
-  float radius = pow(seed.x, .75) * taper;
-  float orbit = seed.y + uTime * (.12 + .18 * (1. - seed.x));
-  vec3 p = vec3(sin(phase) * .48 + cos(orbit) * radius,
-                h + sin(orbit * 2. + h + uTime * .15) * .10,
-                cos(phase * .83) * .38 + sin(orbit) * radius);
-  p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .24) * .07;
-  // Only sparse outliers leave the coherent core. Their distribution is shared
-  // by both physical grains and depth-aware fine scatter.
-  float fringe = smoothstep(.93, 1., seed.w);
-  p += vec3(cos(seed.y) * 2.6, sin(seed.y * 2.) * 1.4, sin(seed.y) * 1.6) * fringe;
-  p.xz *= mix(1.16, 1.35, uCompact);
-  p.y *= mix(1.16, .90, uCompact);
+  // A continuous, multi-strand spiral volume: vertically suspended at the opening,
+  // with restrained lateral folding as the camera pulls back over the valley.
+  float h = (seed.z / 3.14159265 - .5) * mix(5.15, 5.65, uCompact);
+  // Uniform angle + a height offset is still statistically a uniform cylinder.
+  // Two angular strata concentrate seeds into broad, twisting silver folds.
+  // Each seed remains on a continuous trajectory; no respawn or CPU simulation.
+  float strand = floor(seed.y / 3.14159265);
+  float across = fract(seed.y / 3.14159265) - .5;
+  float phase = h * 1.62 + strand * 3.14159265 + across * 1.4
+    + uTime * (.55 + .06 * sin(seed.w * 6.28));
+  float envelope = .72 + .52 * cos(h * 1.12 + .35) + .18 * sin(h * 2.4 - uTime * .7);
+  float radius = mix(.35, 1., pow(seed.x, .45)) * max(.22, envelope);
+  // A small interior population fills the folds without washing out their form.
+  float interior = 1. - smoothstep(.28, .45, seed.w);
+  phase = mix(phase, seed.y + uTime * .1, interior);
+  radius = mix(radius, pow(seed.x, 1.4) * max(.22, envelope), interior);
+  float arm = sin(phase * 2.0 + h * .55 + uTime * .12);
+  float x = cos(phase) * radius * 1.42 + sin(phase * .47 + h) * .34 + arm * .16;
+  float z = sin(phase) * radius * 1.12 + cos(phase * .62 - h) * .28;
+  float turbulence = sin(phase * 3. + h * 2.1 + uTime * .32) * .12;
+  vec3 p = vec3(x, h + turbulence, z);
+  // Coherent low-frequency billows act on the whole volume, not independent
+  // random per-grain jitter. Both populations evaluate the same GPU field.
+  vec3 billow = vec3(sin(p.y * 1.7 + uTime * .62) - cos(p.z * 1.4),
+    sin(p.z * 1.5 + uTime * .49) - cos(p.x * 1.8),
+    sin(p.x * 1.6 - uTime * .57) - cos(p.y * 1.3));
+  p += billow * mix(.34, .18, uCompact);
+  // Successive recording frames show broad folding/advection, not a slow
+  // rigid orbit. Correlated displacements preserve neighboring trajectories.
+  p.x += sin(h * 1.1 + uTime * .65) * mix(.24, .22, uCompact);
+  p.z += cos(h * .85 - uTime * .6) * mix(.45, .18, uCompact);
+  p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .34) * .065;
+  // Sparse pearl/bokeh outliers break the silhouette into suspended particles.
+  float fringe = smoothstep(.965, .998, seed.w);
+  p += vec3(cos(seed.y * 1.3) * 3.0, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.4) * fringe;
+  // Keep the opening cloud centered and vertical like the recording; the valley
+  // pullback restores a little width without turning the plume into a horizontal ribbon.
+  p.x *= mix(1.05, 1.60, uCompact);
+  p.z *= mix(1.05, 1.28, uCompact);
+  p.y *= mix(.92, 1.08, uCompact);
+  p.z = min(p.z, 4.);
   p += vec3(-.35, 8.4, 0.);
   vec3 away = p - uPointer;
   float distanceToPointer = length(away);
@@ -31,7 +54,7 @@ vec3 plume(vec4 seed) {
 }`;
 const declarations = `
 attribute vec4 aSeed;
-uniform float uTime, uCompact, uMobile, uPointerStrength, uOpacity, uPixelRatio;
+uniform float uTime, uCompact, uMobile, uPointerStrength, uOpacity, uPixelRatio, uFocusDistance;
 uniform vec3 uPointer;
 `;
 
@@ -40,7 +63,7 @@ export function createAboutPlume(count: number) {
   const uniforms = {
     uTime: { value: 0 }, uCompact: { value: 0 }, uMobile: { value: 0 },
     uPointer: { value: new THREE.Vector3(0, 8.65, 0) }, uPointerStrength: { value: 0 },
-    uOpacity: { value: 1 }, uCyanBoost: { value: 0 }, uPixelRatio: { value: 1 },
+    uOpacity: { value: 1 }, uCyanBoost: { value: 0 }, uPixelRatio: { value: 1 }, uFocusDistance: { value: 6.9 },
   };
   const seeds = new Float32Array(count * 4);
   let state = 20261029;
@@ -63,10 +86,14 @@ export function createAboutPlume(count: number) {
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 ${flow}
 void main() {
-  // A meaningful population of mid-sized metal grains supplies a surface;
-  // a near-zero radius on most instances previously left only fine dust visible.
-  float outlier = smoothstep(.93, 1., aSeed.w);
-  vRadius = .044 * mix(.4, 1.8, pow(aSeed.w, 3.)) * mix(1., .55, outlier);
+  // Most beads stay small and pearl-like; only the far-tail seeds become
+  // foreground bokeh, and the same tail is displaced beyond the coherent cloud.
+  float bokeh = smoothstep(.997, .9998, aSeed.w);
+  float pearlRadius = .012 + .022 * pow(aSeed.w, 3.2);
+  float bokehRadius = .035 + .035 * pow(aSeed.x, 1.6);
+  // Opening grains read as real silver beads; retain the smaller world-space
+  // radius once the camera resolves the suspended cloud over the basin.
+  vRadius = mix(pearlRadius, bokehRadius, bokeh) * mix(1.9, 1., uCompact);
   vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;
   vDisc = position.xy;
   vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);
@@ -74,7 +101,7 @@ void main() {
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
 }`,
-    fragmentShader: `uniform float uOpacity, uCyanBoost, uCompact;
+    fragmentShader: `uniform float uOpacity, uCyanBoost, uCompact, uFocusDistance;
 uniform mat4 projectionMatrix;
 varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;
 void main() {
@@ -90,8 +117,11 @@ void main() {
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
-  vec3 color = vec3(.035, .04, .043) + vec3(.25, .28, .29) * diffuse + specular * .7 + fresnel * .10;
+  vec3 color = vec3(.07, .08, .09) + vec3(.40, .43, .45) * diffuse + specular * 1.05 + fresnel * .13;
   color = mix(color, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
+  // Near/far grains share directional light but not identical exposure: the
+  // back of the suspended volume is occluded, not a flat sheet of white beads.
+  color *= mix(.58, 1., smoothstep(-2.5, 2.5, vCenterEye.z + uFocusDistance));
   color *= mix(.82, 1.35, uCompact) * mix(1., .65, smoothstep(8., 90., vDepth));
   gl_FragColor = vec4(color, uOpacity * mix(.58, 1., vSeed) * (1. - smoothstep(.82, 1., r2)));
   #include <tonemapping_fragment>
@@ -118,9 +148,9 @@ void main() {
   // Sparse seeded foreground grains are actual nearer 3D points, not an overlay.
   p.z += smoothstep(.965, 1., aSeed.w) * mix(3.6, 1.4, uCompact);
   vec4 eye = modelViewMatrix * vec4(p, 1.);
-  float defocus = abs(-eye.z - 7.5);
+  float defocus = abs(-eye.z - uFocusDistance);
   vBlur = smoothstep(1.6, 5., defocus) * (.3 + .7 * pow(aSeed.w, 8.));
-  float perspective = clamp(7.5 / max(1., -eye.z), .4, 2.);
+  float perspective = clamp(7.5 / max(1., -eye.z), .06, 2.);
   gl_PointSize = clamp((1.9 + aSeed.x * 2.4 + vBlur * 18.) * perspective * uPixelRatio, 1., 32.);
   vFade = uOpacity * mix(.65, .23, vBlur);
   vSeed = aSeed.w;
@@ -138,7 +168,7 @@ void main() {
   vec3 light = normalize(vec3(-.3, .8, .7));
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + vec3(0., 0., 1.)))), 20.);
-  vec3 silver = vec3(.035) + vec3(.23, .27, .28) * diffuse + specular * .55;
+  vec3 silver = vec3(.065, .075, .08) + vec3(.42, .46, .48) * diffuse + specular * 1.05;
   silver = mix(silver, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   float edge = 1. - smoothstep(mix(.62, .05, vBlur), 1., r2);
   gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed) * mix(.85, 1.6, uCompact), edge * vFade);

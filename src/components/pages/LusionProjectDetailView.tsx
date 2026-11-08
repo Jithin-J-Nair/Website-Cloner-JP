@@ -9,6 +9,7 @@ import { StudioFooter } from "@/components/sections/StudioFooter";
 import { getCanonicalProjectTitle } from "@/lib/clean-media-synthesizer";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
+import { ProjectPreviewVideo } from "@/components/studio/ProjectPreviewVideo";
 
 interface LusionProjectDetailViewProps {
   project: LusionProjectDetail;
@@ -82,14 +83,12 @@ function ProjectMediaCard({
   item,
   projectId,
   canonicalTitle,
-  highlight,
   isHeroDesktop = false,
   onOpenModal,
 }: {
   item: LusionProjectDetail["media"][number];
   projectId: string;
   canonicalTitle: string;
-  highlight: string;
   isHeroDesktop?: boolean;
   onOpenModal: (label: string, desktopSrc: string, mobileSrc: string) => void;
 }) {
@@ -97,6 +96,17 @@ function ProjectMediaCard({
   const aspectW = item.declaredWidth || 1280;
   const aspectH = item.declaredHeight || 720;
   const fallbackPoster = `/assets/projects/${projectId}/home.webp`;
+
+  if (item.type === "text" && "text" in item) {
+    const fontSizeEm = "fontSizeEm" in item && typeof item.fontSizeEm === "number" ? item.fontSizeEm : 1.5;
+    return (
+      <div data-project-media-type="text" data-project-media-index={item.index} className="py-8">
+        <p className="font-sans leading-relaxed" style={{ fontSize: `${fontSizeEm}em` }}>
+          {item.text}
+        </p>
+      </div>
+    );
+  }
 
   if (item.type === "video") {
     const videoDesktop = item.desktopSrc || "/assets/textures/reel/desktop.mp4";
@@ -111,6 +121,7 @@ function ProjectMediaCard({
           )
         }
         role="button"
+        aria-label={`${canonicalTitle} — play sequence ${String(item.index + 1).padStart(2, "0")}`}
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -130,16 +141,11 @@ function ProjectMediaCard({
         }`}
       >
         {!videoFailed ? (
-          <video
-            src={videoDesktop}
+          <ProjectPreviewVideo
+            desktopSrc={videoDesktop}
+            mobileSrc={videoMobile}
             poster={fallbackPoster}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
             onError={() => setVideoFailed(true)}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
           />
         ) : (
           <>
@@ -189,13 +195,14 @@ function ProjectMediaCard({
 }
 
 /**
- * Verified Lusion Case-Study Page (`/projects/[slug]` — All 19 Canonical Routes)
+ * Captured Lusion Case-Study Page (`/projects/[slug]` — 19 current canonical detail routes: 17 captured + 2 current additions)
  *
- * Matches all 38 desktop (`1440x900`) and mobile (`390x844`) captures in `docs/validation/phase-g/reference/`:
- *   - Exact brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
+ * Historical desktop (`1440x900`) and mobile (`390x844`) layout references are in `docs/validation/phase-g/reference/`:
+ * Captured surfaces below are implementation inputs, not a current parity certificate.
+ *   - Captured brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
  *   - Crisp `#ffffff` `• LAUNCH PROJECT` pill matching `.project-details-launch-btn` in `lusion.co` CSS
- *   - Desktop opening `100vh` split stage: sticky left narrative (`cols 1..5`) + right flush-bleeding `70vh` media stage (`left: 46vw..100vw`) + `SCROLL TO EXPLORE >>`
- *   - Mobile opening `100svh` editorial viewport (`LUSION`, `←` + `••` white circles, `h1`, paragraphs, `SERVICES`/`LINKS`, `• LAUNCH PROJECT`) followed seamlessly below by full media gallery & `NEXT PROJECT`
+ *   - Desktop opening `100vh` split stage: sticky left narrative (`cols 1..5`) + right flush-bleeding `70vh` media stage (`left: ~53.5vw..100vw`) + `SCROLL TO EXPLORE >>`
+ *   - Mobile opening `100svh` editorial viewport (`LUSION`, `←` + `••` white circles, `h1`, paragraphs, `SERVICES`/`LINKS`, `• LAUNCH PROJECT` after the mobile services/links block, followed by the full media gallery & `NEXT PROJECT`
  */
 export function LusionProjectDetailView({ project }: LusionProjectDetailViewProps) {
   const setActiveProjectTheme = useStudioStore((s) => s.setActiveProjectTheme);
@@ -253,6 +260,22 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
 
   const renderLaunchCta = () => {
     if (!project.launchCta) return null;
+    if (!project.launchCta.href?.trim() && !project.launchCta.isVimeoOverlay) {
+      // The current reference capture exposes this CTA label but no destination.
+      // Preserve the visible pill without turning an empty href into a self-link.
+      return (
+        <span
+          role="note"
+          aria-label={`${project.launchCta.label} — destination unavailable in the reference data`}
+          data-launch-unavailable="true"
+          className="inline-flex h-12 items-center gap-3.5 rounded-full px-7 font-sans text-xs font-medium tracking-[0.05em] uppercase shadow-[0_10px_28px_rgba(0,0,0,0.08)]"
+          style={{ backgroundColor: pillBg, color: pillText }}
+        >
+          <span className="h-2 w-2 rounded-full bg-current" />
+          <span>{project.launchCta.label}</span>
+        </span>
+      );
+    }
     if (project.launchCta.isVimeoOverlay) {
       return (
         <button
@@ -310,17 +333,17 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
       </div>
 
       {/* Split Sticky Editorial + Right Media Showcase Band */}
-      <section className="relative z-10 px-[var(--base-padding-x)] pt-24 pb-20 min-[813px]:grid min-[813px]:grid-cols-12 min-[813px]:items-start min-[813px]:gap-x-[var(--grid-gap)] min-[813px]:pt-[17vh] min-[813px]:pb-28">
+      <section className="relative z-10 px-[var(--base-padding-x)] pt-[6.5rem] pb-20 min-[813px]:grid min-[813px]:grid-cols-12 min-[813px]:items-start min-[813px]:gap-x-[var(--grid-gap)] min-[813px]:pt-[17vh] min-[813px]:pb-28">
         {/* Left Sticky Editorial Column (fills first mobile viewport cleanly; sticky cols 1..5 on desktop) */}
-        <div className="flex min-h-[calc(100svh-7.5rem)] flex-col justify-between pb-6 min-[813px]:sticky min-[813px]:top-[22vh] min-[813px]:col-span-5 min-[813px]:min-h-0 min-[813px]:pt-[5vh] min-[813px]:pb-0">
+        <div className="flex min-h-[calc(100svh-7.5rem)] flex-col justify-between pb-6 min-[813px]:sticky min-[813px]:top-[22vh] min-[813px]:col-span-5 min-[813px]:min-h-0 min-[813px]:pt-[3.7vh] min-[813px]:pb-0">
           <div>
-            <h1 className="m-0 font-sans text-[13.4vw] leading-[0.98] font-normal tracking-[-0.025em] min-[813px]:text-[3.45vw]">
+            <h1 className="m-0 font-sans text-[16vw] leading-[0.98] font-normal tracking-[-0.025em] min-[813px]:text-[3.45vw]">
               {canonicalTitle}
             </h1>
 
             {/* Desktop 2-column sub-split (`paragraphs + CTA` left, `SERVICES + LINKS` right) */}
-            <div className="mt-8 grid grid-cols-1 gap-8 min-[1100px]:grid-cols-12 min-[1100px]:gap-6">
-              <div className="space-y-5 font-sans text-[15px] leading-[1.58] opacity-92 min-[1100px]:col-span-8">
+            <div className="mt-[4.25rem] grid grid-cols-1 gap-8 min-[1100px]:grid-cols-12 min-[1100px]:gap-6">
+              <div className="space-y-5 font-sans text-[15.5px] leading-[1.58] opacity-92 min-[1100px]:col-span-8">
                 {project.paragraphs.map((para, idx) => (
                   <RichGroundTruthParagraph
                     key={idx}
@@ -378,28 +401,26 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
                   </div>
                 )}
               </div>
+              {project.launchCta && (
+                <div className="mt-8 min-[813px]:hidden" data-mobile-launch-cta>{renderLaunchCta()}</div>
+              )}
             </div>
           </div>
-
-          {/* Mobile `• LAUNCH PROJECT` White Pill at bottom of opening mobile screen */}
-          {project.launchCta && (
-            <div className="mt-8 min-[813px]:hidden">{renderLaunchCta()}</div>
-          )}
         </div>
 
         {/* Right Media Showcase Column (`cols 6..12` on desktop, flush right bleed on opening hero frame) */}
-        <div className="mt-10 space-y-6 min-[813px]:col-span-7 min-[813px]:mt-0 min-[813px]:space-y-8">
+        <div className="mt-10 space-y-6 min-[813px]:col-start-7 min-[813px]:col-span-6 min-[813px]:ml-[2.5vw] min-[813px]:mt-0 min-[813px]:space-y-8">
           {heroMedia && (
             <div className="min-[813px]:-mr-[var(--base-padding-x)] min-[813px]:pb-14">
               <ProjectMediaCard
+                key={`${project.id}-${heroMedia.index}`}
                 item={heroMedia}
                 projectId={project.id}
                 canonicalTitle={canonicalTitle}
-                highlight={highlight}
                 isHeroDesktop={true}
                 onOpenModal={openMediaModal}
               />
-              {/* Bottom-Right `SCROLL TO EXPLORE >>` Indicator matching `12-01..12-19` desktop captures */}
+              {/* Bottom-Right `SCROLL TO EXPLORE >>` Indicator matching `12-01..12-17` desktop captures */}
               <div className="mt-5 flex justify-end max-[812px]:hidden min-[813px]:pr-[var(--base-padding-x)]">
                 <span
                   style={{ color: highlight }}
@@ -413,18 +434,17 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
 
           {restMedia.map((item) => (
             <ProjectMediaCard
-              key={item.index}
+              key={`${project.id}-${item.index}`}
               item={item}
               projectId={project.id}
               canonicalTitle={canonicalTitle}
-              highlight={highlight}
               onOpenModal={openMediaModal}
             />
           ))}
         </div>
       </section>
 
-      {/* Verified `NEXT PROJECT` Chain Banner (`project.nextProject` across all 19 case studies) */}
+      {/* Verified `NEXT PROJECT` Chain Banner (`project.nextProject` across all 17 current case studies) */}
       <section
         id="project-next"
         style={{

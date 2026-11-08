@@ -160,13 +160,35 @@ function VideoOverlaySession({
     setProgressPct(ratio * 100);
   };
 
+  const seekToProgress = (nextProgress: number) => {
+    const clampedProgress = Math.min(100, Math.max(0, nextProgress));
+    const video = videoRef.current;
+    if (video && Number.isFinite(video.duration) && video.duration > 0) {
+      video.currentTime = (clampedProgress / 100) * video.duration;
+    }
+    setProgressPct(clampedProgress);
+  };
+
   const handleSliderKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft" && e.key !== "Home" && e.key !== "End") {
+      return;
+    }
+
+    e.preventDefault();
+    const video = videoRef.current;
+    const currentProgress =
+      video && Number.isFinite(video.duration) && video.duration > 0
+        ? (video.currentTime / video.duration) * 100
+        : progressPct;
+
     if (e.key === "ArrowRight") {
-      e.preventDefault();
-      setProgressPct((p) => Math.min(100, p + 5));
+      seekToProgress(currentProgress + 5);
     } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      setProgressPct((p) => Math.max(0, p - 5));
+      seekToProgress(currentProgress - 5);
+    } else if (e.key === "Home") {
+      seekToProgress(0);
+    } else {
+      seekToProgress(100);
     }
   };
 

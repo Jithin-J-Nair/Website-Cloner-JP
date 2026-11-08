@@ -11,6 +11,9 @@ try{
   assert.match(mesh.material.fragmentShader,/sqrt\(max\(0\., 1\. - r2\)\)/,'curved sphere normal, not a flat billboard');
   assert.match(mesh.material.fragmentShader,/gl_FragDepth = .*surfaceClip\.z \/ surfaceClip\.w/,'write projected curved surface depth for world occlusion');
   assert.equal(mesh.geometry.instanceCount,count);assert.equal(dust.geometry.attributes.position.count,count*4);assert.deepEqual(mesh.geometry.attributes.aSeed.array,b.group.children[0].geometry.attributes.aSeed.array);
+  assert.equal(mesh.material.uniforms.uFocusDistance.value, 6.9, 'initial focus matches the opening camera');
+  assert.match(dust.material.vertexShader, /abs\(-eye\.z - uFocusDistance\)/, 'depth of field uses camera-relative focus, not a fixed opening depth');
+  assert.match(dust.material.vertexShader, /clamp\(7\.5 \/ max\(1\., -eye\.z\), \.06, 2\.\)/, 'distant grains can shrink below the former perspective floor');
   const fine=dust.geometry.attributes.aSeed.array;
   assert.equal(fine.length,count*16);assert.ok(fine.every(Number.isFinite));
   assert.deepEqual(fine,b.group.children[1].geometry.attributes.aSeed.array);
@@ -23,6 +26,11 @@ try{
   assert.match(mesh.material.fragmentShader,/#include <tonemapping_fragment>/);
   const seeds=mesh.geometry.attributes.aSeed.array;assert.ok(seeds.every(Number.isFinite));for(let i=0;i<count;i++){assert.ok(seeds[i*4]>=0&&seeds[i*4]<=1);assert.ok(seeds[i*4+2]>=0&&seeds[i*4+2]<=Math.PI);}
   assert.equal(mesh.material.uniforms,dust.material.uniforms,'layers share one transport/pointer packet');assert.match(mesh.material.vertexShader,/plume\(aSeed\)/);assert.match(mesh.material.fragmentShader,/specular/);
+  assert.match(mesh.material.vertexShader, /mix\(1\.9, 1\., uCompact\)/, 'opening bead scale resolves into smaller basin grains on the same scroll uniform');
+  assert.match(mesh.material.vertexShader, /smoothstep\(\.997, \.9998, aSeed\.w\)/, 'only the extreme seed tail creates large bokeh beads');
+  assert.match(mesh.material.vertexShader, /pearlRadius = \.012 \+ \.022 \* pow\(aSeed\.w, 3\.2\)/, 'most hero beads stay small');
+  assert.match(mesh.material.fragmentShader, /specular \* 1\.05/, 'pearl beads carry a tight glossy highlight');
+  assert.match(mesh.material.vertexShader, /smoothstep\(\.965, \.998, seed\.w\)/, 'only a sparse population scatters beyond the core');
   let disposed=0;for(const child of a.group.children){child.geometry.addEventListener('dispose',()=>disposed++);child.material.addEventListener('dispose',()=>disposed++);}a.dispose();assert.equal(disposed,4);b.dispose();
  }
  const source=fs.readFileSync('src/components/pages/AboutPageView.tsx','utf8');assert.ok(!source.includes('loadLusionBuf'),'About must not fetch restricted portrait binaries');assert.match(source,/webglcontextrestored/);assert.match(source,/removeEventListener\("pointercancel"/);assert.match(source,/frameTimes.push\(elapsed \* 1000\)/,'observability must not clamp away stalls');

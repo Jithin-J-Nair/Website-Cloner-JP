@@ -385,28 +385,185 @@ body {
   opacity: 1;
 }
 
-/* About's recognition is a typographic act, not another UI-card section. */
-.about-awards-monument {
-  position: relative;
-  margin-inline: calc(var(--base-padding-x) * -1);
-  margin-bottom: clamp(2rem, 5vw, 6rem);
-  overflow: hidden;
-  line-height: .9;
-  letter-spacing: -.055em;
-  font-size: 23vw;
-  color: transparent;
-  -webkit-text-stroke: 1px rgb(255 255 255 / .5);
-  user-select: none;
+/* About recognition: pinned index, clipped ledger, outlined type and pointer glint. */
+.about-recognition-section {
+  min-height: 100svh;
+  --award-pointer-x: 70%;
+  --award-pointer-y: 32%;
 }
-.about-awards-monument span { display: block; width: max-content; }
-.about-expertise-diagram { contain: layout; }
+.about-recognition-section::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(460px circle at var(--award-pointer-x) var(--award-pointer-y), rgb(255 112 58 / .15), transparent 58%),
+    radial-gradient(560px circle at var(--award-pointer-x) var(--award-pointer-y), rgb(49 91 255 / .12), transparent 72%);
+  mix-blend-mode: screen;
+}
+.about-awards-monument {
+  position: absolute;
+  z-index: 0;
+  inset: 1.5rem 0 auto;
+  overflow: hidden;
+  line-height: .76;
+  letter-spacing: -.065em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(255 255 255 / .21);
+  user-select: none;
+  pointer-events: none;
+  opacity: .54;
+}
+.about-awards-monument span {
+  display: block;
+  width: max-content;
+  font-size: clamp(4.5rem, 13.4vw, 12.4rem);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.about-awards-monument span:nth-child(even) { margin-left: 12vw; }
+.about-recognition-layout { align-items: start; }
+.about-recognition-index {
+  position: sticky;
+  top: 12vh;
+  align-self: start;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.2vh, 2.2rem);
+}
+.about-recognition-index-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: .9rem;
+  border-bottom: 1px solid rgb(255 255 255 / .22);
+}
+.about-recognition-index-item h2 {
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  line-height: .96;
+  font-weight: 400;
+  letter-spacing: -.045em;
+}
+.about-recognition-count {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: .65rem;
+  font-family: var(--font-jetbrains-mono, ui-monospace), monospace;
+  font-size: clamp(1rem, 1.55vw, 1.45rem);
+  font-variant-numeric: tabular-nums;
+}
+.about-recognition-count-icon { color: rgb(255 255 255 / .72); font-size: .8em; }
+.about-recognition-window {
+  position: relative;
+  z-index: 2;
+  height: min(72svh, 48rem);
+  min-height: 32rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  padding: .5rem clamp(.75rem, 2.4vw, 2.25rem) 2rem 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 92%, transparent 100%);
+}
+.about-recognition-window::-webkit-scrollbar { display: none; }
+.about-recognition-record { padding-block: 1.5rem 3rem; }
+.about-recognition-record + .about-recognition-record { border-top: 1px solid rgb(255 255 255 / .23); }
+.about-recognition-record-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+.about-recognition-record-heading h3 {
+  font-size: clamp(1.35rem, 2.2vw, 2.05rem);
+  font-weight: 400;
+  letter-spacing: -.035em;
+}
+.about-recognition-award-header,
+.about-recognition-award-row {
+  display: grid;
+  grid-template-columns: minmax(7.2rem, 1.25fr) minmax(3.2rem, .42fr) minmax(10rem, 1.75fr);
+  column-gap: clamp(.6rem, 1.4vw, 1.35rem);
+  align-items: baseline;
+}
+.about-recognition-award-header {
+  padding-block: .8rem;
+  border-bottom: 1px solid rgb(255 255 255 / .28);
+  color: rgb(255 255 255 / .48);
+  font: 9px/1.2 var(--font-jetbrains-mono, ui-monospace), monospace;
+  letter-spacing: .12em;
+}
+.about-recognition-award-row {
+  min-height: 3.15rem;
+  padding-block: .9rem;
+  border-bottom: 1px solid rgb(255 255 255 / .095);
+  font-size: clamp(.82rem, 1vw, .96rem);
+}
+.about-recognition-org { color: rgb(255 255 255 / .56); }
+.about-recognition-count-cell {
+  color: rgb(255 255 255 / .86);
+  font: 11px/1.2 var(--font-jetbrains-mono, ui-monospace), monospace;
+  font-variant-numeric: tabular-nums;
+}
+.about-recognition-label { color: rgb(255 255 255 / .9); }
+.about-recognition-link-list,
+.about-recognition-talk-table { border-top: 1px solid rgb(255 255 255 / .22); }
+.about-recognition-link {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid rgb(255 255 255 / .12);
+  color: white;
+  text-decoration: none;
+  transition: color .22s ease, padding-inline .32s cubic-bezier(.22,1,.36,1), background-color .22s ease;
+}
+.about-talk-row {
+  display: flex;
+  min-height: 3.7rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: .9rem;
+  border-bottom: 1px solid rgb(255 255 255 / .12);
+  font-size: clamp(.82rem, 1vw, .96rem);
+}
+.about-talk-row span:last-child {
+  flex: none;
+  color: rgb(255 255 255 / .58);
+  font: 10px/1.2 var(--font-jetbrains-mono, ui-monospace), monospace;
+}
 @media (hover: hover) and (pointer: fine) {
-  .about-expertise-column:hover { border-color: white; }
+  .about-recognition-link:hover {
+    padding-inline: .8rem;
+    color: #a9c2ff;
+    background: rgb(255 255 255 / .035);
+  }
+  .about-talk-row:hover { background: rgb(255 255 255 / .045); }
+}
+@media (max-width: 812px) {
+  .about-recognition-section { min-height: auto; }
+  .about-recognition-index { position: static; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .55rem; }
+  .about-recognition-index-item { align-items: flex-start; flex-direction: column; gap: .55rem; padding-block: .6rem; }
+  .about-recognition-index-item h2 { font-size: clamp(1.1rem, 5.2vw, 1.45rem); }
+  .about-recognition-count { gap: .35rem; font-size: .95rem; }
+  .about-recognition-window { height: 66svh; min-height: 28rem; padding-right: 0; }
+  .about-recognition-award-header,
+  .about-recognition-award-row { grid-template-columns: minmax(5.2rem,1fr) 2.6rem minmax(7.5rem,1.4fr); column-gap: .55rem; }
+  .about-recognition-award-header { font-size: 7px; }
+  .about-recognition-award-row { font-size: .78rem; }
+  .about-talk-row { align-items: flex-start; flex-direction: column; gap: .35rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .about-expertise-column { transform: none !important; }
+  .about-recognition-link { transition: none; }
 }
-
 /* Keep technical registration marks and accessible HTML; replace only the flat drawing. */
 #about-capability[data-expertise-webgl="ready"] .about-expertise-diagram [data-expertise-plane] {
   opacity: 0;
@@ -415,7 +572,7 @@ body {
 /* About: observed playing-card composition, not an unrelated diagram gallery.
    CSS 3D keeps service text selectable and needs no second WebGL renderer. */
 .about-playing-expertise {
-  --about-expertise-blue: #3833e8;
+  --about-expertise-blue: #353DEF;
   position: relative;
   color: #fafafa;
   background: var(--about-expertise-blue);
@@ -474,4 +631,267 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .about-service-card { transition: none; transform: none !important; }
+}
+
+
+/* About client mark field: three independent, reversible logo currents.
+   Reduced-motion users receive one static row copy; no content is motion-only. */
+.about-client-marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 3.5%, #000 96.5%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 3.5%, #000 96.5%, transparent);
+}
+.about-client-marquee-track {
+  display: flex;
+  width: 200%;
+  transform: translate3d(0, 0, 0);
+  animation: about-client-marquee var(--marquee-duration, 38s) linear infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+.about-client-marquee.is-in-view .about-client-marquee-track {
+  animation-play-state: running;
+}
+.about-client-marquee[data-direction="reverse"] .about-client-marquee-track {
+  animation-direction: reverse;
+}
+.about-client-marquee-set {
+  display: flex;
+  flex: 0 0 50%;
+  width: 50%;
+  min-width: 0;
+  align-items: center;
+}
+.about-client-logo-tile {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+}
+.about-client-logo-art {
+  display: block;
+  width: min(100%, 9rem);
+  height: calc(100% - 1rem);
+  max-width: 100%;
+  object-fit: contain;
+  opacity: .84;
+  transition: opacity 420ms ease-out, transform 420ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .about-client-marquee:hover .about-client-logo-art {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+}
+@keyframes about-client-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@media (min-width: 813px) {
+  .about-client-logo-tile { height: 6.5rem; }
+}
+@media (max-width: 812px) {
+  .about-client-logo-tile { height: 5.5rem; }
+  .about-client-marquee-stack { gap: 1rem; }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .about-client-marquee:hover .about-client-marquee-track {
+    animation-play-state: paused;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-client-marquee { -webkit-mask-image: none; mask-image: none; }
+  .about-client-marquee-track {
+    width: 100%;
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+  .about-client-marquee-set { width: 100%; flex-basis: 100%; }
+  .about-client-marquee-set[aria-hidden="true"] { display: none; }
+  .about-client-logo-art { transition: none !important; transform: none !important; }
+}
+
+
+/* Recognition ledger: reveal the record in editorial groups, never as app cards. */
+#about-award[data-awards-motion-ready="true"] [data-award-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 720ms cubic-bezier(.22, 1, .36, 1),
+    transform 900ms cubic-bezier(.22, 1, .36, 1);
+  transition-delay: calc(var(--reveal-index, 0) * 55ms);
+}
+#about-award[data-awards-motion-ready="true"] [data-award-reveal].is-in-view {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.about-award-group-heading {
+  min-height: 2.75rem;
+  transition: border-color 280ms ease-out;
+}
+.about-award-group-heading h3 {
+  letter-spacing: -.025em;
+}
+.about-award-honor {
+  min-height: 2.75rem;
+  padding-inline: .35rem;
+  border-bottom: 1px solid rgb(255 255 255 / .055);
+  transition:
+    color 240ms ease-out,
+    background-color 240ms ease-out,
+    padding-left 320ms cubic-bezier(.22, 1, .36, 1);
+}
+.about-award-honor:last-child { border-bottom: 0; }
+.about-award-honor > span:first-child { min-width: 0; }
+.about-award-honor > span:last-child {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.about-recognition-link {
+  min-height: 3.25rem;
+  gap: 1rem;
+  border-radius: 2px;
+  transition:
+    color 240ms ease-out,
+    padding-inline 360ms cubic-bezier(.22, 1, .36, 1),
+    background-color 240ms ease-out;
+}
+.about-talk-row {
+  min-height: 3.25rem;
+  gap: 1rem;
+  padding-inline: .35rem;
+  border-bottom: 1px solid rgb(255 255 255 / .06);
+  transition:
+    color 240ms ease-out,
+    padding-inline 360ms cubic-bezier(.22, 1, .36, 1),
+    background-color 240ms ease-out;
+}
+.about-talk-row:last-child { border-bottom: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .about-award-honor:hover,
+  .about-talk-row:hover {
+    padding-left: .8rem;
+    color: #fff;
+    background-color: rgb(255 255 255 / .045);
+  }
+  .about-recognition-link:hover {
+    padding-inline: .75rem;
+    background-color: rgb(255 255 255 / .035);
+  }
+  .about-award-group:hover .about-award-group-heading {
+    border-color: rgb(255 255 255 / .38);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #about-award[data-awards-motion-ready="true"] [data-award-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .about-award-group-heading,
+  .about-award-honor,
+  .about-recognition-link,
+  .about-talk-row {
+    transition: none;
+  }
+}
+
+
+/* About wide-shot chromatic frame fringe: one CSS layer, scroll-owned opacity. */
+.about-wide-chromatic-ring {
+  position: absolute;
+  z-index: 10;
+  inset: -1.8%;
+  pointer-events: none;
+  opacity: 0;
+  border: 1px solid rgb(113 191 255 / .13);
+  box-shadow:
+    inset 0 0 44px rgb(53 61 239 / .07),
+    0 0 26px rgb(75 148 255 / .035);
+  background:
+    radial-gradient(ellipse at 50% 48%, transparent 64%, rgb(74 172 255 / .035) 70%, rgb(53 61 239 / .08) 73%, rgb(255 110 176 / .055) 75%, transparent 80%);
+  mix-blend-mode: screen;
+  transform: scale(1.012);
+  will-change: opacity;
+}
+.about-wide-chromatic-ring::after {
+  content: "";
+  position: absolute;
+  inset: .65%;
+  border: 1px solid transparent;
+  border-image: linear-gradient(90deg, rgb(69 207 255 / .2), transparent 26%, transparent 72%, rgb(255 92 180 / .17)) 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-wide-chromatic-ring { display: none; }
+}
+
+
+/* Narrative words are individually seekable and reversible; no timer owns their state. */
+.about-narrative-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(16px,0,0);
+  will-change: opacity, transform;
+}
+.about-narrative-word.is-italic { font-style: italic; }
+@media (prefers-reduced-motion: reduce) {
+  .about-narrative-word { opacity: 1 !important; transform: none !important; will-change: auto; }
+}
+
+/* Team progress is started by the scroll-owned team-active data flag and restarts on member key. */
+.about-team-progress {
+  width: 10rem;
+  height: 2px;
+  overflow: hidden;
+  background: rgb(255 255 255 / .28);
+}
+.about-team-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: rgb(255 255 255 / .96);
+}
+/* Clear the shared header's padding and 2.8em controls at every viewport,
+   including ultrawide. No per-frame layout reads or Home chrome changes. */
+.about-who-team-overlay {
+  padding-top: max(7rem, calc(var(--base-padding-y) * 2 + clamp(1rem, 1vw, 1.5rem) * 2.8 + 1rem));
+}
+
+.about-who-team-overlay[data-team-active="true"]:not([data-reduced="true"]) .about-team-progress-fill {
+  animation: about-team-member-progress 4.8s linear forwards;
+}
+.about-who-team-overlay[data-reduced="true"] .about-team-progress-fill {
+  width: 100%;
+}
+@keyframes about-team-member-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-team-progress-fill { width: 100%; animation: none !important; }
+}
+
+
+/* About CTA: original arm silhouette; letter hops are visibility-aware Web Animations. */
+#end-section .about-cta-arm {
+  position: absolute;
+  z-index: 21;
+  top: -4vh;
+  left: -5vw;
+  width: min(60vw, 58rem);
+  height: 46vh;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-14vw,-8vh,0) rotate(-8deg);
+  transform-origin: 18% 20%;
+  will-change: opacity, transform;
+}
+#end-section .about-cta-arm svg { display: block; width: 100%; height: 100%; overflow: visible; }
+@media (prefers-reduced-motion: reduce) {
+  #end-section .about-cta-arm { opacity: .18 !important; transform: none !important; will-change: auto; }
 }

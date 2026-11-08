@@ -1,0 +1,38 @@
+[
+  {
+    "command": "npm run test:about-clients",
+    "exitCode": 0,
+    "seconds": 12.62,
+    "log": "client-layout-green.log"
+  },
+  {
+    "command": "python3 docs/lusion-parity-audit/harness/verify-project-content.py",
+    "exitCode": 1,
+    "seconds": 0.1,
+    "log": "project-content-h1-expectation-failure.log"
+  },
+  {
+    "command": "node scripts/test-project-gallery-text-browser.mjs",
+    "exitCode": 0,
+    "seconds": 8.99,
+    "log": "project-gallery-text-browser.log"
+  },
+  {
+    "command": "ABOUT_RESTORATIONS_OUT_DIR=docs/lusion-parity-audit/evidence/implementation-04 node docs/lusion-parity-audit/harness/capture-about-restorations.mjs",
+    "exitCode": 0,
+    "seconds": 22.44,
+    "log": "about-mobile-followup.log"
+  },
+  {
+    "command": "VISUAL_ROUTES=/about,/projects/of_the_oak,/projects/worldcoin VISUAL_OUT_DIR=docs/lusion-parity-audit/evidence/implementation-05 node docs/lusion-parity-audit/harness/validate-captured-visuals.mjs",
+    "exitCode": 0,
+    "seconds": 87.21,
+    "log": "affected-route-visual.log"
+  },
+  {
+    "command": "npm run test:assets && npm run test:about-portrait && npm run test:motion && npm run qa && npm run test:project-preview",
+    "exitCode": 0,
+    "seconds": 9.26,
+    "log": "final-regressions.log"
+  }
+]

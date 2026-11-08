@@ -12,6 +12,9 @@ try {
     compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
   }).outputText);
   const { terrainHeightAt, createAboutTerrainMaterial } = await import(pathToFileURL(`${dir}/terrain.mjs`));
+  assert.match(source, /ridgeC \* \.32/, 'flank mesh keeps high-frequency fractured relief');
+  assert.match(source, /micro = .*\.17 \* flankMask/, 'microrelief remains visible on the crater flanks');
+  assert.match(source, /amplitude = \.036/, 'screen-space rock relief has enough amplitude to read at desktop scale');
   let min = Infinity, max = -Infinity;
   for (let z = -48; z <= 48; z += .5) {
     for (let x = -48; x <= 48; x += .5) {
@@ -32,6 +35,14 @@ try {
   assert.match(a.fragmentShader, /dFdx\(relief\)/);
   assert.match(a.fragmentShader, /#include <tonemapping_fragment>/);
   assert.match(a.fragmentShader, /#include <colorspace_fragment>/);
+  assert.match(source, /vec3 sand = vec3\(\.53, \.56, \.57\)/, 'pale regolith uses the measured high-luminance linear target');
+  assert.match(source, /p\.x < 0\. \? 1\.22 : \.78/, 'left and right flanks retain the measured light/dark split');
+  const about = fs.readFileSync('src/components/pages/AboutPageView.tsx', 'utf8');
+  assert.match(about, /terrainHeightAt\(-\.35, -1\.8\)/, 'procedural explorer feet use the shared terrain sampler');
+  assert.match(about, /terrainHeightAt\(rx, rz\)/, 'grounded pebbles use the same terrain sampler');
+  assert.match(about, /hGrid\[j \* \(C_GRID \+ 1\) \+ i\] = terrainHeightAt\(x, z\)/, 'topographic contours use the same terrain sampler');
+  assert.match(about, /ROCK_COUNT = 224, FLOATING_ROCK_COUNT = 16/, 'the basin has a small suspended-rock population and grounded pebbles');
+  assert.match(about, /about-wide-chromatic-ring/, 'the wide pullback has its own clean-room chromatic edge layer');
   let disposed = 0;
   a.addEventListener('dispose', () => disposed++);
   b.addEventListener('dispose', () => disposed++);

@@ -1,0 +1,80 @@
+{
+  "a": {
+    "frames": 2,
+    "u": 0,
+    "time": 0,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": false,
+    "state": "ready",
+    "explorer": "ready",
+    "explorerScale": 1,
+    "teamYaw": 0,
+    "teamPitch": 0,
+    "teamMember": "Edan Kwan",
+    "count": 900,
+    "portraitPoints": 8192,
+    "streakCount": 384,
+    "qualityTier": "high",
+    "reducedMotion": true,
+    "frameTimes": [
+      16.799999999813735,
+      0.2999999998137355
+    ],
+    "draws": 3,
+    "triangles": 38792,
+    "memory": {
+      "geometries": 3,
+      "textures": 1
+    },
+    "width": 390,
+    "height": 844,
+    "camera": [
+      0,
+      8.15,
+      8.6
+    ]
+  },
+  "b": {
+    "frames": 2,
+    "u": 0,
+    "time": 0,
+    "pointer": [
+      0,
+      0
+    ],
+    "pointerActive": 0,
+    "pending": false,
+    "state": "ready",
+    "explorer": "ready",
+    "explorerScale": 1,
+    "teamYaw": 0,
+    "teamPitch": 0,
+    "teamMember": "Edan Kwan",
+    "count": 900,
+    "portraitPoints": 8192,
+    "streakCount": 384,
+    "qualityTier": "high",
+    "reducedMotion": true,
+    "frameTimes": [
+      16.799999999813735,
+      0.2999999998137355
+    ],
+    "draws": 3,
+    "triangles": 38792,
+    "memory": {
+      "geometries": 3,
+      "textures": 1
+    },
+    "width": 390,
+    "height": 844,
+    "camera": [
+      0,
+      8.15,
+      8.6
+    ]
+  }
+}

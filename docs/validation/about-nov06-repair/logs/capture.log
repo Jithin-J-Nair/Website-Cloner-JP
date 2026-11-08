@@ -1,0 +1,3 @@
+PASS 1568x832: seven rendered milestones, six reverse/fast seeks, nonoverlapping settled chapters, header clearance, no overflow/runtime/restricted requests
+PASS 768x1024: seven rendered milestones, six reverse/fast seeks, nonoverlapping settled chapters, header clearance, no overflow/runtime/restricted requests
+PASS 390x844: seven rendered milestones, six reverse/fast seeks, nonoverlapping settled chapters, header clearance, no overflow/runtime/restricted requests

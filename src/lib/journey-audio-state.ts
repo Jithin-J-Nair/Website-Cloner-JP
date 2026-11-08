@@ -1,6 +1,6 @@
-/** Audio follows existing scene coordinates, never its own visual playhead.
- * Boundaries copied from GoalTunnelSection: flash .785–.865, glass opacity
- * .30–.40, and endDecor .92–.99. These are NOT observed reference audio cues.
+/** Audio follows the same scene coordinates as the visual playhead.
+ * The fracture onset remains the first visible shard frame; the mix reaches the glass
+ * texture earlier so the impact lands on the short, one-beat breakup.
  */
 export type JourneyStage = "home" | "black-title" | "solar" | "tesseract" | "white-transition" | "blue" | "glass" | "fracture" | "contact";
 export type StemName = "orbit" | "pulse" | "bass" | "prism" | "resolve";
@@ -39,7 +39,7 @@ export function journeyMix(input: JourneyAudioInput): JourneyMix {
   if (input.title) return { stage: "black-title", gains: [0.30, 0, 0.04, 0, 0], cutoff: 1500, level: 0.55 };
   if (input.emergence) return { stage: "solar", gains: ORBIT, cutoff: 3800, level: 0.70 };
   const blue = smooth(0.785, 0.865, input.tunnel);
-  const glass = smooth(0, 0.30, input.drop);
+  const glass = smooth(0, 0.24, input.drop);
   const end = Math.max(smooth(0.92, 0.99, input.drop), input.wait > 0 ? 1 : 0);
   const stage: JourneyStage = end > 0 ? "contact" : input.drop >= 0.30 ? "fracture" : input.drop > 0 ? "glass" : input.tunnel >= 0.865 ? "blue" : input.tunnel >= 0.785 ? "white-transition" : "tesseract";
   return {

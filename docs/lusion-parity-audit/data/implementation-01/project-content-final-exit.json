@@ -1,0 +1,7 @@
+{
+  "command": "python3 docs/lusion-parity-audit/harness/verify-project-content.py",
+  "exitCode": 0,
+  "seconds": 0.211,
+  "supersedes": "project-content-h1-expectation-failure.log",
+  "correction": "H1 oracle uses captured canonical meta title; raw Porsche/Spaace title fields differ from the pre-existing canonical display mapping. No application title was changed."
+}

@@ -57,7 +57,7 @@ export function getCanonicalProjectTitle(id: string, fallbackTitle: string): str
 }
 
 /**
- * Set of every canonical asset relative path referenced across all 22 Lusion routes.
+ * Set of every canonical asset relative path referenced across all 20 current Lusion routes.
  */
 const APPROVED_SYNTHETIC_PATHS: Map<
   string,
@@ -178,8 +178,10 @@ const BUNDLED_MANIFEST_PATHS: Set<string> = (() => {
   return set;
 })();
 
+const APPROVED_STATIC_VECTOR_PATHS = new Set(["images/cards/back-ink.svg"]);
+
 export function isApprovedCatalogAsset(relPath: string): boolean {
-  if (APPROVED_SYNTHETIC_PATHS.has(relPath)) return true;
+  if (APPROVED_SYNTHETIC_PATHS.has(relPath) || APPROVED_STATIC_VECTOR_PATHS.has(relPath)) return true;
   return BUNDLED_MANIFEST_PATHS.has(relPath);
 }
 

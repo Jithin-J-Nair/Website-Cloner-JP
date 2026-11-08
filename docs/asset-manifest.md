@@ -1,5 +1,27 @@
 # Lusion Reconstruction — Traceable Asset & Licensing Manifest
 
+## About team-scene authorization — 7 November 2026
+
+For this repair the user explicitly confirmed authorization to reuse Lusion's
+original bundled team assets in this project, **including a deployed version**.
+This is a user-confirmed permission statement, not an independently verified
+public/open-source license and not a change of copyright ownership.
+
+The exception is narrowly implemented by `/about/scene/[asset]`: the seven
+`media-bundle/team/{edan,ffi,pierre,yannic,paul,andrii,sunny}.buf` point-cloud heads
+and `media-bundle/models/about/terrain_lines.buf` (the team's topographic backdrop,
+served as `contours.buf`). These remain Lusion reference assets; likenesses are
+used only with their published roster names/roles. No files were duplicated into
+`public/`. The former personal-photo PLY and its live reconstruction helpers have
+been removed.
+
+The global `/assets` resolver and its environment flags were not changed. It
+already serves approved files in the tracked repository bundle without the
+local-inspection opt-in; this repair does not expand that behavior or its catalog.
+Commercial fonts remain blocked. This permission exception does not include
+unrelated scene models, portfolio footage or sound stems. It is not authorization to merge or deploy the application. The original
+manifest classifications/checksums remain provenance records, not license grants.
+
 - **Machine-readable manifest:** `docs/asset-manifest.json` (**588** individually traced records with SHA-256 checksums)
 - **Reference capture source:** `quangminh1212/Design_Lusion.co` (*captured 23 September 2026 from public `https://lusion.co/` responses*)
 - **Active font policy:** **Font Option 2 — Strict Licensing Compliance** (`0` commercial/proprietary font binaries in repository)

@@ -98,3 +98,11 @@ Outputs are written under ignored `temp/`; selected reports and screenshots are 
 ## Limits
 
 60fps remains the design target, **not a certified hardware result**. Browser checks use bundled Chromium and SwiftShader software rendering. The slow autonomous wall times above are deliberately reported separately from the 23.5-second animation clock. No physical GPU profiling or continuous UHD frame-rate benchmark was available. Original asset texture detail is unchanged; the procedural flare renders at native UHD but does not invent higher-resolution source textures. Spectral hue, exact lens shape, choreography and scroll curves remain approximations of the available references.
+
+
+## 2026-11-04 glass visibility correction
+
+- The fragment shader samples the live tunnel/astronaut scene and computes transmission/reflection before output. Its alpha now represents the actual shard surface coverage (uOpacity) instead of alpha-blending the already-composited scene a second time; this prevents broken panes from fading into nearly invisible outlines.
+- Closed shard sidewalls remain enabled. The transparent hypercube lattice has smoother 8-sided rods, larger crystal vertices/edges, clearer environment reflections and higher peak visibility while remaining transparent (no opaque white tesseract).
+- The captured metal truss is reduced further only at the pink-vortex peak so the glass lattice and spiral become the focal geometry; the metal tunnel remains visible around it.
+- Unit tests assert single-pass optical compositing and the updated lattice/truss hierarchy. Production browser captures include vortex peak and glass-shatter states for visual review.

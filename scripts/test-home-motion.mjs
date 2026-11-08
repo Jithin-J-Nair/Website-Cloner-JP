@@ -4,6 +4,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 import { pathToFileURL } from 'node:url';
+const homeMarkup = fs.readFileSync('src/components/home/HomePageView.tsx','utf8');
+assert.ok(homeMarkup.includes('text-[6.6vw]'), 'mobile hero headline matches the reference line wrapping');
+assert.ok(homeMarkup.includes('min-[813px]:pt-[calc(var(--vh,1vh)*5.3)]'), 'desktop hero title aligns with the reference top edge');
+assert.ok(homeMarkup.includes('min-[813px]:mt-[calc(var(--base-padding-y)*0.9)]'), 'desktop stage top aligns with the reference');
+assert.ok(homeMarkup.includes('min-[813px]:mb-[calc(var(--base-padding-y)*0.05)]'), 'desktop stage bottom aligns with the reference');
+assert.ok(homeMarkup.includes('min-[813px]:pb-[calc(var(--base-padding-y)*0.94)]'), 'desktop section bottom matches the reference viewport');
+assert.ok(homeMarkup.includes('min-[813px]:bottom-0'), 'desktop scroll cue sits on the reference bottom edge');
+assert.ok(homeMarkup.includes('mb-[calc(var(--base-padding-y)*1.35)]'), 'mobile stage bottom aligns with the reference');
 fs.mkdirSync('temp',{recursive:true});
 const dir = fs.mkdtempSync(path.resolve('temp/home-motion-unit-'));
 try {
@@ -11,7 +19,7 @@ try {
   const file = path.join(dir,'motion.mjs');
   fs.writeFileSync(file,output);
   const {advanceCinematicProgress,acceleratedFall,stepMotionSpring,homeRenderDpr,cinematicRenderDpr,blueFlightDistance,UHD_PIXEL_BUDGET,GOAL_CINEMATIC_SECONDS,motionEase} = await import(pathToFileURL(file));
-  assert.ok(GOAL_CINEMATIC_SECONDS<26 && GOAL_CINEMATIC_SECONDS>22);
+  assert.equal(GOAL_CINEMATIC_SECONDS,20,'the guided journey spans exactly two complete score loops');
   for (const dt of [1/120,1/60,1/30,.25,.5,1,2]) {
     let progress=0,elapsed=0;
     while(elapsed<GOAL_CINEMATIC_SECONDS-1e-9) {
@@ -26,6 +34,9 @@ try {
   assert.equal(advanceCinematicProgress(.2,NaN),.2);
   assert.equal(advanceCinematicProgress(0,100),1);
   assert.equal(acceleratedFall(-1),0); assert.equal(acceleratedFall(2),1);
+  assert.ok(acceleratedFall(0.25)>0.17,'astronaut reaches a stronger early descent than the previous curve');
+  assert.ok(acceleratedFall(0.5)>0.39,'astronaut carries more speed through the middle of the fall');
+  assert.ok(Math.abs(acceleratedFall(1)-1)<1e-12,'faster fall retains its exact endpoint');
   let lastVelocity = -Infinity;
   for(let i=1;i<1000;i++) {
     const t=i/1000, epsilon=1e-5;
@@ -59,6 +70,127 @@ try {
   assert.equal(cinematicRenderDpr(3840,2160,2,true,true),1);
   assert.ok(cinematicRenderDpr(1440,900,1,true,false)<1);
   assert.ok(blueFlightDistance(1,.5)>blueFlightDistance(1,0),'corridor keeps moving during glass approach');
+
+  const homePageSource = fs.readFileSync('src/components/home/HomePageView.tsx','utf8');
+  const heroSource = fs.readFileSync('src/components/home/HeroCrossesStage.tsx','utf8');
+  const goalSource = fs.readFileSync('src/components/home/GoalTunnelSection.tsx','utf8');
+  const downstreamSource = fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8');
+  const smoothSource = fs.readFileSync('src/components/foundation/SmoothScrollProvider.tsx','utf8');
+  assert.ok(!homePageSource.includes('skewY(') && !homePageSource.includes('targetSkew'),
+    'project cards do not shear or glitch with scroll velocity');
+  assert.ok(heroSource.includes('idleEnabled && isSoftwareRenderer && !ptr.active && !transientMoving'),
+    'software idle throttling is disabled while the pointer is actively throwing connectors');
+  assert.ok(heroSource.includes('frameCostMs > 40 && idleOnly'),
+    'slow software frames use the long yield only when the hero is genuinely idle');
+  assert.ok(!goalSource.includes('home-goal-monitor-cracks') && !goalSource.includes('crackProgress'),
+    'the synthetic crack overlay is completely removed');
+  assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),
+    'the full-screen radial RGB glitch/dispersion pass is removed');
+  assert.ok(goalSource.includes('...(isMobileInit || isSoftwareRenderer') && goalSource.includes('#include <tonemapping_fragment>') && goalSource.includes('#include <colorspace_fragment>'),
+    'glass shader applies ACES and sRGB output transforms on direct-render mobile/software paths while leaving composer output to OutputPass');
+  assert.ok(goalSource.includes('const float iorR = 1.516;') && goalSource.includes('const float iorG = 1.520;') && goalSource.includes('const float iorB = 1.526;'),
+    'glass refraction uses wavelength-dependent Snell IOR rather than an arbitrary RGB offset');
+  assert.ok(goalSource.includes('uniform mat4 uCameraWorldMatrix;') && goalSource.includes('mat3(uCameraWorldMatrix) * vNormalV'),
+    'glass reflections use correctly transformed world-space facet normals');
+  assert.ok(goalSource.includes('float distribution = alpha2 / max(PI * dDenom * dDenom') && goalSource.includes('float fres = fresnelSchlick(facing, f0);'),
+    'glass facets use GGX microfacet highlights and Schlick Fresnel reflection');
+  assert.ok(downstreamSource.includes('theta * 4.0 - r * 22.0') && downstreamSource.includes('float eventHorizon'),
+    'vortex core uses a deformed four-fold spiral, accretion ring and dark central horizon');
+  assert.ok(!downstreamSource.includes('GlassTesseractVortex') && !downstreamSource.includes('TesseractGlass'),
+    'the white tesseract object is completely removed from the tunnel scene');
+  assert.ok(downstreamSource.includes('buildVortexHypercubeLattice') && downstreamSource.includes('rotatePlane(four, 0, 3'),
+    'the vortex is a nested perspective-projected 4D glass lattice, not an opaque white cube');
+  assert.ok(downstreamSource.includes('buildGlassShardSideGeometry') && downstreamSource.includes('sideNormal.crossVectors'),
+    'captured glass fragments gain closed volumetric side faces');
+  assert.ok(goalSource.includes('uGlassThickness') && goalSource.includes('sideHalfThickness') && goalSource.includes('Math.max(0.035,'),
+    'glass optical path is derived from the actual world-scaled shard plate thickness');
+  assert.ok(goalSource.includes('mix(envReflection, screenReflection, 0.92)'),
+    'moving glass reflects the live corridor/astronaut scene rather than relying on a static environment alone');
+  assert.ok(goalSource.includes('float alpha = uOpacity;'),
+    'the refracted/reflected composite is not blended a second time over the source scene');
+  assert.ok(goalSource.includes('1 - 0.54 * smoothstep(0.54, 0.70, tTunnel)') && downstreamSource.includes('vec3(0.94, 0.13, 0.62)') && downstreamSource.includes('primary*mix(3.5,2.6,pink)'),
+    'the vortex peak gives the transparent glass lattice visual priority over the metallic truss');
+  assert.ok(downstreamSource.includes('float warm = smoothstep(0.24, 0.36, uPhase);') &&
+    downstreamSource.includes('float emerald = smoothstep(0.39, 0.55, uPhase);') &&
+    downstreamSource.includes('float pink = smoothstep(0.65, 0.80, uPhase);') &&
+    downstreamSource.includes('vec3(0.42, 1.0, 0.12)') &&
+    downstreamSource.includes('secondary = mix(secondary, vec3(0.18, 0.72, 1.0), pink)'),
+    'captured tunnel lighting follows the cyan/steel -> warm red -> emerald -> pink/blue reference sequence');
+  assert.ok(downstreamSource.includes('const tubeRadius = 0.020') && downstreamSource.includes('scale.setScalar(0.043') && downstreamSource.includes('material.opacity = 0.34 + glow * 0.54') && downstreamSource.includes('envMapIntensity: 2.85'),
+    'the 4D glass lattice has legible crystal edges and stronger environmental reflections');
+  assert.ok(goalSource.includes('(tShatter - 0.205) / 0.145'),
+    'the 946-piece glass breakup is compressed to a short impact beat');
+  assert.ok(goalSource.includes('smoothstep(0.08, 0.28, tShatter)') && goalSource.includes('descent * 1.72'),
+    'the astronaut breakout and tunnel descent use the faster gravity trajectory');
+  assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
+    'Lenis uses the tuned smooth-wheel profile');
+
+  const downstreamOutput = ts.transpileModule(fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+  const downstreamFile = path.join(dir,'downstream.mjs');
+  fs.writeFileSync(downstreamFile,downstreamOutput);
+  const {createGoalPlaybackPath,createGlassFrameSampler} = await import(pathToFileURL(downstreamFile));
+  const playback = createGoalPlaybackPath({emergenceStart:1000,emergenceSpan:1000,tunnelStart:2000,tunnelSpan:4000,imgOutTop:8000,endTop:10000,endHeight:1000,viewportH:1000});
+  const shardPositions = new Float32Array([
+    0,0,0,  1,0,0,  1.5,0,0,  3,0,0,  4,0,0,
+  ]);
+  const shardOrientations = new Float32Array([
+    0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,0,1,
+  ]);
+  const sampledPosition = new Float32Array(4);
+  const sampledOrientation = new Float32Array(4);
+  const sampleGlass = createGlassFrameSampler(shardPositions,shardOrientations,1,5,sampledPosition,sampledOrientation);
+  for(let key=0;key<5;key++) {
+    sampleGlass(key);
+    assert.ok(Math.abs(sampledPosition[0]-shardPositions[key*3])<1e-6,"glass sampler preserves every captured position keyframe");
+    assert.deepEqual(Array.from(sampledOrientation),[0,0,0,1],"quaternion keyframes remain normalized");
+  }
+  let shardPrevious=-Infinity;
+  for(let i=0;i<=4000;i++) {
+    sampleGlass(i/1000);
+    assert.ok(sampledPosition[0]>=shardPrevious-1e-6,"shape-preserving shard interpolation must not reverse or overshoot a monotone axis");
+    shardPrevious=sampledPosition[0];
+  }
+  const velocityAt=(frame,epsilon)=>{sampleGlass(frame+epsilon);const right=sampledPosition[0];sampleGlass(frame-epsilon);const left=sampledPosition[0];return (right-left)/(2*epsilon);};
+  for(const key of [1,2,3]) assert.ok(Math.abs(velocityAt(key,0.001)-velocityAt(key,0.0005))<0.06,"glass velocity remains locally continuous at a captured frame boundary");
+  assert.ok(shardPrevious<=4.00001,"shape-preserving interpolation cannot overshoot the final authored transform");
+  for(const key of [1,2,3]) {
+    sampleGlass(key);
+    const atKey=sampledPosition[0];
+    sampleGlass(key-0.01);
+    const leftVelocity=(atKey-sampledPosition[0])/0.01;
+    sampleGlass(key+0.01);
+    const rightVelocity=(sampledPosition[0]-atKey)/0.01;
+    assert.ok(Math.abs(leftVelocity-rightVelocity)<0.025,
+      "PCHIP shares a continuous position tangent across adjacent captured-frame segments");
+  }
+
+  // A reversal / plateau must stay within each pair of authored keys without ringing.
+  const reversingPositions = new Float32Array([0,0,0, 1,0,0, 1.5,0,0, 1.2,0,0, 0.5,0,0]);
+  const reversingOutput = new Float32Array(4);
+  const reversingSampler = createGlassFrameSampler(reversingPositions,shardOrientations,1,5,reversingOutput,new Float32Array(4));
+  for(let segment=0;segment<4;segment++) {
+    const low=Math.min(reversingPositions[segment*3],reversingPositions[(segment+1)*3]);
+    const high=Math.max(reversingPositions[segment*3],reversingPositions[(segment+1)*3]);
+    for(let step=0;step<=100;step++) {
+      reversingSampler(segment+step/100);
+      assert.ok(reversingOutput[0]>=low-1e-6 && reversingOutput[0]<=high+1e-6,
+        "PCHIP cannot overshoot a reversing shard's authored segment bounds");
+    }
+  }
+  for(let i=0;i<=100;i++) {
+    reversingSampler(2+i/100);
+    assert.ok(reversingOutput[0]<=1.500001 && reversingOutput[0]>=1.199999,
+      "PCHIP remains shape-preserving through the reversal");
+  }
+
+  let priorY = -Infinity;
+  for(let i=0;i<=1000;i++) {
+    const y=playback(i/1000);
+    assert.ok(y>=priorY-1e-6,'cinematic document path must remain monotone');
+    priorY=y;
+  }
+  const drop = 8000 - 550, span = 10000 - drop;
+  assert.ok(Math.abs((playback(.866)-playback(.83))/span-.42)<1e-6,'glass separation must occupy the compact one-beat segment');
   let previous=-1;
   for(let i=0;i<=200;i++) {
     const phase=i/100;

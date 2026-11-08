@@ -3,17 +3,33 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { launchMotionBrowser, startBrowserRecording } from './lib/browser-runtime.mjs';
 const baseline=process.env.ABOUT_BASELINE==='1';
-const out=`temp/about-audit/${baseline?'before':'after'}`;fs.mkdirSync(out,{recursive:true});
+const out=process.env.ABOUT_EXPERIENCE_OUT||`temp/about-audit/${baseline?'before':'after'}`;fs.mkdirSync(out,{recursive:true});
 const browser=await launchMotionBrowser();
 try{
  for(const width of [1440,390]){
+  const height=width===390?844:900;
   const context=await browser.newContext({viewport:{width,height:width===390?844:900},isMobile:width===390,hasTouch:width===390,reducedMotion:'no-preference'});
-  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;window.__aboutBuffersCreated=0;
+  await context.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');window.__enableAboutProbe=true;window.__enableCtaProbe=true;window.__aboutBuffersCreated=0;
     const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){const gl=Reflect.apply(get,this,[type,...args]);if(gl&&/webgl/.test(type)&&!gl.__counted){gl.__counted=true;const create=gl.createBuffer;gl.createBuffer=function(...a){window.__aboutBuffersCreated++;return Reflect.apply(create,this,a);};}return gl;};});
   const page=await context.newPage(),report={width,height:width===390?844:900,baseline,errors:[],consoleErrors:[],restrictedRequests:[],milestones:[]};
   page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error')report.consoleErrors.push(m.text());});
   page.on('request',r=>{if(/\/team\/.*\.buf|\/images\/logo\//.test(r.url()))report.restrictedRequests.push(r.url());});
-  const seek=async y=>{await page.evaluate(top=>{window.__lenis?.scrollTo(top,{immediate:true});window.scrollTo({top,behavior:'instant'});},y);await page.waitForTimeout(500);};
+  const seek=async y=>{await page.evaluate(top=>{
+   const manager=window.__lusionInspector?.scrollManager;
+   if(manager?.scrollToPixel) manager.scrollToPixel(top);
+   else {window.__lenis?.scrollTo(top,{immediate:true});window.scrollTo({top,behavior:'instant'});}
+  },y);
+   // Software rendering can exceed a fixed 500ms delay. Wait for the actual
+   // scene playhead, not an elapsed sleep, while retaining the same pose checks.
+   await page.waitForFunction(({target,unit})=>{
+    const section=document.querySelector('#about-who'),top=section.getBoundingClientRect().top+scrollY;
+    const u=(target-top)/unit,probe=window.__aboutProbe?.();
+    const inScene=target>=top&&target<=top+section.offsetHeight-innerHeight;
+    const destination=Math.max(0,Math.min(target,document.documentElement.scrollHeight-innerHeight));
+    return Math.abs(scrollY-destination)<2&&(!inScene||Math.abs((probe?.u??-100)-u)<.01);
+   },{target:y,unit:width<820?height:width},{timeout:20000});
+   await page.waitForTimeout(250);
+  };
   try{
    await page.goto('http://127.0.0.1:3000/about',{waitUntil:'networkidle',timeout:120000});await page.waitForSelector('#about-who canvas');
    const unit=width<820?844:width;
@@ -24,13 +40,47 @@ try{
    for(const id of ['about-clients','about-award','about-capability','end-section','footer-section']){
     const y=await page.locator(`#${id}`).evaluate(e=>e.getBoundingClientRect().top+scrollY);await seek(y);
     const file=`${width}-${id}.jpg`;await page.screenshot({path:`${out}/${file}`,type:'jpeg',quality:65,timeout:120000});report.milestones.push({id,file,y});
+    if(id==='end-section' && !baseline){
+     await page.waitForFunction(()=>window.__ctaProbe?.().frames>0,null,{timeout:20000});
+     const cta=await page.evaluate(()=>window.__ctaProbe());
+     assert.ok(width===390 ? cta.count===2600 : cta.count===3600 || cta.count===5600);
+     // Matches the integrated branch's CinematicContactField quality tiers and four shape families.
+     assert.ok(cta.draws<=4,'CTA field must remain at four instanced shape-family draws');
+     assert.ok(cta.triangles<=cta.count*24,'CTA geometry must remain within its triangle budget');
+     if(width!==390){
+      await page.mouse.move(width*.56,height*.68);
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer>.85,null,{timeout:5000});
+      const engaged=await page.evaluate(()=>window.__ctaProbe().pointer);
+      await page.mouse.move(width+40,height+40);
+      await page.waitForFunction(()=>window.__ctaProbe?.().pointer<.12,null,{timeout:5000});
+      report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,pointerEngaged:engaged,pointerReleased:true};
+     }else{
+      report.cta={count:cta.count,draws:cta.draws,triangles:cta.triangles,touchPointerInactive:cta.pointer===0};
+      assert.equal(cta.pointer,0,'touch scrolling must not activate mouse repulsion');
+     }
+    }
    }
    if(!baseline){
     assert.deepEqual(report.restrictedRequests,[]);assert.deepEqual(report.errors,[]);assert.deepEqual(report.consoleErrors,[]);
+    // Verify that the curved valley wordmark is actually wired to the same
+    // scroll playhead, disappears at its authored exit, and re-enters on reverse.
+    const sweep=page.locator('[data-about-wordmark-sweep]');assert.equal(await sweep.count(),1);
+    const peak=width===390?2.45:1.25,end=width===390?3.45:2.35;
+    await seek(unit*peak);
+    const atPeak=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility,transform:el.style.transform,text:el.querySelector('textPath')?.textContent?.trim()}));
+    assert.ok(atPeak.opacity>.99);assert.equal(atPeak.visibility,'visible');assert.equal(atPeak.text,'LUSION');
+    await seek(unit*end);
+    const atExit=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility}));
+    assert.ok(atExit.opacity<.005);assert.equal(atExit.visibility,'hidden');
+    await seek(unit*peak);
+    const onReverse=await sweep.evaluate(el=>({opacity:Number(getComputedStyle(el).opacity),visibility:getComputedStyle(el).visibility}));
+    assert.ok(onReverse.opacity>.99);assert.equal(onReverse.visibility,'visible');
+    report.wordmarkSweep={peak,end,atPeak,atExit,onReverse,reversible:true};
     // Scene must sleep when it is entirely outside the viewport.
-    await page.waitForTimeout(250);const sleeping=await page.evaluate(()=>window.__aboutProbe());await page.waitForTimeout(450);assert.equal((await page.evaluate(()=>window.__aboutProbe())).frames,sleeping.frames);
+    await seek(await page.locator('#footer-section').evaluate(e=>e.getBoundingClientRect().top+scrollY));
+    await page.waitForTimeout(250);const sleeping=await page.evaluate(()=>window.__aboutProbe());await page.waitForTimeout(450);assert.equal((await page.evaluate(()=>window.__aboutProbe())).frames,sleeping.frames);assert.equal((await page.evaluate(()=>window.__aboutProbe())).pending,false,'offscreen scene must not queue another RAF');
     await seek(unit*7.2);const beforeName=await page.locator('#about-who-team-name').textContent().catch(()=>null);
-    await page.getByRole('button',{name:'Next team member',exact:true}).click();
+    await page.getByRole('button',{name:'Select Ffion Morgan',exact:true}).click();
     report.team={beforeName,selected:await page.getByRole('button',{name:'Select Ffion Morgan',exact:true}).getAttribute('aria-pressed')};assert.equal(report.team.selected,'true');assert.notEqual(beforeName,await page.locator('#about-who-team-name').textContent());
     const buffersBefore=await page.evaluate(()=>window.__aboutBuffersCreated);for(const member of await page.getByRole('button',{name:/^Select /}).all()){
      // Locator auto-scroll moves Chromium sticky content after screenshots;
@@ -57,9 +107,9 @@ try{
     // A real continuous native interaction recording, distinct from milestone stills.
     if(process.env.ABOUT_RECORD==='1'){
      const raw=`${out}/recording-${width}`;fs.mkdirSync(raw,{recursive:true});const recording=await startBrowserRecording(context,page,raw);await recording.waitForFirstFrame();
-     await page.mouse.move(width*.35,250);await page.waitForTimeout(800);await seek(unit*1.6);await page.waitForTimeout(800);await seek(unit*5.35);await page.waitForTimeout(800);await seek(unit*7.2);await page.getByRole('button',{name:'Next team member',exact:true}).click();await page.waitForTimeout(600);await seek(unit*1.6);report.recordedFrames=await recording.stop();
+     await page.mouse.move(width*.35,250);await page.waitForTimeout(800);await seek(unit*1.6);await page.waitForTimeout(800);await seek(unit*5.35);await page.waitForTimeout(800);await seek(unit*7.2);await page.getByRole('button',{name:'Select Ffion Morgan',exact:true}).click();await page.waitForTimeout(600);await seek(unit*1.6);report.recordedFrames=await recording.stop();
     }
-    await seek(await page.locator('#about-capability').evaluate(e=>e.offsetTop));const card=page.getByRole('button',{name:'Creative expertise',exact:true});await card.focus();await page.keyboard.press('Enter');assert.equal(await card.getAttribute('aria-pressed'),'true');
+    await seek(await page.locator('#about-capability').evaluate(e=>e.offsetTop+(innerWidth>=1000?Math.max(0,e.offsetHeight-innerHeight):0)));const card=page.getByRole('button',{name:'Creative expertise',exact:true});await card.focus();await page.keyboard.press('Enter');assert.equal(await card.getAttribute('aria-pressed'),'true');
     report.cardKeyboard=true;
     if(width===1440){await card.hover({position:{x:10,y:10}});const transform=await card.evaluate(e=>e.style.transform),angles=[...transform.matchAll(/rotate[XY]\(([-\d.]+)deg\)/g)].map(m=>Number(m[1]));assert.equal(angles.length,2);assert.ok(angles.every(n=>Math.abs(n)<=4));report.cardHover={transform,bounded:true};await page.mouse.move(0,0);assert.equal(await card.evaluate(e=>e.style.transform),'');}
     else{await card.tap();assert.ok(!/rotateX\((?!0deg)/.test(await card.evaluate(e=>e.style.transform)));report.touchCardNoTilt=true;}
@@ -84,5 +134,5 @@ try{
   await page.goto('http://127.0.0.1:3000/about',{waitUntil:'networkidle',timeout:120000});await page.waitForFunction(()=>!!window.__aboutProbe);await page.waitForTimeout(500);const a=await page.evaluate(()=>window.__aboutProbe());await page.waitForTimeout(500);const b=await page.evaluate(()=>window.__aboutProbe());assert.equal(a.frames,b.frames);assert.equal(b.pending,false);fs.writeFileSync(`${out}/reduced.json`,JSON.stringify({a,b},null,2));await context.close();
   const failed=await browser.newContext({viewport:{width:390,height:844}});await failed.addInitScript(()=>{sessionStorage.setItem('lusion_booted_v1','1');const native=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/.test(type)?null:Reflect.apply(native,this,[type,...args]);};});const p=await failed.newPage(),expectedFaults=[];p.on('console',m=>{if(m.type()==='error')expectedFaults.push(m.text());});await p.goto('http://127.0.0.1:3000/about',{waitUntil:'networkidle'});await p.waitForFunction(()=>document.querySelector('#about-who').dataset.sceneState==='unavailable');assert.ok(await p.getByText('Continue to studio information',{exact:true}).isVisible());assert.ok(await p.locator('#about-who').evaluate(e=>e.offsetHeight<2000));await p.screenshot({path:`${out}/unavailable.jpg`,type:'jpeg',quality:65});fs.writeFileSync(`${out}/unavailable.json`,JSON.stringify({state:'unavailable',expectedInjectedWebglErrors:expectedFaults},null,2));await failed.close();
  }
- console.log('PASS About '+(baseline?'baseline coverage':'real GPU scene, section coverage, reverse, pointer, keyboard, sleep, reduced, context recovery, fallback, remount'));
+ console.log('PASS About '+(baseline?'baseline coverage':'rendered WebGL scene (sandbox uses SwiftShader), section coverage, reverse, pointer, keyboard, sleep, reduced, context recovery, fallback, remount'));
 }finally{await browser.close();}

@@ -1,0 +1,56 @@
+
+> lusion-studio-reconstruction@1.0.0 test:motion
+> node scripts/test-home-motion.mjs && node scripts/test-home-pointer-decay.mjs
+
+PASS: deferred GPU results are phase-correct and deduplicated; unavailable is null
+PASS: bounded focal response; nonblocking GPU query ring, phase tags, unavailable/disjoint/context-loss paths and idempotent disposal
+PASS: accelerating fall, 20s clock, springs, UHD/software budget, continuous blue approach, soft solar occlusion and pupil acceptance
+{
+  "scope": "Two-body numerical isolation with energy seeded to 1 and controlled elapsed-input deltas. Not wall-clock FPS, DOM cancellation, original physics or rendered motion verification.",
+  "results": [
+    {
+      "frameDt": 0.004166666666666667,
+      "frames": 1152,
+      "elapsedInputSeconds": 4.8,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 0.008333333333333333,
+      "frames": 576,
+      "elapsedInputSeconds": 4.8,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 0.016666666666666666,
+      "frames": 288,
+      "elapsedInputSeconds": 4.8,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 0.05,
+      "frames": 96,
+      "elapsedInputSeconds": 4.8,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 0.25,
+      "frames": 20,
+      "elapsedInputSeconds": 5,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 1,
+      "frames": 5,
+      "elapsedInputSeconds": 5,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 2,
+      "frames": 3,
+      "elapsedInputSeconds": 6,
+      "finalEnergy": 0
+    }
+  ],
+  "boundedCollisionAndHeldPointerChecks": true
+}
+PASS release-clock numerical checks; browser cancellation requires its separate integration gate.

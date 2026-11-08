@@ -1,0 +1,5 @@
+
+> lusion-studio-reconstruction@1.0.0 validate:home-motion
+> node scripts/validate-home-motion.mjs
+
+PASS home motion 1440 { hero: 'settled', reel: true, featured: true, solarGL: 0, errors: [] }

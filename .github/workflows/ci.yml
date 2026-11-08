@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - arena/53eb1ea0-website-cloner-jp
   pull_request:
     branches:
       - master
@@ -11,17 +12,93 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      # One-shot extraction of the user's Projects walkthrough stored in Git LFS.
+      # The commit-message guard prevents future CI runs from repeatedly downloading it.
+      - name: Extract Projects walkthrough frames from Git LFS
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-project-reference]')
+        run: |
+          if ! command -v git-lfs >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y git-lfs
+          fi
+          git lfs install
+          git lfs pull --include="public/videos/Lusion-project.mp4"
+          test -s public/videos/Lusion-project.mp4
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          mkdir -p temp/project-reference
+          ffprobe -v error -show_entries format=duration,size -show_streams -of json public/videos/Lusion-project.mp4 > temp/project-reference/metadata.json
+          ffmpeg -hide_banner -loglevel error -i public/videos/Lusion-project.mp4 -vf "fps=1/2,scale=960:-1" -q:v 3 temp/project-reference/frame-%03d.jpg
+          ffmpeg -hide_banner -loglevel error -i public/videos/Lusion-project.mp4 -vf "fps=1/3,scale=480:-1,tile=4x4" -frames:v 1 -q:v 3 temp/project-reference/contact-sheet.jpg
+
+      - name: Upload Projects walkthrough reference frames
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-project-reference]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-reference-video-frames
+          path: temp/project-reference/
+          if-no-files-found: error
+
+      # One-shot extraction of the Home and About recordings from Git LFS.
+      # Frames are uploaded as evidence so the source videos can be inspected without re-uploading.
+      - name: Extract Home and About reference frames from Git LFS
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-home-about-references]')
+        run: |
+          if ! command -v git-lfs >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y git-lfs
+          fi
+          git lfs install
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          mkdir -p temp/home-about-reference
+          for section in home about; do
+            video="public/videos/Lusion-${section}.mp4"
+            git lfs pull --include="${video}"
+            test -s "${video}"
+            out="temp/home-about-reference/${section}"
+            mkdir -p "${out}"
+            ffprobe -v error -show_entries format=duration,size -show_streams -of json "${video}" > "${out}/metadata.json"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vn -ac 1 -ar 22050 -c:a pcm_s16le "${out}/audio.wav"
+            sha256sum "${video}" > "${out}/sha256.txt"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/2,scale=960:-1" -q:v 3 "${out}/frame-%03d.jpg"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/6,scale=480:-1,tile=4x4" -frames:v 1 -q:v 3 "${out}/contact-sheet.jpg"
+          done
+
+      - name: Upload Home and About reference frames
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-home-about-references]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-about-reference-video-frames
+          path: temp/home-about-reference/
+          if-no-files-found: error
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
+
+      - name: Install the requested glassmorphism skill for Claude Code
+        run: |
+          repo_dir="$GITHUB_WORKSPACE"
+          install_dir="$(mktemp -d)"
+          trap 'rm -rf "$install_dir"' EXIT
+          cd "$install_dir"
+          npx -y skills add https://raw.githubusercontent.com/compozy/compozy/main/.agents/skills/glassmorphism/SKILL.md --agent claude-code --copy --yes
+          test -s "$install_dir/.claude/skills/glassmorphism/SKILL.md"
+          cp "$install_dir/.claude/skills/glassmorphism/SKILL.md" "$repo_dir/.claude/skills/glassmorphism/SKILL.md"
+          test -s "$repo_dir/.claude/skills/glassmorphism/assets/glass.css"
 
       - name: Install dependencies
         run: npm ci
@@ -35,5 +112,226 @@ jobs:
       - name: Deterministic journey audio tests
         run: node scripts/test-journey-audio.mjs
 
+      - name: Homepage motion and score-timing tests
+        run: node scripts/test-home-motion.mjs
+
+      - name: About scene-motion tests
+        run: node scripts/test-about-scene-motion.mjs
+
+      - name: About procedural portrait geometry tests
+        run: node scripts/test-about-portrait.mjs
+
+      - name: About CTA particle-field tests
+        run: node scripts/test-contact-field.mjs
+
+      - name: About expertise-card motion tests
+        run: node scripts/test-about-expertise-motion.mjs
+
+      - name: About client-logo wall tests
+        run: node scripts/test-about-clients.mjs
+
+      - name: About accessible-copy regression
+        run: npm run test:about-copy
+
+      - name: Preloader progress semantics
+        run: npm run test:preloader-a11y
+
+
+      - name: About recognition-ledger tests
+        run: node scripts/test-about-recognition.mjs
+
+      - name: Projects archive and detail-route tests
+        run: node scripts/test-projects-archive.mjs
+
       - name: Build
+        id: build
         run: npm run build
+
+      - name: Start production preview
+        run: |
+          npm run start > /tmp/website-cloner-jp-next.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3000/about > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-next.log
+          exit 1
+
+      - name: Merged branding and metadata regression
+        run: node scripts/test-merged-branding.mjs
+
+      - name: Capture About scroll sequence at 1440x900
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          ABOUT_CAPTURE_BASE: http://127.0.0.1:3000
+          ABOUT_CAPTURE_OUT: /tmp/about-shots
+          ABOUT_REFERENCE_DIR: reference/about
+        run: |
+          node scripts/about-capture.mjs
+          node scripts/about-contact-sheet.mjs
+
+      - name: Upload About scroll contact sheet and PNG frames
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: about-scroll-capture
+          path: |
+            /tmp/about-shots/
+            /tmp/about-contact-sheet.png
+          if-no-files-found: ignore
+
+      - name: Validate About wordmark in production browser
+        # Each browser gate gets its own preview process. This preserves the About
+        # evidence even when a preceding Home Chromium job exits or tears down its server.
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          ABOUT_WORDMARK_BASE: http://127.0.0.1:3002
+        run: |
+          PORT=3002 npm run start > /tmp/website-cloner-jp-about.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3002/about > /dev/null; then
+              node scripts/validate-about-wordmark.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-about.log
+          exit 1
+
+      - name: Upload About wordmark render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: about-wordmark-render-evidence
+          path: temp/about-wordmark-validation/
+          if-no-files-found: ignore
+
+      - name: Validate About accessibility and reduced motion
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          ABOUT_A11Y_BASE: http://127.0.0.1:3004
+        run: |
+          PORT=3004 npm run start > /tmp/website-cloner-jp-a11y.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3004/about > /dev/null; then
+              node scripts/validate-about-accessibility.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-a11y.log
+          exit 1
+
+      - name: Capture About rendering and particle budgets
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          ABOUT_BUDGET_BASE: http://127.0.0.1:3005
+        run: |
+          PORT=3005 npm run start > /tmp/website-cloner-jp-budget.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3005/about > /dev/null; then
+              node scripts/capture-about-budget.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-budget.log
+          exit 1
+
+      - name: Upload About accessibility and performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: about-accessibility-performance
+          path: |
+            temp/about-accessibility/
+            temp/about-audit/budget/
+          if-no-files-found: ignore
+
+      - name: Validate homepage cinematic at desktop
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          HOME_VIEWPORT_WIDTH: '1440'
+          HOME_HEIGHT: '900'
+        run: node scripts/validate-home-motion.mjs
+
+      - name: Validate homepage cinematic at touch mobile
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          HOME_VIEWPORT_WIDTH: '390'
+          HOME_HEIGHT: '844'
+          HOME_TOUCH: '1'
+          BASE_URL: http://127.0.0.1:3001
+        run: |
+          PORT=3001 npm run start > /tmp/website-cloner-jp-mobile.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3001/ > /dev/null; then
+              node scripts/validate-home-motion.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-mobile.log
+          exit 1
+
+      - name: Upload homepage motion evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-motion-render-evidence
+          path: temp/home-motion-*/
+          if-no-files-found: ignore
+
+      - name: Navigation keyboard focus loop
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          NAVIGATION_A11Y_BASE: http://127.0.0.1:3000
+        run: node scripts/test-navigation-a11y.mjs
+      - name: Showreel playback and keyboard seeking regression
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          PROJECT_PREVIEW_BASE: http://127.0.0.1:3000
+        run: node scripts/test-project-preview-browser.mjs
+
+      - name: Validate current Projects experience in production browser
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          PROJECTS_EXPERIENCE_BASE: http://127.0.0.1:3003
+        run: |
+          PORT=3003 npm run start > /tmp/website-cloner-jp-projects.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3003/projects > /dev/null; then
+              node scripts/validate-projects-experience.mjs
+              exit $?
+            fi
+            sleep 2
+          done
+          cat /tmp/website-cloner-jp-projects.log
+          exit 1
+
+      - name: Upload Projects production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: projects-experience-render-evidence
+          path: temp/projects-experience/
+          if-no-files-found: ignore

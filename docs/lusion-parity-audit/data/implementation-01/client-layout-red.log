@@ -1,0 +1,9 @@
+AssertionError [ERR_ASSERTION]: Mobile mark tile 72px must be one third of 390px, not squeezed desktop columns
+    at file:///home/user/Website-Cloner-JP/scripts/test-about-client-layout.mjs:19:25 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
