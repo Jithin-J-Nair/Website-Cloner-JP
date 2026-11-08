@@ -80,10 +80,10 @@ try {
   const smoothSource = fs.readFileSync('src/components/foundation/SmoothScrollProvider.tsx','utf8');
   assert.ok(!homePageSource.includes('skewY(') && !homePageSource.includes('targetSkew'),
     'project cards do not shear or glitch with scroll velocity');
-  assert.ok(heroSource.includes('idleEnabled && isSoftwareRenderer && !ptr.active && !transientMoving'),
+  assert.ok(heroSource.includes('api.software && !pointer.current.active && !responding'),
     'software idle throttling is disabled while the pointer is actively throwing connectors');
-  assert.ok(heroSource.includes('frameCostMs > 40 && idleOnly'),
-    'slow software frames use the long yield only when the hero is genuinely idle');
+  assert.ok(heroSource.includes('}, 45)') && heroSource.includes('else wake()'),
+    'software idle uses a bounded yield; hardware and active interaction schedule the next RAF directly');
   assert.ok(!goalSource.includes('home-goal-monitor-cracks') && !goalSource.includes('crackProgress'),
     'the synthetic crack overlay is completely removed');
   assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),

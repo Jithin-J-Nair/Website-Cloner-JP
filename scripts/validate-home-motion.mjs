@@ -54,8 +54,10 @@ try {
  }else{
  const hero=page.locator('#home-hero-visual-container');
  await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container')?.dataset.motionState==='settled',null,{timeout:90000});
+ await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container canvas')?.dataset.nativeAssets==='true',null,{timeout:90000});
+ if(!reduced) await page.waitForFunction(()=>Number(document.querySelector('#home-hero-visual-container').dataset.nativeTime)>3,null,{timeout:90000});
  const initial=await hero.evaluate(el=>({...el.dataset}));
- assert.equal(initial.clusterMode,'free-body-cloud','homepage hero uses an unconstrained free-body connector cloud');
+ assert.equal(initial.clusterMode,'source-balloon-cloud','homepage hero uses an unconstrained free-body connector cloud');
  if(!reduced) {
    const scrollEngine=await page.evaluate(()=>({active:!!window.__lenis,duration:window.__lenis?.options?.duration,smoothWheel:window.__lenis?.options?.smoothWheel}));
    assert.equal(scrollEngine.active,true,'Lenis owns smooth wheel scrolling');
@@ -71,19 +73,22 @@ try {
   // exercises velocity-driven throws rather than only static cursor repulsion.
   await page.mouse.move(box.x+box.width*.14,box.y+box.height*.48);
   await page.mouse.move(box.x+box.width*.84,box.y+box.height*.65,{steps:18});
-  await page.waitForFunction((startTravel)=> {
+  await page.waitForFunction(()=> {
     const el=document.querySelector('#home-hero-visual-container');
     return Number(el.dataset.offsetEnergy)>.16 &&
       Number(el.dataset.pointerInfluencedPieces)>=2 &&
-      Number(el.dataset.maxTravel)>startTravel+0.30;
-  }, Number(initial.maxTravel), {timeout:30000});
+      Number(el.dataset.pointerDisplacement)>.005;
+  }, null, {timeout:30000});
   const hovered=await hero.evaluate(el=>({...el.dataset}));
   assert.ok(Number(hovered.pointerInteractions)>Number(initial.pointerInteractions),
     'hover must reach and physically displace the connector cloud');
   assert.ok(Number(hovered.pointerInfluencedPieces)>=2,
     'a pointer pass must affect multiple nearby connectors');
-  assert.ok(Number(hovered.maxTravel)>Number(initial.maxTravel)+0.30,
-    'cursor force must visibly throw at least one free connector away from its spawn pose');
+  // Spawn travel is already dominated by the two glass bodies' z=7..8 arrival;
+  // it is not a pointer-displacement metric for the source solver. Measure the
+  // actual ray-induced position correction, with control-vs-ray unit coverage.
+  assert.ok(Number(hovered.pointerDisplacement)>.005,
+    'cursor ray must physically displace the cloud, not just toggle hover telemetry');
   await page.screenshot({path:out+'/hero-hover.png',timeout:90000});
   await page.mouse.move(2,2);
   await page.waitForFunction(()=>document.querySelector('#home-hero-visual-container').dataset.motionState==='settled'&&Number(document.querySelector('#home-hero-visual-container').dataset.offsetEnergy)===0,null,{timeout:90000});
@@ -103,7 +108,7 @@ try {
   const idleFrames=Number(idle.renderCount)-Number(returned.renderCount);
   assert.ok(Number(idle.kineticEnergy)>0.01,'free connectors retain angular and linear momentum after pointer release');
   assert.equal(idle.physicsActive,'true','the connector cloud remains physically animated at rest');
-  assert.equal(Number(returned.clusterPieces),23,'the home stage renders the full layered connector cluster');
+  assert.equal(Number(returned.clusterPieces),width<=812?22:24,'the home stage renders the source responsive body count');
   // Rapid direction changes followed by cancellation must still release pointer energy.
   for (const x of [.2,.8,.3,.7,.49]) await page.mouse.move(box.x+box.width*x,box.y+box.height*.56);
   await hero.dispatchEvent('pointercancel',{pointerType:'mouse'});

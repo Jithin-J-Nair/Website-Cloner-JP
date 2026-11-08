@@ -19,7 +19,7 @@
     "check": "npm run lint && npm run typecheck && npm run build",
     "test:about-portrait": "node scripts/test-about-portrait.mjs",
     "test:assets": "node scripts/test-asset-route.mjs",
-    "test:motion": "node scripts/test-home-motion.mjs && node scripts/test-home-pointer-decay.mjs",
+    "test:motion": "node scripts/test-home-motion.mjs && node scripts/test-home-pointer-decay.mjs && node scripts/test-home-native-physics.mjs",
     "test:about-clients": "node scripts/test-about-client-layout.mjs",
     "test:project-gallery-text": "node scripts/test-project-gallery-text-browser.mjs",
     "test:project-preview": "node scripts/test-project-preview-browser.mjs",
@@ -39,7 +39,9 @@
     "validate:home-editorial": "node scripts/validate-home-editorial.mjs",
     "test:projects-contact": "node scripts/test-projects-contact-fluid.mjs",
     "validate:projects-motion": "node scripts/validate-projects-motion.mjs",
-    "validate:projects-fallbacks": "node scripts/validate-projects-fallbacks.mjs"
+    "validate:projects-fallbacks": "node scripts/validate-projects-fallbacks.mjs",
+    "test:home-hdr": "node scripts/test-home-hdr-assets.mjs",
+    "validate:home-native": "node scripts/validate-home-native-hero.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

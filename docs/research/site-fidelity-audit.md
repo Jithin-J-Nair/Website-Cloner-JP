@@ -1,3 +1,5 @@
+> **Round-two update:** the Home opening now uses source-derived shaders, HDR assets, 24/22-body physics and camera choreography. Production 3003 is build `yGnDAfDwlNhcmDxISwXEQ`; the older build/results below describe the first pass. See [motion-fidelity-round2.md](motion-fidelity-round2.md) for fresh 44-route observations, native-hero/regression gates, explicit adaptations and the still-failing broad Home vortex assertion. The all-page exact-clone task remains incomplete.
+
 # Site-wide reference-first fidelity audit
 
 **Status: baseline audit and the first shared case-study remediation are complete. Comprehensive exact visual/motion parity is NOT complete.** This document separates corrected discrepancies, functional evidence, retained customizations and open graphics/choreography gaps.

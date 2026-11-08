@@ -24,6 +24,8 @@ const SAFE_MIME_BY_EXT: Readonly<Record<string, string>> = {
   ".ogg": "audio/ogg",
   ".mp3": "audio/mpeg",
   ".buf": "application/octet-stream",
+  // HDR matcaps are binary render data, still restricted to the existing manifest.
+  ".exr": "application/octet-stream",
   ".woff": "font/woff",
   ".woff2": "font/woff2",
 };

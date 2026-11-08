@@ -27,7 +27,10 @@ export async function checkHomeEditorial(page,{width,height,reduced,out}) {
  else assert.ok(result.line.every(p=>Number(p)===1),'reduced motion exposes a complete, static native ribbon');
  const thumb=await box('#home-reel-thumb'),outer=await box('#home-reel-container');
  const from=thumb.top-(height-thumb.height)*.5,to=outer.top-(height-outer.height)*.5;
- const yValues=width>812&&!reduced?[from,(from+to)*.5,to]:[outer.top-height*.15];
+ // Native playback starts only at a completed morph. Rounding a fractional
+ // endpoint DOWN can stop a fraction of a pixel before it at 900px height.
+ // Bracket both endpoints instead; do not weaken glyph or reversal assertions.
+ const yValues=width>812&&!reduced?[Math.floor(from),(from+to)*.5,Math.ceil(to)]:[outer.top-height*.15];
  for(const [i,y] of yValues.entries()){
   await seek(y);await page.waitForFunction(()=>document.getElementById('home').dataset.editorialWebgl==='ready');await frame();
   result.morph.push({y,state:await root()});await capture('reel-'+i);
