@@ -24,7 +24,17 @@ export function createAboutScenePost(renderer: THREE.WebGLRenderer, scene: THREE
   motion.uniforms.u_motionTexture.value = velocity.texture;
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 2.2, .25, .72);
   bloom.materialHighPassFilter.fragmentShader = bloom.materialHighPassFilter.fragmentShader.replace("float v = luminance( texel.xyz );", "float v = luminance( texel.xyz ) * clamp(texel.a,0.,1.);");
-  const copy = new ShaderPass(CopyShader);
+  // Intermediate alpha encodes emission (ground specular, zero for the person
+  // and sky), not scene coverage. Never copy it into the browser's drawing
+  // buffer: compositors/readbacks can interpret it as opacity and punch black
+  // holes through otherwise valid RGB. Keep that mask for bloom, then publish
+  // an opaque image without changing its radiance or adding color conversion.
+  const copy = new ShaderPass({ name: "AboutOpaqueOutput", uniforms: { tDiffuse: { value: null } },
+    vertexShader: CopyShader.vertexShader,
+    fragmentShader: `uniform sampler2D tDiffuse;varying vec2 vUv;
+      void main(){gl_FragColor=vec4(texture2D(tDiffuse,vUv).rgb,1.);}`,
+  });
+  copy.material.depthTest = false; copy.material.depthWrite = false; copy.material.blending = THREE.NoBlending;
   composer.addPass(render); composer.addPass(motion); composer.addPass(bloom); composer.addPass(copy);
   let disposed = false;
   return {

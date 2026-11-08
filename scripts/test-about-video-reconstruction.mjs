@@ -11,12 +11,29 @@ const captures = process.env.ABOUT_CHECK_CAPTURES;
 if (captures) fs.mkdirSync(captures,{recursive:true});
 const browser = await launchMotionBrowser();
 try {
-  for (const width of [1440,390]) {
-    const page = await browser.newPage({viewport:{width,height:width<820?844:764},deviceScaleFactor:1});
+  for (const [width,height] of [[1440,764],[1568,1230],[390,844]]) {
+    const page = await browser.newPage({viewport:{width,height},deviceScaleFactor:1});
     const errors = [];
     page.on('pageerror',e=>errors.push(e.message));
     page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-    await page.addInitScript(()=>{window.__enableAboutProbe=true;window.__enableCtaProbe=true;});
+    await page.addInitScript(()=>{
+      window.__enableAboutProbe=true;window.__enableCtaProbe=true;
+      // Read the final fullscreen draw synchronously, before the browser can
+      // discard the drawing buffer. Test-only; no production readback/RAF added.
+      let pending;
+      window.__sampleAboutOutputAlpha=()=>new Promise(resolve=>{pending=resolve;});
+      const draw=WebGL2RenderingContext.prototype.drawArrays;
+      WebGL2RenderingContext.prototype.drawArrays=function(...args){
+        draw.apply(this,args);
+        if(!pending||!this.canvas.closest('#about-who')||this.getParameter(this.FRAMEBUFFER_BINDING)!==null)return;
+        const pixel=new Uint8Array(4),alpha=[];
+        for(const [x,y] of [[.1,.1],[.5,.1],[.9,.1],[.1,.5],[.5,.5],[.9,.5],[.1,.9],[.5,.9],[.9,.9]]){
+          this.readPixels(Math.floor(x*this.drawingBufferWidth),Math.floor(y*this.drawingBufferHeight),1,1,this.RGBA,this.UNSIGNED_BYTE,pixel);
+          alpha.push(pixel[3]);
+        }
+        const resolve=pending;pending=null;resolve(alpha);
+      };
+    });
     await page.goto(`${base}/about`,{waitUntil:'networkidle',timeout:120000});
     if(process.env.EXPECTED_BUILD_SHA)assert.equal(await page.locator('#about').getAttribute('data-build-commit'),process.env.EXPECTED_BUILD_SHA,'preview is serving the current commit');
     await page.waitForFunction(()=>!!window.__aboutProbe);
@@ -34,12 +51,21 @@ try {
     const section = async id => page.locator(`#${id}`).evaluate(e=>({y:e.getBoundingClientRect().top+scrollY,range:e.offsetHeight-innerHeight}));
     const snap = async name => {if(captures)await page.screenshot({path:path.join(captures,`${width}-${name}.jpg`),quality:85});};
     if(width>=820){
-      for(const u of [0,1.15,1.6,3.3]){await seek(u*width);await snap(`scene-${u}`);}
+      for(const u of [0,1.15,1.6,3.3]){
+        await seek(u*width);
+        assert.deepEqual(await page.evaluate(()=>window.__sampleAboutOutputAlpha()),Array(9).fill(255),'scene emission must never become display transparency');
+        await snap(`scene-${u}`);
+      }
       await seek(7.2*width);
       await page.getByRole('button',{name:'Select Edan Kwan',exact:true}).click();
       await page.waitForFunction(()=>document.querySelector('#about-who')?.dataset.teamAssetState==='ready');
       await page.mouse.move(735,465);await page.waitForTimeout(1000);await snap('team');
       assert.equal(await page.locator('.about-team-cursor').innerText(),'→');
+    }
+    if(width<820){
+      await seek(.5*height);
+      assert.deepEqual(await page.evaluate(()=>window.__sampleAboutOutputAlpha()),Array(9).fill(255),'mobile composite is opaque');
+      await snap('scene-.5');
     }
     await seek((await section('about-clients')).y);
     const rows = page.locator('.about-client-marquee');
@@ -71,6 +97,9 @@ try {
     assert.equal(await page.locator('.about-expertise-studio').count(),0);
     assert.equal(await page.locator('.about-service-card').count(),4);
     const cta=await section('end-section');await seek(cta.y+cta.range*.6);
+    // Enter keyboard modality; programmatic focus after pointer interactions
+    // need not match :focus-visible (the previous short viewport passed by hover).
+    await page.keyboard.press('Tab');
     await page.locator('#end-section-title-link').focus();await page.waitForTimeout(800);
     assert.equal(await page.locator('.about-cta-arm').count(),0);
     for(const line of await page.locator('.about-cta-line').all())assert.match(await line.evaluate(e=>getComputedStyle(e).backgroundImage),/linear-gradient/,'keyboard focus underlines both lines');
@@ -81,7 +110,7 @@ try {
       await page.setViewportSize({width:1720,height:912});
       const pill=await page.locator('#end-bottom').evaluate(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}));
       assert.ok(Math.abs(pill.width-286)<2&&Math.abs(pill.height-68)<1,'pill matches the recorded 1720px viewport footprint');
-      await page.setViewportSize({width,height:764});
+      await page.setViewportSize({width,height});
     }
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.waitForFunction(()=>document.querySelector('#about-capability')?.dataset.cardLayout==='reading');
@@ -92,7 +121,7 @@ try {
     }
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'no horizontal overflow');
     assert.deepEqual(errors,[],'no page or renderer errors');
-    console.log(`PASS About ${width}px: scene/section handoffs, brand seam and accessibility, recognition links, four cards, CTA focus/mailto/pill, reduced motion and overflow.`);
+    console.log(`PASS About ${width}×${height}: opaque GPU output, scene/section handoffs, brand seam and accessibility, recognition links, four cards, CTA focus/mailto/pill, reduced motion and overflow.`);
     await page.close();
   }
 } finally {await browser.close();}
