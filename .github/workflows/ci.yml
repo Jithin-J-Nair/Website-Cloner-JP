@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - arena/53eb1ea0-website-cloner-jp
   pull_request:
     branches:
       - master
@@ -16,6 +17,71 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      # One-shot extraction of the user's Projects walkthrough stored in Git LFS.
+      # The commit-message guard prevents future CI runs from repeatedly downloading it.
+      - name: Extract Projects walkthrough frames from Git LFS
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-project-reference]')
+        run: |
+          if ! command -v git-lfs >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y git-lfs
+          fi
+          git lfs install
+          git lfs pull --include="public/videos/Lusion-project.mp4"
+          test -s public/videos/Lusion-project.mp4
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          mkdir -p temp/project-reference
+          ffprobe -v error -show_entries format=duration,size -show_streams -of json public/videos/Lusion-project.mp4 > temp/project-reference/metadata.json
+          ffmpeg -hide_banner -loglevel error -i public/videos/Lusion-project.mp4 -vf "fps=1/2,scale=960:-1" -q:v 3 temp/project-reference/frame-%03d.jpg
+          ffmpeg -hide_banner -loglevel error -i public/videos/Lusion-project.mp4 -vf "fps=1/3,scale=480:-1,tile=4x4" -frames:v 1 -q:v 3 temp/project-reference/contact-sheet.jpg
+
+      - name: Upload Projects walkthrough reference frames
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-project-reference]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-reference-video-frames
+          path: temp/project-reference/
+          if-no-files-found: error
+
+      # One-shot extraction of the Home and About recordings from Git LFS.
+      # Frames are uploaded as evidence so the source videos can be inspected without re-uploading.
+      - name: Extract Home and About reference frames from Git LFS
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-home-about-references]')
+        run: |
+          if ! command -v git-lfs >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y git-lfs
+          fi
+          git lfs install
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          mkdir -p temp/home-about-reference
+          for section in home about; do
+            video="public/videos/Lusion-${section}.mp4"
+            git lfs pull --include="${video}"
+            test -s "${video}"
+            out="temp/home-about-reference/${section}"
+            mkdir -p "${out}"
+            ffprobe -v error -show_entries format=duration,size -show_streams -of json "${video}" > "${out}/metadata.json"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vn -ac 1 -ar 22050 -c:a pcm_s16le "${out}/audio.wav"
+            sha256sum "${video}" > "${out}/sha256.txt"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/2,scale=960:-1" -q:v 3 "${out}/frame-%03d.jpg"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/6,scale=480:-1,tile=4x4" -frames:v 1 -q:v 3 "${out}/contact-sheet.jpg"
+          done
+
+      - name: Upload Home and About reference frames
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-home-about-references]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-about-reference-video-frames
+          path: temp/home-about-reference/
+          if-no-files-found: error
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -64,6 +130,13 @@ jobs:
       - name: About client-logo wall tests
         run: node scripts/test-about-clients.mjs
 
+      - name: About accessible-copy regression
+        run: npm run test:about-copy
+
+      - name: Preloader progress semantics
+        run: npm run test:preloader-a11y
+
+
       - name: About recognition-ledger tests
         run: node scripts/test-about-recognition.mjs
 
@@ -85,6 +158,9 @@ jobs:
           done
           cat /tmp/website-cloner-jp-next.log
           exit 1
+
+      - name: Merged branding and metadata regression
+        run: node scripts/test-merged-branding.mjs
 
       - name: Capture About scroll sequence at 1440x900
         if: always() && !cancelled() && steps.build.outcome == 'success'
@@ -220,6 +296,18 @@ jobs:
           name: home-motion-render-evidence
           path: temp/home-motion-*/
           if-no-files-found: ignore
+
+      - name: Navigation keyboard focus loop
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          NAVIGATION_A11Y_BASE: http://127.0.0.1:3000
+        run: node scripts/test-navigation-a11y.mjs
+      - name: Showreel playback and keyboard seeking regression
+        if: always() && !cancelled() && steps.build.outcome == 'success'
+        env:
+          CHROMIUM_MULTIPROCESS: '1'
+          PROJECT_PREVIEW_BASE: http://127.0.0.1:3000
+        run: node scripts/test-project-preview-browser.mjs
 
       - name: Validate current Projects experience in production browser
         if: always() && !cancelled() && steps.build.outcome == 'success'

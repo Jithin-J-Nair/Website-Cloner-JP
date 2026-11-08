@@ -9,6 +9,9 @@ const eslintConfig = defineConfig([
   globalIgnores([
     ".agents/**",
     "agent/**",
+    // Research scratch and read-only skill examples are not application code.
+    "temp/**",
+    "skills/**",
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",

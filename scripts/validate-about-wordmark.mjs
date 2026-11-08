@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
 import { launchMotionBrowser } from './lib/browser-runtime.mjs';
 
 const base = process.env.ABOUT_WORDMARK_BASE || 'http://127.0.0.1:3000';
@@ -69,25 +70,18 @@ try {
         }, y);
         await page.waitForTimeout(250);
       };
-      const inspect = () => mark.evaluate((element, mobile) => {
-        const text = element.querySelector(mobile ? '[data-about-wordmark-mobile]' : '[data-about-wordmark-desktop]');
-        const textPath = text?.querySelector('textPath');
-        const pathId = textPath?.getAttribute('href')?.slice(1);
-        const path = pathId ? document.getElementById(pathId) : null;
+      const inspect = () => mark.evaluate(element => {
         const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
         return {
-          opacity: Number(getComputedStyle(element).opacity),
-          visibility: getComputedStyle(element).visibility,
-          transform: element.style.transform,
-          fill: text ? getComputedStyle(text).fill : null,
-          stroke: text ? getComputedStyle(text).stroke : null,
-          text: textPath?.textContent?.trim() ?? null,
-          fontSize: text ? Number.parseFloat(getComputedStyle(text).fontSize) : 0,
-          pathLength: path?.getTotalLength() ?? 0,
+          opacity: Number(style.opacity),
+          visibility: style.visibility,
+          surface: element.dataset.wordmarkSurface,
+          deformation: Number(element.dataset.deformation),
+          childCount: element.childElementCount,
           stage: { width: rect.width, height: rect.height, top: rect.top },
-          activeText: text?.dataset.aboutWordmarkMobile !== undefined ? 'mobile' : 'desktop',
         };
-      }, width === 390);
+      });
 
       await seek(0);
       await page.screenshot({ path: `${out}/${width}-opening.png`, fullPage: false, timeout: 120000 });
@@ -131,14 +125,12 @@ try {
         atPeak.mobileHandoff = handoff;
       }
       assert.equal(atPeak.visibility, 'visible');
-      assert.equal(atPeak.text, 'LUSION');
-      assert.equal(atPeak.fill, 'rgb(255, 255, 255)', 'curved wordmark is solid white, not outline-only');
-      assert.equal(atPeak.stroke, 'none', 'curved wordmark does not render as a double outline');
+      assert.equal(atPeak.surface, 'continuous-mesh', 'LUSION is rendered by the shared Three.js wordmark surface');
+      assert.equal(atPeak.childCount, 0, 'the semantic marker does not duplicate GPU-rendered letters in the DOM');
+      assert.ok(Number.isFinite(atPeak.deformation) && atPeak.deformation > 0.1,
+        'the wordmark mesh receives a finite, active fold deformation');
       const openingFill = await page.locator('[data-about-opening-wordmark] text').evaluate(element => getComputedStyle(element).fill);
       assert.equal(openingFill, 'rgb(255, 255, 255)', 'opening wordmark remains a filled solid glyph');
-      assert.equal(atPeak.activeText, width === 390 ? 'mobile' : 'desktop');
-      assert.ok(atPeak.pathLength > 1000, 'the active sweep path must be a genuine long curve');
-      assert.ok(width === 390 ? atPeak.fontSize <= 240 : atPeak.fontSize >= 380, 'responsive mark uses the correct glyph scale');
       // Desktop applies a deliberate 1.34x horizontal flourish; transformed
       // bounds may exceed the viewport, so verify actual document clipping,
       // not the un-clipped transformed element rectangle.
@@ -221,76 +213,78 @@ try {
       } else {
         teamInteraction = { ...teamInteraction, touchMemberSwitch: true };
       }
-      await page.screenshot({ path: `${out}/${width}-team.png`, fullPage: false, timeout: 120000 });
+      // Team screenshots are captured by validate-about-scroll-capture.mjs.
+      // This test remains focused on the wordmark and team interaction probes.
 
-      // Brand wall: source names remain accessible as text wordmarks.
-      // Captured SVG artwork is deliberately not requested by this clean-room pass.
+      // Brand wall: real source SVG marks remain named for assistive technology.
       const clients = page.locator('#about-clients');
       const clientsTop = await clients.evaluate(element => element.getBoundingClientRect().top + window.scrollY);
+      // Move the real pointer away before scrolling the marquee under the viewport.
+      // The source behavior intentionally pauses a row while it is hovered.
+      await page.mouse.move(width - 2, height - 2);
       await seekY(clientsTop);
+      const firstMarquee = clients.locator('.about-client-marquee').first();
+      await firstMarquee.scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => {
+        const track = document.querySelector('#about-clients .about-client-marquee-track');
+        return Boolean(track && getComputedStyle(track).animationPlayState === 'running');
+      });
       const logoState = await clients.evaluate(section => {
         const firstSets = [...section.querySelectorAll('.about-client-marquee-set:not([aria-hidden="true"])')];
-        const wordmarks = firstSets.flatMap(set => [...set.querySelectorAll('.about-client-wordmark')]);
+        const marks = firstSets.flatMap(set => [...set.querySelectorAll('img.about-client-logo-art')]);
         const tracks = [...section.querySelectorAll('.about-client-marquee-track')];
+        const names = marks.map(mark => mark.alt.trim());
         return {
-          count: wordmarks.length,
-          labels: wordmarks.filter(mark => (mark.getAttribute('aria-label') || '').trim().length > 0).length,
-          named: wordmarks.filter(mark => (mark.textContent || '').trim().length > 0).length,
-          names: wordmarks.map(mark => (mark.textContent || '').trim()),
-          imageRequests: section.querySelectorAll('img').length,
+          count: marks.length,
+          labels: marks.filter(mark => mark.alt.trim().length > 0).length,
+          names,
+          uniqueNames: new Set(names).size,
+          sources: marks.filter(mark => mark.getAttribute('src')?.startsWith('/assets/images/logo/')).length,
+          imageRequests: section.querySelectorAll('img.about-client-logo-art').length,
           animation: tracks[0] ? getComputedStyle(tracks[0]).animationName : 'missing',
           playState: tracks[0] ? getComputedStyle(tracks[0]).animationPlayState : 'missing',
           rows: section.querySelectorAll('.about-client-marquee').length,
         };
       });
+      fs.writeFileSync(path.join(out, `${width}-clients-debug.json`), JSON.stringify(logoState, null, 2));
       assert.equal(logoState.rows, 3, 'client brands retain three flowing rows');
       assert.equal(logoState.count, 16, 'all 16 source placements remain represented across the three rows');
-      assert.equal(logoState.labels, 16, 'every text wordmark has an accessible brand label');
-      assert.equal(logoState.named, 16, 'every text wordmark renders a visible brand name');
-      assert.equal(logoState.imageRequests, 0, 'brand wall does not request captured SVG/logo image assets');
+      assert.equal(logoState.labels, 16, 'every SVG logo has a non-empty accessible brand label');
+      assert.equal(logoState.uniqueNames, 15, 'the 16 placements represent 15 unique source brands');
+      assert.equal(logoState.sources, 16, 'every image is served from the bundled source-logo directory');
+      assert.equal(logoState.imageRequests, 32, '16 visible logo placements each have a duplicate image for seamless marquee looping');
       assert.equal(logoState.animation, 'about-client-marquee');
       assert.equal(logoState.playState, 'running', 'visible client marquees animate only while in view');
       if (width !== 390) {
-        await clients.locator('.about-client-marquee').first().hover();
+        await firstMarquee.hover();
         assert.equal(await clients.locator('.about-client-marquee-track').first().evaluate(el => getComputedStyle(el).animationPlayState), 'paused', 'hover pauses the marquee without stopping other rows');
         await page.mouse.move(width - 2, height - 2);
       }
       report.brandWall = logoState;
       await page.screenshot({ path: `${out}/${width}-clients.png`, fullPage: false, timeout: 120000 });
 
-      // Recognition: exercise the internal clipped scroll window, not document scrolling.
+      // Recognition is three consecutive full-flow records. Keyboard focus and
+      // native page scrolling remain available; no nested clipped scroll is used.
       const recognitionWindow = page.locator('#about-recognition-window');
       await recognitionWindow.scrollIntoViewIfNeeded();
       const windowMetrics = await recognitionWindow.evaluate(element => ({
         clientHeight: element.clientHeight,
         scrollHeight: element.scrollHeight,
         overflowY: getComputedStyle(element).overflowY,
+        awards: element.querySelectorAll('.about-source-award-group').length,
+        articles: element.querySelectorAll('.about-source-articles a[href]').length,
+        talks: element.querySelectorAll('.about-source-talks li').length,
+        headline: element.parentElement?.querySelector('[data-awards-word]')?.textContent?.trim() ?? '',
       }));
-      assert.ok(windowMetrics.scrollHeight > windowMetrics.clientHeight, 'recognition record is an internally scrollable clipped window');
-      assert.equal(windowMetrics.overflowY, 'auto');
-      const awardTargets = page.locator('#about-award [data-award-reveal]');
-      const awardCount = await awardTargets.count();
-      assert.ok(awardCount >= 9, 'recognition exposes the pinned index and the award record rows');
-      for (let index = 0; index < awardCount; index++) {
-        const target = awardTargets.nth(index);
-        await target.scrollIntoViewIfNeeded();
-        await page.waitForFunction(i => document.querySelectorAll('#about-award [data-award-reveal]')[i]?.classList.contains('is-in-view'), index, { timeout: 5000 });
-      }
-      const ledgerScrollTop = await recognitionWindow.evaluate(element => element.scrollTop);
-      assert.ok(ledgerScrollTop > 0, 'recognition row traversal scrolls the internal record window');
-      if (awardCount > 0) {
-        await page.waitForFunction(() => {
-          const tracks = [...document.querySelectorAll('#about-clients .about-client-marquee-track')];
-          return tracks.length === 3 && tracks.every(track => getComputedStyle(track).animationPlayState === 'paused');
-        }, null, { timeout: 5000 });
-      }
-      const awardState = await page.evaluate(() => ({
-        visible: [...document.querySelectorAll('#about-award [data-award-reveal]')].filter(el => el.classList.contains('is-in-view')).length,
-        total: document.querySelectorAll('#about-award [data-award-reveal]').length,
-        headline: document.querySelector('#about-award .about-awards-monument')?.textContent?.trim(),
-      }));
-      assert.equal(awardState.visible, awardState.total, 'all recognition groups reveal as they enter the viewport');
-      assert.ok(awardState.headline.includes('AWARD') && awardState.headline.includes('WINNING') && awardState.headline.includes('STUDIO'), 'recognition background retains its six-word outline stack');
+      assert.ok(windowMetrics.clientHeight > 0, 'recognition record region has a measurable full-flow layout');
+      assert.ok(windowMetrics.scrollHeight <= windowMetrics.clientHeight + 1, 'recognition record is not internally clipped');
+      assert.equal(windowMetrics.overflowY, 'visible', 'recognition follows normal document flow');
+      assert.equal(windowMetrics.awards, 7, 'all seven award organizations are rendered');
+      assert.equal(windowMetrics.articles, 3, 'all three article links are rendered');
+      assert.equal(windowMetrics.talks, 5, 'all five talks are rendered');
+      assert.ok(windowMetrics.headline.includes('AWARD') && windowMetrics.headline.includes('WINNING') && windowMetrics.headline.includes('STUDIO'),
+        'recognition monument retains its six-word outline stack');
+      report.recognition = windowMetrics;
       await page.screenshot({ path: `${out}/${width}-recognition.png`, fullPage: false, timeout: 120000 });
 
       assert.deepEqual(errors, [], 'no uncaught browser errors');
@@ -354,8 +348,12 @@ try {
       assert.ok(Math.abs(ctaLayout.pill.height - 54) <= 1, 'CTA scroll pill is 54px high');
       assert.ok(Math.abs(ctaLayout.pill.y - (height - 56 - 54)) <= 8, 'CTA scroll pill is 56px above the bottom');
       const topCrosses = ctaLayout.crosses.slice(0,2);
-      assert.ok(Math.abs(topCrosses[0].x / width - .206) < .035, 'left CTA cross is near 20.6vw');
-      assert.ok(Math.abs(topCrosses[1].x / width - .794) < .035, 'right CTA cross is near 79.4vw');
+      // The authored mobile layout uses 8% side insets; desktop uses 20.6%.
+      // Check the actual outside edges to one pixel instead of applying the
+      // desktop composition to touch layouts with a loose percentage tolerance.
+      const crossInset = width < 820 ? .08 : .206;
+      assert.ok(Math.abs(topCrosses[0].x - width * crossInset) <= 1, 'left CTA cross respects its responsive inset');
+      assert.ok(Math.abs(topCrosses[1].x + topCrosses[1].width - width * (1 - crossInset)) <= 1, 'right CTA cross respects its responsive inset');
       report.ctaLayout = ctaLayout;
 
       // The arm and broad particle mound enter as the CTA scroll playhead moves.
@@ -443,7 +441,17 @@ try {
       await page.waitForFunction(() => window.scrollY < 80, null, { timeout: 15000 });
       await page.screenshot({ path: `${out}/${width}-footer-return.png`, fullPage: false, timeout: 120000 });
       await page.locator('#scroll-nav-next').scrollIntoViewIfNeeded();
-      await page.locator('#scroll-nav-next').click();
+      const portalLayout = await page.locator('#scroll-nav-next').evaluate(button => {
+        const rect=button.getBoundingClientRect(), portal=document.querySelector('#scroll-nav-section').getBoundingClientRect();
+        return {top:rect.top,bottom:rect.bottom,portalTop:portal.top,portalBottom:portal.bottom,height:innerHeight,scrollHeight:button.closest('#scroll-nav-section').scrollHeight,clientHeight:button.closest('#scroll-nav-section').clientHeight};
+      });
+      assert.ok(portalLayout.top>=portalLayout.portalTop && portalLayout.bottom<=portalLayout.portalBottom,
+        'next-page action is visible inside its portal, not overflow-clipped before focus');
+      assert.ok(portalLayout.top>=0 && portalLayout.bottom<=height,'next-page action remains within the viewport');
+      if(width===390) assert.ok(portalLayout.scrollHeight<=portalLayout.clientHeight+1,'mobile About portal must not clip controls and expand during touch focus');
+      report.portalLayout=portalLayout;
+      if (width===390) await page.locator('#scroll-nav-next').tap();
+      else await page.locator('#scroll-nav-next').click();
       await page.waitForURL(url => url.pathname === '/projects', { timeout: 20000 });
       assert.equal(new URL(page.url()).pathname, '/projects', 'Next Page router button navigates to Projects');
 

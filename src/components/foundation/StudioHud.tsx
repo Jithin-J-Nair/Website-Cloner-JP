@@ -115,6 +115,8 @@ export function StudioHud() {
 
   const waveCanvasRef = useRef<HTMLCanvasElement>(null);
   const scrollBarRef = useRef<HTMLDivElement>(null);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLElement>(null);
 
   // Track vertical scroll so fixed top chrome masks underlying scrolling copy cleanly
   useEffect(() => {
@@ -196,13 +198,56 @@ export function StudioHud() {
   }, [pathname, setNavMenuOpen]);
 
   useEffect(() => {
+    if (!navMenuOpen) return;
+
+    const getVisibleMenuControls = () => {
+      const menu = menuRef.current;
+      if (!menu) return [];
+      return Array.from(
+        menu.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => (
+        element.tabIndex >= 0 &&
+        element.getClientRects().length > 0 &&
+        element.getAttribute("aria-hidden") !== "true"
+      ));
+    };
+
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && navMenuOpen) {
+      if (e.key === "Escape") {
+        e.preventDefault();
         setNavMenuOpen(false);
+        menuTriggerRef.current?.focus({ preventScroll: true });
+        return;
+      }
+
+      if (e.key !== "Tab") return;
+      const controls = getVisibleMenuControls();
+      if (!controls.length) return;
+
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      const active = document.activeElement;
+      const focusOutsideMenu = !menuRef.current?.contains(active);
+
+      if (e.shiftKey && (active === first || focusOutsideMenu)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || focusOutsideMenu)) {
+        e.preventDefault();
+        first.focus();
       }
     };
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      getVisibleMenuControls()[0]?.focus({ preventScroll: true });
+    });
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, [navMenuOpen, setNavMenuOpen]);
 
   // Sound canvas waveform renderer (`#header-right-sound-btn canvas`)
@@ -299,6 +344,8 @@ export function StudioHud() {
       document.getElementById("end-section") ?? document.getElementById("footer-section");
     if (target) {
       target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
       return;
     }
     window.location.href = `mailto:${LUSION_GLOBAL_CHROME.footer.enquiriesEmail}`;
@@ -371,7 +418,10 @@ export function StudioHud() {
         <div
           id="header-background"
           aria-hidden="true"
-          onClick={() => setNavMenuOpen(false)}
+          onClick={() => {
+            setNavMenuOpen(false);
+            menuTriggerRef.current?.focus({ preventScroll: true });
+          }}
           className={`fixed inset-0 transition-opacity duration-300 ${
             navMenuOpen
               ? "pointer-events-auto opacity-100 max-[812px]:bg-[#0016ec] min-[813px]:left-1/2 min-[813px]:bg-[linear-gradient(270deg,rgba(11,11,18,0.38),rgba(11,11,18,0))]"
@@ -392,9 +442,19 @@ export function StudioHud() {
               navMenuOpen ? "max-[812px]:!text-black" : ""
             }`}
           >
-            <span className="font-sans text-[1.16rem] font-medium leading-none tracking-[-0.075em] text-current">
-              JITHIN
-            </span>
+            {pathname === "/" ? (
+              <span className="inline-flex h-6 w-[6em] items-center font-sans text-[1.5rem] font-semibold leading-none tracking-[-0.055em] text-current min-[813px]:w-[7.5em] min-[813px]:origin-left min-[813px]:scale-x-[1.8] min-[813px]:scale-y-[1.1] min-[813px]:-translate-y-1">
+                JITHIN
+              </span>
+            ) : pathname === "/about" ? (
+              <span className="font-sans text-[1.65rem] min-[813px]:text-[2.2rem] font-normal leading-none tracking-[-0.025em] text-current">
+                JITHIN
+              </span>
+            ) : (
+              <span className="font-sans text-[1.16rem] font-medium leading-none tracking-[-0.075em] text-current">
+                JITHIN
+              </span>
+            )}
           </TransitionLink>
 
           {/* Right Header Controls + Project Details Back Control */}
@@ -495,7 +555,9 @@ export function StudioHud() {
             {/* Menu Toggle Pill (`#header-right-menu-btn`, `MENU ••` / `CLOSE ••`) */}
             <button
               id="header-right-menu-btn"
+              ref={menuTriggerRef}
               type="button"
+              aria-haspopup="true"
               aria-expanded={navMenuOpen}
               aria-controls="header-menu"
               aria-label={navMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -553,8 +615,10 @@ export function StudioHud() {
         {/* Floating Stacked Menu Popover (`#header-menu`) */}
         <nav
           id="header-menu"
+          ref={menuRef}
           aria-label="Primary Navigation"
           aria-hidden={!navMenuOpen}
+          inert={!navMenuOpen}
           className={`fixed top-[calc(var(--base-padding-y)+3.45rem)] right-[var(--base-padding-x)] z-20 flex flex-col gap-[0.625em] text-black max-[812px]:left-[var(--base-padding-x)] min-[813px]:w-[19.4em] ${
             navMenuOpen ? "--opened pointer-events-auto" : "pointer-events-none"
           }`}

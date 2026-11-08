@@ -1,0 +1,112 @@
+{
+  "scope": "17 independent detail routes: rendered SSR title/metadata/paragraphs/services/links/gallery count+order/image URLs/next chain against authorized frozen manifest. Not visual, playback, source-image identity or external reachability acceptance.",
+  "states": [
+    {
+      "route": "/projects/oryzo_ai",
+      "title": "Lusion - Oryzo AI",
+      "paragraphs": 2,
+      "services": 6,
+      "links": 4,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "video",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "video",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ]
+      ],
+      "next": "/projects/of_the_oak"
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "title": "Lusion - Of The Oak",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 1,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "image",
+          2
+        ],
+        [
+          "image",
+          3
+        ],
+        [
+          "text",
+          4
+        ],
+        [
+          "image",
+          5
+        ],
+        [
+          "image",
+          6
+        ]
+      ],
+      "next": "/projects/devin_ai"
+    },
+    {
+      "route": "/projects/devin_ai",
+      "title": "Lusion - Devin AI",
+      "paragraphs": 2,
+      "services": 5,
+      "links": 0,
+      "gallery": [
+        [
+          "video",
+          0
+        ],
+        [
+          "image",
+          1
+        ],
+        [
+          "video",
+          2
+        ],
+        [
+          "video",
+          3
+        ],
+        [
+          "image",
+          4
+        ]
+      ],
+      "next": "/projects/porsche_dream_machine"
+    }
+  ],
+  "passed": false
+}

@@ -4,22 +4,25 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";
 import { LUSION_ABOUT } from "@/data/reference";
-import { aboutScenePose, aboutWordmarkSweepPose } from "@/lib/about-scene-motion";
-import { buildSculpturalPortraitPositions } from "@/lib/about-portrait-geometry";
+import { aboutScenePose, aboutWordmarkSweepPose, aboutLetteringPose } from "@/lib/about-scene-motion";
 import { createAboutPlume } from "@/components/three/AboutPlume";
 import { createAboutExplorer } from "@/components/three/AboutExplorer";
 import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";
-import { createAboutTerrainMaterial, terrainHeightAt } from "@/components/three/AboutTerrain";
+import { createAboutTerrainMaterial, createAboutGroundClasts, attachAboutGroundFlow, terrainHeightAt } from "@/components/three/AboutTerrain";
 import { cinematicRenderDpr } from "@/lib/home-motion";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
-import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
+import { AboutContactSection } from "@/components/pages/AboutContactSection";
+import { AboutRecognition } from "@/components/pages/AboutRecognition";
+import { AboutPageStyles } from "@/components/pages/AboutPageStyles";
+import { createAboutSourceTeam } from "@/components/three/AboutSourceTeam";
+import { createAboutWordmarkSweep } from "@/components/three/AboutWordmarkSweep";
 import { StudioFooter } from "@/components/sections/StudioFooter";
 
 declare global {
   interface Window {
     __enableAboutProbe?: boolean;
-    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; count: number; portraitPoints: number; streakCount: number; qualityTier: string; reducedMotion: boolean; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
+    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; teamAsset?: string; teamReady?: boolean; teamMorph?: number; count: number; portraitPoints: number; streakCount: number; qualityTier: string; reducedMotion: boolean; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };
   }
 }
 
@@ -85,17 +88,17 @@ function AboutWhoExperience({
   const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);
   const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const teamOverlayRef = useRef<HTMLDivElement | null>(null);
-  const portraitCountRef = useRef(8192);
+  const teamCursorRef = useRef<HTMLDivElement | null>(null);
+  const sourceTeamRef = useRef<ReturnType<typeof createAboutSourceTeam> | null>(null);
+  const [sourceTeamState, setSourceTeamState] = useState("loading");
   const fallbackPosterRef = useRef<HTMLDivElement | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartXRef = useRef<number | null>(null);
 
-  const portraitMatRef = useRef<THREE.ShaderMaterial | null>(null);
-  const portraitGeoRef = useRef<THREE.BufferGeometry | null>(null);
+  const requestSceneRenderRef = useRef<(() => void) | null>(null);
 
   const [sceneGeneration, setSceneGeneration] = useState(0);
   const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);
-  const portraitMorphStartRef = useRef<number | null>(null);
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
@@ -149,28 +152,9 @@ function AboutWhoExperience({
     };
   }, [activeMemberIdx, onStepMember, reducedMotion]);
 
-  // Original, non-likeness portrait study. A member change interpolates from
-  // the currently visible point positions, so rapid selections remain interruptible.
   useEffect(() => {
     memberRef.current = activeMemberIdx;
-    const geo = portraitGeoRef.current;
-    if (!geo) return;
-    const position = geo.getAttribute("position") as THREE.BufferAttribute;
-    const from = geo.getAttribute("aMorphFrom") as THREE.BufferAttribute | undefined;
-    if (!from) return;
-    const currentMorph = portraitMatRef.current?.uniforms.uMorph.value ?? 1;
-    for (let i = 0; i < position.array.length; i++) {
-      from.array[i] = from.array[i] * (1 - currentMorph) + position.array[i] * currentMorph;
-    }
-    from.needsUpdate = true;
-    position.array.set(buildSculpturalPortraitPositions(activeMemberIdx, portraitCountRef.current));
-    position.needsUpdate = true;
-    geo.computeBoundingSphere();
-    portraitMorphStartRef.current = -1;
-    if (reducedMotion && portraitMatRef.current) {
-      portraitMatRef.current.uniforms.uMorph.value = 1;
-      portraitMorphStartRef.current = null;
-    }
+    void sourceTeamRef.current?.setMember(activeMemberIdx, reducedMotion);
   }, [activeMemberIdx, reducedMotion]);
 
   useEffect(() => {
@@ -202,12 +186,8 @@ function AboutWhoExperience({
     const ctx = glRenderer.getContext(), debug = ctx.getExtension("WEBGL_debug_renderer_info");
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
-    const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
-    // Portrait quality stays bounded and independent from the plume's bead budget.
-    portraitCountRef.current = reducedMotion || software || window.innerWidth < 820 || tier === "low"
-      ? 8192
-      : tier === "medium" ? 16384 : 24576;
-    glRenderer.setClearColor(0x0d0c0f, 1);
+    const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 7000 : 12000;
+    glRenderer.setClearColor(0x000302, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
     glRenderer.toneMappingExposure = 1.05;
@@ -261,6 +241,8 @@ function AboutWhoExperience({
         uniforms: {
           uOpacity: { value: 0 },
           uCyanCore: { value: 0.25 },
+          uOpening: { value: 1 },
+          uWide: { value: 0 },
         },
         vertexShader: `
           varying vec2 vUv;
@@ -273,21 +255,41 @@ function AboutWhoExperience({
           varying vec2 vUv;
           uniform float uOpacity;
           uniform float uCyanCore;
+          uniform float uOpening;
+          uniform float uWide;
           void main() {
             // A finite overhead emitter and widening cone, not a laser joining
             // the cloud to the ground. Its top naturally enters the wide shot.
             float x = (vUv.x - .5) * 38.;
-            float y = vUv.y * 32. - 2.5;
-            float coneWidth = mix(1.45, .16, smoothstep(8., 22.3, y));
+            float y = vUv.y * 56. - 2.5;
+            // Opening needs only a compact cloud veil. Avoid evaluating every
+            // shaft/emitter Gaussian over the entire screen while their weight
+            // is exactly zero; the later pullback still uses the full material.
+            if (uOpening > .999) {
+              float haze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
+              vec3 openingColor = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore) * haze * .15;
+              float fade = smoothstep(-2.5, 0., y) * (1. - smoothstep(42., 53.5, y));
+              gl_FragColor = vec4(openingColor, uOpacity * fade);
+              #include <tonemapping_fragment>
+              #include <colorspace_fragment>
+              return;
+            }
+            float coneWidth = mix(3., .30, smoothstep(8., 23.2, y));
             float beam = exp(-pow(x / coneWidth, 2.)) * smoothstep(6., 10., y)
-              * (1. - smoothstep(22.4, 23.5, y));
-            float emitter = exp(-pow(x / .25, 2.) - pow((y - 22.3) / .25, 2.));
-            float halo = exp(-pow(x / 1.1, 2.) - pow((y - 22.3) / 1.2, 2.));
+              * (1. - smoothstep(23.3, 24.4, y));
+            float emitter = exp(-pow(x / .42, 2.) - pow((y - 23.2) / .42, 2.));
+            float halo = exp(-pow(x / mix(1.6, 3.6, uWide), 2.)
+              - pow((y - 23.2) / mix(2.6, 6.8, uWide), 2.));
             float cloudHaze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
-            float wideHaze = exp(-pow(x / 9., 2.)) * .014;
-            float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(25., 29.5, y));
+            float wideHaze = exp(-pow(x / 9., 2.)) * mix(.014, .035, uWide);
+            float beamVeil = exp(-pow(x / (coneWidth * 2.4), 2.))
+              * smoothstep(4., 11., y) * (1. - smoothstep(23.3, 25., y));
+            float atmosphere = exp(-pow(x / 7., 2.) - pow((y - 19.) / 11., 2.));
+            float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(42., 53.5, y));
             vec3 col = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore)
-              * (beam * .20 + emitter * 4. + halo * .32 + cloudHaze * .035 + wideHaze);
+              * ((beam * .22 + beamVeil * .075 + emitter * 4. + halo * .30
+                + atmosphere * .055 * uWide + wideHaze) * (1. - uOpening)
+                + cloudHaze * mix(.15, .09, 1. - uOpening));
             gl_FragColor = vec4(col, uOpacity * vertFade);
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
@@ -295,8 +297,8 @@ function AboutWhoExperience({
         `,
       })
     );
-    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 32.0)), godRayMat);
-    godRayPlane.position.set(-.35, 13.5, -2.5);
+    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 56.0)), godRayMat);
+    godRayPlane.position.set(-.35, 25.5, -2.5);
     godRayPlane.renderOrder = -1;
     scene.add(godRayPlane);
 
@@ -450,21 +452,21 @@ function AboutWhoExperience({
     const rockGeo = track(new THREE.DodecahedronGeometry(0.24, 0));
     const rockMat = track(
       new THREE.MeshStandardMaterial({
-        color: 0x2a2f38,
-        roughness: 0.78,
+        color: 0x747d85,
+        roughness: 0.86,
         metalness: 0.12,
         flatShading: true,
       })
     );
-    const rocksMesh = new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT);
+    const rocksMesh = track(new THREE.InstancedMesh(rockGeo, rockMat, ROCK_COUNT));
     const rockDummy = new THREE.Object3D();
     const rockSeeds = Array.from({ length: ROCK_COUNT }, (_, i) => {
       const floating = i < FLOATING_ROCK_COUNT;
       const ang = (i * 2.39996) % (Math.PI * 2);
       const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
-      const rx = Math.cos(ang) * rad;
-      const rz = 3.5 + Math.sin(ang) * rad * 0.72;
-      const scale = floating ? 0.12 + ((i * 19) % 10) * .028 : .045 + Math.pow(((i * 17) % 100) / 100, 3) * .5;
+      const rx = floating ? Math.cos(ang) * rad : Math.sin(i * 7.31) * (2 + ((i * 37) % 100) * .095);
+      const rz = floating ? 3.5 + Math.sin(ang) * rad * .72 : -11 + ((i * 43) % 100) * .39;
+      const scale = floating ? .38 + ((i * 19) % 10) * .078 : .06 + Math.pow(((i * 17) % 100) / 100, 4) * .58;
       // Half-embed small clasts instead of lifting every size eight centimetres
       // above the floor. Concentrate the same population on the visible basin.
       const ry = floating
@@ -479,113 +481,60 @@ function AboutWhoExperience({
         phase: i * 0.73,
       };
     });
-    // Bake grounded transforms once; the stones on the basin must not rotate.
+    // Seed rest transforms once. GPU flow transports the grounded population;
+    // only the sixteen freely suspended rocks need CPU pose updates.
     for (let i = 0; i < ROCK_COUNT; i++) {
       const rs = rockSeeds[i];
       rockDummy.position.set(rs.x, rs.y, rs.z);
       rockDummy.rotation.set(rs.phase, rs.phase * 1.4, 0);
-      rockDummy.scale.setScalar(rs.scale * .58);
+      rockDummy.scale.set(rs.scale * .7, rs.scale * (rs.floating ? .58 : .3), rs.scale * .5);
       rockDummy.updateMatrix(); rocksMesh.setMatrixAt(i, rockDummy.matrix);
+      rocksMesh.setColorAt(i, new THREE.Color(rs.floating ? 0xb3bdc4 : 0x4e5458));
     }
     rocksMesh.instanceMatrix.needsUpdate = true;
     scene.add(rocksMesh);
 
-    // -------------------------------------------------------------------------
-    // 6. 8,192-Vertex 3D Point-Cloud Team Portrait Stage ('about-04-team-hologram')
-    // -------------------------------------------------------------------------
-    const portraitGeo = track(new THREE.BufferGeometry());
-    const initialPortrait = buildSculpturalPortraitPositions(memberRef.current, portraitCountRef.current);
-    portraitGeo.setAttribute("position", new THREE.BufferAttribute(initialPortrait, 3));
-    portraitGeo.setAttribute("aMorphFrom", new THREE.BufferAttribute(initialPortrait.slice(), 3));
-    portraitGeoRef.current = portraitGeo;
-    sectionEl.dataset.teamPortraitSource = "procedural-study";
-
-    const portraitMat = track(
-      new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        uniforms: {
-          uOpacity: { value: 0 },
-          uTime: { value: 0 },
-          uMorph: { value: 1 },
-          uPixelRatio: { value: 1 },
-          uPointerNDC: { value: new THREE.Vector2(0, 0) },
-        },
-        vertexShader: `
-          uniform float uTime;
-          uniform float uPixelRatio;
-          uniform float uMorph;
-          uniform vec2 uPointerNDC;
-          attribute vec3 aMorphFrom;
-          varying float vDepth;
-          varying float vShade;
-          void main() {
-            vec3 p = mix(aMorphFrom, position, clamp(uMorph, 0.0, 1.0));
-            // Pointer repulsion bends only nearby grains; the silhouette remains readable.
-            vec2 pointerDelta = p.xy - uPointerNDC * vec2(.82, 1.34);
-            float pointerInfluence = exp(-dot(pointerDelta, pointerDelta) * 5.2);
-            p.xy += normalize(pointerDelta + vec2(.0001)) * pointerInfluence * .032;
-            // Subtle holographic scan shimmer remains procedural and non-identifying.
-            p.x += sin(p.y * 8.0 + uTime * 2.1) * 0.012;
-            p.z += cos(p.x * 6.0 + uTime * 1.6) * 0.015;
-            vec4 mv = modelViewMatrix * vec4(p, 1.0);
-            vDepth = -mv.z;
-            vShade = clamp(p.z * 0.85 + 0.42, 0.12, 1.0);
-            float dof = 1.0 + abs(p.z - 0.35) * 2.2;
-            gl_PointSize = (2.45 * dof) * uPixelRatio;
-            gl_Position = projectionMatrix * mv;
-          }
-        `,
-        fragmentShader: `
-          uniform float uOpacity;
-          varying float vShade;
-          void main() {
-            vec2 d = gl_PointCoord - 0.5;
-            float r = length(d);
-            if (r > 0.5) discard;
-            float soft = smoothstep(0.5, 0.08, r);
-            vec3 col = mix(vec3(0.35, 0.44, 0.58), vec3(0.92, 0.96, 1.0), vShade);
-            gl_FragColor = vec4(col, soft * uOpacity * 0.72);
-          }
-        `,
-      })
-    );
-    portraitMatRef.current = portraitMat;
-
-    const portraitPoints = new THREE.Points(portraitGeo, portraitMat);
-    portraitPoints.visible = false;
-    scene.add(portraitPoints);
-
-    // Original depth-layered vertical light field, sharing the portrait clock.
-    // These are abstract atmosphere, never a replacement claim for an employee likeness.
-    const streakCount = 384;
-    const lightPositions = new Float32Array(streakCount * 6);
-    for (let i = 0; i < streakCount; i++) {
-      const x = (i / (streakCount - 1) - .5) * 10.5;
-      const z = Math.sin(i * 17.31) * 1.2 - .6;
-      const bottom = -4.8 + Math.sin(i * 9.1) * .4;
-      const top = 4.5 + Math.cos(i * 4.7) * .75;
-      lightPositions.set([x, bottom, z, x, top, z], i * 6);
+    // Angular sediment is actual contact-anchored geometry, not black polka dots.
+    // One bounded GPU-advected instanced draw; the aura carries grains outward and upward.
+    const sediment = createAboutGroundClasts(software ? 1100 : window.innerWidth < 820 ? 1600 : 3200);
+    const sedimentGeo = track(new THREE.IcosahedronGeometry(1, 0));
+    const sedimentMaterial = track(rockMat.clone());
+    const groundFlow = attachAboutGroundFlow(sedimentGeo, sedimentMaterial, sediment);
+    const rockFlow = attachAboutGroundFlow(rockGeo, rockMat, rockSeeds.map(seed => ({
+      x: seed.x, y: seed.y, z: seed.z, size: seed.scale * .24, aspect: .3, angle: seed.phase,
+    })), FLOATING_ROCK_COUNT);
+    const sedimentMesh = track(new THREE.InstancedMesh(sedimentGeo, sedimentMaterial, sediment.length));
+    sedimentMesh.frustumCulled = false;
+    for (let i = 0; i < sediment.length; i++) {
+      const stone = sediment[i];
+      rockDummy.position.set(stone.x, stone.y, stone.z);
+      rockDummy.rotation.set(0, stone.angle, .12 * Math.sin(stone.angle));
+      rockDummy.scale.set(stone.size, stone.size * stone.aspect, stone.size * (1.1 + .3 * Math.sin(stone.angle)));
+      rockDummy.updateMatrix(); sedimentMesh.setMatrixAt(i, rockDummy.matrix);
+      sedimentMesh.setColorAt(i, new THREE.Color().setScalar(.36 + .3 * (i % 17) / 16));
     }
-    const lightGeometry = track(new THREE.BufferGeometry());
-    lightGeometry.setAttribute("position", new THREE.BufferAttribute(lightPositions, 3));
-    const lightMaterial = track(new THREE.ShaderMaterial({
-      uniforms: portraitMat.uniforms, transparent: true, depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      vertexShader: `varying vec3 vLocal; void main() { vLocal = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
-      fragmentShader: `uniform float uTime, uOpacity; varying vec3 vLocal;
-        void main() {
-          float envelope = smoothstep(-1.9, -.9, vLocal.y) * (1. - smoothstep(.8, 2.35, vLocal.y));
-          float scan = pow(.5 + .5 * sin(vLocal.y * 3. - uTime * .65 + vLocal.x * 7.), 8.);
-          float edge = .25 + .75 * smoothstep(.3, 1.6, abs(vLocal.x));
-          gl_FragColor = vec4(mix(vec3(.35,.42,.54), vec3(.75,.85,1.), scan), envelope * edge * (.08 + scan * .19) * uOpacity);
-        }`,
-    }));
-    const portraitLightField = new THREE.LineSegments(lightGeometry, lightMaterial);
-    portraitLightField.visible = false;
-    scene.add(portraitLightField);
+    sedimentMesh.instanceMatrix.needsUpdate = true;
+    scene.add(sedimentMesh);
+    const wordmarkSweep = track(createAboutWordmarkSweep());
+    scene.add(wordmarkSweep.mesh);
+    document.fonts.ready.then(() => {
+      if (!disposed) { wordmarkSweep.repaint(); ensureLoop(); }
+    });
 
+    // Authorized source roster points and captured topographic contours. This
+    // replaces the user's photo, reconstructed mesh and invented anatomical bust.
+    let teamAssemblyStart = -1, teamWasVisible = false;
+    const sourceTeam = track(createAboutSourceTeam(() => ensureLoop(), (state, id) => {
+      if (disposed) return;
+      if (id === "contours") { sectionEl.dataset.teamTerrainState = state; return; }
+      sectionEl.dataset.teamPortraitSource = "source-roster";
+      sectionEl.dataset.teamAssetState = state;
+      sectionEl.dataset.teamAssetId = id;
+      setSourceTeamState(state);
+    }));
+    sourceTeamRef.current = sourceTeam;
+    scene.add(sourceTeam.group);
+    void sourceTeam.setMember(memberRef.current, reducedMotion);
 
     // -------------------------------------------------------------------------
     // Scroll & Camera Spline Update Loop
@@ -638,7 +587,6 @@ function AboutWhoExperience({
       glRenderer.setSize(W, H, false);
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
-      portraitMat.uniforms.uPixelRatio.value = dpr;
       stormMat.uniforms.uPixelRatio.value = dpr;
       syncInspector();
     };
@@ -687,6 +635,9 @@ function AboutWhoExperience({
       if (sphereStorm.visible) {
         stormMat.uniforms.uTime.value = reducedMotion ? 0.5 : elapsedSec;
         stormMat.uniforms.uCompact.value = tPullback;
+        // Focus follows the existing camera, rather than leaving distant grains
+        // defocused and oversized as if the opening shot were still active.
+        stormMat.uniforms.uFocusDistance.value = Math.hypot(camX + .35, camY - 8.4, camZ);
         stormMat.uniforms.uMobile.value = isMobile ? 1.0 : 0.0;
         stormMat.uniforms.uPointer.value.copy(pointerWorld);
         stormMat.uniforms.uPointerStrength.value = pointerActive;
@@ -697,8 +648,11 @@ function AboutWhoExperience({
       // 2. Vertical volumetric God-Ray column & Valley Terrain & Explorer & Floating Rocks ('about-02')
       const landscapeVis = smoothstep(0.30, 1.05, u);
       const darkHudFade = 1 - smoothstep(3.45, 4.55, u);
-      godRayPlane.visible = landscapeVis * stormVis > 0.01;
-      godRayMat.uniforms.uOpacity.value = landscapeVis * stormVis * 0.85;
+      const atmosphereVis = Math.max(landscapeVis, (1 - landscapeVis) * .34) * stormVis;
+      godRayPlane.visible = atmosphereVis > 0.01;
+      godRayMat.uniforms.uOpacity.value = atmosphereVis * 0.85;
+      godRayMat.uniforms.uOpening.value = 1 - landscapeVis;
+      godRayMat.uniforms.uWide.value = smoothstep(30, 65, camZ);
       godRayMat.uniforms.uCyanCore.value = isMobile ? .20 : 0;
 
       // The reference opening already has a readable, near-black basin rim behind
@@ -706,11 +660,13 @@ function AboutWhoExperience({
       // astronaut and god-ray beat: the world should not begin as a floating
       // particle-only void. The full landscape, explorer and shaft still arrive
       // on the later pullback cue.
-      const terrainReveal = lerp(.24, 1, smoothstep(.12, .92, u));
+      const terrainReveal = lerp(.04, 1, smoothstep(.12, .92, u));
       // Team mode returns to black to preserve portrait contrast.
       const narrativeGround = (1 - tTeamPhase) * .22;
       const terrainVis = terrainReveal * Math.max(darkHudFade, narrativeGround);
-      terrainMesh.visible = terrainVis > .01;
+      // Do not shade a full terrain pass at four-percent opacity behind the
+      // opening lettering. It enters with the existing pullback reveal.
+      terrainMesh.visible = terrainVis > .05;
       terrainMat.uniforms.uOpacity.value = terrainVis;
       terrainMat.uniforms.uValleyBrightness.value = lerp(.16, 1, darkHudFade);
 
@@ -726,6 +682,11 @@ function AboutWhoExperience({
       }
 
       rocksMesh.visible = explorerVis > 0.02;
+      sedimentMesh.visible = rocksMesh.visible;
+      groundFlow.uGroundTime.value = elapsedSec;
+      groundFlow.uGroundMotion.value = reducedMotion ? 0 : 1;
+      rockFlow.uGroundTime.value = elapsedSec;
+      rockFlow.uGroundMotion.value = reducedMotion ? 0 : 1;
       if (rocksMesh.visible) {
         for (let i = 0; i < FLOATING_ROCK_COUNT; i++) {
           const rs = rockSeeds[i];
@@ -746,54 +707,39 @@ function AboutWhoExperience({
 
       // 3. 36 Topographic Elevation Contour Lines ('about-03' & 'about-04')
       const contourVis = smoothstep(3.75, 4.85, u);
-      contourLines.visible = contourVis > 0.01;
+      contourLines.visible = contourVis > 0.01 && u < 4.8;
       if (contourLines.visible) {
-        contourMat.uniforms.uOpacity.value = contourVis * lerp(0.42, 1.95, tTeamPhase);
+        contourMat.uniforms.uOpacity.value = contourVis * lerp(.42, .12, tTeamPhase);
         contourMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
         contourMat.uniforms.uTeamPhase.value = tTeamPhase;
       }
 
-      // 4. Subtle Lower-Pedestal Team Hologram Shimmer ('about-04' — upper sky kept pure deep `#000000`!)
-      portraitPoints.visible = tTeamPhase > 0.02;
-      portraitLightField.visible = portraitPoints.visible;
-      if (portraitPoints.visible) {
-        if (reducedMotion) {
-          portraitMat.uniforms.uMorph.value = 1;
-          portraitMorphStartRef.current = null;
-        } else if (portraitMorphStartRef.current !== null) {
-          if (portraitMorphStartRef.current < 0) portraitMorphStartRef.current = elapsedSec;
-          const morphT = Math.max(0, Math.min(1, (elapsedSec - portraitMorphStartRef.current) / .58));
-          portraitMat.uniforms.uMorph.value = 1 - Math.pow(1 - morphT, 3);
-          if (morphT >= 1) portraitMorphStartRef.current = null;
-        }
-        portraitMat.uniforms.uOpacity.value = tTeamPhase * 0.7;
-        portraitMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
-        portraitMat.uniforms.uPointerNDC.value.copy(pointerNDC);
-        // One damped whole-form target combines cursor tilt and subtle idle drift.
-        // Do not follow this with a direct rotation.set(): it would overwrite the easing.
-        const portraitTilt = reducedMotion ? 0 : 1;
-        const targetPitch = pointerNDC.y * -0.10 * portraitTilt;
-        const targetYaw = pointerNDC.x * 0.14 * portraitTilt + Math.sin(elapsedSec * 0.45) * (reducedMotion ? 0 : 0.05);
-        portraitPoints.rotation.x = THREE.MathUtils.lerp(portraitPoints.rotation.x, targetPitch, .12);
-        portraitPoints.rotation.y = THREE.MathUtils.lerp(portraitPoints.rotation.y, targetYaw, .12);
-        portraitPoints.rotation.z = 0;
-        portraitPoints.position.set(
-          camera.position.x + (isMobile ? -0.12 : -0.48),
-          camera.position.y - (isMobile ? 2.65 : 2.55),
-          camera.position.z - 5.8
-        );
-        portraitLightField.position.copy(portraitPoints.position);
-      }
+      // Source portrait and terrain share one camera-aligned stage. Terrain
+      // does not rotate with the head and is not disguised as a shirt/torso.
+      const teamVisible = tTeamPhase > .02 && sourceTeam.ready;
+      if (teamVisible && !teamWasVisible) teamAssemblyStart = elapsedSec;
+      teamWasVisible = teamVisible;
+      sourceTeam.update(camera, elapsedSec, tTeamPhase,
+        smoothstep(4.7, 5.1, u) * (1 - tTeamPhase), pointerNDC,
+        window.innerWidth, window.innerHeight, glRenderer.getPixelRatio(), reducedMotion,
+        reducedMotion ? 1.2 : 1.2 * smoothstep(0, 1.1, Math.max(0, elapsedSec - teamAssemblyStart)));
 
       // -----------------------------------------------------------------------
       // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
       // -----------------------------------------------------------------------
-      // A. The straight monumental wordmark holds through the first elastic
-      // lettering sweep, returns cleanly, then exits only as the studio statement
-      // settles. The previous early fade removed it before the reference's main beat.
+      // A. Exclusive lettering chapters: opening → flourish → manifesto.
+      // One pure packet owns visibility; no second playhead or delayed callbacks.
+      const lettering = aboutLetteringPose(u, isMobile);
+      if (teamCursorRef.current) {
+        teamCursorRef.current.style.opacity = hasPointer && !pointerOverControl && !reducedMotion && !isMobile ? String(tTeamPhase) : "0";
+        const x = (pointerNDC.x + 1) * window.innerWidth * .5;
+        const y = (1 - pointerNDC.y) * window.innerHeight * .5;
+        const scale = .8 + Math.min(.6, pointerActive * .5);
+        teamCursorRef.current.style.transform = `translate3d(${x - 52}px,${y - 52}px,0) scale(${scale})`;
+      }
       if (heroWordmarkRef.current) {
-        const wordOut = 1 - smoothstep(isMobile ? 4.55 : 4.72, isMobile ? 5.18 : 5.38, u);
-        const slideX = -smoothstep(isMobile ? 4.58 : 4.72, isMobile ? 5.18 : 5.38, u) * (isMobile ? 48 : 66);
+        const wordOut = lettering.opening;
+        const slideX = reducedMotion ? 0 : -lettering.openingTravel * (isMobile ? 24 : 36);
         heroWordmarkRef.current.style.opacity = String(wordOut);
         heroWordmarkRef.current.style.transform = `translate3d(${slideX}vw, 0, 0)`;
         heroWordmarkRef.current.style.visibility = wordOut > 0.005 ? "visible" : "hidden";
@@ -805,42 +751,40 @@ function AboutWhoExperience({
          // Faint chromatic edge ring belongs only to the pullback/wide-shot beat.
          // It is a CSS overlay over the original scene, never a copied post-process.
          if (chromaticRingRef.current) {
-           const wideShot = smoothstep(1.35, 1.68, u) * (1 - smoothstep(2.38, 2.82, u));
+           const wideShot = smoothstep(1.35, 1.68, u) * (1 - smoothstep(3.55, 3.95, u));
            chromaticRingRef.current.style.opacity = String(wideShot * 0.42);
          }
       }
 
-      // A2. Short curved logotype sweep across the first grounded valley beat.
-      // This uses the same native-scroll playhead and existing DOM transform path.
+      // A2. Continuous type surface, sharing this renderer and scroll authority.
+      const sweep = aboutWordmarkSweepPose(u, isMobile);
+      wordmarkSweep.mesh.visible = sweep.opacity > .005;
+      wordmarkSweep.uniforms.uOpacity.value = sweep.opacity;
+      wordmarkSweep.uniforms.uPhase.value = sweep.deformation;
+      wordmarkSweep.uniforms.uAspect.value = W / H;
       if (sweepWordmarkRef.current) {
-        const sweep = aboutWordmarkSweepPose(u, isMobile);
         sweepWordmarkRef.current.style.opacity = String(sweep.opacity);
-        sweepWordmarkRef.current.style.visibility = sweep.opacity > 0.005 ? "visible" : "hidden";
-        sweepWordmarkRef.current.style.transform =
-          `translate3d(${sweep.xVw}vw,${sweep.yVh}vh,0) skewX(${sweep.skewX}deg) rotate(${sweep.rotation}deg) scaleX(${sweep.stretchX}) scale(${sweep.scale})`;
+        sweepWordmarkRef.current.style.visibility = sweep.opacity > .005 ? "visible" : "hidden";
+        sweepWordmarkRef.current.dataset.deformation = sweep.deformation.toFixed(4);
       }
 
       // B. The two-sided studio statement arrives after the first wordmark
       // distortion and remains alongside the valley shot until the later narrative.
       if (manifestoOverlayRef.current) {
-        const manIn = smoothstep(isMobile ? 1.95 : 2.02, isMobile ? 2.45 : 2.48, u);
-        const manOut = 1 - smoothstep(isMobile ? 5.72 : 5.78, isMobile ? 6.28 : 6.34, u);
-        const manVis = manIn * manOut;
+        const manVis = lettering.manifesto;
         manifestoOverlayRef.current.style.opacity = String(manVis);
         manifestoOverlayRef.current.style.visibility = manVis > 0.005 ? "visible" : "hidden";
-        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(2.02, 2.48, u))}vw, 0, 0)`;
+        manifestoOverlayRef.current.style.transform = `translate3d(${lerp(4, 0, smoothstep(isMobile ? 1.95 : 1.1, isMobile ? 2.42 : 1.6, u))}vw, 0, 0)`;
       }
 
       // C. Studio Narrative HUD: each word owns a deterministic scroll window.
       // No React state or per-frame DOM queries; the same playhead drives reverse fade/slide.
       if (narrativeOverlayRef.current) {
-        const narIn = smoothstep(4.45, 4.82, u);
         const exit = smoothstep(5.82, 6.42, u);
-        const narOut = 1 - exit;
-        const narVis = narIn * narOut;
+        const narVis = lettering.narrative;
         narrativeOverlayRef.current.style.opacity = "1";
         narrativeOverlayRef.current.style.visibility = narVis > 0.005 ? "visible" : "hidden";
-        narrativeOverlayRef.current.style.transform = `translate3d(${-7 * exit}vw,0,0)`;
+        narrativeOverlayRef.current.style.transform = `translate3d(${(1 - smoothstep(4.42, 4.9, u)) * 105 - 58 * exit}vw,0,0)`;
         for (let i = 0; i < narrativeWordRefs.current.length; i++) {
           const word = narrativeWordRefs.current[i];
           if (!word) continue;
@@ -871,7 +815,9 @@ function AboutWhoExperience({
       lastTime = now;
       const rect = sectionEl.getBoundingClientRect();
       if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
-      if (!reducedMotion) sceneTime += dt;
+      // Analytical shaders/reveals follow active elapsed time even on slow GPUs.
+      // Keep the bounded dt only for damping; ensureLoop resets lastTime after sleep.
+      if (!reducedMotion) sceneTime += elapsed;
       frameTimes.push(elapsed * 1000); if (frameTimes.length > 180) frameTimes.shift();
       targetScrollY = window.scrollY;
       const diff = targetScrollY - smoothScrollY;
@@ -888,9 +834,12 @@ function AboutWhoExperience({
         rafId = window.requestAnimationFrame(tick);
       }
     };
-    const releasePointer = () => { pointerTarget.set(0, 0); ensureLoop(); };
+    requestSceneRenderRef.current = ensureLoop;
+    let hasPointer = false, pointerOverControl = false;
+    const releasePointer = () => { hasPointer = false; pointerTarget.set(0, 0); ensureLoop(); };
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType === "touch" || reducedMotion) return;
+      hasPointer = true; pointerOverControl = e.target instanceof Element && !!e.target.closest("button,a,input");
       pointerTarget.set(Math.max(-1, Math.min(1, e.clientX / Math.max(1, window.innerWidth) * 2 - 1)), Math.max(-1, Math.min(1, 1 - e.clientY / Math.max(1, window.innerHeight) * 2)));
       pointerActive = 1;
       ensureLoop();
@@ -912,11 +861,12 @@ function AboutWhoExperience({
     const onRestored = () => { if (!disposed) setSceneGeneration(n => n + 1); };
     const probe = () => ({ frames, u: lastU, time: sceneTime, pointer: pointerNDC.toArray(), pointerActive, pending: !!rafId,
       state: sectionEl.dataset.sceneState, explorer: licensedExplorer.status, explorerScale: explorerGroup.scale.x,
-      teamYaw: portraitPoints.rotation.y, teamPitch: portraitPoints.rotation.x,
+      teamYaw: sourceTeam.head.rotation.y, teamPitch: sourceTeam.head.rotation.x,
+      teamAsset: sourceTeam.member, teamReady: sourceTeam.ready, teamMorph: sourceTeam.morph,
       teamMember: teamOverlayRef.current?.querySelector("#about-who-team-name")?.textContent?.trim() ?? null,
       count,
-      portraitPoints: (portraitGeoRef.current?.getAttribute("position") as THREE.BufferAttribute | undefined)?.count ?? 0,
-      streakCount, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
+      portraitPoints: sourceTeam.count,
+      streakCount: 0, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,
       memory: { ...glRenderer.info.memory }, width: glRenderer.domElement.width, height: glRenderer.domElement.height, camera: camera.position.toArray() });
     if (window.__enableAboutProbe) window.__aboutProbe = probe;
@@ -933,7 +883,14 @@ function AboutWhoExperience({
 
     const onVisibility = () => {
       docVisible = document.visibilityState === "visible";
-      ensureLoop();
+      if (!docVisible) {
+        // A backgrounded browser may defer this callback indefinitely. Do not
+        // leave a stale pending id that blocks a fresh request on return.
+        if (rafId) window.cancelAnimationFrame(rafId);
+        rafId = 0;
+      } else {
+        ensureLoop();
+      }
     };
 
     resize();
@@ -956,10 +913,11 @@ function AboutWhoExperience({
 
     return () => {
       disposed = true;
+      if (requestSceneRenderRef.current === ensureLoop) requestSceneRenderRef.current = null;
+      if (sourceTeamRef.current === sourceTeam) sourceTeamRef.current = null;
       unsubscribeChrome();
       if (window.__aboutProbe === probe) delete window.__aboutProbe;
       if (window.__lusionInspector?.scrollManager === ownedInspector && window.__lusionInspector) delete window.__lusionInspector.scrollManager;
-      portraitGeoRef.current = null; portraitMatRef.current = null;
       glRenderer.domElement.removeEventListener("webglcontextlost", onLost);
       glRenderer.domElement.removeEventListener("webglcontextrestored", onRestored);
       window.removeEventListener("pointercancel", releasePointer);
@@ -1096,56 +1054,11 @@ function AboutWhoExperience({
           </div>
         </div>
 
-        {/* Layer 1.5: source-observed curved logotype beat, rebuilt as original SVG text-on-path. */}
-        <div
-          ref={sweepWordmarkRef}
-          aria-hidden="true"
-          data-about-wordmark-sweep
-          style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[5vw] top-[65%] z-10 h-[42vh] overflow-visible will-change-transform max-[819px]:inset-x-[10vw] max-[819px]:top-[43%] max-[819px]:h-[25vh]"
-        >
-          <svg
-            viewBox="0 0 1900 620"
-            preserveAspectRatio="none"
-            className="h-full w-full overflow-visible"
-          >
-            <defs>
-              <path
-                id="about-wordmark-sweep-path"
-                d="M 80 480 C 240 250 500 190 760 345 C 980 470 1230 520 1450 380 C 1640 250 1830 210 1980 300"
-              /><path
-                id="about-wordmark-sweep-path-mobile"
-                d="M 90 390 C 360 330 640 325 900 355 C 1180 390 1480 395 1810 340"
-              />
-            </defs>
-            <text
-              data-about-wordmark-desktop
-              className="hidden min-[820px]:block"
-              fill="#ffffff"
-              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-              fontSize="390"
-              fontWeight="450"
-              letterSpacing="-12"
-              textLength="1720"
-              lengthAdjust="spacingAndGlyphs"
-            >
-              <textPath href="#about-wordmark-sweep-path" startOffset="0%">LUSION</textPath>
-            </text>
-            <text
-              data-about-wordmark-mobile
-              className="block min-[820px]:hidden"
-              fill="#ffffff"
-              fontFamily="LusionSansCalibrated, system-ui, sans-serif"
-              fontSize="230"
-              fontWeight="450"
-              letterSpacing="-7"
-              textLength="1480"
-              lengthAdjust="spacingAndGlyphs"
-            >
-              <textPath href="#about-wordmark-sweep-path-mobile" startOffset="0%">LUSION</textPath>
-            </text>
-          </svg>
-        </div>
+        {/* Accessible/inspectable phase marker; the continuous glyph mesh is
+            rendered by the existing world, not a second canvas or textPath. */}
+        <div ref={sweepWordmarkRef} aria-hidden="true" data-about-wordmark-sweep
+          data-wordmark-surface="continuous-mesh"
+          style={{ opacity: 0, visibility: "hidden" }} className="pointer-events-none absolute inset-0" />
 
         {/* Layer 2: Horizontal `WE ARE A CREATIVE PRODUCTION STUDIO` Reveal (`u = 2.05 .. 4.35`) */}
         <div
@@ -1177,21 +1090,22 @@ function AboutWhoExperience({
         <div
           ref={narrativeOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
-          className="pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[16vh] bottom-[6vh] z-20 flex flex-col justify-between"
+          data-about-narrative
+          className="about-narrative-layout pointer-events-none absolute inset-x-[var(--base-padding-x)] top-[14vh] bottom-[6vh] z-20"
         >
           <p
             id="about-who-desc-top"
             aria-label="A worldwide team of specialists in design, motion, 3D, and technology"
-            className="font-sans text-[clamp(1.85rem,3.9vw,3.55rem)] font-normal leading-[1.15] tracking-[-0.02em] text-white"
+            className="font-sans text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.12] tracking-[-0.02em] text-white"
           >
-            {narrativeWords(["A", "worldwide", "team"], 0, 3)}<br />
-            {narrativeWords(["of", "specialists", "in", "design,"], 3)}<br />
+            {narrativeWords(["A", "worldwide", "team", "of"], 0, 3)}<br />
+            {narrativeWords(["specialists", "in", "design,"], 4)}<br />
             {narrativeWords(["motion,", "3D,", "and", "technology"], 7)}
           </p>
           <p
             id="about-who-desc-bottom"
             aria-label="working together to turn ambitious ideas into immersive digital experiences."
-            className="self-end text-right font-sans text-[clamp(1.7rem,3.9vw,3.55rem)] font-normal leading-[1.16] tracking-[-0.02em] text-white"
+            className="font-sans text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.12] tracking-[-0.02em] text-white"
           >
             {narrativeWords(["working", "together", "to"], 11)}<br />
             {narrativeWords(["turn", "ambitious", "ideas", "into"], 14)}<br />
@@ -1204,9 +1118,13 @@ function AboutWhoExperience({
           ref={teamOverlayRef}
           style={{ opacity: 0, visibility: "hidden" }}
           data-team-active="false"
+          onPointerUp={event => {
+            if (event.pointerType === "mouse" && event.target instanceof Element && !event.target.closest("button,a,input")) onStepMember(1);
+          }}
           data-reduced={reducedMotion}
-          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pt-28 pb-8 min-[820px]:pt-36"
+          className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pb-8"
         >
+          <div ref={teamCursorRef} className="about-team-cursor" aria-hidden="true">↗</div>
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
             {/* Mobile full-width spaced `T E A M` above index row (`390x844/about-04`) */}
@@ -1238,7 +1156,7 @@ function AboutWhoExperience({
 
               {/* Interactive `2x7` / Dot-Matrix Specialist Selector + Desktop `T E A M` Title */}
               <div className="flex items-start gap-8">
-                <div className="grid grid-cols-7 gap-1.5 pt-1">
+                <div className="about-team-selector grid grid-cols-7 gap-1.5 pt-1">
                   {team.map((member, idx) => (
                     <button
                       key={member.id}
@@ -1246,6 +1164,11 @@ function AboutWhoExperience({
                       aria-label={`Select ${member.name}`}
                       aria-pressed={idx === activeMemberIdx}
                       onClick={() => onSelectMember(idx)}
+                      onKeyDown={event => {
+                        if (event.key !== "Enter" && event.key !== " ") return;
+                        event.preventDefault();
+                        onSelectMember(idx);
+                      }}
                       className="grid h-6 w-6 place-items-center rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-0 focus-visible:outline-white"
                     >
                       <span
@@ -1308,7 +1231,7 @@ function AboutWhoExperience({
               <div className="about-team-progress mt-3" aria-hidden="true">
                 <span key={activeMemberIdx} className="about-team-progress-fill" />
               </div>
-              <p className="sr-only">Abstract procedural visualization; not a likeness of {activeMember.name}.</p>
+              <p className="sr-only" aria-live="polite">{sourceTeamState === "ready" ? `Original point portrait of ${activeMember.name}.` : sourceTeamState === "unavailable" ? "Team portrait unavailable." : "Loading team portrait."}</p>
             </div>
 
             <div className="flex items-end gap-6">
@@ -1331,15 +1254,16 @@ function AboutWhoExperience({
   );
 }
 
-/** The logo files are part of the repository's approved media bundle.
- * The alt text remains the brand name; the second marquee copy is hidden from AT.
- */
-function ClientLogoTile({ name }: { name: string }) {
+/** Verified bundled brand artwork. Duplicate marquee copies remain hidden from AT. */
+function ClientLogoTile({ name, src, id }: { name: string; src: string; id: string }) {
+  // The supplied About recording identifies this mark as European Partners;
+  // preserve the frozen manifest's provenance instead of rewriting its old label.
+  const label = id === "cocacola" ? "Coca-Cola European Partners" : name;
   return (
     <div role="listitem" className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
-      <span className="about-client-wordmark" aria-label={name}>
-        {name}
-      </span>
+      {/* Native SVG image preserves the verified mark's exact viewBox and linework. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={label} width={240} height={240} loading="lazy" decoding="async" className="about-client-logo-art" />
     </div>
   );
 }
@@ -1368,9 +1292,9 @@ function AboutClientMarqueeLifecycle() {
 }
 
 /** Historical-evidence reconstruction, not a claim of exact current live parity.
- * Sticky native Three world → brands → recognition → expertise → shared CTA/footer.
- * Original generic portrait and procedural terrain replace restricted capture data;
- * the shared CTA uses original GPU-instanced analytical flow, not a FLIP solver.
+ * Sticky native Three world → brands → recognition → expertise → owned CTA/shared footer.
+ * Authorized source team points replace the former personal-photo reconstruction;
+ * the About CTA uses an original pressure-projected PIC/FLIP glyph liquid.
  */
 export function AboutPageView() {
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
@@ -1391,6 +1315,10 @@ export function AboutPageView() {
     let disposed = false;
     const elements = [capabilityBandRef.current, darkUpperRef.current, document.getElementById("end-section")];
     let bands: ({ top: number; bottom: number } | null)[] = [];
+    const capability = capabilityBandRef.current;
+    const cardFaces = [...(capability?.querySelectorAll<HTMLElement>(".about-card-front") ?? [])];
+    let cardBands: { top: number; bottom: number; left: number; right: number }[] = [];
+    let logoSample = { x: 0, y: 0 };
     const syncHeaderSurface = () => {
       rafId = 0;
       if (document.hidden) return;
@@ -1401,12 +1329,23 @@ export function AboutPageView() {
           const rect = el.getBoundingClientRect();
           return { top: rect.top + y, bottom: rect.bottom + y };
         });
+        // Reading-layout cards can pass underneath the fixed header. Sample
+        // the wordmark's actual position, not only the blue section background.
+        const logo = document.getElementById("header-logo")?.getBoundingClientRect();
+        if (logo) logoSample = { x: logo.x + logo.width / 2, y: logo.y + logo.height / 2 };
+        cardBands = cardFaces.map(face => {
+          const rect = face.getBoundingClientRect();
+          return { top: rect.top + y, bottom: rect.bottom + y, left: rect.left, right: rect.right };
+        });
         dirty = false;
       }
       const line = y + window.innerHeight * 0.12;
       const [cap, dark, end] = bands;
       const covers = (band: { top: number; bottom: number } | null) => band && band.top <= line && band.bottom >= line;
-      const nextSurface = covers(cap) || covers(end) ? "cobalt" : dark && dark.bottom >= line ? "void" : "ice";
+      const overReadingCard = capability?.dataset.cardLayout === "reading" && cardBands.some(band =>
+        band.top <= y + logoSample.y && band.bottom >= y + logoSample.y &&
+        band.left <= logoSample.x && band.right >= logoSample.x);
+      const nextSurface = overReadingCard ? "ice" : covers(cap) || covers(end) ? "cobalt" : dark && dark.bottom >= line ? "void" : "ice";
       if (lastSurfaceRef.current !== nextSurface) {
         lastSurfaceRef.current = nextSurface;
         setActiveSurface(nextSurface);
@@ -1459,6 +1398,7 @@ export function AboutPageView() {
       if (dirty) { awardTop = measure(award); dirty = false; }
       const vh = Math.max(1, window.innerHeight), y = window.scrollY;
       const awardsP = reducedMotion ? .5 : clamp01((y - awardTop + vh) / (vh * 2));
+      if (award) award.style.setProperty("--recognition-progress", String(clamp01((y - awardTop) / Math.max(1, award.offsetHeight - vh))));
       if (word) word.style.transform = `translate3d(${lerp(3, -3, awardsP)}%,0,0)`;
 
     };
@@ -1489,8 +1429,9 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="suspended-volume-dual-basin-v2" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
+    <main id="about" data-scene-version="about-source-team-v5" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
+      <AboutPageStyles />
       <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
         {/* =====================================================================
             1. 3D SPHERE VORTEX + CRATER LANDSCAPE + TOPOGRAPHIC HUD + TEAM (`#about-who`)
@@ -1544,6 +1485,8 @@ export function AboutPageView() {
                         <ClientLogoTile
                           key={`${copy}-${client.id}-${cIdx}`}
                           name={client.name}
+                          id={client.id}
+                          src={client.src}
                         />
                       ))}
                     </div>
@@ -1555,124 +1498,20 @@ export function AboutPageView() {
         </section>
 
         {/* =====================================================================
-            3. RECOGNITION LEDGER — pinned category index, internally scrolling record
+            3. RECOGNITION — consecutive awards, articles and talks in document flow
            ===================================================================== */}
-        <section
-          id="about-award"
-          onPointerMove={event => {
-            const bounds = event.currentTarget.getBoundingClientRect();
-            event.currentTarget.style.setProperty("--award-pointer-x", `${((event.clientX - bounds.left) / Math.max(1, bounds.width)) * 100}%`);
-            event.currentTarget.style.setProperty("--award-pointer-y", `${((event.clientY - bounds.top) / Math.max(1, bounds.height)) * 100}%`);
-          }}
-          className="about-recognition-section relative isolate overflow-hidden bg-[#0d0c0f] px-[var(--base-padding-x)] py-20 text-white min-[813px]:py-24"
-        >
-          <div className="about-awards-monument" aria-hidden="true">
-            {["AWARD", "WINNING", "MULTI", "DISCIPLINARY", "CREATIVE", "STUDIO"].map(word => (
-              <span key={word}>{word}</span>
-            ))}
-          </div>
-
-          <div className="about-recognition-layout relative z-10 grid grid-cols-1 gap-10 min-[813px]:grid-cols-12 min-[813px]:gap-8">
-            <nav className="about-recognition-index min-[813px]:col-span-4" aria-label="Recognition categories">
-              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 0 } as React.CSSProperties}>
-                <h2>AWARDS</h2>
-                <span className="about-recognition-count">
-                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
-                  <span>{LUSION_ABOUT.recognition.awardsDisplayedTotal}</span>
-                </span>
-              </div>
-              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 1 } as React.CSSProperties}>
-                <h2>ARTICLES</h2>
-                <span className="about-recognition-count">
-                  <span className="about-recognition-count-icon" aria-hidden="true">↗</span>
-                  <span>{LUSION_ABOUT.recognition.articlesDisplayedTotal}</span>
-                </span>
-              </div>
-              <div className="about-recognition-index-item" data-award-reveal style={{ "--reveal-index": 2 } as React.CSSProperties}>
-                <h2>TALKS</h2>
-                <span className="about-recognition-count">
-                  <span className="about-recognition-count-icon" aria-hidden="true">✳</span>
-                  <span>{LUSION_ABOUT.recognition.talksDisplayedTotal}</span>
-                </span>
-              </div>
-            </nav>
-
-            <div id="about-recognition-window" className="about-recognition-window min-[813px]:col-span-8" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
-              <section className="about-recognition-record" aria-labelledby="about-awards-record-title">
-                <div className="about-recognition-record-heading">
-                  <h3 id="about-awards-record-title">AWARDS</h3>
-                  <span className="font-mono text-xs text-white/55">58 HONORS</span>
-                </div>
-                <div className="about-recognition-award-header" aria-hidden="true">
-                  <span>ORGANIZATION</span><span>COUNT</span><span>RECOGNITION</span>
-                </div>
-                <ul className="about-recognition-award-table">
-                  {LUSION_ABOUT.recognition.awardGroups.flatMap(group =>
-                    group.honors.map(honor => (
-                      <li
-                        key={`${group.organization}-${honor.recognition}`}
-                        className="about-recognition-award-row"
-                        data-award-reveal
-                      >
-                        <span className="about-recognition-org">{group.organization}</span>
-                        <span className="about-recognition-count-cell">{honor.countFormatted}</span>
-                        <span className="about-recognition-label">{honor.recognition}</span>
-                      </li>
-                    ))
-                  )}
-                </ul>
-              </section>
-
-              <section className="about-recognition-record" aria-labelledby="about-articles-record-title">
-                <div className="about-recognition-record-heading">
-                  <h3 id="about-articles-record-title">ARTICLES</h3>
-                  <span className="font-mono text-xs text-white/55">03 FEATURES</span>
-                </div>
-                <ul className="about-recognition-link-list">
-                  {LUSION_ABOUT.recognition.articles.map(article => (
-                    <li key={article.href}>
-                      <a
-                        href={article.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="about-recognition-link"
-                      >
-                        <span>{article.title}</span>
-                        <span aria-hidden="true" className="font-mono text-xs">↗</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <section className="about-recognition-record" aria-labelledby="about-talks-record-title">
-                <div className="about-recognition-record-heading">
-                  <h3 id="about-talks-record-title">TALKS</h3>
-                  <span className="font-mono text-xs text-white/55">05 EVENTS</span>
-                </div>
-                <ul className="about-recognition-talk-table">
-                  {LUSION_ABOUT.recognition.talks.map(talk => (
-                    <li key={`${talk.event}-${talk.dateAndLocation}`} className="about-talk-row">
-                      <span>{talk.event}</span>
-                      <span>{talk.dateAndLocation}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </div>
-          </div>
-        </section>
+        <AboutRecognition />
       </div>
 
       {/* =====================================================================
-          4. AREA OF EXPERTISE (`#about-capability` — Full-Bleed Electric Cobalt `#1a2ffb`)
+          4. AREA OF EXPERTISE (`#about-capability` — route-owned blue playing-card act)
          ===================================================================== */}
       <AboutExpertiseCards sectionRef={capabilityBandRef} reducedMotion={reducedMotion} />
 
       {/* =====================================================================
           5, 6 & 7. END CTA, STUDIO FOOTER & SCROLL PORTAL (`Our Projects` -> `/projects`)
          ===================================================================== */}
-      <ContactCtaSection />
+      <AboutContactSection />
       <StudioFooter nextHref="/projects" nextLabel={LUSION_ABOUT.scrollNav.targetTitle} />
     </main>
   );

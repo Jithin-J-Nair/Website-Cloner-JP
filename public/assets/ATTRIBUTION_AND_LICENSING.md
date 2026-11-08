@@ -1,6 +1,28 @@
 # Staged Asset Attribution & Licensing Notice
 
-This directory (`public/assets/`) stages local verification and open-license typography assets for the reference-faithful reconstruction of `https://lusion.co/`.
+## About team-scene authorization — 7 November 2026
+
+For this repair the user explicitly confirmed authorization to reuse Lusion's
+original bundled team assets in this project, **including a deployed version**.
+This is a user-confirmed permission statement, not an independently verified
+public/open-source license and not a change of copyright ownership.
+
+The exception is narrowly implemented by `/about/scene/[asset]`: the seven
+`media-bundle/team/{edan,ffi,pierre,yannic,paul,andrii,sunny}.buf` point-cloud heads
+and `media-bundle/models/about/terrain_lines.buf` (the team's topographic backdrop,
+served as `contours.buf`). These remain Lusion reference assets; likenesses are
+used only with their published roster names/roles. No files were duplicated into
+`public/`. The former personal-photo PLY and its live reconstruction helpers have
+been removed.
+
+The global `/assets` resolver and its environment flags were not changed. It
+already serves approved files in the tracked repository bundle without the
+local-inspection opt-in; this repair does not expand that behavior or its catalog.
+Commercial fonts remain blocked. This permission exception does not include
+unrelated scene models, portfolio footage or sound stems. It is not authorization to merge or deploy the application. The original
+manifest classifications/checksums remain provenance records, not license grants.
+
+This directory (`public/assets/`) stages open-license typography and original clean-room vector artwork for the reference-faithful reconstruction of `https://lusion.co/`.
 
 ## Licensing Categories & Strict Compliance Summary
 
@@ -12,6 +34,7 @@ This directory (`public/assets/`) stages local verification and open-license typ
    - `fonts/IBMPlexMono-Regular.{woff,woff2}`, `fonts/IBMPlexMono-Medium.{woff,woff2}` — **SIL Open Font License 1.1** (verified via embedded SFNT `nameID[13]`; see `fonts/OFL-IBMPlexMono.txt`).
    - `fonts/InstrumentSans-Variable.woff2`, `fonts/InstrumentSans-VariableItalic.woff2` — **SIL Open Font License 1.1** (metric-matched open-license replacement for `Aeonik`; see `fonts/OFL-InstrumentSans.txt`).
    - `fonts/capability-icons/{strategy,creative,tech,production}.svg` — **MIT** original geometric vector icons replacing `LusionMono` icon codepoints.
+   - `images/cards/back-ink.svg` — original clean-room abstract linework texture authored for this reconstruction; it is not copied or derived from the proprietary bundled `images/cards/back.png`.
 
 3. **Standard Permissive Shader Lookup Textures:**
    - `textures/LDR_RGB1_0.png` — **CC0-1.0** blue-noise dither texture.

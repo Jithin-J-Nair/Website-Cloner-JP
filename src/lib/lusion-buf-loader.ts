@@ -149,7 +149,16 @@ export function loadLusionBuf(url: string): Promise<ParsedBufData> {
       }
       return res.arrayBuffer();
     })
-    .then(parseLusionBuf);
+    .then(parseLusionBuf)
+    .catch((error: unknown) => {
+      // A transient network/parse failure must not poison this URL for the rest
+      // of the session. Only evict the promise that failed; keep successful
+      // parses cached so every scene reuses the same decoded geometry.
+      if (bufCache.get(url) === promise) {
+        bufCache.delete(url);
+      }
+      throw error;
+    });
 
   bufCache.set(url, promise);
   return promise;

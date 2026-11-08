@@ -1,0 +1,30 @@
+{
+  "scope": "Two-body numerical isolation with energy seeded to 1. Not wall-clock FPS, DOM cancellation, original physics or rendered motion verification.",
+  "results": [
+    {
+      "frameDt": 0.004166666666666667,
+      "frames": 1152,
+      "simulatedSeconds": 4.8,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 0.008333333333333333,
+      "frames": 576,
+      "simulatedSeconds": 4.8,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 0.016666666666666666,
+      "frames": 288,
+      "simulatedSeconds": 4.8,
+      "finalEnergy": 0
+    },
+    {
+      "frameDt": 0.05,
+      "frames": 96,
+      "simulatedSeconds": 4.8,
+      "finalEnergy": 0
+    }
+  ]
+}
+PASS isolated no-pointer solver decay; browser cancellation failure remains open.

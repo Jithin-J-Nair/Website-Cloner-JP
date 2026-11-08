@@ -1,0 +1,45 @@
+
+> lusion-studio-reconstruction@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 32ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1317ms
+  Running TypeScript ...
+  Finished TypeScript in 10.4s ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/27) ...
+  Generating static pages using 1 worker (6/27)
+  Generating static pages using 1 worker (13/27)
+  Generating static pages using 1 worker (20/27)
+✓ Generating static pages using 1 worker (27/27) in 1569ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ƒ /assets/[...path]
+├ ○ /contact
+├ ○ /design-system
+├ ○ /icon.svg
+├ ○ /labs
+├ ○ /projects
+├   /projects/[slug]
+│ ├ ● /projects/oryzo_ai
+│ ├ ● /projects/of_the_oak
+│ ├ ● /projects/devin_ai
+│ └ ● [+14 more paths]
+├ ○ /work
+└ ƒ /work/[slug]
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> lusion-studio-reconstruction@1.0.0 postbuild
+> cp -r public .next/standalone/ && cp -r media-bundle .next/standalone/ && cp -r .next/static .next/standalone/.next/

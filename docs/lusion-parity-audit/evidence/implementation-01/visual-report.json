@@ -1,0 +1,4132 @@
+{
+  "baseline": "Local 5051 production checkpoint, not original Lusion",
+  "current": "Working-tree production build",
+  "referenceScope": "Captured manifest/assets/screenshots/recording. No current-live parity assertion.",
+  "policy": "Reduced motion, DPR1, seeded initialization, paused video. Static UI raster gate hides canvas/video identically; unmasked images are review evidence, not a 3D or motion acceptance.",
+  "threshold": {
+    "channelDelta": 24,
+    "maximumStaticChangedFraction": 0.03
+  },
+  "states": [
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Award Winning 3D and Interactive Web Studio",
+          "overflow": false,
+          "h1": [
+            "We create 3D visual storytelling and interactive web experiences that help brands stand out"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Our Projects",
+          "overflow": false,
+          "h1": [
+            "PROJECTS"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Oryzo AI",
+          "overflow": false,
+          "h1": [
+            "Oryzo AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Of The Oak",
+          "overflow": false,
+          "h1": [
+            "Of The Oak"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Devin AI",
+          "overflow": false,
+          "h1": [
+            "Devin AI"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Porsche: Dream Machine",
+          "overflow": false,
+          "h1": [
+            "Porsche: Dream Machine"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Synthetic Human",
+          "overflow": false,
+          "h1": [
+            "Synthetic Human"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - DDD 2024",
+          "overflow": false,
+          "h1": [
+            "DDD 2024"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Spaace - NFT Marketplace",
+          "overflow": false,
+          "h1": [
+            "Spaace - NFT Marketplace"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Choo Choo World",
+          "overflow": false,
+          "h1": [
+            "Choo Choo World"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Zero Tech",
+          "overflow": false,
+          "h1": [
+            "Zero Tech"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Meta: Spatial Fusion",
+          "overflow": false,
+          "h1": [
+            "Meta: Spatial Fusion"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Worldcoin Globe",
+          "overflow": false,
+          "h1": [
+            "Worldcoin Globe"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Lusion Labs",
+          "overflow": false,
+          "h1": [
+            "Lusion Labs"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - My Little Storybook",
+          "overflow": false,
+          "h1": [
+            "My Little Storybook"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Soda Experience",
+          "overflow": false,
+          "h1": [
+            "Soda Experience"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Infinite Passerella",
+          "overflow": false,
+          "h1": [
+            "Infinite Passerella"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - The Turn Of The Screw",
+          "overflow": false,
+          "h1": [
+            "The Turn Of The Screw"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - Max Mara: Bearing Gifts",
+          "overflow": false,
+          "h1": [
+            "Max Mara: Bearing Gifts"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    }
+  ],
+  "sections": [
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    }
+  ],
+  "failures": [],
+  "finished": true
+}

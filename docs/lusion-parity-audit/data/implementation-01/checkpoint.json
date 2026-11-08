@@ -1,0 +1,27 @@
+{
+  "codeCommit": "c3c5f1a598deb7dbbaebe9b585b350c04939363d",
+  "branch": "arena/53eb1ea0-website-cloner-jp",
+  "productionBuildId": "QEMEiSIizZDv8F5IDeJNk",
+  "previewPort": 3000,
+  "readOnlyBaselinePort": 3001,
+  "status": "Captured-reference reconstruction incomplete; current-live parity unverified.",
+  "originalSourceTeamTest": {
+    "unchangedFrom": "e5bdb3a",
+    "sha256": "76480d30af4d84cd293b10c8f3492ad20bcab5fd101a668a9f4b709cf52f3500"
+  },
+  "evidenceScopes": {
+    "implementation-01": "First 120-state local-checkpoint regression + Home motion + broad browser evidence; see per-command build/date limits.",
+    "implementation-03": "Second full 120-state gate with console/network diagnostics before LP-013/014.",
+    "implementation-04": "Six normal About viewport captures after mobile fix.",
+    "implementation-05": "Final build, 3 affected routes x six sizes = 18 states.",
+    "project-gallery-text": "Both restored paragraphs, 2 projects x desktop/mobile = 4 actual rendered states."
+  },
+  "knownLimits": [
+    "Original source camera/material/motion parity not accepted.",
+    "Local static gate masks canvas/video on both sides; unmasked images separate.",
+    "36 initial About asset request aborts logged separately in each diagnostic gate; not falsely called zero failed requests.",
+    "First SSR checker canonical-H1 expectation failure retained; corrected exact frozen-meta-title rerun exit is separate.",
+    "StudioFooter lint warning and 13 dependency advisories remain.",
+    "Unknown current Atlas Motion/Everswap destinations and physical-hardware/OS-background behavior remain unverified."
+  ]
+}

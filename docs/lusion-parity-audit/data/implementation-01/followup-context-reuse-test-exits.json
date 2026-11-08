@@ -1,0 +1,32 @@
+[
+  {
+    "command": "node docs/lusion-parity-audit/harness/capture-about-restorations.mjs",
+    "exitCode": 1,
+    "seconds": 4.75,
+    "log": "about-restorations-context-reuse-failure.log"
+  },
+  {
+    "command": "VISUAL_ROUTES=/about VISUAL_OUT_DIR=docs/lusion-parity-audit/evidence/implementation-02 node docs/lusion-parity-audit/harness/validate-captured-visuals.mjs",
+    "exitCode": 1,
+    "seconds": 10.78,
+    "log": "about-followup-context-reuse-failure.log"
+  },
+  {
+    "command": "npm run test:about-portrait",
+    "exitCode": 0,
+    "seconds": 1.09,
+    "log": "about-final.log"
+  },
+  {
+    "command": "npm run qa",
+    "exitCode": 0,
+    "seconds": 0.67,
+    "log": "qa-final.log"
+  },
+  {
+    "command": "LUSION_VALIDATION_OUT_DIR=docs/lusion-parity-audit/evidence/implementation-01/browser-final npm run validate:browser",
+    "exitCode": 0,
+    "seconds": 286.74,
+    "log": "browser-final.log"
+  }
+]

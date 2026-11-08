@@ -1,0 +1,68 @@
+
+> lusion-studio-reconstruction@1.0.0 lint
+> eslint
+
+
+/home/user/Website-Cloner-JP/src/components/pages/LusionProjectDetailView.tsx
+  85:3  warning  'highlight' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/user/Website-Cloner-JP/src/components/sections/StudioFooter.tsx
+  174:7  warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+
+✖ 2 problems (0 errors, 2 warnings)
+
+
+> lusion-studio-reconstruction@1.0.0 typecheck
+> tsc --noEmit
+
+PASS wordmark sweep: deterministic, bounded, continuous, reversible and scroll-seek safe. Authored timing is not represented as measured source timing.
+PASS 22,502 camera samples: finite, deterministic, reversible, bounded per-step travel, C1 joins, distinct near/wide framing and retained editorial/team endpoints. Original timing, not recovered source curves.
+PASS terrain: 37,249 finite/deterministic height samples, bounds -1.700..12.777, ridge hierarchy, filtered world-space relief, independent uniforms and disposal. Browser compilation checked separately.
+PASS original deterministic finite multiscale instancing, shared GPU field packet, all quality counts, disposal events, no restricted portrait fetch, recovery/cancel cleanup and uncapped frame telemetry. Browser shader compilation/interaction is tested separately.
+PASS About portrait geometry: deterministic, bounded, finite 3D side-profile silhouettes; distinct mirrored variants; exact point counts and safe input fallbacks.
+PASS card poses: finite, bounded, continuous, monotonic, deterministic, reversible; aligned settled fronts; stagger; malformed scroll fallback. Not a reference-timing assertion.
+
+> lusion-studio-reconstruction@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 29ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 9.1s
+  Running TypeScript ...
+  Finished TypeScript in 9.3s ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/27) ...
+  Generating static pages using 1 worker (6/27)
+  Generating static pages using 1 worker (13/27)
+  Generating static pages using 1 worker (20/27)
+✓ Generating static pages using 1 worker (27/27) in 865ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ƒ /assets/[...path]
+├ ○ /contact
+├ ○ /design-system
+├ ○ /icon.svg
+├ ○ /labs
+├ ○ /projects
+├   /projects/[slug]
+│ ├ ● /projects/oryzo_ai
+│ ├ ● /projects/of_the_oak
+│ ├ ● /projects/devin_ai
+│ └ ● [+14 more paths]
+├ ○ /work
+└ ƒ /work/[slug]
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> lusion-studio-reconstruction@1.0.0 postbuild
+> cp -r public .next/standalone/ && cp -r media-bundle .next/standalone/ && cp -r .next/static .next/standalone/.next/

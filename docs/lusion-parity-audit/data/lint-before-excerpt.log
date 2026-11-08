@@ -1,0 +1,19 @@
+
+> lusion-studio-reconstruction@1.0.0 lint
+> eslint
+
+
+/home/user/Website-Cloner-JP/src/components/pages/LusionProjectDetailView.tsx
+  85:3  warning  'highlight' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/user/Website-Cloner-JP/src/components/sections/StudioFooter.tsx
+  174:7  warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+
+/home/user/Website-Cloner-JP/temp/deep-comparison/clone/.next/build/chunks/1ju9_1krmk1uriip_4._.js
+     3:133  warning  'exports' is defined but never used                                            @typescript-eslint/no-unused-vars
+    25:133  warning  'exports' is defined but never used                                            @typescript-eslint/no-unused-vars
+    38:135  warning  'exports' is defined but never used                                            @typescript-eslint/no-unused-vars
+[Middle omitted; full original retained at temp/lusion-parity/lint.log]
+
+✖ 30865 problems (5409 errors, 25456 warnings)
+  1 error and 36 warnings potentially fixable with the `--fix` option.

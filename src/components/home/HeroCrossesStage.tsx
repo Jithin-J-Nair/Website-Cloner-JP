@@ -17,16 +17,11 @@ import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
 /**
- * Verified Lusion Hero Accent Palette
- * Starts deterministically at index 0 (`#1a22e0` studio royal cobalt) and cycles on click.
+ * Reference-locked Lusion hero palette.
+ * The source recording uses only royal blue, white and near-black connectors.
+ * Clicks still add a physical impulse; the blue material never cycles to unrelated hues.
  */
-export const HERO_ACCENT_PALETTE = [
-  "#1b24e6",
-  "#ADFF00",
-  "#f6000e",
-  "#7e09f5",
-  "#ffc000",
-] as const;
+export const HERO_ACCENT_PALETTE = ["#1a22e0"] as const;
 
 // Linear input calibrated so post-ACESFilmic + OutputPass sRGB equals ~#13151d (matching reference dark slate!)
 const STUDIO_SCENE_BG_HEX = "#101114";
@@ -821,7 +816,7 @@ export function HeroCrossesStage() {
       }
       const physicsFrame = isReduced
         ? {collisions:0,influencedPieces:0,interactionEnergy:0,kineticEnergy:0,maxTravel:0,meanRadius:0}
-        : physics.step(dt,now*0.001,ptr.active?pointerRay.ray:null,pointerSweep);
+        : physics.step(rawDt,now*0.001,ptr.active?pointerRay.ray:null,pointerSweep);
       ptr.vx*=Math.exp(-4.5*dt);
       ptr.vy*=Math.exp(-4.5*dt);
       const collisionCount=physicsFrame.collisions;
@@ -1005,7 +1000,7 @@ export function HeroCrossesStage() {
       ref={containerRef}
       role="button"
       tabIndex={0}
-      aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to cycle studio palette"
+      aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to pulse the sculpture"
       data-color-index={colorIdx}
       data-cluster-mode="free-body-cloud"
       data-cluster-envelope="soft-central-return"

@@ -103,13 +103,17 @@ export class HomeConnectorPhysics {
     pointerSweep: THREE.Vector3,
   ): HomePhysicsStep {
     this.touched.fill(false);
+    // Input activity is a time envelope, not kinetic energy. Release must not
+    // stretch when rendering stalls; collision integration remains capped below.
+    if (!pointerRay) this.interactionEnergy *= Math.exp(-2.4 * Math.max(0, frameDt));
     this.accumulator += Math.min(frameDt,0.05);
     let collisions=0;
     let steps=0;
     while(this.accumulator>=this.stepSize && steps<6) {
       const h=this.stepSize;
       const time=timeSeconds+(steps*h);
-      this.interactionEnergy*=Math.exp(-2.4*h);
+      // Preserve the existing held-pointer impulse/envelope response exactly.
+      if (pointerRay) this.interactionEnergy *= Math.exp(-2.4 * h);
       // Free flight, light gravity and a shared soft attractor. The restoring force
       // grows only after a body leaves the loose cluster; it never targets a slot.
       for(let i=0;i<this.meshes.length;i++) {

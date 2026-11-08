@@ -1,0 +1,20 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: no-ray energy decays to exact zero within six elapsed-input seconds, even when collision steps are capped
++ actual - expected
+
++ 0.056134762834133316
+- 0
+
+    at file:///home/user/Website-Cloner-JP/scripts/test-home-pointer-decay.mjs:43:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 0.056134762834133316,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.3

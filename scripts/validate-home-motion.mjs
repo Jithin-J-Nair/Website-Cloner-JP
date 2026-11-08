@@ -21,7 +21,16 @@ const touch = process.env.HOME_TOUCH === '1';
 const context = await browser.newContext({viewport:{width,height},hasTouch:touch,isMobile:touch,reducedMotion:reduced?'reduce':'no-preference'});
 await context.addInitScript(()=>sessionStorage.setItem('lusion_booted_v1','1'));
 const page = await context.newPage();
-const report={viewport:{width,height},reduced,touch,errors:[],failedAssets:[],states:[]};
+const report={
+ viewport:{width,height},reduced,touch,errors:[],failedAssets:[],states:[],
+ referenceVideoDurationSeconds:45.42,
+ referenceTimeline:[
+  {seconds:0,phase:"home-hero"},{seconds:6,phase:"showreel"},{seconds:12,phase:"featured-work"},
+  {seconds:18,phase:"goal-introduction"},{seconds:24,phase:"vortex"},{seconds:30,phase:"blue-corridor"},
+  {seconds:32,phase:"glass-approach"},{seconds:34,phase:"glass-break"},{seconds:36,phase:"blue-corridor-exit"},
+  {seconds:40,phase:"contact-cta"},{seconds:42,phase:"contact-cta-footer"}
+ ]
+};
 page.on('pageerror',e=>report.errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')report.errors.push(m.text())});
 page.on('response',r=>{if(r.url().includes('/assets/')&&!r.ok())report.failedAssets.push(r.url())});
@@ -210,6 +219,8 @@ try {
      shatterProgress:window.__goalAstronautTelemetry.sceneState.shatterProgress,
      bakedFrame:window.__goalAstronautTelemetry.sceneState.bakedFrame,
      corridorTravel:window.__goalAstronautTelemetry.sceneState.corridorTravel,
+     corridorVisible:window.__goalAstronautTelemetry.sceneState.corridorVisible,
+     corridorClipped:window.__goalAstronautTelemetry.sceneState.corridorClipped,
      glassOpacity:window.__goalAstronautTelemetry.sceneState.glassOpacity,
      glassThickness:window.__goalAstronautTelemetry.sceneState.glassThickness,
      glassRefractionReady:window.__goalAstronautTelemetry.sceneState.glassRefractionReady,
@@ -252,6 +263,8 @@ try {
  const blueY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForTunnel(0.90));
  const blueState = await seekScenePhase('blue-corridor',blueY,'tunnelProgress',0.90);
  assert.ok(blueState.corridorTravel>0,'astronaut transitions into the blue arch corridor');
+ assert.equal(blueState.corridorVisible,true,'blue corridor is visible before the glass transition');
+ assert.equal(blueState.corridorClipped,true,'corridor stays framed inside the display before the breakout');
  assert.equal(blueState.webglError,0);
  const impactApproachY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.16));
  const impactApproach = await seekScenePhase('glass-approach',impactApproachY,'shatterProgress',0.16);
@@ -270,7 +283,23 @@ try {
  const exitY = await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForShatter(0.90));
  const exitState = await seekScenePhase('post-shatter',exitY,'shatterProgress',0.90);
  assert.ok(exitState.glassOpacity<0.4,'glass fragments clear rather than lingering over the astronaut');
+ assert.equal(exitState.corridorVisible,true,'the full blue corridor returns after the glass breakout');
+ assert.equal(exitState.corridorClipped,false,'post-break corridor expands beyond the display aperture');
  report.downstream={vortex:vortexState,blueCorridor:blueState,impactApproach,shatter:shatterState,postShatter:exitState};
+ const ctaY=await page.evaluate(()=>{const el=document.querySelector('#end-section-title-link');if(!el)return -1;let y=0;for(let n=el;n;n=n.offsetParent)y+=n.offsetTop;return y;});
+ assert.ok(ctaY>0,'home contact CTA title exists');
+ await seek(ctaY-height*.35);
+ await page.waitForFunction(()=>{const el=document.querySelector('#end-section-title-link');if(!el)return false;const r=el.getBoundingClientRect();return r.top<innerHeight*.75&&r.bottom>0;},null,{timeout:30000});
+ await page.waitForTimeout(450);
+ await page.screenshot({path:out+'/home-cta.png',timeout:90000});
+ report.cta=await page.evaluate(()=>{
+   const title=document.querySelector('#end-section-title-link');
+   const pill=document.querySelector('#end-bottom');
+   return {title:title?.textContent?.replace(/\\s+/g,' ').trim()??null,titleOpacity:title?getComputedStyle(title).opacity:null,
+     bottomPillVisible:!!pill&&getComputedStyle(pill).opacity!=='0',
+     corridorVisible:window.__goalAstronautTelemetry?.sceneState?.corridorVisible??false,
+     waitProgress:window.__goalAstronautTelemetry?.sceneState?.waitProgress??0};
+ });
  await seek(layout.reel-height*.12);
  await page.locator('#home-reel-video-watch-btn').click();
  await page.locator('#video-overlay[role="dialog"]').waitFor({state:'visible'});

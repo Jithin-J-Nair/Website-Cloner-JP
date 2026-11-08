@@ -1,25 +1,21 @@
 #!/usr/bin/env node
 /**
- * Lusion Reconstruction Automated QA, Contrast, Licensing, Full 22-Route & Asset Security Verifier
+ * Lusion Reconstruction Automated QA, Contrast, Licensing, Manifest-Driven Route & Asset Security Verifier
  * Verifies:
  *   1. WCAG 2.1 contrast math on verified Lusion tokens
  *   2. Font Option 2 compliance & zero unapproved personal portfolio leaks in active app modules
  *   3. Authentic shared Lusion shell landmarks & ground-truth copy across `/`, `/about`, `/projects`
- *   4. All 22 canonical ground-truth routes (`HTTP 200` + exact `<title>` + `<main>` + `<h1>` + SkipNav)
+ *   4. All canonical ground-truth routes (`HTTP 200` + exact `<title>` + `<main>` + `<h1>` + SkipNav)
  *      plus verified `HTTP 404` behavior on unknown top-level and unknown `/projects/<slug>` routes
  *   5. Clean-production asset delivery (`HTTP 200`, `0` unexpected `404`s, strict CSP + `nosniff`)
  */
 
 import fs from "node:fs";
 import path from "node:path";
+import { loadCurrentLiveGroundTruth } from "./lib/load-ground-truth.mjs";
 
 const BASE_URL = process.env.QA_BASE_URL || "http://127.0.0.1:3000";
-const GROUND_TRUTH = JSON.parse(
-  fs.readFileSync(
-    path.join(process.cwd(), "src", "data", "reference", "lusion-ground-truth.json"),
-    "utf8"
-  )
-);
+const GROUND_TRUTH = loadCurrentLiveGroundTruth();
 
 function hexToLuminance(hex) {
   const clean = hex.replace("#", "");
@@ -53,6 +49,7 @@ const SHELL_MARKERS = [
   { name: "Lusion vector wordmark (#header-logo)", re: /id="header-logo"/ },
   { name: "Menu toggle (#header-right-menu-btn)", re: /id="header-right-menu-btn"/ },
   { name: "Floating menu (#header-menu)", re: /id="header-menu"/ },
+  { name: "Closed floating menu is removed from sequential focus", re: /<nav id="header-menu"[^>]*aria-hidden="true"[^>]*inert/ },
   { name: "Labs card with Lucy (#header-menu-labs-lucy-svg)", re: /id="header-menu-labs-lucy-svg"/ },
   { name: "Scroll indicator (#scroll-indicator)", re: /id="scroll-indicator"/ },
   { name: "Home hero stage (#home-hero-visual-container)", re: /id="home-hero-visual-container"/ },
@@ -118,6 +115,28 @@ for (const file of srcFiles) {
 console.log(`  PASS Audited ${srcFiles.length} active source files — zero unapproved portfolio references.`);
 
 // 3. Shared Lusion Shell & About/Archive Landmark Verification
+const hudSource = fs.readFileSync(path.join(process.cwd(), "src", "components", "foundation", "StudioHud.tsx"), "utf8");
+const backdropStart = hudSource.indexOf('id="header-background"');
+const backdropEnd = hudSource.indexOf('className={`fixed inset-0', backdropStart);
+const backdropMarkup = backdropStart >= 0 && backdropEnd > backdropStart
+  ? hudSource.slice(backdropStart, backdropEnd)
+  : "";
+const backdropRestoresFocus =
+  backdropMarkup.includes("setNavMenuOpen(false)") &&
+  backdropMarkup.includes("menuTriggerRef.current?.focus");
+console.log(`  ${backdropRestoresFocus ? "PASS" : "FAIL"} Navigation backdrop close restores focus to its trigger`);
+if (!backdropRestoresFocus) failures += 1;
+
+const contactHandlerStart = hudSource.indexOf("const scrollToContactSection = useCallback");
+const contactHandlerEnd = hudSource.indexOf("const handleProjectBack", contactHandlerStart);
+const contactHandler = contactHandlerStart >= 0 && contactHandlerEnd > contactHandlerStart
+  ? hudSource.slice(contactHandlerStart, contactHandlerEnd)
+  : "";
+const contactRestoresFocus = contactHandler.includes('target.setAttribute("tabindex", "-1")') &&
+  contactHandler.includes("target.focus({ preventScroll: true })");
+console.log(`  ${contactRestoresFocus ? "PASS" : "FAIL"} Contact menu action moves focus to its scroll destination`);
+if (!contactRestoresFocus) failures += 1;
+
 console.log("\n[3/5] Auditing Shared Lusion Chrome Landmarks & Page Sections...");
 const homeRes = await fetch(`${BASE_URL}/`);
 const homeHtml = await homeRes.text();
@@ -134,7 +153,7 @@ for (const id of ["about-who", "about-clients", "about-award", "about-capability
   if (!ok) failures += 1;
 }
 
-// 4. Live HTTP, `<title>`, `<main>`, `<h1>` & 404 Audit Across ALL 22 Canonical Ground-Truth Routes + 2 Negative Routes
+// 4. Live HTTP, `<title>`, `<main>`, `<h1>` & 404 Audit Across ALL Manifest Canonical Ground-Truth Routes + 2 Negative Routes
 console.log(`\n[4/5] Auditing All ${GROUND_TRUTH.routes.length} Canonical Routes + 2 Negative 404 Routes on ${BASE_URL}...`);
 for (const entry of GROUND_TRUTH.routes) {
   const res = await fetch(`${BASE_URL}${entry.route}`);
@@ -233,5 +252,5 @@ if (failures > 0) {
   console.error(`\nQA FAILED with ${failures} issue(s).`);
   process.exit(1);
 } else {
-  console.log("\nALL LUSION QA GATES PASSED SUCCESSFULLY (22/22 ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).");
+  console.log(`\nALL LUSION QA GATES PASSED SUCCESSFULLY (${GROUND_TRUTH.routes.length}/${GROUND_TRUTH.routes.length} ROUTES + 404 + ASSET SECURITY + CAPTURED SCENE ASSETS).`);
 }

@@ -295,7 +295,7 @@ export function HomePageView() {
   const handleOpenReel = () => {
     soundEngine.playClick();
     setReelOpen(true, {
-      title: "Lusion Showreel",
+      title: "JITHIN Showreel",
       desktopSrc: LUSION_HOME.reel.desktopLoopVideo,
       mobileSrc: LUSION_HOME.reel.mobileLoopVideo,
     });
@@ -309,13 +309,13 @@ export function HomePageView() {
       <section
         id="home-hero"
         ref={heroSectionRef}
-        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+2.9rem)] pb-[calc(var(--base-padding-y)*1.25)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*5.6)] min-[813px]:pb-[var(--base-padding-y)]"
+        className="section relative grid h-[calc(var(--vh,1vh)*100)] min-h-[580px] grid-cols-6 grid-rows-[auto_1fr] px-[var(--base-padding-x)] pt-[calc(var(--base-padding-y)+2.9rem)] pb-[calc(var(--base-padding-y)*1.25)] min-[813px]:grid-cols-12 min-[813px]:pt-[calc(var(--vh,1vh)*5.3)] min-[813px]:pb-[calc(var(--base-padding-y)*0.94)]"
       >
         {/* Reference Headline (`#home-hero-title`: cols 4..8 desktop, cols 1..6 mobile) */}
         <h1
           id="home-hero-title"
           ref={heroHeadingRef}
-          className="relative col-span-6 m-0 h-fit font-sans text-[5.9vw] leading-[1.09] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[6.8vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.7vw]"
+          className="relative col-span-6 m-0 h-fit font-sans text-[6.6vw] leading-[1.09] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[6.8vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.7vw]"
         >
           {heroWords.map((word, idx) => (
             <React.Fragment key={idx}>
@@ -341,7 +341,7 @@ export function HomePageView() {
         {/* Dark Rounded 3D Hollow Cross Stage (`#home-hero-visual-container`) */}
         <div
           ref={heroStageRef}
-          className="col-span-6 mt-[calc(var(--base-padding-y)*0.55)] mb-[calc(var(--base-padding-y)*0.75)] min-h-0 will-change-[transform,opacity] min-[813px]:col-span-12 min-[813px]:mt-[calc(var(--base-padding-y)*0.6)] min-[813px]:mb-[calc(var(--base-padding-y)*0.55)]"
+          className="col-span-6 mt-[calc(var(--base-padding-y)*0.55)] mb-[calc(var(--base-padding-y)*1.35)] min-h-0 will-change-[transform,opacity] min-[813px]:col-span-12 min-[813px]:mt-[calc(var(--base-padding-y)*0.9)] min-[813px]:mb-[calc(var(--base-padding-y)*0.05)]"
         >
           <HeroCrossesStage />
         </div>
@@ -350,7 +350,7 @@ export function HomePageView() {
         <div
           id="home-hero-scroll-container"
           ref={heroCueRef}
-          className="pointer-events-none absolute right-[var(--base-padding-x)] bottom-[calc(var(--base-padding-y)*0.32)] left-[var(--base-padding-x)] flex h-[var(--base-padding-y)] items-center justify-between"
+          className="pointer-events-none absolute right-[var(--base-padding-x)] bottom-[calc(var(--base-padding-y)*0.32)] min-[813px]:bottom-0 left-[var(--base-padding-x)] flex h-[var(--base-padding-y)] items-center justify-between"
         >
           <div
             id="home-hero-scroll-container-crosses"
@@ -676,7 +676,7 @@ export function HomePageView() {
       </section>
 
       {/* =====================================================================
-          3. FEATURED WORK SECTION (`#home-featured` — 10 Current Projects)
+          3. FEATURED WORK SECTION (`#home-featured` — 12 Current Projects)
          ===================================================================== */}
       <section
         id="home-featured"
@@ -741,7 +741,7 @@ export function HomePageView() {
       {/* =====================================================================
           6 & 7. STUDIO FOOTER (`#footer-section`) & PORTAL (`#scroll-nav-section`)
          ===================================================================== */}
-      <StudioFooter nextHref="/about" nextLabel="About Us" />
+      <StudioFooter nextHref="/about" nextLabel="About Us" brandName="JITHIN" />
     </main>
   );
 }

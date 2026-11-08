@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
+    "prebuild": "node scripts/generate-about-card-ink.mjs",
     "build": "next build",
     "postbuild": "cp -r public .next/standalone/ && cp -r media-bundle .next/standalone/ && cp -r .next/static .next/standalone/.next/",
     "start": "HOSTNAME=0.0.0.0 PORT=${PORT:-3000} node .next/standalone/server.js",
@@ -18,7 +19,10 @@
     "check": "npm run lint && npm run typecheck && npm run build",
     "test:about-portrait": "node scripts/test-about-portrait.mjs",
     "test:assets": "node scripts/test-asset-route.mjs",
-    "test:motion": "node scripts/test-home-motion.mjs",
+    "test:motion": "node scripts/test-home-motion.mjs && node scripts/test-home-pointer-decay.mjs",
+    "test:about-clients": "node scripts/test-about-client-layout.mjs",
+    "test:project-gallery-text": "node scripts/test-project-gallery-text-browser.mjs",
+    "test:project-preview": "node scripts/test-project-preview-browser.mjs",
     "validate:home-motion": "node scripts/validate-home-motion.mjs",
     "qa": "node scripts/qa-verify.mjs",
     "validate:browser": "node scripts/phase-c-home-validate.mjs",
@@ -26,7 +30,11 @@
     "about:capture": "node scripts/about-capture.mjs",
     "about:contact-sheet": "node scripts/about-contact-sheet.mjs",
     "about:accessibility": "node scripts/validate-about-accessibility.mjs",
-    "about:budget": "node scripts/capture-about-budget.mjs"
+    "about:budget": "node scripts/capture-about-budget.mjs",
+    "test:projects": "node scripts/test-projects-archive.mjs",
+    "test:about-copy": "node scripts/test-about-copy.mjs",
+    "test:preloader-a11y": "node scripts/test-preloader-a11y.mjs",
+    "test:navigation-a11y": "node scripts/test-navigation-a11y.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
