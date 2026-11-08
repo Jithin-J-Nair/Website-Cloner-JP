@@ -1,47 +1,29 @@
 "use client";
 
-import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useStudioStore } from "@/lib/store";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { createRouteTransitionMotion } from "./RouteTransitionMotion";
 
+/** One persistent Canvas2D owner, not an extra WebGL context or link-local timer. */
 export function PageTransitionCurtain() {
-  const isTransitioning = useStudioStore((s) => s.isTransitioning);
-  const transitionLabel = useStudioStore((s) => s.transitionLabel);
-
+  const pathname = usePathname();
+  const root = useRef<HTMLDivElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const status = useRef<HTMLSpanElement>(null);
+  const owner = useRef<ReturnType<typeof createRouteTransitionMotion> | null>(null);
+  useEffect(() => {
+    if (!root.current || !canvas.current || !status.current) return;
+    const motion = createRouteTransitionMotion(root.current, canvas.current, status.current);
+    owner.current = motion;
+    return () => { motion.dispose(); owner.current = null; };
+  }, []);
+  useEffect(() => { owner.current?.routeCommitted(pathname); }, [pathname]);
   return (
-    <AnimatePresence>
-      {isTransitioning && (
-        <motion.div
-          key="route-curtain"
-          initial={{ scaleY: 0, transformOrigin: "bottom" }}
-          animate={{
-            scaleY: 1,
-            transformOrigin: "bottom",
-            transition: { duration: 0.28, ease: [0.76, 0, 0.24, 1] },
-          }}
-          exit={{
-            scaleY: 0,
-            transformOrigin: "top",
-            transition: { duration: 0.34, ease: [0.76, 0, 0.24, 1] },
-          }}
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 z-[90] flex flex-col items-center justify-center bg-[#000000] text-[#ffffff]"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0, transition: { delay: 0.06, duration: 0.16 } }}
-            exit={{ opacity: 0, y: -10, transition: { duration: 0.14 } }}
-            className="flex flex-col items-center gap-4 text-center"
-          >
-            <svg width="28" height="35" viewBox="0 0 86 108" fill="none" aria-hidden="true">
-              <path d="M0 0H43V54H86V108H0V0Z" fill="#1a2ffb" />
-            </svg>
-            <span className="font-sans text-3xl font-normal tracking-tight uppercase md:text-5xl">
-              {transitionLabel || "LUSION"}
-            </span>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <>
+      <div ref={root} id="route-transition" hidden className="fixed inset-0 z-[100] overflow-hidden touch-none" aria-hidden="true">
+        <canvas ref={canvas} id="transition-overlay" className="absolute top-0 left-0" />
+      </div>
+      <span ref={status} className="sr-only" role="status" aria-live="polite" aria-atomic="true" />
+    </>
   );
 }

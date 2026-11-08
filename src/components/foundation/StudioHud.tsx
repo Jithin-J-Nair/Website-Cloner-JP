@@ -1,9 +1,11 @@
 "use client";
 
+import "./studio-menu-motion.css";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { TransitionLink } from "@/components/studio/TransitionLink";
 import { useStudioStore, type ProjectThemeConfig } from "@/lib/store";
+import { navigateStudioRoute } from "@/lib/route-navigation";
 import { soundEngine } from "@/lib/audio";
 import { LUSION_GLOBAL_CHROME, LUSION_PROJECT_DETAILS } from "@/data/reference";
 
@@ -103,7 +105,6 @@ export function StudioHud() {
   const setNavMenuOpen = useStudioStore((s) => s.setMenuOpen);
   const activeProjectTheme = useStudioStore((s) => s.activeProjectTheme);
   const setActiveProjectTheme = useStudioStore((s) => s.setActiveProjectTheme);
-  const setTransition = useStudioStore((s) => s.setTransition);
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
 
   const [previewProjectSlug, setPreviewProjectSlug] = useState<string | null>(null);
@@ -348,8 +349,12 @@ export function StudioHud() {
       target.focus({ preventScroll: true });
       return;
     }
+    if (pathname.startsWith("/projects/") || pathname.startsWith("/work/")) {
+      navigateStudioRoute("/#footer-section", router, "Contact");
+      return;
+    }
     window.location.href = `mailto:${LUSION_GLOBAL_CHROME.footer.enquiriesEmail}`;
-  }, [reducedMotion, setNavMenuOpen]);
+  }, [pathname, reducedMotion, router, setNavMenuOpen]);
 
   const handleProjectBack = () => {
     soundEngine.playClick();
@@ -359,15 +364,7 @@ export function StudioHud() {
       return;
     }
     const target = pathname.startsWith("/work/") ? "/work" : "/projects";
-    if (!reducedMotion) {
-      setTransition(true, "Projects");
-      window.setTimeout(() => {
-        router.push(target);
-        window.setTimeout(() => setTransition(false, ""), 380);
-      }, 240);
-    } else {
-      router.push(target);
-    }
+    navigateStudioRoute(target, router, "Projects");
   };
 
   const handleMenuNewsletterSubmit = (e: React.FormEvent) => {

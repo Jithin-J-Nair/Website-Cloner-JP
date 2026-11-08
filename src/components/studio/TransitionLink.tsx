@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useStudioStore } from "@/lib/store";
+import { navigateStudioRoute, shouldTransitionAnchor } from "@/lib/route-navigation";
 import { soundEngine } from "@/lib/audio";
 
 interface TransitionLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -27,7 +28,6 @@ export function TransitionLink({
   const router = useRouter();
   const pathname = usePathname();
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
-  const setTransition = useStudioStore((s) => s.setTransition);
   const setMenuOpen = useStudioStore((s) => s.setMenuOpen);
   const setCursor = useStudioStore((s) => s.setCursor);
   const resetCursor = useStudioStore((s) => s.resetCursor);
@@ -35,18 +35,7 @@ export function TransitionLink({
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
     resetCursor();
-    if (
-      e.defaultPrevented ||
-      e.metaKey ||
-      e.ctrlKey ||
-      e.shiftKey ||
-      e.altKey ||
-      href.startsWith("http") ||
-      href.startsWith("mailto:") ||
-      href.startsWith("#")
-    ) {
-      return;
-    }
+    if (!shouldTransitionAnchor(e, e.currentTarget)) return;
 
     if (href === pathname) {
       e.preventDefault();
@@ -59,21 +48,7 @@ export function TransitionLink({
     soundEngine.playChime(523.25, 0.08);
     setMenuOpen(false);
 
-    if (reducedMotion) {
-      router.push(href);
-      return;
-    }
-
-    const label =
-      transitionLabel ||
-      (href === "/"
-        ? "HOME"
-        : href.replace(/^\//, "").replace(/\//g, " // ").replace(/-/g, " ").toUpperCase());
-
-    setTransition(true, label);
-    window.setTimeout(() => {
-      router.push(href);
-    }, 260);
+    navigateStudioRoute(href, router, transitionLabel || (href === "/" ? "Home" : href.split("/").filter(Boolean).join(" ")));
   };
 
   return (

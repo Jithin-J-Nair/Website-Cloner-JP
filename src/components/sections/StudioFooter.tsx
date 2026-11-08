@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useStudioStore } from "@/lib/store";
+import { navigateStudioRoute } from "@/lib/route-navigation";
+import { createScrollPortalMotion } from "@/components/foundation/ScrollPortalMotion";
 import { soundEngine } from "@/lib/audio";
 import {
   LUSION_ABOUT,
@@ -56,7 +58,6 @@ export function StudioFooter({
   const pathname = usePathname();
   const router = useRouter();
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
-  const setTransition = useStudioStore((s) => s.setTransition);
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const footerCopyright = pathname === "/"
     ? "©2026 JITHIN"
@@ -70,7 +71,6 @@ export function StudioFooter({
   const footerRef = useRef<HTMLElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
   const chargeBarRef = useRef<HTMLSpanElement>(null);
-  const triggeredRef = useRef(false);
 
   // Switch header ink back to crisp `#000000` black whenever white `#footer-section` enters view
   useEffect(() => {
@@ -112,65 +112,14 @@ export function StudioFooter({
   }, [nextHref, nextLabel, pathname]);
 
   const navigateNextChapter = useCallback(() => {
-    if (triggeredRef.current) return;
-    triggeredRef.current = true;
     soundEngine.playTransitionWhoosh();
+    return navigateStudioRoute(resolvedPortal.targetPath, router, resolvedPortal.label);
+  }, [resolvedPortal.label, resolvedPortal.targetPath, router]);
 
-    if (reducedMotion) {
-      router.push(resolvedPortal.targetPath);
-      window.setTimeout(() => {
-        triggeredRef.current = false;
-      }, 600);
-      return;
-    }
-
-    setTransition(true, resolvedPortal.label);
-    window.setTimeout(() => {
-      router.push(resolvedPortal.targetPath);
-      window.setTimeout(() => {
-        setTransition(false, "");
-        triggeredRef.current = false;
-      }, 420);
-    }, 260);
-  }, [reducedMotion, resolvedPortal.label, resolvedPortal.targetPath, router, setTransition]);
-
-  // Bottom overscroll progress bar (`#scroll-nav-next-bar-inner`, zero-rerender DOM update)
   useEffect(() => {
-    let charge = 0.5;
-    if (chargeBarRef.current) {
-      chargeBarRef.current.style.transform = "scaleX(0.500)";
+    if (portalRef.current && chargeBarRef.current) {
+      return createScrollPortalMotion(portalRef.current, chargeBarRef.current, reducedMotion, navigateNextChapter);
     }
-    if (reducedMotion) return;
-
-    let decayTimer = 0;
-    const onWheel = (e: WheelEvent) => {
-      const el = portalRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const atBottom = rect.bottom <= window.innerHeight + 36;
-      if (atBottom && e.deltaY > 0) {
-        charge = Math.min(1, charge + Math.min(0.2, e.deltaY * 0.0014));
-        if (chargeBarRef.current) {
-          chargeBarRef.current.style.transform = `scaleX(${charge.toFixed(3)})`;
-        }
-        if (charge >= 0.995) {
-          navigateNextChapter();
-        }
-        window.clearTimeout(decayTimer);
-        decayTimer = window.setTimeout(() => {
-          charge = 0.5;
-          if (chargeBarRef.current) {
-            chargeBarRef.current.style.transform = "scaleX(0.500)";
-          }
-        }, 460);
-      }
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: true });
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.clearTimeout(decayTimer);
-    };
   }, [navigateNextChapter, pathname, reducedMotion]);
 
   const handleNewsletterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -472,15 +421,13 @@ export function StudioFooter({
         </div>
       </footer>
 
-      {/* 2. Bottom Overscroll Next-Page Portal (`#scroll-nav-section`, `#121416` slate).
-          About's next action stays visible on touch: expanding a clipped portal
-          on focus moves the button between pointer-down/up and cancels activation.
-          Keep other routes' existing presentation unchanged. */}
+      {/* Native chapter portal remains readable on touch. Never resize the
+          button's container on focus between pointer-down/up. */}
       <div
         id="scroll-nav-section"
         ref={portalRef}
         data-path={resolvedPortal.targetPath}
-        className={`relative z-[32] flex flex-col justify-between overflow-hidden bg-[#121416] px-[var(--base-padding-x)] py-7 text-[clamp(0.875rem,1vw,1.25rem)] text-white md:min-h-[428px] md:py-11 ${pathname === "/about" ? "" : "max-[812px]:max-h-[116px] max-[812px]:focus-within:max-h-[340px]"}`}
+        className="relative z-[32] flex flex-col justify-between overflow-hidden bg-[#121416] px-[var(--base-padding-x)] py-7 text-[clamp(0.875rem,1vw,1.25rem)] text-white md:min-h-[428px] md:py-11"
       >
         <div id="scroll-nav-content" className="uppercase">
           <div id="scroll-nav-subtitle" className="text-[0.85em] leading-[1.35] text-white/80">
@@ -522,8 +469,8 @@ export function StudioFooter({
                 <span
                   id="scroll-nav-next-bar-inner"
                   ref={chargeBarRef}
-                  style={{ transform: "scaleX(0.500)" }}
-                  className="block h-full w-full origin-left bg-[#c1ff00] transition-transform duration-150"
+                  style={{ transform: "scaleX(0)" }}
+                  className="block h-full w-full origin-left bg-[#c1ff00]"
                 />
               </span>
               <span id="scroll-nav-next-arrow" aria-hidden="true" className="h-[1.2em] w-[1.2em] shrink-0">
