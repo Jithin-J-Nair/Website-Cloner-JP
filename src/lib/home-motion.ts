@@ -42,10 +42,11 @@ export function blueFlightDistance(tunnel: number, shatter: number): number {
   return 22 * (0.28 * travel + 0.72 * travel * travel);
 }
 
-/** Software rasterizers are fill-bound: conserve pixels during motion, not static UHD inspection. */
+/** The native 81-neighbour field/FFT is expensive on CPU rasterizers. Bound only
+ * software motion pixels; physical GPUs and static/reduced-motion inspection keep native quality. */
 export function cinematicRenderDpr(width: number, height: number, deviceDpr: number, software: boolean, reduced: boolean): number {
   const native = homeRenderDpr(width, height, deviceDpr);
-  return software && !reduced ? Math.min(native, Math.sqrt(960 * 600 / Math.max(1, width * height))) : native;
+  return software && !reduced ? Math.min(native, Math.sqrt(640 * 400 / Math.max(1, width * height))) : native;
 }
 
 /** Advance only by visible, unpaused elapsed time. Interpolation limits must not slow this clock. */

@@ -74,7 +74,9 @@ try {
   const homePageSource = fs.readFileSync('src/components/home/HomePageView.tsx','utf8');
   const heroSource = fs.readFileSync('src/components/home/HeroCrossesStage.tsx','utf8');
   const goalSource = fs.readFileSync('src/components/home/GoalTunnelSection.tsx','utf8');
-  const downstreamSource = fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8');
+  const nativeWorlds = fs.readFileSync('src/components/home/GoalReferenceWorlds.ts','utf8');
+  const nativeShaders = fs.readFileSync('src/components/home/GoalReferenceShaders.ts','utf8');
+  const nativeBloom = fs.readFileSync('src/components/home/GoalReferenceBloomPass.ts','utf8');
   const smoothSource = fs.readFileSync('src/components/foundation/SmoothScrollProvider.tsx','utf8');
   assert.ok(!homePageSource.includes('skewY(') && !homePageSource.includes('targetSkew'),
     'project cards do not shear or glitch with scroll velocity');
@@ -86,42 +88,29 @@ try {
     'the synthetic crack overlay is completely removed');
   assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),
     'the full-screen radial RGB glitch/dispersion pass is removed');
-  assert.ok(goalSource.includes('...(isMobileInit || isSoftwareRenderer') && goalSource.includes('#include <tonemapping_fragment>') && goalSource.includes('#include <colorspace_fragment>'),
-    'glass shader applies ACES and sRGB output transforms on direct-render mobile/software paths while leaving composer output to OutputPass');
-  assert.ok(goalSource.includes('const float iorR = 1.516;') && goalSource.includes('const float iorG = 1.520;') && goalSource.includes('const float iorB = 1.526;'),
-    'glass refraction uses wavelength-dependent Snell IOR rather than an arbitrary RGB offset');
-  assert.ok(goalSource.includes('uniform mat4 uCameraWorldMatrix;') && goalSource.includes('mat3(uCameraWorldMatrix) * vNormalV'),
-    'glass reflections use correctly transformed world-space facet normals');
-  assert.ok(goalSource.includes('float distribution = alpha2 / max(PI * dDenom * dDenom') && goalSource.includes('float fres = fresnelSchlick(facing, f0);'),
-    'glass facets use GGX microfacet highlights and Schlick Fresnel reflection');
-  assert.ok(downstreamSource.includes('theta * 4.0 - r * 22.0') && downstreamSource.includes('float eventHorizon'),
-    'vortex core uses a deformed four-fold spiral, accretion ring and dark central horizon');
-  assert.ok(!downstreamSource.includes('GlassTesseractVortex') && !downstreamSource.includes('TesseractGlass'),
-    'the white tesseract object is completely removed from the tunnel scene');
-  assert.ok(downstreamSource.includes('buildVortexHypercubeLattice') && downstreamSource.includes('rotatePlane(four, 0, 3'),
-    'the vortex is a nested perspective-projected 4D glass lattice, not an opaque white cube');
-  assert.ok(downstreamSource.includes('buildGlassShardSideGeometry') && downstreamSource.includes('sideNormal.crossVectors'),
-    'captured glass fragments gain closed volumetric side faces');
-  assert.ok(goalSource.includes('uGlassThickness') && goalSource.includes('sideHalfThickness') && goalSource.includes('Math.max(0.035,'),
-    'glass optical path is derived from the actual world-scaled shard plate thickness');
-  assert.ok(goalSource.includes('mix(envReflection, screenReflection, 0.92)'),
-    'moving glass reflects the live corridor/astronaut scene rather than relying on a static environment alone');
-  assert.ok(goalSource.includes('float alpha = uOpacity;'),
-    'the refracted/reflected composite is not blended a second time over the source scene');
-  assert.ok(goalSource.includes('1 - 0.54 * smoothstep(0.54, 0.70, tTunnel)') && downstreamSource.includes('vec3(0.94, 0.13, 0.62)') && downstreamSource.includes('primary*mix(3.5,2.6,pink)'),
-    'the vortex peak gives the transparent glass lattice visual priority over the metallic truss');
-  assert.ok(downstreamSource.includes('float warm = smoothstep(0.24, 0.36, uPhase);') &&
-    downstreamSource.includes('float emerald = smoothstep(0.39, 0.55, uPhase);') &&
-    downstreamSource.includes('float pink = smoothstep(0.65, 0.80, uPhase);') &&
-    downstreamSource.includes('vec3(0.42, 1.0, 0.12)') &&
-    downstreamSource.includes('secondary = mix(secondary, vec3(0.18, 0.72, 1.0), pink)'),
-    'captured tunnel lighting follows the cyan/steel -> warm red -> emerald -> pink/blue reference sequence');
-  assert.ok(downstreamSource.includes('const tubeRadius = 0.020') && downstreamSource.includes('scale.setScalar(0.043') && downstreamSource.includes('material.opacity = 0.34 + glow * 0.54') && downstreamSource.includes('envMapIntensity: 2.85'),
-    'the 4D glass lattice has legible crystal edges and stronger environmental reflections');
-  assert.ok(goalSource.includes('(tShatter - 0.205) / 0.145'),
-    'the 946-piece glass breakup is compressed to a short impact beat');
-  assert.ok(goalSource.includes('smoothstep(0.08, 0.28, tShatter)') && goalSource.includes('descent * 1.72'),
-    'the astronaut breakout and tunnel descent use the faster gravity trajectory');
+  // Supersedes tests that required invented thick glass cages, a separate
+  // accretion disc, Snell/GGX shader and a compressed explosion. Those were
+  // implementation assertions, not evidence of reference-video similarity.
+  assert.ok(goalSource.includes('createGoalReferenceWorlds(track)') && !goalSource.includes('buildVortexHypercubeLattice') && !goalSource.includes('buildTunnelGlazing'),
+    'the live owner uses captured architecture, not the old decorative worlds');
+  assert.ok(nativeWorlds.includes('GRID_SIZE: 20') && nativeWorlds.includes('instanceGridIds') && nativeWorlds.includes('a_instanceId'),
+    'encoded grid placement and 16-block corridor instancing are retained');
+  assert.ok(nativeShaders.includes('vec4 b=vec4(2.*a,ada-1.)/(1.+ada)') && nativeShaders.includes('pos=c.xyz/(1.-c.w)'),
+    'the shaft itself performs the stereographic 4D fold');
+  assert.ok(nativeShaders.includes('for(int l=-1;l<=1;l++)') && nativeShaders.includes('for(int i=-1;i<=1;i++)'),
+    'the blue bands use the captured 81-neighbour 4D Voronoi field');
+  assert.ok(nativeShaders.includes('cross(fdx,fdy)') && nativeShaders.includes('normalize(mix(posFrom,posTo,u_frameRatio))') && nativeShaders.includes('u_backgroundTexture'),
+    'glass uses derivative normals, captured rigid endpoints and the live scene buffer');
+  assert.ok(goalSource.includes('depthWrite: false, side: THREE.DoubleSide') && !goalSource.includes('buildGlassShardSideGeometry') && goalSource.includes('(tShatter - .75) / .25'),
+    'transparent, non-depth-writing shards have no invented thickness and only shrink during the final quarter');
+  assert.ok(nativeBloom.includes('THREE.UnsignedByteType') && nativeBloom.includes('THREE.FloatType') && nativeBloom.includes('gl_FragColor=vec4(texture2D(u_texture,v_uv).rgb+texture2D(u_bloom'),
+    'clamped scene/bloom-cache and float FFT boundaries feed an opaque final display');
+  assert.ok(nativeBloom.includes('HORIZTONAL: 1') && nativeShaders.includes('u_subtransformSize') && nativeShaders.includes('rotToCenter*vec2(1.0,20.0)'),
+    'native diffraction is convolution of the source kernel, not arbitrary full-screen RGB distortion');
+  assert.ok(goalSource.includes('outputPass.enabled = inEmergencePhase') && goalSource.includes('referenceBloom.enabled = !inEmergencePhase'),
+    'ACES/sRGB emergence and the native unmanaged-color pipeline are not applied twice');
+  assert.ok(goalSource.includes('nativeRatios.white * 79 : 79 + tShatter * 20') && !goalSource.includes('_invertedBasis'),
+    'captured root timing/basis replaces hand-authored Euler spins and depth offsets');
   assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
     'Lenis uses the tuned smooth-wheel profile');
 

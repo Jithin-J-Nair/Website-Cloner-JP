@@ -6,7 +6,10 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
-import { advanceCinematicProgress, acceleratedFall, blueFlightDistance, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
+import { advanceCinematicProgress, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
+import { createGoalReferenceWorlds, createGoalGlassAnimationTextures, goalWorldRatios, sampleGoalBrownian, GOAL_WORLD_SCALE } from "./GoalReferenceWorlds";
+import { GoalReferenceBloomPass } from "./GoalReferenceBloomPass";
+import { glassVertex, glassFragment } from "./GoalReferenceShaders";
 import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
 import { createGpuFrameTimer } from "@/lib/gpu-frame-timer";
 import { LUSION_HOME } from "@/data/reference";
@@ -24,28 +27,18 @@ import {
   evaluateSuitPoseStage,
   loadLicensedAstronautGlb,
   loadLusionAstronautParts,
-  applyCapturedDualQuaternionSkinning,
   setPortalStencilMask,
   SUIT_POSE_TABLET_FLOAT,
   type LoadedAstronautRig,
   type SuitJointPose,
 } from "@/components/home/AstronautEmergenceAssets";
 import {
-  buildArchitecturalTrussTunnel,
-  buildBlueArchCorridor,
-  buildGlassShardSideGeometry,
-  buildTunnelGlazing,
-  buildVortexHypercubeLattice,
   buildDiamondsAndPopStickers,
-  buildHologramEchoMaterial,
   buildVisorLedMatrix,
-  createGlassFrameSampler,
   createGoalPlaybackPath,
   evaluateSuitWavePose,
   SUIT_POSE_CORRIDOR_FLY,
   SUIT_POSE_CTA_RELAXED,
-  SUIT_POSE_SHATTER_BREAK,
-  SUIT_POSE_TUMBLE_CURL,
   SUIT_POSE_TUMBLE_SPREAD,
   SUIT_POSE_VISOR_SALUTE,
 } from "@/components/home/GoalDownstreamScenes";
@@ -75,6 +68,7 @@ declare global {
       };
     };
     __goalAstronautTelemetry?: {
+      pipelineReady: boolean;
       glbLoaded: boolean;
       glbError: string | null;
       qualityTier: "desktop" | "mobile";
@@ -99,6 +93,12 @@ declare global {
         bakedFrame: number;
         astronautMatrix: number[];
         cameraMatrix: number[];
+        nativeWorldsReady: boolean;
+        worldError: string | null;
+        blackInstances: number;
+        whiteInstances: number;
+        blackOffset: number;
+        bloomTechnique: "source-fft" | "emergence";
         trussLoaded: boolean;
         shardsLoaded: boolean;
         portalFlash: number;
@@ -369,10 +369,10 @@ export function GoalTunnelSection() {
     // -------------------------------------------------------------------------
     // 4. Load captured Lusion astronaut meshes first; the unrelated GLB is last-resort fallback only.
     // -------------------------------------------------------------------------
+    const nativeLightMask = { value: 0 };
     let mainAstro: LoadedAstronautRig | null = null;
     const clones: LoadedAstronautRig[] = [];
     const visorLed = buildVisorLedMatrix(track);
-    const hologramEchoMat = buildHologramEchoMaterial(track);
 
     const glbPromise = forceAssetFailure
       ? Promise.reject(new Error("Simulated astronaut asset failure (?simulateGlbError=1)"))
@@ -383,60 +383,28 @@ export function GoalTunnelSection() {
         );
 
     // -------------------------------------------------------------------------
-    // 5. High-Fidelity Single-Draw-Call Downstream Worlds (`Frames 09–20`)
+    // 5. Captured instanced architectural worlds and source-shaped feedback
     // -------------------------------------------------------------------------
-    const corridorEnvironment = track(new THREE.WebGLCubeRenderTarget(isMobileInit ? 64 : 128));
-    const captureCorridorEnvironment = (world: THREE.Group) => {
+    const worlds = createGoalReferenceWorlds(track);
+    scene.add(worlds.black, worlds.white, worlds.monitorStencilMask);
+    void worlds.ready.then(() => {
       if (unmounted || contextLost) return;
-      const reflectionScene = new THREE.Scene();
-      reflectionScene.background = new THREE.Color(0x0a104a);
-      reflectionScene.add(new THREE.HemisphereLight(0xe5efff,0x162e9a,1.2));
-      const reflectionKey = new THREE.DirectionalLight(0xffffff,1.1);
-      reflectionKey.position.set(-2,3,4);
-      reflectionScene.add(reflectionKey);
-      const reflected = world.clone(true);
-      reflected.visible = true;
-      reflectionScene.add(reflected);
-      const stencilStates = new Map<THREE.Material,boolean>();
-      reflected.traverse((node) => {
-        if (!(node instanceof THREE.Mesh)) return;
-        for (const mat of Array.isArray(node.material) ? node.material : [node.material]) {
-          if (!stencilStates.has(mat)) stencilStates.set(mat,mat.stencilWrite);
-          mat.stencilWrite = false;
-        }
-      });
-      const cubeCamera = new THREE.CubeCamera(0.1,80,corridorEnvironment);
-      cubeCamera.position.set(0,0,1.5);
-      try { cubeCamera.update(glRenderer,reflectionScene); }
-      finally {
-        for (const [mat,stencilWrite] of stencilStates) mat.stencilWrite = stencilWrite;
-        reflectionScene.clear();
+      const state = window.__goalAstronautTelemetry?.sceneState;
+      if (state) {
+        state.nativeWorldsReady = worlds.blackReady && worlds.whiteReady; state.worldError = worlds.error;
+        state.blackInstances = worlds.blackReady ? 552 : 0; state.whiteInstances = worlds.whiteReady ? 32 : 0;
       }
-    };
-    const blueCorridor = buildBlueArchCorridor(track,captureCorridorEnvironment,isMobileInit || isSoftwareRenderer);
-    blueCorridor.group.visible = false;
-    scene.add(blueCorridor.group);
-    scene.add(blueCorridor.monitorStencilMask);
-    // Initial fallback capture; refresh once when authoritative architecture is ready.
-    // No cube renders or PMREM generation occur in the animation loop.
-    captureCorridorEnvironment(blueCorridor.group);
-    const trussSystem = buildArchitecturalTrussTunnel(track, isMobileInit || isSoftwareRenderer, corridorEnvironment.texture);
-    trussSystem.group.visible = false;
-    scene.add(trussSystem.group);
-    // Nested transparent 4D-projected glass cages surround the core; no opaque white tesseract.
-    const vortexGlass = buildVortexHypercubeLattice(track, corridorEnvironment.texture, isMobileInit);
-    vortexGlass.group.visible = false;
-    scene.add(vortexGlass.group);
-    const glazing = buildTunnelGlazing(track, corridorEnvironment.texture, isMobileInit);
-    scene.add(glazing.group);
-    glazing.group.visible = false;
+      if (worlds.error) {
+        console.warn("Goal architecture unavailable", worlds.error); audioJourney.release(); showStaticFallback();
+        if (window.__goalAstronautTelemetry) window.__goalAstronautTelemetry.fallbackVisible = true;
+      } else renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * .001);
+    });
 
     // Live scene color buffer: animated fragments refract the current tunnel and astronaut.
     let glassRefractionTarget: THREE.WebGLRenderTarget | null = null;
 
     // Captured rigid-body shard transforms are interpolated continuously at each scroll sample.
     let shardsMesh: THREE.Mesh | null = null;
-    let shardEdgesMesh: THREE.Mesh | null = null;
     let numShards = 0;
     let framesPerShard = 0;
 
@@ -445,7 +413,7 @@ export function GoalTunnelSection() {
     scene.add(endDecor.group);
 
     // Glass is optional: a failed debris asset must not suppress the astronaut rig.
-    import("@/lib/lusion-buf-loader")
+    const glassPromise = import("@/lib/lusion-buf-loader")
       .then((m) => Promise.all([
         m.loadLusionBuf("/assets/models/tunnels/broken_glass.buf"),
         m.loadLusionBuf("/assets/models/tunnels/broken_glass_animation.buf"),
@@ -457,215 +425,29 @@ export function GoalTunnelSection() {
         numShards = maxPiece + 1;
         framesPerShard = Math.floor(bga.header.vertexCount / numShards);
         
-        // This is one indexed mesh, not an instanced draw. Preserve normals for the glass shader.
         const geom = track(bg.geometry.clone());
-        geom.setAttribute("aPiece", geom.getAttribute("piece"));
-        geom.computeVertexNormals();
-        const restBounds = new THREE.Box3();
-        const restVertex = new THREE.Vector3();
-        const positions = geom.getAttribute("position");
-        const pieces = geom.getAttribute("piece");
+        const restBounds = new THREE.Box3(), vertex = new THREE.Vector3(), orientation = new THREE.Quaternion();
+        const positions = geom.getAttribute("position"), pieces = geom.getAttribute("piece");
         for (let i = 0; i < positions.count; i++) {
-          const piece = pieces.getX(i);
-          restVertex.fromBufferAttribute(positions, i);
-          restVertex.x += bga.attributes.position[piece * 3];
-          restVertex.y += bga.attributes.position[piece * 3 + 1];
-          restVertex.z += bga.attributes.position[piece * 3 + 2];
-          restBounds.expandByPoint(restVertex);
+          const piece = pieces.getX(i); orientation.fromArray(bga.attributes.orient, piece * 4);
+          vertex.fromBufferAttribute(positions, i).applyQuaternion(orientation);
+          vertex.x += bga.attributes.position[piece * 3]; vertex.y += bga.attributes.position[piece * 3 + 1]; vertex.z += bga.attributes.position[piece * 3 + 2]; restBounds.expandByPoint(vertex);
         }
-
-        const animData = new Float32Array(bga.attributes.position);
-        const animOrient = new Float32Array(bga.attributes.orient);
-        const shardCenter = restBounds.getCenter(new THREE.Vector3());
-        const shardBoundsSize = restBounds.getSize(new THREE.Vector3()).length();
-        const shardSideThickness = Math.max(0.001, shardBoundsSize * 0.00125);
-        const shardSpread = 1.20;
-        
-        const mat = track(
-          new THREE.ShaderMaterial({
-            defines: { USE_SHARDS: 1 },
-            transparent: true,
-            side: THREE.DoubleSide,
-            // Let nearer shard facets occlude farther facets instead of accumulating as wireframe layers.
-            depthWrite: true,
-            uniforms: { 
-              uOpacity: { value: 0 },
-              uEnvironment: { value: corridorEnvironment.texture },
-              uSceneColor: { value: glassRefractionTarget?.texture ?? null },
-              uRefractionSize: { value: new THREE.Vector2(1, 1) },
-              uRefractionStrength: { value: 1.68 },
-              uGlassThickness: { value: Math.max(0.035, shardSideThickness * 2.0) },
-              uCameraWorldMatrix: { value: camera.matrixWorld },
-              uFrameData: { value: null },
-              uOrientData: { value: null },
-            },
-            vertexShader: [
-              "attribute float aPiece;",
-              "uniform sampler2D uFrameData;",
-              "uniform sampler2D uOrientData;",
-              "uniform mat4 uCameraWorldMatrix;",
-              "varying vec3 vNormalV;",
-              "varying vec3 vPosV;",
-              "varying vec3 vWorldPos;",
-              "varying vec3 vNormalW;",
-              "varying vec4 vClipPosition;",
-              "vec3 applyQuat(vec3 v, vec4 q) {",
-              "  return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);",
-              "}",
-              "void main() {",
-              "  float p = aPiece;",
-              "  float u = (mod(p, 32.0) + 0.5) / 32.0;",
-              "  float v = (floor(p / 32.0) + 0.5) / 30.0;",
-              "  vec3 center = texture2D(uFrameData, vec2(u, v)).xyz;",
-              "  vec4 q = texture2D(uOrientData, vec2(u, v));",
-              "  vec3 pos = center + applyQuat(position, q);",
-              "  vec4 mv = modelViewMatrix * vec4(pos, 1.0);",
-              "  vPosV = mv.xyz;",
-              "  vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;",
-              "  // Inverse-transpose handles the non-uniform monitor aperture scale.",
-              "  vNormalV = normalize(normalMatrix * applyQuat(normal, q));",
-              "  // Convert view-space normals back to world space with the camera world rotation.",
-              "  vNormalW = normalize(mat3(uCameraWorldMatrix) * vNormalV);",
-              "  gl_Position = projectionMatrix * mv;",
-              "  vClipPosition = gl_Position;",
-              "}",
-            ].join("\n"),
-            fragmentShader: [
-              "varying vec3 vNormalV;",
-              "varying vec3 vPosV;",
-              "varying vec3 vWorldPos;",
-              "varying vec3 vNormalW;",
-              "varying vec4 vClipPosition;",
-              "uniform float uOpacity;",
-              "uniform float uRefractionStrength;",
-              "uniform float uGlassThickness;",
-              "uniform samplerCube uEnvironment;",
-              "uniform sampler2D uSceneColor;",
-              "uniform vec2 uRefractionSize;",
-              "const float PI = 3.14159265359;",
-              "vec3 safeRefraction(vec3 I, vec3 N, float eta) {",
-              "  vec3 ray = refract(I, N, eta);",
-              "  return dot(ray, ray) < 0.0001 ? reflect(I, N) : ray;",
-              "}",
-              "float fresnelSchlick(float cosine, float f0) {",
-              "  return f0 + (1.0 - f0) * pow(1.0 - clamp(cosine, 0.0, 1.0), 5.0);",
-              "}",
-              "void main() {",
-              "  vec3 N = normalize(vNormalW) * (gl_FrontFacing ? 1.0 : -1.0);",
-              "  vec3 Nv = normalize(vNormalV) * (gl_FrontFacing ? 1.0 : -1.0);",
-              "  vec3 V = normalize(cameraPosition - vWorldPos);",
-              "  float facing = clamp(abs(dot(N, V)), 0.0, 1.0);",
-              "  const float iorR = 1.516;",
-              "  const float iorG = 1.520;",
-              "  const float iorB = 1.526;",
-              "  const float f0 = 0.0426;",
-              "  float fres = fresnelSchlick(facing, f0);",
-              "  vec2 screenUv = vClipPosition.xy / max(0.0001, vClipPosition.w) * 0.5 + 0.5;",
-              "  float pixelScale = min(1.65, 900.0 / max(1.0, min(uRefractionSize.x, uRefractionSize.y)));",
-               "  float edge = pow(1.0 - facing, 1.12);",
-               "  float opticalPath = min(0.42, uGlassThickness / max(0.18, facing));",
-              "  vec3 incident = normalize(vPosV);",
-              "  float etaR = gl_FrontFacing ? (1.0 / iorR) : iorR;",
-              "  float etaG = gl_FrontFacing ? (1.0 / iorG) : iorG;",
-              "  float etaB = gl_FrontFacing ? (1.0 / iorB) : iorB;",
-              "  vec3 rayR = safeRefraction(incident, Nv, etaR);",
-              "  vec3 rayG = safeRefraction(incident, Nv, etaG);",
-              "  vec3 rayB = safeRefraction(incident, Nv, etaB);",
-              "  vec2 incidentSlope = incident.xy / max(0.12, abs(incident.z));",
-              "  vec2 slopeR = rayR.xy / max(0.12, abs(rayR.z));",
-              "  vec2 slopeG = rayG.xy / max(0.12, abs(rayG.z));",
-              "  vec2 slopeB = rayB.xy / max(0.12, abs(rayB.z));",
-               "  float bendScale = (0.012 + edge * 0.034) * opticalPath * uRefractionStrength * pixelScale;",
-              "  vec2 uvR = clamp(screenUv + (slopeR - incidentSlope) * bendScale, vec2(0.001), vec2(0.999));",
-              "  vec2 uvG = clamp(screenUv + (slopeG - incidentSlope) * bendScale, vec2(0.001), vec2(0.999));",
-              "  vec2 uvB = clamp(screenUv + (slopeB - incidentSlope) * bendScale, vec2(0.001), vec2(0.999));",
-              "  vec3 transmitted = vec3(texture2D(uSceneColor, uvR).r, texture2D(uSceneColor, uvG).g, texture2D(uSceneColor, uvB).b);",
-              "  vec3 envTransmission = textureCube(uEnvironment, rayG).rgb;",
-              "  transmitted = mix(transmitted, envTransmission, 0.075);",
-              "  vec3 envReflection = textureCube(uEnvironment, reflect(-V, N)).rgb;",
-              "  vec3 reflectedRay = reflect(incident, Nv);",
-               "  vec2 reflectedUv = clamp(screenUv + reflectedRay.xy * (0.032 + edge * 0.026) * pixelScale, vec2(0.001), vec2(0.999));",
-              "  vec3 screenReflection = texture2D(uSceneColor, reflectedUv).rgb;",
-               "  vec3 reflection = mix(envReflection, screenReflection, 0.92);",
-               "  float reflectance = clamp(fres + edge * 0.14, 0.04, 0.99);",
-              "  vec3 keyLight = normalize(vec3(-0.45, 0.72, 0.55));",
-              "  float nDotV = max(dot(N, V), 0.001);",
-              "  float nDotL = max(dot(N, keyLight), 0.0);",
-              "  vec3 H = normalize(V + keyLight);",
-              "  float nDotH = max(dot(N, H), 0.0);",
-              "  float vDotH = max(dot(V, H), 0.0);",
-              "  float roughness = 0.062 + edge * 0.018;",
-              "  float alphaRough = roughness * roughness;",
-              "  float alpha2 = alphaRough * alphaRough;",
-              "  float dDenom = nDotH * nDotH * (alpha2 - 1.0) + 1.0;",
-              "  float distribution = alpha2 / max(PI * dDenom * dDenom, 0.00001);",
-              "  float geometryK = pow(roughness + 1.0, 2.0) * 0.125;",
-              "  float geometryV = nDotV / (nDotV * (1.0 - geometryK) + geometryK);",
-              "  float geometryL = nDotL / (nDotL * (1.0 - geometryK) + geometryK);",
-              "  float specFres = f0 + (1.0 - f0) * pow(1.0 - vDotH, 5.0);",
-              "  float ggxSpec = distribution * geometryV * geometryL * specFres / max(4.0 * nDotV * nDotL, 0.001) * nDotL;",
-              "  float wideRough = 0.18;",
-              "  float wideA = wideRough * wideRough;",
-              "  float wideA2 = wideA * wideA;",
-              "  float wideDenom = nDotH * nDotH * (wideA2 - 1.0) + 1.0;",
-              "  float wideSpec = wideA2 / max(PI * wideDenom * wideDenom, 0.00001) * geometryV * geometryL * specFres / max(4.0 * nDotV * nDotL, 0.001) * nDotL;",
-              "  vec3 absorption = exp(-vec3(0.010, 0.005, 0.0025) * opticalPath);",
-              "  vec3 col = mix(transmitted * absorption, reflection, reflectance);",
-               "  col += vec3(0.72, 0.87, 1.0) * edge * 0.28;",
-               "  col += vec3(1.0, 0.995, 0.985) * ggxSpec * 4.2;",
-              "  col += vec3(0.48, 0.70, 1.0) * wideSpec * 0.56;",
-               "  // col already contains the transmitted live-scene sample and reflected contribution.",
-               "  // Use the fragment surface's real coverage once; a second low-alpha blend",
-               "  // would composite the background twice and make broken glass disappear.",
-               "  float alpha = uOpacity;",
-              "  gl_FragColor = vec4(col, alpha);",
-              ...(isMobileInit || isSoftwareRenderer
-                ? ["#include <tonemapping_fragment>", "#include <colorspace_fragment>"]
-                : []),
-              "}",
-            ].join("\n"),
-          })
-        );
-        
-        shardsMesh = new THREE.Mesh(geom, mat);
-        shardsMesh.visible = false;
-        shardsMesh.frustumCulled = false;
-        shardsMesh.renderOrder = 12;
-        // Close every captured fragment into a thin glass plate. Sidewalls use the
-        // same per-piece frame/quaternion textures as the refractive front/back faces.
-        const sideGeometry = track(buildGlassShardSideGeometry(geom, shardSideThickness));
-        shardEdgesMesh = new THREE.Mesh(sideGeometry, mat);
-        shardEdgesMesh.visible = false;
-        shardEdgesMesh.frustumCulled = false;
-        shardEdgesMesh.renderOrder = 13;
-        // The data is 946 items. 32x30 texture is 960 items.
-        const frameData = new Float32Array(32 * 30 * 4);
-        const orientData = new Float32Array(32 * 30 * 4);
-        const texFrame = track(new THREE.DataTexture(frameData, 32, 30, THREE.RGBAFormat, THREE.FloatType));
-        const texOrient = track(new THREE.DataTexture(orientData, 32, 30, THREE.RGBAFormat, THREE.FloatType));
-        texFrame.needsUpdate = true;
-        texOrient.needsUpdate = true;
-        mat.uniforms.uFrameData.value = texFrame;
-        mat.uniforms.uOrientData.value = texOrient;
-        
-        const sampleCapturedFrame = createGlassFrameSampler(animData, animOrient, numShards, framesPerShard, frameData, orientData);
-        const sampleFrame = (frame: number) => {
-          sampleCapturedFrame(frame);
-          // Widen the authored breakup envelope slightly while keeping every captured shard trajectory.
-          for (let piece = 0; piece < numShards; piece++) {
-            const offset = piece * 4;
-            frameData[offset] = shardCenter.x + (frameData[offset] - shardCenter.x) * shardSpread;
-            frameData[offset + 1] = shardCenter.y + (frameData[offset + 1] - shardCenter.y) * shardSpread;
-            frameData[offset + 2] = shardCenter.z + (frameData[offset + 2] - shardCenter.z) * shardSpread;
-          }
-        };
-        shardsMesh.userData = {
-          sampleFrame, texFrame, texOrient, framesPerShard, restBounds, shardSpread,
-          sidewallTriangles: Math.floor(sideGeometry.getAttribute("position").count / 3),
-          sideHalfThickness: shardSideThickness,
-        };
+        // Full captured animation textures: exact frame-major endpoint sampling in
+        // the vertex shader, not a rescaled CPU-spline explosion or extra sidewalls.
+        const atlas = createGoalGlassAnimationTextures(bga, numShards);
+        const texFrame = track(atlas.position), texOrient = track(atlas.orient);
+        const mat = track(new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
+          uniforms: { u_backgroundTexture: { value: null }, u_resolution: { value: new THREE.Vector2(1, 1) },
+            u_positionTexture: { value: texFrame }, u_orientTexture: { value: texOrient }, u_textureSize: { value: new THREE.Vector2(numShards, framesPerShard) },
+            u_frameFrom: { value: 0 }, u_frameTo: { value: 0 }, u_frameRatio: { value: 0 }, u_fragmentScale: { value: 1 } },
+          vertexShader: glassVertex, fragmentShader: glassFragment,
+        }));
+        shardsMesh = new THREE.Mesh(geom, mat); shardsMesh.visible = false; shardsMesh.frustumCulled = false; shardsMesh.renderOrder = 1000;
+        shardsMesh.userData = { restBounds, shardSpread: 1, sampleFrame(frame: number) {
+          mat.uniforms.u_frameFrom.value = Math.floor(frame); mat.uniforms.u_frameTo.value = Math.min(framesPerShard - 1, Math.floor(frame) + 1); mat.uniforms.u_frameRatio.value = frame % 1;
+        } };
         scene.add(shardsMesh);
-        scene.add(shardEdgesMesh);
 
       })
       .catch((error: unknown) => {
@@ -677,6 +459,26 @@ export function GoalTunnelSection() {
         if (unmounted || contextLost) return;
         mainAstro = primary;
         portalMaskedMaterials.push(...primary.materials);
+        // Captured rigs share materials; fallback GLB clones may own theirs.
+        // Bridge each material once, never stack shader declarations per clone.
+        const nativeBridgedMaterials = new WeakSet<THREE.Material>();
+        const applyNativeDisplayBridge = (rig: LoadedAstronautRig) => {
+          for (const material of rig.materials) {
+            if (nativeBridgedMaterials.has(material)) continue;
+            nativeBridgedMaterials.add(material);
+            const compile = material.onBeforeCompile, key = material.customProgramCacheKey();
+            material.onBeforeCompile = function(shader, renderer) {
+              compile.call(this, shader, renderer); shader.uniforms.u_goalNativeLightMask = nativeLightMask;
+              shader.fragmentShader = "uniform float u_goalNativeLightMask;\n" + shader.fragmentShader;
+              const end = shader.fragmentShader.lastIndexOf("}");
+              shader.fragmentShader = shader.fragmentShader.slice(0, end) +
+                "gl_FragColor.a=mix(gl_FragColor.a,max(0.,dot(gl_FragColor.rgb,vec3(.299,.587,.114))-1.)*.5,u_goalNativeLightMask);\n" +
+                "gl_FragColor.rgb=mix(gl_FragColor.rgb,sRGBTransferOETF(vec4(max(gl_FragColor.rgb,vec3(0.)),1.)).rgb,u_goalNativeLightMask);\n" + shader.fragmentShader.slice(end);
+            };
+            material.customProgramCacheKey = () => key + "-goal-light-selection-display-v2"; material.needsUpdate = true;
+          }
+        };
+        applyNativeDisplayBridge(primary);
 
         // Attach curved dot-matrix LED emoticon display inside `Head` bone (`Frames 18–20`)
         if (primary.bones.Head) {
@@ -690,18 +492,10 @@ export function GoalTunnelSection() {
         applySuitJointPose(primary, SUIT_POSE_TABLET_FLOAT);
         scene.add(primary.root);
 
-        if (primary.sampleBakedPose) applyCapturedDualQuaternionSkinning(hologramEchoMat);
-        const cloneCount = isMobileInit ? 2 : 4;
+        const cloneCount = 4;
         for (let c = 0; c < cloneCount; c++) {
           const cl = createClone();
-          // Replace heavy PBR clearcoat materials on clones with single lightweight holographic shader!
-          cl.modelRoot.traverse((node) => {
-            if ((node as THREE.Mesh).isMesh) {
-              (node as THREE.Mesh).material = hologramEchoMat;
-              (node as THREE.Mesh).castShadow = false;
-              (node as THREE.Mesh).receiveShadow = false;
-            }
-          });
+          applyNativeDisplayBridge(cl);
           cl.root.visible = false;
           applySuitJointPose(cl, SUIT_POSE_TUMBLE_SPREAD);
           scene.add(cl.root);
@@ -711,27 +505,21 @@ export function GoalTunnelSection() {
         // Pre-compile all downstream WebGL programs on hardware GPUs so scrolling through
         // `Frames 09 -> 20` incurs zero shader-compilation stalls (skip blocking batch LLVM JIT on software rasterizers).
         if (!isSoftwareRenderer) {
-          const prevTruss = trussSystem.group.visible;
-          const prevBlue = blueCorridor.group.visible;
+          const prevTruss = worlds.black.visible;
+          const prevBlue = worlds.white.visible;
           const prevShards = shardsMesh ? shardsMesh.visible : false;
-          const prevShardEdges = shardEdgesMesh ? shardEdgesMesh.visible : false;
-          const prevVortexGlass = vortexGlass.group.visible;
           const prevDecor = endDecor.group.visible;
           const prevLed = visorLed.mesh.visible;
-          trussSystem.group.visible = true;
-          blueCorridor.group.visible = true;
+          worlds.black.visible = true;
+          worlds.white.visible = true;
           if(shardsMesh) shardsMesh.visible = true;
-          if(shardEdgesMesh) shardEdgesMesh.visible = true;
-          vortexGlass.group.visible = true;
           endDecor.group.visible = true;
           visorLed.mesh.visible = true;
           if (clones[0]) clones[0].root.visible = true;
           glRenderer.compile(scene, camera);
-          trussSystem.group.visible = prevTruss;
-          blueCorridor.group.visible = prevBlue;
+          worlds.black.visible = prevTruss;
+          worlds.white.visible = prevBlue;
           if(shardsMesh) shardsMesh.visible = prevShards;
-          if(shardEdgesMesh) shardEdgesMesh.visible = prevShardEdges;
-          vortexGlass.group.visible = prevVortexGlass;
           endDecor.group.visible = prevDecor;
           visorLed.mesh.visible = prevLed;
           if (clones[0]) clones[0].root.visible = false;
@@ -740,7 +528,7 @@ export function GoalTunnelSection() {
         if (window.__goalAstronautTelemetry) {
           window.__goalAstronautTelemetry.glbLoaded = true;
           window.__goalAstronautTelemetry.glbError = null;
-          window.__goalAstronautTelemetry.fallbackVisible = false;
+          window.__goalAstronautTelemetry.fallbackVisible = Boolean(worlds.error);
         }
         renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);
       })
@@ -760,11 +548,13 @@ export function GoalTunnelSection() {
       });
 
     // -------------------------------------------------------------------------
-    // Desktop Post-Processing (High-Threshold Bloom strictly above suit diffuse luminance!)
+    // Emergence color pipeline + native LDR/float-FFT cinematic bloom on all tiers
     // Stencil buffer preserved (`stencilBuffer: true`) so 3D portal stencil masking works!
     // -------------------------------------------------------------------------
     let composer: EffectComposer | null = null;
     let bloomPass: UnrealBloomPass | null = null;
+    let referenceBloom: GoalReferenceBloomPass | null = null;
+    let outputPass: OutputPass | null = null;
 
     const glassRefractionScale = isMobileInit ? 0.58 : isSoftwareRenderer ? 0.68 : 0.92;
     glassRefractionTarget = track(new THREE.WebGLRenderTarget(
@@ -772,7 +562,7 @@ export function GoalTunnelSection() {
       Math.max(2, Math.floor(initH * initDpr * glassRefractionScale)),
       {
         format: THREE.RGBAFormat,
-        type: glRenderer.capabilities.isWebGL2 && !isSoftwareRenderer ? THREE.HalfFloatType : THREE.UnsignedByteType,
+        type: THREE.UnsignedByteType,
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
         depthBuffer: true,
@@ -781,34 +571,54 @@ export function GoalTunnelSection() {
     ));
     glassRefractionTarget.texture.colorSpace = THREE.LinearSRGBColorSpace;
 
-    if (!isMobileInit && !isSoftwareRenderer) {
+    {
       const bufW = Math.max(2, Math.floor(initW * initDpr));
       const bufH = Math.max(2, Math.floor(initH * initDpr));
-      const msaaSamples = glRenderer.capabilities.isWebGL2
+      const msaaSamples = glRenderer.capabilities.isWebGL2 && !isSoftwareRenderer && !isMobileInit
         ? Math.min(4, glRenderer.capabilities.maxSamples)
         : 0;
 
-      const rt = track(
-        new THREE.WebGLRenderTarget(bufW, bufH, {
+      // EffectComposer owns this target and its clone; do not also track/dispose it.
+      const rt = new THREE.WebGLRenderTarget(bufW, bufH, {
           type: THREE.HalfFloatType,
           depthBuffer: true,
           stencilBuffer: true,
           samples: msaaSamples,
           minFilter: THREE.LinearFilter,
           magFilter: THREE.LinearFilter,
-        })
-      );
+        });
       composer = new EffectComposer(glRenderer, rt);
       composer.setPixelRatio(initDpr);
       composer.setSize(initW, initH);
 
       const renderPass = new RenderPass(scene, camera);
+      const renderArchitecture = renderPass.render.bind(renderPass);
+      renderPass.render = (renderer, writeBuffer, readBuffer, deltaTime, maskActive) => {
+        if (!worlds.black.visible) { renderArchitecture(renderer, writeBuffer, readBuffer, deltaTime, maskActive); return; }
+        // Source feedback is captured after LD/HD architecture and before the
+        // foreground astronaut. Copy the resolved scene target instead of drawing
+        // a second 130k-vertex lattice every normal-playback frame.
+        const foreground = [...(mainAstro ? [mainAstro.root] : []), ...clones.map(clone => clone.root)];
+        const visibility = foreground.map(object => object.visible), autoClear = renderer.autoClear;
+        try {
+          for (const object of foreground) object.visible = false;
+          renderArchitecture(renderer, writeBuffer, readBuffer, deltaTime, maskActive);
+          worlds.captureFeedback(renderer, readBuffer.texture);
+          worlds.black.visible = false;
+          foreground.forEach((object, i) => { object.visible = visibility[i]; });
+          renderer.setRenderTarget(readBuffer); renderer.autoClear = false; renderer.render(scene, camera);
+        } finally {
+          worlds.black.visible = true; foreground.forEach((object, i) => { object.visible = visibility[i]; });
+          renderer.autoClear = autoClear; renderer.setRenderTarget(readBuffer);
+        }
+      };
       composer.addPass(renderPass);
 
       bloomPass = new UnrealBloomPass(new THREE.Vector2(initW, initH), 0.16, 0.46, 1.48);
       composer.addPass(bloomPass);
 
-      const outputPass = new OutputPass();
+      referenceBloom = new GoalReferenceBloomPass(); referenceBloom.enabled = false; composer.addPass(referenceBloom);
+      outputPass = new OutputPass();
       composer.addPass(outputPass);
     }
 
@@ -824,6 +634,10 @@ export function GoalTunnelSection() {
     let cinematicTimeOffset = 0;
     let frameClock = performance.now();
     let userPaused = false;
+    let pipelineReady = Boolean(reducedMotion), pipelineWarmed = false;
+    let pipelineWarmPromise: Promise<void> | null = null;
+    let cancelPipelineWarmup = () => {};
+    let restoreWarmCanvas = () => {};
     // Reduced motion avoids involuntary travel entirely: the established scrub remains available.
     // A live preference change also releases playback immediately (handled below).
     const controls = playbackControlsRef.current;
@@ -874,7 +688,7 @@ export function GoalTunnelSection() {
     const pointerSmooth = { x: 0, y: 0 };
 
     window.__goalAstronautTelemetry = {
-      glbLoaded: false,
+      pipelineReady, glbLoaded: false,
       glbError: null,
       qualityTier: isMobileInit ? "mobile" : "desktop",
       renderWidth: Math.floor(initW * initDpr),
@@ -895,10 +709,11 @@ export function GoalTunnelSection() {
         tunnelProgress: 0, shatterProgress: 0, waitProgress: 0, bakedFrame: 0,
         astronautMatrix: new Array<number>(16).fill(0),
         cameraMatrix: new Array<number>(16).fill(0),
+        nativeWorldsReady: false, worldError: null, blackInstances: 0, whiteInstances: 0, blackOffset: 0, bloomTechnique: "emergence",
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
         corridorTravel: 0, corridorVisible: false, corridorClipped: false,
         glazingLayers: 0, glassOpacity: 0, glassThickness: 0,
-         glassRefractionReady: false, shardDepthWrite: false, shardSpread: 1.20,
+        glassRefractionReady: false, shardDepthWrite: false, shardSpread: 1,
         shardSidewallsLoaded: false, shardSidewallTriangles: 0,
         shardCount: 0, shardFrames: 0, vortexIntensity: 0,
         vortexGlassVisible: false, vortexGlassLayers: 0, vortexGlassEdges: 0, ringVisible: false,
@@ -1085,7 +900,7 @@ export function GoalTunnelSection() {
       const blackTitleFrom = emergenceStart + emergenceSpan * 0.62;
       const blackTitleTo = emergenceEnd;
       const blackTunnelFrom = tunnelStart;
-      const blackTunnelTo = tunnelStart + tunnelSpan * 0.72;
+      const blackTunnelTo = tunnelStart + tunnelSpan * .815;
       const whiteTunnelFrom = blackTunnelTo;
       const whiteTunnelTo = tunnelEnd;
       const astroDropFrom = imgOutTop - H * 0.55;
@@ -1164,10 +979,9 @@ export function GoalTunnelSection() {
     const _solarBlocker = new THREE.Vector3();
     const _cameraForward = new THREE.Vector3();
     const _rootPosition = new THREE.Vector3();
-    const _outPosition = new THREE.Vector3();
     const _rootOrientation = new THREE.Quaternion();
-    const _outOrientation = new THREE.Quaternion();
-    const _invertedBasis = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),Math.PI);
+    const _noisePosition = new THREE.Vector3();
+    const _noiseRotation = new THREE.Quaternion();
     const _headWorld = new THREE.Vector3();
     const _camLook = new THREE.Vector3();
     const _monitorCenter = new THREE.Vector3();
@@ -1260,7 +1074,7 @@ export function GoalTunnelSection() {
       // -----------------------------------------------------------------------
       if (inEmergencePhase) {
         const fovNow = m.isMobile ? kf.camFovMobile : kf.camFovDesktop;
-        camera.fov = fovNow;
+        camera.near = .08; camera.far = 180; camera.fov = fovNow;
         camera.aspect = W / H;
         camera.up.set(0, 1, 0);
         camera.position.set(
@@ -1273,28 +1087,17 @@ export function GoalTunnelSection() {
         camera.updateProjectionMatrix();
         camera.updateMatrixWorld();
       } else {
-        // Dynamic camera FOV + clockwise banking roll in `Frame 15` (`-25.2°`), leveling smoothly into `16`!
-        const inBlueCorridor = tTunnel > 0.81 && tShatter < 0.90 && tWait <= 0.001;
-        const bankRoll = inBlueCorridor
-          ? lerp(-0.44, 0.0, smoothstep(0.05, 0.68, tOutPull)) *
-            smoothstep(0.81, 0.85, tTunnel) * (reducedMotion ? 0.35 : 1.0)
-          : -smoothstep(0.36,0.60,tTunnel) * 0.72 * (1-smoothstep(0.75,0.81,tTunnel)) * (reducedMotion ? 0.15 : 1.0);
-        const vortexEnvelope = smoothstep(0.43, 0.55, tTunnel) * (1 - smoothstep(0.76, 0.84, tTunnel));
-        const vortexOrbit = Math.sin(((tTunnel - 0.43) / 0.34) * Math.PI * 2.0) * 0.052 * vortexEnvelope;
-        const vortexFovBoost = smoothstep(0.68, 0.80, tTunnel) * (1 - smoothstep(0.81, 0.85, tTunnel)) * 10;
-        const vortexDive = smoothstep(0.62, 0.77, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
-        const cameraRoll = bankRoll + (reducedMotion ? 0 : vortexOrbit);
-        camera.fov = (m.isMobile ? 54 : 45) + vortexFovBoost;
-        camera.aspect = W / H;
-        camera.up.set(Math.sin(cameraRoll), Math.cos(cameraRoll), 0);
-        camera.position.set(
-          pxParallax * lerp(0.08, 0.06, smoothstep(0, 0.08, tTunnel)) + Math.sin(tTunnel * Math.PI * 2.0) * 0.035 * vortexEnvelope,
-          pyParallax * lerp(0.06, 0.05, smoothstep(0, 0.08, tTunnel)) + Math.cos(tTunnel * Math.PI * 2.0) * 0.024 * vortexEnvelope,
-          5.2 - (reducedMotion ? 0 : vortexDive * 0.14)
-        );
-        camera.lookAt(0, 0, 0);
-        camera.updateProjectionMatrix();
-        camera.updateMatrixWorld();
+        const ratios = goalWorldRatios(tTunnel, tShatter);
+        const offset = tTunnel >= .815 ? 60 * (1 - ratios.white) : Math.sin(ratios.black * 10 + (reducedMotion ? 1 : playing() ? elapsedSec : ratios.black * 10 + ratios.white * 3)) * 7.5 * smoothstep(0, .2, ratios.black);
+        const expectedFov = m.isMobile ? 54 : 45;
+        const frameFraction = lerp(1, m.imgOutHeight / H, tOutPull);
+        const baseFov = 2 * Math.atan(Math.tan(expectedFov * Math.PI / 360) / frameFraction) * 180 / Math.PI;
+        // Reference dolly compensates distance, not an independently banked camera.
+        const dolly = Math.tan(baseFov * Math.PI / 720) / Math.tan((baseFov + offset) * Math.PI / 720) - 1;
+        camera.near = GOAL_WORLD_SCALE; camera.far = 200 * GOAL_WORLD_SCALE; camera.fov = baseFov; camera.aspect = W / H; camera.up.set(0, 1, 0);
+        camera.position.set(pxParallax * .04, pyParallax * .035, 5.2 + dolly * GOAL_WORLD_SCALE);
+        camera.lookAt(pxParallax * .1, pyParallax * .1, 24 * GOAL_WORLD_SCALE);
+        camera.updateProjectionMatrix(); camera.updateMatrixWorld();
       }
 
       // Pin tablet cleanly once scroll reaches `emergenceStart` (`01 -> 03 -> 04`), while tracking natural
@@ -1387,14 +1190,6 @@ export function GoalTunnelSection() {
 
       if (portalMaskActive) {
         backdropEl.style.opacity = "0";
-      } else if (tOutPull > 0.02 && tWait <= 0.001) {
-        // Deep indigo surroundings keep the break inside the same blue environment.
-        const blueWall = smoothstep(0.14, 0.55, tOutPull) * (1 - smoothstep(0.78, 0.94, tShatter));
-        const rCh = Math.round(10 * blueWall);
-        const gCh = Math.round(16 * blueWall);
-        const bCh = Math.round(74 * blueWall);
-        backdropEl.style.opacity = "1";
-        backdropEl.style.background = `rgb(${rCh}, ${gCh}, ${bCh})`;
       } else {
         // Pitch-black space across `Frames 05–15` AND throughout `#end-section` (`17 -> 19 -> 18`)!
         backdropEl.style.opacity = "1";
@@ -1506,55 +1301,26 @@ export function GoalTunnelSection() {
         optics.chromaticRingMat.uniforms.uTime.value = reducedMotion ? 0 : elapsedSec;
       }
 
-      // 1. Downstream Instanced GPU-Twisted Architectural Truss & Vortex (`Frames 09 -> 14`)
-      const blackIn = !inEmergencePhase ? smoothstep(0.065, 0.135, tTunnel) : 0;
-      const blackOut = 1 - smoothstep(0.80, 0.845, tTunnel);
-      const blackVis = blackIn * blackOut;
-      glazing.update(tTunnel, blackVis, reducedMotion);
-
-      // Seamless white-lavender portal flash bridging `Frame 14 -> Frame 15` (`tTunnel ~ 0.82`)
-      const portalFlash =
-        !inEmergencePhase
-          ? smoothstep(0.785, 0.822, tTunnel) * (1 - smoothstep(0.822, 0.865, tTunnel))
-          : 0;
-      // The veil outlives the opaque shaft. Hiding its parent at blackOut's endpoint
-      // used to cut a still-bright transition flash off halfway through its fade.
-      trussSystem.group.visible = blackVis > 0.005 || portalFlash > 0.001;
-      trussSystem.flashVeilMat.uniforms.uFlash.value = portalFlash;
-      if (trussSystem.group.visible) {
-        const uPhase = clamp01((tTunnel - 0.10) / 0.68);
-        const twistAmt = reducedMotion
-          ? smoothstep(0.42, 0.76, tTunnel) * 0.23
-          : smoothstep(0.40, 0.58, tTunnel) * 0.18 + smoothstep(0.60, 0.76, tTunnel) * 0.34;
-        const vortexPinch = smoothstep(0.56, 0.75, tTunnel);
-        const vortexStructureFade = 1 - 0.54 * smoothstep(0.54, 0.70, tTunnel) * (1 - smoothstep(0.78, 0.85, tTunnel));
-        trussSystem.tunnelMaterial.uniforms.uOpacity.value = blackVis * vortexStructureFade;
-        trussSystem.tunnelMaterial.uniforms.uPhase.value = uPhase;
-        trussSystem.tunnelMaterial.uniforms.uTwist.value = twistAmt;
-        trussSystem.tunnelMaterial.uniforms.uVortexPinch.value = vortexPinch;
-        trussSystem.tunnelMaterial.uniforms.uTravelZ.value = acceleratedFall(tTunnel) * 44;
-        const pinkVortexGlow = smoothstep(0.49, 0.69, tTunnel);
-        const vortexPulse = 0.94 + 0.06 * Math.sin(tTunnel * Math.PI * 14);
-        const vortexIntensity = pinkVortexGlow * blackVis * vortexPulse;
-        trussSystem.vortexCoreMat.uniforms.uMode.value = smoothstep(0.53, 0.68, tTunnel);
-        trussSystem.vortexCoreMat.uniforms.uIntensity.value = vortexIntensity;
-        vortexGlass.update(tTunnel, vortexIntensity, reducedMotion);
-        if (bloomPass) {
-          bloomPass.strength = lerp(0.14, 0.28, smoothstep(0.66, 0.75, tTunnel));
-        }
-      } else {
-        vortexGlass.update(tTunnel, 0, reducedMotion);
-        if (bloomPass) bloomPass.strength = 0.16;
+      // Source architectural worlds: native grid instances and stereographic
+      // folding; the blue world is the captured base/wall with 4D cellular bands.
+      const nativeRatios = worlds.update(tTunnel, tShatter, reducedMotion ? 1 : elapsedSec, Boolean(reducedMotion));
+      worlds.blackUniforms.u_resolution.value.set(glRenderer.domElement.width, glRenderer.domElement.height);
+      const portalFlash = !inEmergencePhase ? smoothstep(.795, .815, tTunnel) * (1 - smoothstep(.815, .84, tTunnel)) : 0;
+      const clipToMonitor = worlds.white.visible && tOutPull > .02;
+      worlds.setMonitorClip(clipToMonitor); worlds.monitorStencilMask.visible = clipToMonitor;
+      nativeLightMask.value = inEmergencePhase ? 0 : 1;
+      if (referenceBloom) {
+        referenceBloom.enabled = !inEmergencePhase;
+        referenceBloom.amount = tTunnel < .815 ? 6 : tShatter < 1 ? lerp(4, 2, clamp01(tOutPull / .05)) : lerp(0, 20, clamp01(tWait / .1));
+        referenceBloom.saturation = tTunnel < .815 ? lerp(1, 3, clamp01(nativeRatios.black / .7)) : 1;
+        referenceBloom.haloStrength = tTunnel < .815 ? lerp(.15 + .25 * smoothstep(.2, .4, nativeRatios.black), .08, smoothstep(.65, .75, nativeRatios.black)) : 0;
       }
-
-      // 2. Downstream Royal-Blue Arch & White-Ring Corridor (`Frames 15 & 16`)
-      const whiteIn = !inEmergencePhase ? smoothstep(0.815, 0.85, tTunnel) : 0;
-      const whiteOut = 1 - smoothstep(0.98, 1.0, tShatter);
-      const whiteVis = whiteIn * whiteOut * (tWait > 0.001 ? 0 : 1);
-      blueCorridor.group.visible = whiteVis > 0.008;
-      const clipToMonitor = blueCorridor.group.visible && tOutPull > 0.02 && tShatter < 0.42;
-      blueCorridor.setMonitorClip(clipToMonitor);
-      blueCorridor.monitorStencilMask.visible = clipToMonitor;
+      if (outputPass) outputPass.enabled = inEmergencePhase;
+      if (bloomPass) {
+        bloomPass.enabled = inEmergencePhase;
+        bloomPass.strength = inEmergencePhase ? .16 : tTunnel < .815 ? lerp(.6, 1.15, nativeRatios.transform) : .48;
+        bloomPass.radius = .52; bloomPass.threshold = inEmergencePhase ? 1.48 : .75;
+      }
 
       // One camera-space aperture for both the stencil and the glass burst. Account for
       // camera banking, CSS monitor rotation, aspect ratio and the actual inner border.
@@ -1572,59 +1338,26 @@ export function GoalTunnelSection() {
       _screenRotation.setFromAxisAngle(_zAxis, -monRot);
       _monitorRotation.copy(camera.quaternion).multiply(_screenRotation);
 
-      if (blueCorridor.group.visible) {
-        const distance = blueFlightDistance(tTunnel, tShatter);
-        blueCorridor.travelGroup.position.z = distance;
-        blueCorridor.wallTexture.offset.y = reducedMotion ? 0 : -distance / 22 * 0.42;
+      if (worlds.white.visible) {
+        // The native walls deform in the vertex shader, not by moving a row of rings.
         if (clipToMonitor) {
-          blueCorridor.monitorStencilMask.position.copy(_monitorCenter);
-          blueCorridor.monitorStencilMask.quaternion.copy(_monitorRotation);
-          blueCorridor.monitorStencilMask.scale.set(monWorldW, monWorldH, 1);
+          worlds.monitorStencilMask.position.copy(_monitorCenter); worlds.monitorStencilMask.quaternion.copy(_monitorRotation);
+          worlds.monitorStencilMask.scale.set(monWorldW, monWorldH, 1);
         }
-
-        const monShrink =
-          tOutPull > 0.01 ? lerp(1.0, m.isMobile ? 0.62 : 0.84, smoothstep(0.0, 0.82, tOutPull)) : 1.0;
-        const tunnelShiftY =
-          tOutPull > 0.01 ? ((H * 0.5 - outBaseY) / H) * 4.3 : 0;
-        blueCorridor.group.scale.set(monShrink * (m.isMobile ? 0.90 : 1.08), monShrink * 0.95, monShrink);
-        blueCorridor.group.position.set(0, tunnelShiftY, -2.2 * smoothstep(0.0, 0.08, tOutPull));
-        blueCorridor.endGlowMat.uniforms.uOpacity.value = whiteVis;
+        worlds.white.scale.setScalar(GOAL_WORLD_SCALE);
       }
-
-      // 3. Authentic Plate-Glass Shatter Burst (`Frame 16`)
       if (shardsMesh) {
-        const shardVis = smoothstep(0.18, 0.205, tShatter) * (1 - smoothstep(0.34, 0.42, tShatter)) * (tWait > 0.001 ? 0 : 1);
-        shardsMesh.visible = shardVis > 0.005;
-        if (shardEdgesMesh) shardEdgesMesh.visible = shardsMesh.visible;
+        shardsMesh.visible = tShatter > .18 && tShatter < 1 && tWait <= .001;
         if (shardsMesh.visible) {
-          const mat = shardsMesh.material as THREE.ShaderMaterial;
-          mat.uniforms.uOpacity.value = shardVis;
-           mat.uniforms.uRefractionStrength.value = 1.72 + shardVis * 0.48;
-
-          // The 946 captured rigid-body trajectories remain intact; only the
-          // playback window is compressed to a sub-second glass impact.
-          const burst = acceleratedFall(clamp01((tShatter - 0.205) / 0.145));
-          const { sampleFrame, texFrame, texOrient, framesPerShard } = shardsMesh.userData;
-          sampleFrame(clamp01(burst) * (framesPerShard - 1));
+          const material = shardsMesh.material as THREE.ShaderMaterial;
+          // Source sine-out rigid trajectories persist through the drop; fragments
+          // shrink only in the last quarter rather than vanishing after .42.
+          const burst = clamp01((tShatter - .18) / .78);
+          shardsMesh.userData.sampleFrame(Math.sin(burst * Math.PI / 2) * (framesPerShard - 1));
+          material.uniforms.u_fragmentScale.value = 1 - clamp01((tShatter - .75) / .25);
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
-          const scaleX = monWorldW / (bounds.max.x - bounds.min.x);
-          const scaleY = monWorldH / (bounds.max.y - bounds.min.y);
-          shardsMesh.position.copy(_monitorCenter);
-          shardsMesh.quaternion.copy(_monitorRotation);
-           shardsMesh.scale.set(scaleX, scaleY, Math.min(scaleX, scaleY));
-           // Convert measured local sidewall thickness into world units; a fixed 0.75-unit
-           // optical path made these thin display-glass plates refract like thick acrylic.
-           mat.uniforms.uGlassThickness.value = Math.max(
-             0.035,
-             (shardsMesh.userData.sideHalfThickness as number) * 2.0 * Math.min(scaleX, scaleY)
-           );
-          if (shardEdgesMesh) {
-            shardEdgesMesh.position.copy(shardsMesh.position);
-            shardEdgesMesh.quaternion.copy(shardsMesh.quaternion);
-            shardEdgesMesh.scale.copy(shardsMesh.scale);
-          }
-          texFrame.needsUpdate = true;
-          texOrient.needsUpdate = true;
+          const scale = monWorldH / (bounds.max.y - bounds.min.y);
+          shardsMesh.position.copy(_monitorCenter); shardsMesh.quaternion.copy(_monitorRotation); shardsMesh.scale.setScalar(scale);
         }
       }
 
@@ -1691,75 +1424,11 @@ export function GoalTunnelSection() {
           ay += Math.sin(elapsedSec * 0.65) * 0.014 * driftAmp;
 
           visorFlareAmt = kf.sunFlare;
-        } else if (tOutPull <= 0.001) {
-          // Downstream Tunnel Flight (`Frames 09 -> 15`):
-          // - `09` (`tTunnel ~ 0.036`): tiny rear T-pose at `(0, 0)` inside rainbow halo
-          // - `10..13` (`tTunnel ~ 0.14..0.64`): curled & inverted zero-G tumble down truss shaft
-          // - `14` (`tTunnel ~ 0.75`): pulled deep into glowing pink-white vortex core
-          // - `15` (`tTunnel ~ 0.93`): crisp front-facing head-on dive down royal-blue arch corridor!
-          const inBlueDive = smoothstep(0.81, 0.86, tTunnel);
-          const intoCurl = smoothstep(0.08, 0.16, tTunnel);
-          const midInvert =
-            smoothstep(0.24, 0.31, tTunnel) * (1 - smoothstep(0.34, 0.40, tTunnel));
-          const vortexShrink = smoothstep(0.64, 0.77, tTunnel) * (1 - inBlueDive);
-
-          const trussPose = blendSuitPose(
-            blendSuitPose(SUIT_POSE_TUMBLE_SPREAD, SUIT_POSE_TUMBLE_CURL, intoCurl),
-            SUIT_POSE_TUMBLE_SPREAD,
-            midInvert
-          );
-          jointPose = blendSuitPose(trussPose, SUIT_POSE_CORRIDOR_FLY, inBlueDive);
-
-          const entry = smoothstep(0.0, 0.08, tTunnel);
-          const entryPos = m.isMobile ? kf.astroPosMobile : kf.astroPosDesktop;
-          ax = lerp(entryPos[0], lerp(0.0, 0.04, inBlueDive), entry);
-          ay = lerp(entryPos[1], lerp(0.0, -0.02, inBlueDive), entry);
-          az = lerp(entryPos[2], lerp(-1.12 - vortexShrink * 4.2, -3.75, inBlueDive), entry);
-
-          // Flight-axis gravity adds increasing descent/depth through the shaft, then blends
-          // into the authored blue-flight pose; never introduce another playhead.
-          const descent = acceleratedFall(clamp01((tTunnel - 0.06) / 0.64)) * (1 - inBlueDive);
-          ay -= descent * 0.42;
-          az -= descent * 1.72;
-          const trussRy = lerp(Math.PI, Math.PI * 1.45, intoCurl);
-          const trussRz = intoCurl * (-1.15 - tTunnel * 3.1);
-          const vortexSpiral = smoothstep(0.42, 0.78, tTunnel) * (1 - inBlueDive);
-          const vortexAngle = ((tTunnel - 0.42) / 0.36) * Math.PI * 2.0;
-          const vortexRadius = lerp(0.92, 0.035, smoothstep(0.42, 0.78, tTunnel));
-          ax += Math.cos(vortexAngle) * vortexRadius * vortexSpiral;
-          ay += Math.sin(vortexAngle) * vortexRadius * 0.62 * vortexSpiral;
-          rx = lerp(kf.astroRot[0] - pyParallax * 0.045, lerp(0.18, 0.24, inBlueDive), entry)
-            + Math.sin(vortexAngle * 0.5) * 0.24 * vortexSpiral;
-          ry = lerp(kf.astroRot[1] + pxParallax * 0.065, lerp(trussRy, Math.PI * 2 + 0.14, inBlueDive), entry)
-            + vortexSpiral * 0.34;
-          rz = lerp(kf.astroRot[2], lerp(trussRz, -Math.PI * 2 - 0.28, inBlueDive), entry)
-            - vortexSpiral * Math.PI * 0.78;
-          aScale = lerp(kf.astroScale, lerp(
-            lerp(0.62, 0.58, intoCurl) * (1 - vortexShrink * 0.60),
-            0.38,
-            inBlueDive
-          ), entry);
-          visorFlareAmt = 0;
         } else if (sy <= m.endTop) {
-          // `Frame 16` (`16-monitor-glass-shatter`) -> `Frame 17` (`17-astronaut-stickers-wait`):
-          // Astronaut bursts forward through the Studio Display screen with BOTH ARMS RAISED
-          // (`SUIT_POSE_SHATTER_BREAK`) and settles smoothly into visor salute (`SUIT_POSE_VISOR_SALUTE`)!
-          const burst = smoothstep(0.08, 0.28, tShatter);
-          const settleSalute = smoothstep(0.70, 0.90, tShatter);
-          jointPose = blendSuitPose(
-            blendSuitPose(SUIT_POSE_CORRIDOR_FLY, SUIT_POSE_SHATTER_BREAK, burst),
-            SUIT_POSE_VISOR_SALUTE,
-            settleSalute
-          );
-          ax = lerp(0.04, pxParallax * 0.05, burst);
-          const gravityDrop = acceleratedFall(clamp01((tShatter-0.08)/0.40));
-          ay = lerp(-0.02,m.isMobile ? -0.22 : -0.40,gravityDrop);
-          az = lerp(-3.75, m.isMobile ? 0.68 : 1.72, burst);
-          az = lerp(az, m.isMobile ? 1.24 : 2.66, settleSalute);
-          rx = lerp(0.24, -pyParallax * 0.04, burst);
-          ry = lerp(0.14, pxParallax * 0.07, burst);
-          rz = lerp(-0.28, 0.0, burst);
-          aScale = lerp(0.38, 1.0, burst);
+          // Captured root and bone palettes below own the downstream flight.
+          jointPose = SUIT_POSE_CORRIDOR_FLY; ax = 0; ay = 0; az = 0;
+          rx = ry = rz = 0; aScale = GOAL_WORLD_SCALE;
+          visorFlareAmt = 0;
         } else {
           // `#end-section` & `#footer-section` White Wipe (`Frames 17 -> 18 -> 19 -> 20`):
           // Exact Lusion medium-full portrait framing (`az = 2.66, ay = -0.32`), curved LED dot-matrix
@@ -1803,21 +1472,14 @@ export function GoalTunnelSection() {
           };
         }
 
-        if (!inEmergencePhase && !reducedMotion) {
-          const blueDrift = smoothstep(0.85, 0.98, tTunnel) * (1 - smoothstep(0.14, 0.62, tShatter));
-          az += blueDrift * 0.28;
-          ay += Math.sin(blueDrift * Math.PI * 2) * 0.025;
-          rx += Math.sin(blueDrift * Math.PI * 2) * 0.035;
-        }
         applySuitJointPose(mainAstro, jointPose);
-        // Captured parts have deformation palettes, not the legacy GLB's named joints.
-        // Sample all clips from the shared virtual coordinate, never a competing animation mixer.
-        const bakedFrame = tWait > 0
-          ? lerp(139, 287, tWait)
-          : tShatter > 0
-            ? lerp(89, 139, smoothstep(0.0, 0.74, tShatter))
-            : 89 * clamp01((sy - m.tunnelStart) / Math.max(1, shatterStart - m.tunnelStart));
-        mainAstro.sampleBakedPose?.(bakedFrame, inEmergencePhase ? 0 : smoothstep(0, 0.08, tTunnel));
+        const motionTime = nativeRatios.black * 10 + nativeRatios.white * 3;
+        const loopFrame = (motionTime * 30 * .75) % 89;
+        const idleFrame = 140 + ((tShatter > .9 ? (tShatter - .9) * 2 : 0) + tWait * 5) * 30 % 147;
+        const bakedFrame = tShatter < .5 ? loopFrame : idleFrame;
+        const transitionFrame = lerp(90, 139, clamp01((tOutPull + tShatter - .9) / 1.1) ** 4);
+        const transitionWeight = clamp01(tShatter / .1) * (1 - clamp01((tShatter - .9) / .1));
+        mainAstro.sampleBakedPose?.(bakedFrame, inEmergencePhase ? smoothstep(.78, 1, uEmergence) : 1, transitionFrame, transitionWeight);
         if (window.__goalAstronautTelemetry) {
           window.__goalAstronautTelemetry.sceneState.bakedFrame = bakedFrame;
         }
@@ -1825,22 +1487,23 @@ export function GoalTunnelSection() {
         mainAstro.root.position.set(ax, ay, az);
         mainAstro.root.rotation.set(rx, ry, rz);
         if (!inEmergencePhase && mainAstro.sampleCapturedRoot) {
-          // Source root attitude, not a second Euler tumble on top of the bone palette.
-          // Phase mapping/basis are calibrated to our camera; the source timing is not available.
-          mainAstro.sampleCapturedRoot("in",clamp01(tTunnel/0.80)*99,_rootPosition,_rootOrientation);
-          _rootOrientation.multiply(_invertedBasis);
-          const blue = smoothstep(0.80,0.86,tTunnel);
-          if (blue > 0) {
-            const flightFrame = lerp(0,36,smoothstep(0.815,1,tTunnel));
-            const frame = lerp(flightFrame,99,smoothstep(0,0.74,tShatter));
-            mainAstro.sampleCapturedRoot("out",frame,_outPosition,_outOrientation);
-            _rootOrientation.slerp(_outOrientation,blue);
-            _rootPosition.lerp(_outPosition,blue);
-          }
-          const weight = smoothstep(0.04,0.12,tTunnel) * (1-smoothstep(0.78,0.95,tShatter)) * (1-smoothstep(0,0.02,tWait));
-          mainAstro.root.quaternion.slerp(_rootOrientation,weight);
-          mainAstro.root.position.x += _rootPosition.x * 0.8 * weight;
-          mainAstro.root.position.y += _rootPosition.y * 0.18 * weight;
+          const whiteActive = tTunnel >= .815;
+          const frame = whiteActive ? (nativeRatios.white < 1 ? nativeRatios.white * 79 : 79 + tShatter * 20) : 99;
+          mainAstro.sampleCapturedRoot(whiteActive ? "out" : "in", frame, _rootPosition, _rootOrientation);
+          const noiseFade = whiteActive ? 1 - smoothstep(0, .75, tOutPull) : nativeRatios.black;
+          sampleGoalBrownian(motionTime, 0, 5 * noiseFade, (whiteActive ? 15 : 60) * noiseFade,
+            whiteActive ? lerp(.5, .2, tOutPull) : .2 + .5 * nativeRatios.black, .15, _noisePosition, _noiseRotation);
+          _noisePosition.applyQuaternion(_rootOrientation);
+          _rootPosition.add(_noisePosition); _rootOrientation.multiply(_noiseRotation);
+          _rootPosition.y -= (m.isMobile ? 0 : .4) * smoothstep(0, 1, tShatter);
+          mainAstro.root.position.copy(_rootPosition).multiplyScalar(GOAL_WORLD_SCALE);
+          mainAstro.root.quaternion.copy(_rootOrientation); aScale = GOAL_WORLD_SCALE;
+        }
+        if (inEmergencePhase && uEmergence > .78 && mainAstro.sampleCapturedRoot) {
+          const title = clamp01((uEmergence - .62) / .38), weight = smoothstep(.78, 1, uEmergence);
+          mainAstro.sampleCapturedRoot("in", Math.min(99, 100 * title ** 3), _rootPosition, _rootOrientation);
+          mainAstro.root.position.lerp(_rootPosition.multiplyScalar(GOAL_WORLD_SCALE), weight);
+          mainAstro.root.quaternion.slerp(_rootOrientation, weight); aScale = lerp(aScale, GOAL_WORLD_SCALE, weight);
         }
         mainAstro.root.scale.setScalar(aScale);
         mainAstro.root.updateMatrixWorld(true);
@@ -1869,28 +1532,21 @@ export function GoalTunnelSection() {
           optics.visorFlareMesh.visible = false;
         }
 
-        // Translucent Emerald-Cyan Holographic Echo Astronauts strictly during `Frame 13` (`0.47..0.64`)!
-        const echoOpacity =
-          !inEmergencePhase && tOutPull <= 0.001
-            ? smoothstep(0.47, 0.52, tTunnel) * (1 - smoothstep(0.59, 0.65, tTunnel))
-            : 0;
-        const clonesActive = echoOpacity > 0.01;
-        hologramEchoMat.uniforms.uOpacity.value = echoOpacity * 0.72;
+        // Four full-suit clones separate during black .2→.4, then disappear
+        // for the white corridor. They are not green translucent orbiting ghosts.
+        const clonesShow = smoothstep(.2, .4, nativeRatios.black);
         for (let c = 0; c < clones.length; c++) {
           const cl = clones[c];
-          cl.root.visible = clonesActive;
-          if (clonesActive) {
-            cl.sampleBakedPose?.(bakedFrame, 1);
-            const spiralA = tTunnel * 18.0 + c * 2.094;
-            cl.root.position.set(
-              Math.cos(spiralA) * (1.05 + c * 0.24),
-              Math.sin(spiralA) * (0.78 + c * 0.18),
-              -2.2 - c * 1.85
-            );
-            cl.root.rotation.set(0.55 + c * 0.35, spiralA * 0.4, rz + c * 0.85);
-            cl.root.scale.setScalar(0.56 - c * 0.05);
+          cl.root.visible = !inEmergencePhase && tTunnel < .815 && clonesShow > .001;
+          if (cl.root.visible) {
+            cl.sampleBakedPose?.((loopFrame + (c + 1) * 17) % 89, 1);
+            sampleGoalBrownian(motionTime, c + 1, 12, 10, .2, .6, _noisePosition, _noiseRotation);
+            _noisePosition.applyQuaternion(_rootOrientation);
+            cl.root.position.copy(_rootPosition).addScaledVector(_noisePosition, clonesShow).multiplyScalar(GOAL_WORLD_SCALE);
+            cl.root.quaternion.copy(_rootOrientation).multiply(_noiseRotation); cl.root.scale.setScalar(GOAL_WORLD_SCALE);
           }
         }
+
       } else {
         optics.visorFlareMesh.visible = false;
         visorLed.mesh.visible = false;
@@ -1931,10 +1587,10 @@ export function GoalTunnelSection() {
       }
       gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.18 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "vortex");
       glRenderer.info.reset();
+      worlds.renderFeedback(glRenderer, camera, Boolean(reducedMotion));
       let glassRefractionReady = false;
       if (shardsMesh?.visible && glassRefractionTarget) {
         const wasVisible = shardsMesh.visible;
-        const wereEdgesVisible = shardEdgesMesh?.visible ?? false;
         const previousTarget = glRenderer.getRenderTarget();
         const previousToneMapping = glRenderer.toneMapping;
         const previousOutputColorSpace = glRenderer.outputColorSpace;
@@ -1943,18 +1599,17 @@ export function GoalTunnelSection() {
         const previousClearAlpha = glRenderer.getClearAlpha();
         try {
           shardsMesh.visible = false;
-          if (shardEdgesMesh) shardEdgesMesh.visible = false;
           glRenderer.setRenderTarget(glassRefractionTarget);
           glRenderer.autoClear = true;
           glRenderer.toneMapping = THREE.NoToneMapping;
           glRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-          glRenderer.setClearColor(tOutPull > 0.02 && tShatter < 0.60 ? 0x0a104a : 0x000000, 1);
+          glRenderer.setClearColor(0x000000, 1);
           glRenderer.clear(true, true, true);
           glRenderer.render(scene, camera);
           glassRefractionReady = true;
           const shardMaterial = shardsMesh.material as THREE.ShaderMaterial;
-          shardMaterial.uniforms.uSceneColor.value = glassRefractionTarget.texture;
-          shardMaterial.uniforms.uRefractionSize.value.set(glassRefractionTarget.width, glassRefractionTarget.height);
+          shardMaterial.uniforms.u_backgroundTexture.value = glassRefractionTarget.texture;
+          shardMaterial.uniforms.u_resolution.value.set(glRenderer.domElement.width, glRenderer.domElement.height);
         } catch {
           glassRefractionReady = false;
         } finally {
@@ -1964,7 +1619,6 @@ export function GoalTunnelSection() {
           glRenderer.autoClear = previousAutoClear;
           glRenderer.setClearColor(previousClearColor, previousClearAlpha);
           shardsMesh.visible = wasVisible;
-          if (shardEdgesMesh) shardEdgesMesh.visible = wereEdgesVisible;
         }
       }
       if (composer) {
@@ -1992,39 +1646,123 @@ export function GoalTunnelSection() {
         state.waitProgress = tWait;
         mainAstro?.root.matrixWorld.toArray(state.astronautMatrix);
         camera.matrixWorld.toArray(state.cameraMatrix);
-        state.trussLoaded = trussSystem.group.children.some(
-          (child) => child.name === "CapturedInnerLattice" || child.name === "CapturedOuterLattice"
-        );
+        state.nativeWorldsReady = worlds.blackReady && worlds.whiteReady; state.worldError = worlds.error;
+        state.blackInstances = worlds.blackReady ? 552 : 0; state.whiteInstances = worlds.whiteReady ? 32 : 0;
+        state.blackOffset = worlds.blackUniforms.u_offsetZ.value; state.bloomTechnique = inEmergencePhase ? "emergence" : "source-fft";
+        state.trussLoaded = worlds.blackReady;
         state.shardsLoaded = shardsMesh !== null;
-        state.shardSidewallsLoaded = shardEdgesMesh !== null;
-        state.shardSidewallTriangles = shardEdgesMesh
-          ? Math.floor(shardEdgesMesh.geometry.getAttribute("position").count / 3) : 0;
-        state.vortexGlassVisible = vortexGlass.group.visible;
-        state.vortexGlassLayers = vortexGlass.layers;
-        state.vortexGlassEdges = vortexGlass.edges;
-        state.portalFlash = portalFlash;
-        state.flashVisible = trussSystem.group.visible && portalFlash > 0.001;
-        state.corridorTravel = blueCorridor.group.visible ? blueCorridor.travelGroup.position.z : 0;
-        state.corridorVisible = blueCorridor.group.visible;
-        state.corridorClipped = clipToMonitor;
-        state.glazingLayers = glazing.group.visible ? glazing.group.children.length : 0;
-         state.glassOpacity = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uOpacity.value : 0;
-         state.glassThickness = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uGlassThickness.value : 0;
-        state.glassRefractionReady = glassRefractionReady;
-        state.shardDepthWrite = shardsMesh ? (shardsMesh.material as THREE.ShaderMaterial).depthWrite : false;
-         state.shardSpread = shardsMesh ? (shardsMesh.userData.shardSpread as number) : 1.20;
+        state.shardSidewallsLoaded = false; state.shardSidewallTriangles = 0;
+        state.vortexGlassVisible = false; state.vortexGlassLayers = 0; state.vortexGlassEdges = 0;
+        state.portalFlash = portalFlash; state.flashVisible = portalFlash > .001;
+        state.corridorTravel = nativeRatios.white * 22; state.corridorVisible = worlds.white.visible; state.corridorClipped = clipToMonitor;
+        state.glazingLayers = 0; state.glassOpacity = shardsMesh?.visible ? 1 : 0; state.glassThickness = 0;
+        state.glassRefractionReady = glassRefractionReady; state.shardDepthWrite = false; state.shardSpread = 1;
         state.shardCount = numShards;
         state.shardFrames = framesPerShard;
-        state.vortexIntensity = trussSystem.vortexCoreMat.uniforms.uIntensity.value;
+        state.vortexIntensity = nativeRatios.transform;
         state.ringVisible = optics.chromaticRingMesh.visible;
       }
       if (window.__goalPipelineProbe) {
         window.__goalPipelineProbe(glRenderer, {
           authoredAt: frameClock, sceneStartedAt: t0, submittedAt: performance.now(),
           virtualScroll: sy, glassMatrix: shardsMesh ? Array.from(shardsMesh.matrixWorld.elements) : null,
-          blueMatrix: Array.from(blueCorridor.travelGroup.matrixWorld.elements),
+          blueMatrix: Array.from(worlds.white.matrixWorld.elements),
         });
       }
+    };
+
+    // Prewarm actual material variants and both post pipelines before starting
+    // the timed movie. First-use driver/JIT stalls must not consume five seconds
+    // of the black shaft or jump straight over the glass impact on SwiftShader.
+    // The canvas is hidden during preparation, including real output-program
+    // variants; document, scroll, header and audio state are not changed.
+    const warmPipeline = () => {
+      if (pipelineWarmed || pipelineWarmPromise || reducedMotion) return pipelineWarmPromise;
+      pipelineReady = false;
+      if (window.__goalAstronautTelemetry) window.__goalAstronautTelemetry.pipelineReady = false;
+      pipelineWarmPromise = (async () => {
+        await Promise.all([worlds.ready, glbPromise, glassPromise]);
+        if (unmounted || contextLost || worlds.error || !composer || !referenceBloom || !outputPass || !bloomPass) return;
+        const canvasVisibility = hostEl.style.visibility;
+        restoreWarmCanvas = () => { hostEl.style.visibility = canvasVisibility; restoreWarmCanvas = () => {}; };
+        hostEl.style.visibility = "hidden";
+        const visibility = scene.children.map(child => [child, child.visible] as const);
+        const target = glRenderer.getRenderTarget(), autoClear = glRenderer.autoClear;
+        const color = glRenderer.getClearColor(new THREE.Color()), alpha = glRenderer.getClearAlpha();
+        const composerToScreen = composer.renderToScreen;
+        const mask = nativeLightMask.value, ledVisible = visorLed.mesh.visible;
+        const oldPasses = [referenceBloom.enabled, outputPass.enabled, bloomPass.enabled];
+        const fullW = metrics?.viewportW || initW, fullH = metrics?.viewportH || initH;
+        try {
+          composer.renderToScreen = true; composer.setSize(8, 8);
+          for (const [child] of visibility) if (!(child as THREE.Light).isLight) child.visible = false;
+          if (mainAstro) mainAstro.root.visible = true;
+          // Exercise emergence and its suit/environment programs too.
+          tablet3D.group.visible = earthSystem.group.visible = true;
+          optics.spaceHaloMesh.visible = optics.chromaticRingMesh.visible = optics.visorFlareMesh.visible = true;
+          outputPass.enabled = bloomPass.enabled = true; referenceBloom.enabled = false;
+          composer.render(0);
+          tablet3D.group.visible = earthSystem.group.visible = false;
+          optics.spaceHaloMesh.visible = optics.chromaticRingMesh.visible = optics.visorFlareMesh.visible = false;
+          nativeLightMask.value = 1; outputPass.enabled = bloomPass.enabled = false; referenceBloom.enabled = true;
+          for (const clone of clones) clone.root.visible = true;
+          worlds.update(.4, 0, 1, true); worlds.blackUniforms.u_resolution.value.set(8, 8);
+          worlds.renderFeedback(glRenderer, camera, true); composer.render(0);
+          for (const clone of clones) clone.root.visible = false;
+          worlds.update(.93, 0, 1, true); composer.render(0);
+          worlds.update(1, .5, 1, true); worlds.setMonitorClip(true); worlds.monitorStencilMask.visible = true; composer.render(0);
+          worlds.setMonitorClip(false); worlds.monitorStencilMask.visible = false; endDecor.group.visible = true; visorLed.mesh.visible = true;
+          if (shardsMesh && glassRefractionTarget) {
+            glRenderer.setRenderTarget(glassRefractionTarget); glRenderer.setClearColor(0, 1); glRenderer.clear();
+            (shardsMesh.material as THREE.ShaderMaterial).uniforms.u_backgroundTexture.value = glassRefractionTarget.texture;
+            shardsMesh.visible = true;
+          }
+          composer.render(0);
+        } finally {
+          worlds.update(0, 0, 1, true); nativeLightMask.value = mask; visorLed.mesh.visible = ledVisible;
+          [referenceBloom.enabled, outputPass.enabled, bloomPass.enabled] = oldPasses;
+          for (const [child, visible] of visibility) child.visible = visible;
+          composer.renderToScreen = composerToScreen; composer.setSize(fullW, fullH);
+          glRenderer.setRenderTarget(target); glRenderer.autoClear = autoClear; glRenderer.setClearColor(color, alpha);
+        }
+        // Non-blocking completion fence, not a second animation loop or gl.finish.
+        const gl = glRenderer.getContext() as WebGL2RenderingContext;
+        const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+        if (fence) {
+          gl.flush();
+          const completed = await new Promise<boolean>(resolve => {
+            let timer: number | undefined;
+            const finish = (ok: boolean) => { if (timer !== undefined) window.clearTimeout(timer); gl.deleteSync(fence); resolve(ok); cancelPipelineWarmup = () => {}; };
+            cancelPipelineWarmup = () => finish(false);
+            const start = performance.now();
+            const check = () => {
+              if (unmounted || contextLost) { finish(false); return; }
+              const status = gl.clientWaitSync(fence, 0, 0);
+              if (status === gl.ALREADY_SIGNALED || status === gl.CONDITION_SATISFIED) finish(true);
+              else if (status === gl.WAIT_FAILED || performance.now() - start > 90000) finish(false);
+              else timer = window.setTimeout(check, 32);
+            };
+            check();
+          });
+          if (unmounted || contextLost) return;
+          if (!completed) throw new Error("Goal shader preparation did not complete");
+        }
+        renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * .001);
+        restoreWarmCanvas();
+        pipelineWarmed = pipelineReady = true; frameClock = performance.now();
+        if (window.__goalAstronautTelemetry) {
+          window.__goalAstronautTelemetry.pipelineReady = true;
+          window.__goalAstronautTelemetry.resources.programs = glRenderer.info.programs?.length || 0;
+        }
+        ensureLoop();
+      })().catch((error: unknown) => {
+        restoreWarmCanvas();
+        if (!unmounted && !contextLost) {
+          console.warn("Goal pipeline unavailable", error); showStaticFallback(); audioJourney.release();
+          if (window.__goalAstronautTelemetry) window.__goalAstronautTelemetry.fallbackVisible = true;
+        }
+      });
+      return pipelineWarmPromise;
     };
 
     const tick = () => {
@@ -2040,7 +1778,7 @@ export function GoalTunnelSection() {
       const resetAt = metrics ? metrics.emergenceStart - metrics.viewportH * 0.25 : 0;
       const returnedBeforeTablet = lastObservedScrollY >= resetAt && targetScrollY < resetAt;
       lastObservedScrollY = targetScrollY;
-      if (metrics && playbackPath && !reducedMotion && window.__goalAstronautTelemetry?.glbLoaded && !window.__goalAstronautTelemetry.fallbackVisible) {
+      if (metrics && playbackPath && !reducedMotion && window.__goalAstronautTelemetry?.glbLoaded && pipelineReady && !window.__goalAstronautTelemetry.fallbackVisible) {
         const activation = playbackPath(0);
         if (playbackState === "completed" && returnedBeforeTablet) {
           playbackState = "armed";
@@ -2223,6 +1961,9 @@ export function GoalTunnelSection() {
         pointerTarget.x = pointerTarget.y = pointerSmooth.x = pointerSmooth.y = 0;
         releasePlayback(true);
       }
+      pipelineReady = Boolean(reducedMotion) || pipelineWarmed;
+      if (window.__goalAstronautTelemetry) window.__goalAstronautTelemetry.pipelineReady = pipelineReady;
+      if (!reducedMotion) void warmPipeline();
       onResize(); // Preference changes also restore the full static inspection resolution.
     };
     pauseButton?.addEventListener("click", onPausePlayback);
@@ -2244,11 +1985,14 @@ export function GoalTunnelSection() {
     window.addEventListener("resize", onResize, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     ensureLoop();
+    void warmPipeline();
 
     return () => {
       audioJourney.release();
       releasePlayback(false);
       unmounted = true;
+      cancelPipelineWarmup();
+      restoreWarmCanvas();
       unsubscribeChrome();
       glRenderer.domElement.removeEventListener("webglcontextlost", onContextLost);
       pauseButton?.removeEventListener("click", onPausePlayback);
