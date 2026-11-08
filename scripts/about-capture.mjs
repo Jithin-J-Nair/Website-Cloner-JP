@@ -12,7 +12,7 @@ const out = path.resolve(process.env.ABOUT_CAPTURE_OUT || "/tmp/about-shots");
 const width = Number.parseInt(process.env.ABOUT_CAPTURE_WIDTH || "1440", 10);
 const height = Number.parseInt(process.env.ABOUT_CAPTURE_HEIGHT || "900", 10);
 const REFERENCE_DURATION_SECONDS = 42.233333;
-const fractions = (process.env.ABOUT_CAPTURE_FRACTIONS || "0,0.06,0.14,0.24,0.34,0.44,0.55,0.66,0.78,0.9,1")
+const fractions = (process.env.ABOUT_CAPTURE_FRACTIONS || "0,0.06,0.14,0.24,0.34,0.44,0.55,0.66,0.78,0.9,0.95,1")
   .split(",")
   .map(value => Number(value.trim()))
   .filter(value => Number.isFinite(value) && value >= 0 && value <= 1);

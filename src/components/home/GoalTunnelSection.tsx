@@ -104,6 +104,8 @@ declare global {
         portalFlash: number;
         flashVisible: boolean;
         corridorTravel: number;
+        corridorVisible: boolean;
+        corridorClipped: boolean;
         glazingLayers: number;
         glassOpacity: number;
         glassRefractionReady: boolean;
@@ -894,7 +896,8 @@ export function GoalTunnelSection() {
         astronautMatrix: new Array<number>(16).fill(0),
         cameraMatrix: new Array<number>(16).fill(0),
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
-        corridorTravel: 0, glazingLayers: 0, glassOpacity: 0, glassThickness: 0,
+        corridorTravel: 0, corridorVisible: false, corridorClipped: false,
+        glazingLayers: 0, glassOpacity: 0, glassThickness: 0,
          glassRefractionReady: false, shardDepthWrite: false, shardSpread: 1.20,
         shardSidewallsLoaded: false, shardSidewallTriangles: 0,
         shardCount: 0, shardFrames: 0, vortexIntensity: 0,
@@ -1546,10 +1549,10 @@ export function GoalTunnelSection() {
 
       // 2. Downstream Royal-Blue Arch & White-Ring Corridor (`Frames 15 & 16`)
       const whiteIn = !inEmergencePhase ? smoothstep(0.815, 0.85, tTunnel) : 0;
-      const whiteOut = 1 - smoothstep(0.86, 0.96, tShatter);
+      const whiteOut = 1 - smoothstep(0.98, 1.0, tShatter);
       const whiteVis = whiteIn * whiteOut * (tWait > 0.001 ? 0 : 1);
       blueCorridor.group.visible = whiteVis > 0.008;
-      const clipToMonitor = blueCorridor.group.visible && tOutPull > 0.02;
+      const clipToMonitor = blueCorridor.group.visible && tOutPull > 0.02 && tShatter < 0.42;
       blueCorridor.setMonitorClip(clipToMonitor);
       blueCorridor.monitorStencilMask.visible = clipToMonitor;
 
@@ -2002,6 +2005,8 @@ export function GoalTunnelSection() {
         state.portalFlash = portalFlash;
         state.flashVisible = trussSystem.group.visible && portalFlash > 0.001;
         state.corridorTravel = blueCorridor.group.visible ? blueCorridor.travelGroup.position.z : 0;
+        state.corridorVisible = blueCorridor.group.visible;
+        state.corridorClipped = clipToMonitor;
         state.glazingLayers = glazing.group.visible ? glazing.group.children.length : 0;
          state.glassOpacity = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uOpacity.value : 0;
          state.glassThickness = shardsMesh?.visible ? (shardsMesh.material as THREE.ShaderMaterial).uniforms.uGlassThickness.value : 0;
