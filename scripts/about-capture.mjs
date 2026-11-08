@@ -11,6 +11,7 @@ const base = process.env.ABOUT_CAPTURE_BASE || "http://127.0.0.1:3000";
 const out = path.resolve(process.env.ABOUT_CAPTURE_OUT || "/tmp/about-shots");
 const width = Number.parseInt(process.env.ABOUT_CAPTURE_WIDTH || "1440", 10);
 const height = Number.parseInt(process.env.ABOUT_CAPTURE_HEIGHT || "900", 10);
+const REFERENCE_DURATION_SECONDS = 42.233333;
 const fractions = (process.env.ABOUT_CAPTURE_FRACTIONS || "0,0.06,0.14,0.24,0.34,0.44,0.55,0.66,0.78,0.9,1")
   .split(",")
   .map(value => Number(value.trim()))
@@ -73,7 +74,7 @@ try {
       maxScroll,
       title: dimensions.title,
       waitAfterScrollMs: 800,
-      referenceDurationSeconds: 38,
+      referenceDurationSeconds: REFERENCE_DURATION_SECONDS,
       captures: [],
       browserErrors: errors,
     };
@@ -86,7 +87,7 @@ try {
         if (smooth && typeof smooth.scrollTo === "function") smooth.scrollTo(y, { immediate: true });
         window.scrollTo({ top: y, behavior: "instant" });
       }, top);
-      // The reference is a continuous 38s scroll; 800ms gives smooth-scroll and
+      // The current Git LFS reference is 42.233s; 800ms gives smooth-scroll and
       // shader uniforms a deterministic settle window before each still.
       await page.waitForTimeout(800);
       const actual = await page.evaluate(() => ({
@@ -94,7 +95,7 @@ try {
         documentHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight),
         phaseMarker: document.elementFromPoint(window.innerWidth * 0.5, window.innerHeight * 0.5)?.closest("section")?.id ?? null,
       }));
-      const referenceSeconds = fraction * 38;
+      const referenceSeconds = fraction * REFERENCE_DURATION_SECONDS;
       const frameNumber = Math.round(referenceSeconds) + 1;
       const name = `about-${String(index + 1).padStart(2, "0")}-${String(Math.round(fraction * 100)).padStart(3, "0")}.png`;
       await page.screenshot({

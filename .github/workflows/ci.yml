@@ -69,6 +69,7 @@ jobs:
             out="temp/home-about-reference/${section}"
             mkdir -p "${out}"
             ffprobe -v error -show_entries format=duration,size -show_streams -of json "${video}" > "${out}/metadata.json"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vn -ac 1 -ar 22050 -c:a pcm_s16le "${out}/audio.wav"
             sha256sum "${video}" > "${out}/sha256.txt"
             ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/2,scale=960:-1" -q:v 3 "${out}/frame-%03d.jpg"
             ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/6,scale=480:-1,tile=4x4" -frames:v 1 -q:v 3 "${out}/contact-sheet.jpg"

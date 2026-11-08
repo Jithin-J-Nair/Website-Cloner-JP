@@ -5,8 +5,8 @@ import * as THREE from "three";
  */
 const flow = `
 vec3 plume(vec4 seed) {
-  // A continuous, multi-strand spiral volume: broad and turbulent at the opening,
-  // tightening into the vertical suspended column as the camera retreats.
+  // A continuous, multi-strand spiral volume: vertically suspended at the opening,
+  // with restrained lateral folding as the camera pulls back over the valley.
   float h = (seed.z / 3.14159265 - .5) * mix(5.15, 5.65, uCompact);
   // Uniform angle + a height offset is still statistically a uniform cylinder.
   // Two angular strata concentrate seeds into broad, twisting silver folds.
@@ -34,15 +34,15 @@ vec3 plume(vec4 seed) {
   p += billow * mix(.34, .18, uCompact);
   // Successive recording frames show broad folding/advection, not a slow
   // rigid orbit. Correlated displacements preserve neighboring trajectories.
-  p.x += sin(h * 1.1 + uTime * .65) * mix(.72, .22, uCompact);
+  p.x += sin(h * 1.1 + uTime * .65) * mix(.24, .22, uCompact);
   p.z += cos(h * .85 - uTime * .6) * mix(.45, .18, uCompact);
   p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .34) * .065;
   // Sparse pearl/bokeh outliers break the silhouette into suspended particles.
   float fringe = smoothstep(.965, .998, seed.w);
-  p += vec3(cos(seed.y * 1.3) * 4.2, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.9) * fringe;
-  // Opening cloud has a lateral, comet-like spread; the later wide shot reads as
-  // a narrower overhead shaft against the valley.
-  p.x *= mix(1.72, 1.60, uCompact);
+  p += vec3(cos(seed.y * 1.3) * 3.0, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.4) * fringe;
+  // Keep the opening cloud centered and vertical like the recording; the valley
+  // pullback restores a little width without turning the plume into a horizontal ribbon.
+  p.x *= mix(1.05, 1.60, uCompact);
   p.z *= mix(1.05, 1.28, uCompact);
   p.y *= mix(.92, 1.08, uCompact);
   p.z = min(p.z, 4.);
