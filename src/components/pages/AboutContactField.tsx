@@ -22,7 +22,6 @@ export function AboutContactField() {
     const host = hostRef.current;
     const stage = host?.closest<HTMLElement>("#end-section-outer");
     const section = host?.closest<HTMLElement>("section");
-    const arm = stage?.querySelector<HTMLElement>(".about-cta-arm");
     if (!host || !stage || !section) return;
     // A disposed/lost context must never be rebound to the same React-owned canvas
     // during preference changes or Strict Mode effect replay.
@@ -64,6 +63,7 @@ export function AboutContactField() {
       if (!reducedMotion) time += elapsed;
       if (window.__enableCtaProbe) { frameTimes.push(elapsed * 1000); if (frameTimes.length > 120) frameTimes.shift(); }
       progress = Math.max(0, Math.min(1, (window.scrollY - start) / length));
+      const arm = stage.querySelector<HTMLElement>(".about-cta-arm");
       if (arm) {
         const revealInput = reducedMotion ? 1 : Math.max(0, Math.min(1, (progress - .08) / .62));
         if (Math.abs(revealInput - previousArmProgress) > .004) {
