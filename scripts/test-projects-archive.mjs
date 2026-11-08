@@ -116,10 +116,14 @@ assert.match(motion, /matches\(":hover,:focus-visible"\)/, "keyboard title revea
 assert.match(motion, /PARALLAX_SAMPLES:12,BLUR_SAMPLES:6/, "native depth/DOF samples");
 assert.match(card, /project\.thumbnail/, "cards use the source project thumbnail");
 
-assert.match(detail, /project\.media\.slice\(1\)/);
-assert.ok(detail.includes('text-[16vw]'), "mobile project title uses the reference scale");
-assert.ok(detail.includes('text-[15.5px]'), "mobile project copy uses the reference reading size");
-assert.ok(detail.includes('min-[813px]:col-start-7 min-[813px]:col-span-6 min-[813px]:ml-[2.5vw]'), "desktop media occupies the right-hand reference lane");
+assert.match(detail, /const media = project\.media/, "all source media, including the opening item, belong to the same reel");
+assert.match(detail, /media\.map/, "render each source gallery item");
+const caseCss = fs.readFileSync('src/components/case-study/case-study.css', 'utf8');
+assert.match(caseCss, /font-size:4\.5em/, 'native case title scale');
+assert.match(caseCss, /padding-left:48em/, 'native horizontal gallery inset');
+assert.match(caseCss, /gap:5em/, 'native desktop panel gaps');
+assert.match(caseCss, /grid-template-columns:60% 40%/, 'native metadata proportions');
+assert.match(detail, /createCaseStudyMotion/, 'route-owned responsive gallery clock');
 assert.ok(detail.includes('data-mobile-launch-cta'), "mobile launch CTA follows services and links");
 assert.match(detail, /if \(!project\.launchCta\.href\?\.trim\(\) && !project\.launchCta\.isVimeoOverlay\)/, "empty launch URLs must not become self-links");
 assert.match(detail, /data-launch-unavailable="true"/, "missing launch destinations remain visible without a fake link");

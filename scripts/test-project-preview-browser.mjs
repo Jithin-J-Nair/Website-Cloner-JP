@@ -2,8 +2,11 @@
 /** Real browser source/playback lifecycle checks; no mocked visibility or clock. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
 import { launchMotionBrowser } from './lib/browser-runtime.mjs';
-const out='docs/lusion-parity-audit/data/implementation-01/project-preview-browser.json';
+const base=process.env.BASE_URL||'http://127.0.0.1:3000';
+const out=process.env.OUTPUT_PATH||'temp/site-fidelity-audit/project-preview-browser.json';
+fs.mkdirSync(path.dirname(out),{recursive:true});
 const browser=await launchMotionBrowser();
 const context=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
 await context.addInitScript(()=>sessionStorage.setItem('lusion_booted_v1','1'));
@@ -13,7 +16,7 @@ const video=page.locator('main video').first();
 const state=async name=>report.states.push({name,...await video.evaluate(v=>({source:v.getAttribute('src'),selected:v.dataset.previewSource,paused:v.paused,readyState:v.readyState,muted:v.muted,preload:v.preload}))});
 const playing=async suffix=>page.waitForFunction(s=>{const v=document.querySelector('main video');return v?.currentSrc.endsWith(s)&&!v.paused&&v.readyState>=2},suffix,{timeout:30000});
 try{
- await page.goto('http://127.0.0.1:3000/projects/of_the_oak',{waitUntil:'domcontentloaded'});
+ await page.goto(base+'/projects/of_the_oak',{waitUntil:'domcontentloaded'});
  await page.locator('#preloader').waitFor({state:'hidden'});
  await playing('/video0.mp4');await state('desktop-playing');
  await page.emulateMedia({reducedMotion:'reduce'});

@@ -14,6 +14,8 @@ export function ProjectPreviewVideo({ desktopSrc, mobileSrc, poster, onError }: 
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const reduced = useStudioStore(state => state.reducedMotion);
+  const menuOpen = useStudioStore(state => state.menuOpen);
+  const transitioning = useStudioStore(state => state.isTransitioning);
   const reelOpen = useStudioStore(state => state.reelOpen);
   useEffect(() => {
     const video = ref.current;
@@ -21,7 +23,7 @@ export function ProjectPreviewVideo({ desktopSrc, mobileSrc, poster, onError }: 
     const media = window.matchMedia("(max-width: 812px)");
     let visible = false;
     let disposed = false;
-    const canPlay = () => !disposed && visible && !document.hidden && !reduced && !reelOpen;
+    const canPlay = () => !disposed && visible && !document.hidden && !reduced && !reelOpen && !menuOpen && !transitioning;
     const sync = () => {
       const source = media.matches ? mobileSrc : desktopSrc;
       video.dataset.previewSource = source;
@@ -49,9 +51,9 @@ export function ProjectPreviewVideo({ desktopSrc, mobileSrc, poster, onError }: 
       document.removeEventListener("visibilitychange", sync);
       video.pause();
     };
-  }, [desktopSrc, mobileSrc, reduced, reelOpen]);
+  }, [desktopSrc, mobileSrc, reduced, reelOpen, menuOpen, transitioning]);
 
   return <video ref={ref} poster={poster} muted loop playsInline preload="none"
     aria-hidden="true" onError={onError}
-    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" />;
+    className="h-full w-full object-cover" />;
 }

@@ -6,7 +6,8 @@ import path from 'node:path';
 import {launchMotionBrowser} from './lib/browser-runtime.mjs';
 import {loadCurrentLiveGroundTruth} from './lib/load-ground-truth.mjs';
 const manifest=loadCurrentLiveGroundTruth();
-const out='docs/lusion-parity-audit/evidence/project-gallery-text';fs.mkdirSync(out,{recursive:true});
+const base=process.env.BASE_URL||'http://127.0.0.1:3000';
+const out=process.env.OUTPUT_DIR||'temp/site-fidelity-audit/gallery-text';fs.mkdirSync(out,{recursive:true});
 const report={scope:'Captured text/order/em sizing and visible browser render, not matched-source typography/spacing acceptance.',states:[],errors:[]};
 try{
  for(const project of manifest.projectDetails.filter(p=>p.media.some(m=>m.type==='text'))){
@@ -16,9 +17,9 @@ try{
     const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce',deviceScaleFactor:1});
     await context.addInitScript(()=>{if(location.protocol==='http:')sessionStorage.setItem('lusion_booted_v1','1')});
     const page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));
-    await page.goto('http://127.0.0.1:3000'+project.route,{waitUntil:'domcontentloaded'});await page.locator('#preloader').waitFor({state:'hidden'});await page.evaluate(()=>document.fonts.ready);
+    await page.goto(base+project.route,{waitUntil:'domcontentloaded'});await page.locator('#preloader').waitFor({state:'hidden'});await page.evaluate(()=>document.fonts.ready);
     const expected=project.media.find(m=>m.type==='text');const panel=page.locator(`[data-project-media-type="text"][data-project-media-index="${expected.index}"]`);
-    await panel.scrollIntoViewIfNeeded();await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    await panel.evaluate(el=>{const p=el.closest('.case-panel');const y=innerWidth>812?p.offsetLeft-innerWidth*.1:el.getBoundingClientRect().top+scrollY;if(window.__lenis)window.__lenis.scrollTo(y,{immediate:true});else scrollTo(0,y);dispatchEvent(new Event('scroll'));});await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
     assert.equal((await panel.innerText()).trim(),expected.text);assert.equal(await panel.locator('img,video,button').count(),0);assert.equal(await panel.isVisible(),true);
     const style=await panel.evaluate(el=>({font:parseFloat(getComputedStyle(el.querySelector('p')).fontSize),parentFont:parseFloat(getComputedStyle(el).fontSize),width:el.getBoundingClientRect().width}));assert.ok(Math.abs(style.font/style.parentFont-expected.fontSizeEm)<.01);
     const cdp=await context.newCDPSession(page);const shot=await cdp.send('Page.captureScreenshot',{format:'jpeg',quality:78,fromSurface:true,captureBeyondViewport:false});const file=`${project.id}--${width}x${height}.jpg`;fs.writeFileSync(path.join(out,file),Buffer.from(shot.data,'base64'));

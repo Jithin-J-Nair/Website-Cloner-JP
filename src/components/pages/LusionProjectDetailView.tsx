@@ -1,14 +1,15 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { LusionProjectDetail } from "@/data/reference";
 import { TransitionLink } from "@/components/studio/TransitionLink";
-import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
-import { StudioFooter } from "@/components/sections/StudioFooter";
 import { getCanonicalProjectTitle } from "@/lib/clean-media-synthesizer";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
+import { useRouter } from "next/navigation";
+import { createCaseStudyMotion } from "@/components/case-study/CaseStudyMotion";
+import "@/components/case-study/case-study.css";
 import { ProjectPreviewVideo } from "@/components/studio/ProjectPreviewVideo";
 
 interface LusionProjectDetailViewProps {
@@ -83,13 +84,11 @@ function ProjectMediaCard({
   item,
   projectId,
   canonicalTitle,
-  isHeroDesktop = false,
   onOpenModal,
 }: {
   item: LusionProjectDetail["media"][number];
   projectId: string;
   canonicalTitle: string;
-  isHeroDesktop?: boolean;
   onOpenModal: (label: string, desktopSrc: string, mobileSrc: string) => void;
 }) {
   const [videoFailed, setVideoFailed] = useState(false);
@@ -100,8 +99,8 @@ function ProjectMediaCard({
   if (item.type === "text" && "text" in item) {
     const fontSizeEm = "fontSizeEm" in item && typeof item.fontSizeEm === "number" ? item.fontSizeEm : 1.5;
     return (
-      <div data-project-media-type="text" data-project-media-index={item.index} className="py-8">
-        <p className="font-sans leading-relaxed" style={{ fontSize: `${fontSizeEm}em` }}>
+      <div data-project-media-type="text" data-project-media-index={item.index} className="case-text">
+        <p className="font-sans" style={{ fontSize: `${fontSizeEm}em` }}>
           {item.text}
         </p>
       </div>
@@ -133,12 +132,8 @@ function ProjectMediaCard({
             );
           }
         }}
-        style={isHeroDesktop ? undefined : { aspectRatio: `${aspectW} / ${aspectH}` }}
-        className={`group relative w-full cursor-pointer overflow-hidden bg-black/30 shadow-[0_24px_60px_rgba(0,0,0,0.28)] focus-visible:outline-2 focus-visible:outline-white ${
-          isHeroDesktop
-            ? "h-[70vh] rounded-l-[20px] rounded-r-none"
-            : "rounded-[18px]"
-        }`}
+        style={{ aspectRatio: `${aspectW} / ${aspectH}` }}
+        className="case-media group relative h-full w-full cursor-pointer overflow-hidden focus-visible:outline-2 focus-visible:outline-white"
       >
         {!videoFailed ? (
           <ProjectPreviewVideo
@@ -171,12 +166,8 @@ function ProjectMediaCard({
 
   return (
     <figure
-      style={isHeroDesktop ? undefined : { aspectRatio: `${aspectW} / ${aspectH}` }}
-      className={`relative m-0 w-full overflow-hidden bg-black/20 shadow-[0_24px_60px_rgba(0,0,0,0.24)] ${
-        isHeroDesktop
-          ? "h-[70vh] rounded-l-[20px] rounded-r-none"
-          : "rounded-[18px]"
-      }`}
+      style={{ aspectRatio: `${aspectW} / ${aspectH}` }}
+      className="case-media relative m-0 h-full w-full overflow-hidden"
     >
       <picture className="block h-full w-full">
         <source media="(max-width: 812px)" srcSet={imgMobile} />
@@ -194,17 +185,14 @@ function ProjectMediaCard({
   );
 }
 
-/**
- * Captured Lusion Case-Study Page (`/projects/[slug]` — 19 current canonical detail routes: 17 captured + 2 current additions)
- *
- * Historical desktop (`1440x900`) and mobile (`390x844`) layout references are in `docs/validation/phase-g/reference/`:
- * Captured surfaces below are implementation inputs, not a current parity certificate.
- *   - Captured brand surface (`theme.colorBg`, `theme.colorText`, `theme.colorHighlight`) + subtle tonal hero backdrop
- *   - Crisp `#ffffff` `• LAUNCH PROJECT` pill matching `.project-details-launch-btn` in `lusion.co` CSS
- *   - Desktop opening `100vh` split stage: sticky left narrative (`cols 1..5`) + right flush-bleeding `70vh` media stage (`left: ~53.5vw..100vw`) + `SCROLL TO EXPLORE >>`
- *   - Mobile opening `100svh` editorial viewport (`LUSION`, `←` + `••` white circles, `h1`, paragraphs, `SERVICES`/`LINKS`, `• LAUNCH PROJECT` after the mobile services/links block, followed by the full media gallery & `NEXT PROJECT`
- */
+/** Native case-study presentation shared by all nineteen canonical projects. */
 export function LusionProjectDetailView({ project }: LusionProjectDetailViewProps) {
+  const rootRef = useRef<HTMLElement>(null);
+  const reduced = useStudioStore(s => s.reducedMotion);
+  const router = useRouter();
+  useEffect(() => {
+    if (rootRef.current) return createCaseStudyMotion(rootRef.current, project, reduced, () => router.push(project.nextProject.href));
+  }, [project, reduced, router]);
   const setActiveProjectTheme = useStudioStore((s) => s.setActiveProjectTheme);
   const setReelOpen = useStudioStore((s) => s.setReelOpen);
 
@@ -271,8 +259,8 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
           className="inline-flex h-12 items-center gap-3.5 rounded-full px-7 font-sans text-xs font-medium tracking-[0.05em] uppercase shadow-[0_10px_28px_rgba(0,0,0,0.08)]"
           style={{ backgroundColor: pillBg, color: pillText }}
         >
-          <span className="h-2 w-2 rounded-full bg-current" />
-          <span>{project.launchCta.label}</span>
+          <span className="case-launch-dot h-2 w-2 rounded-full bg-current" />
+          <span className="case-launch-text">{project.launchCta.label}</span>
         </span>
       );
     }
@@ -291,8 +279,9 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
           style={{ backgroundColor: pillBg, color: pillText }}
           className="inline-flex h-12 cursor-pointer items-center gap-3.5 rounded-full px-7 font-sans text-xs font-medium tracking-[0.05em] uppercase shadow-[0_10px_28px_rgba(0,0,0,0.08)] transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-white"
         >
-          <span className="h-2 w-2 rounded-full bg-current" />
-          <span>{project.launchCta.label}</span>
+          <span className="case-launch-dot h-2 w-2 rounded-full bg-current" />
+          <span className="case-launch-text">{project.launchCta.label}</span>
+          <span className="case-launch-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12h12m-5-5 5 5-5 5" stroke="currentColor" strokeWidth="1.5" /></svg></span>
         </button>
       );
     }
@@ -305,179 +294,56 @@ export function LusionProjectDetailView({ project }: LusionProjectDetailViewProp
         style={{ backgroundColor: pillBg, color: pillText }}
         className="inline-flex h-12 items-center gap-3.5 rounded-full px-7 font-sans text-xs font-medium tracking-[0.05em] uppercase shadow-[0_10px_28px_rgba(0,0,0,0.08)] transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-white"
       >
-        <span className="h-2 w-2 rounded-full bg-current" />
-        <span>{project.launchCta.label}</span>
+        <span className="case-launch-dot h-2 w-2 rounded-full bg-current" />
+        <span className="case-launch-text">{project.launchCta.label}</span>
+        <span className="case-launch-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12h12m-5-5 5 5-5 5" stroke="currentColor" strokeWidth="1.5" /></svg></span>
       </a>
     );
   };
 
-  const heroMedia = project.media[0];
-  const restMedia = project.media.slice(1);
+  const media = project.media;
 
   return (
-    <main
-      id={`project-${project.id}`}
-      style={{ backgroundColor: bg, color: fg }}
-      className="relative overflow-x-clip"
-    >
-      {/* Subtle Ambient Hero Watermark matching live `lusion.co/projects/[slug]` canvas backdrop */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.055]"
-      >
-        <img
-          src={`/assets/projects/${project.id}/home.webp`}
-          alt=""
-          className="h-full w-full scale-110 object-cover blur-[2px] grayscale"
-        />
+    <main ref={rootRef} id={`project-${project.id}`} data-case-study={project.id}
+      style={{ backgroundColor: bg, color: fg, "--case-highlight": highlight, "--case-btn-hover": project.theme.colorBtnTextHover || "#ffffff", "--case-icon": project.theme.colorIconColor || pillText, "--case-next-bg": project.nextProject.colorBg, "--case-next-text": project.nextProject.colorText } as React.CSSProperties}
+      className="case-study">
+      <div id="project-details" className="case-stage">
+        <section id="project-details-meta" aria-label={`${canonicalTitle} project information`}>
+          <h1 id="project-details-title">{canonicalTitle}</h1>
+          <div className="case-meta-columns">
+            <div className="case-reading">
+              <div id="project-details-desc">
+                {project.paragraphs.map((para, idx) => <RichGroundTruthParagraph key={idx} text={para.text} links={para.links} highlightColor={highlight} />)}
+              </div>
+              {project.launchCta && <div id="project-details-launch-cta" className="case-launch-desktop">{renderLaunchCta()}</div>}
+            </div>
+            <div id="project-details-side-list">
+              {project.services.length > 0 && <div id="project-details-side-list-services">
+                <h2>SERVICES</h2><ul>{project.services.map(service => <li key={service}>{service}</li>)}</ul>
+              </div>}
+              {project.links.length > 0 && <div id="project-details-side-list-links">
+                <h2>LINKS</h2><ul>{project.links.map(link => <li key={`${link.label}-${link.href}`}><a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a></li>)}</ul>
+              </div>}
+            </div>
+          </div>
+          {project.launchCta && <div id="project-details-launch-cta-mobile" data-mobile-launch-cta>{renderLaunchCta()}</div>}
+        </section>
+        <div id="project-details-items-wrapper" data-project-gallery>
+          <div id="project-details-items-move-container">
+            {media.map(item => <div key={`${project.id}-${item.index}`} className="case-panel" data-panel-index={item.index} data-fullscreen={!!item.fullscreen} data-panel-type={item.type}
+              style={{ "--case-aspect": item.type === "text" ? 1 : (item.declaredWidth || 16) / (item.declaredHeight || 9) } as React.CSSProperties}>
+              <ProjectMediaCard item={item} projectId={project.id} canonicalTitle={canonicalTitle} onOpenModal={openMediaModal} />
+            </div>)}
+            <section id="project-next" className="case-next" aria-label="Next project">
+              <TransitionLink href={project.nextProject.href} transitionLabel={nextTitle} onMouseEnter={() => soundEngine.playHover()}>
+                <h2 id="project-details-preview-title">{nextTitle}</h2>
+                <div className="case-next-footer"><span>{project.nextProject.label}</span><span className="case-next-bar"><span /></span><span aria-hidden="true">→</span></div>
+              </TransitionLink>
+            </section>
+          </div>
+        </div>
+        <div id="project-details-header-info" aria-hidden="true">{project.scrollPrompt} <span>»</span></div>
       </div>
-
-      {/* Split Sticky Editorial + Right Media Showcase Band */}
-      <section className="relative z-10 px-[var(--base-padding-x)] pt-[6.5rem] pb-20 min-[813px]:grid min-[813px]:grid-cols-12 min-[813px]:items-start min-[813px]:gap-x-[var(--grid-gap)] min-[813px]:pt-[17vh] min-[813px]:pb-28">
-        {/* Left Sticky Editorial Column (fills first mobile viewport cleanly; sticky cols 1..5 on desktop) */}
-        <div className="flex min-h-[calc(100svh-7.5rem)] flex-col justify-between pb-6 min-[813px]:sticky min-[813px]:top-[22vh] min-[813px]:col-span-5 min-[813px]:min-h-0 min-[813px]:pt-[3.7vh] min-[813px]:pb-0">
-          <div>
-            <h1 className="m-0 font-sans text-[16vw] leading-[0.98] font-normal tracking-[-0.025em] min-[813px]:text-[3.45vw]">
-              {canonicalTitle}
-            </h1>
-
-            {/* Desktop 2-column sub-split (`paragraphs + CTA` left, `SERVICES + LINKS` right) */}
-            <div className="mt-[4.25rem] grid grid-cols-1 gap-8 min-[1100px]:grid-cols-12 min-[1100px]:gap-6">
-              <div className="space-y-5 font-sans text-[15.5px] leading-[1.58] opacity-92 min-[1100px]:col-span-8">
-                {project.paragraphs.map((para, idx) => (
-                  <RichGroundTruthParagraph
-                    key={idx}
-                    text={para.text}
-                    links={para.links}
-                    highlightColor={highlight}
-                  />
-                ))}
-
-                {project.launchCta && (
-                  <div className="pt-4 max-[812px]:hidden">{renderLaunchCta()}</div>
-                )}
-              </div>
-
-              {/* `SERVICES` + `LINKS` Two-Column Metadata Block */}
-              <div className="grid grid-cols-2 gap-6 pt-2 min-[1100px]:col-span-4 min-[1100px]:grid-cols-1 min-[1100px]:pt-0">
-                {project.services.length > 0 && (
-                  <div>
-                    <h2
-                      style={{ color: highlight }}
-                      className="font-sans text-[11px] font-medium tracking-[0.06em] uppercase"
-                    >
-                      SERVICES
-                    </h2>
-                    <ul className="mt-3 space-y-1.5 font-sans text-[13.5px] leading-snug opacity-92">
-                      {project.services.map((svc) => (
-                        <li key={svc}>{svc}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {project.links.length > 0 && (
-                  <div>
-                    <h2
-                      style={{ color: highlight }}
-                      className="font-sans text-[11px] font-medium tracking-[0.06em] uppercase"
-                    >
-                      LINKS
-                    </h2>
-                    <ul className="mt-3 space-y-1.5 font-sans text-[13.5px] leading-snug">
-                      {project.links.map((lnk) => (
-                        <li key={`${lnk.label}-${lnk.href}`}>
-                          <a
-                            href={lnk.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline-offset-4 transition-opacity hover:underline hover:opacity-75"
-                          >
-                            {lnk.label}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-              {project.launchCta && (
-                <div className="mt-8 min-[813px]:hidden" data-mobile-launch-cta>{renderLaunchCta()}</div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Media Showcase Column (`cols 6..12` on desktop, flush right bleed on opening hero frame) */}
-        <div className="mt-10 space-y-6 min-[813px]:col-start-7 min-[813px]:col-span-6 min-[813px]:ml-[2.5vw] min-[813px]:mt-0 min-[813px]:space-y-8">
-          {heroMedia && (
-            <div className="min-[813px]:-mr-[var(--base-padding-x)] min-[813px]:pb-14">
-              <ProjectMediaCard
-                key={`${project.id}-${heroMedia.index}`}
-                item={heroMedia}
-                projectId={project.id}
-                canonicalTitle={canonicalTitle}
-                isHeroDesktop={true}
-                onOpenModal={openMediaModal}
-              />
-              {/* Bottom-Right `SCROLL TO EXPLORE >>` Indicator matching `12-01..12-17` desktop captures */}
-              <div className="mt-5 flex justify-end max-[812px]:hidden min-[813px]:pr-[var(--base-padding-x)]">
-                <span
-                  style={{ color: highlight }}
-                  className="font-sans text-[11px] font-medium tracking-[0.08em] uppercase"
-                >
-                  {project.scrollPrompt} &raquo;
-                </span>
-              </div>
-            </div>
-          )}
-
-          {restMedia.map((item) => (
-            <ProjectMediaCard
-              key={`${project.id}-${item.index}`}
-              item={item}
-              projectId={project.id}
-              canonicalTitle={canonicalTitle}
-              onOpenModal={openMediaModal}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Verified `NEXT PROJECT` Chain Banner (`project.nextProject` across all 17 current case studies) */}
-      <section
-        id="project-next"
-        style={{
-          backgroundColor: project.nextProject.colorBg || "#121417",
-          color: project.nextProject.colorText || "#ffffff",
-        }}
-        className="relative z-10 border-t border-white/10 px-[var(--base-padding-x)] py-24 min-[813px]:py-36"
-      >
-        <TransitionLink
-          href={project.nextProject.href}
-          transitionLabel={nextTitle}
-          onMouseEnter={() => soundEngine.playHover()}
-          className="group block focus-visible:outline-2 focus-visible:outline-white"
-        >
-          <p className="font-mono text-xs tracking-[0.14em] uppercase opacity-70">
-            {project.nextProject.label}
-          </p>
-          <div className="mt-4 flex items-center justify-between gap-6">
-            <h2 className="m-0 font-sans text-[10vw] leading-[0.95] font-normal tracking-[-0.025em] transition-transform duration-300 group-hover:translate-x-3 min-[813px]:text-[6.2vw]">
-              {nextTitle}
-            </h2>
-            <span
-              aria-hidden="true"
-              className="font-sans text-4xl transition-transform duration-300 group-hover:translate-x-2 md:text-6xl"
-            >
-              &rarr;
-            </span>
-          </div>
-        </TransitionLink>
-      </section>
-
-      <ContactCtaSection />
-      <StudioFooter nextHref="/about" nextLabel={project.scrollNav.targetTitle} />
     </main>
   );
 }
