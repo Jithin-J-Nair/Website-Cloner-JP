@@ -9,6 +9,8 @@ const projects = archive.projects;
 const details = source.projectDetails;
 const page = fs.readFileSync("src/components/pages/ProjectsArchiveView.tsx", "utf8");
 const card = fs.readFileSync("src/components/home/FeaturedProjectCard.tsx", "utf8");
+const motion = fs.readFileSync("src/components/projects/ProjectsArchiveMotion.ts", "utf8");
+const css = fs.readFileSync("src/components/projects/projects.css", "utf8");
 const detail = fs.readFileSync("src/components/pages/LusionProjectDetailView.tsx", "utf8");
 
 const expectedArchiveIds = [
@@ -100,17 +102,18 @@ assert.match(page, /LUSION_PROJECTS_ARCHIVE\.projects\.map/);
 assert.match(page, /id="projects-title"/);
 assert.match(page, /id="projects-count"/);
 assert.match(page, /id="projects-list"/);
-assert.ok(page.includes('min-[813px]:text-[17vw]'), "desktop title scale matches the measured reference width");
-assert.ok(page.includes('min-[813px]:pt-[27.4vh]'), "desktop title begins at the reference vertical position");
-assert.ok(page.includes('min-[813px]:mt-[8.7rem]'), "desktop first project row matches the reference gap");
-assert.ok(page.includes('mt-[3.25rem]'), "mobile first project row matches the reference gap");
-assert.match(page, /min-\[813px\]:h-14 min-\[813px\]:w-14/, "desktop directional arrow keeps the reference scale");
-assert.match(page, /grid-cols-6[\s\S]*min-\[813px\]:grid-cols-12/, "archive grid adapts from mobile to desktop");
-
-assert.match(card, /href=\{project\.href\}/, "cards navigate to the canonical project route");
-assert.match(card, /onPointerMove=\{handlePointerMove\}/, "desktop thumbnail parallax remains interactive");
-assert.match(card, /reducedMotion/, "thumbnail parallax respects reduced motion");
-assert.match(card, /onFocus=\{\(\) => setHovered\(true\)\}/, "keyboard focus has the same reveal state as pointer hover");
+assert.match(css, /font-size:17vw/, "native monumental heading scale");
+assert.match(css, /20vh \+ var\(--base-padding-y\)/, "native section padding plus header margin");
+assert.match(css, /#projects-list \{ margin-top:8vh/, "native desktop first-row gap");
+assert.match(css, /#projects #projects-list \{ margin-top:0/, "native mobile first-row gap");
+assert.match(page, /grid-cols-6[\s\S]*min-\[813px\]:grid-cols-12/, "responsive archive grid");
+assert.match(page, /createProjectsArchiveMotion\(rootRef.current, reduced\)/, "one route-owned depth/type clock");
+assert.match(page, /<ProjectsContactSection/, "Projects uses the textured end, not About's blue field");
+assert.match(card, /href=\{project\.href\}/, "canonical links retained");
+assert.match(motion, /listen\(window,"pointermove"/, "owned pointer-driven depth input");
+assert.match(motion, /!narrow&&!reduced/, "depth hover honors touch and reduced motion");
+assert.match(motion, /matches\(":hover,:focus-visible"\)/, "keyboard title reveal remains supported");
+assert.match(motion, /PARALLAX_SAMPLES:12,BLUR_SAMPLES:6/, "native depth/DOF samples");
 assert.match(card, /project\.thumbnail/, "cards use the source project thumbnail");
 
 assert.match(detail, /project\.media\.slice\(1\)/);

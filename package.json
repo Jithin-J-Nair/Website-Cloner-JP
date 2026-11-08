@@ -2,7 +2,7 @@
   "name": "lusion-studio-reconstruction",
   "version": "1.0.0",
   "private": true,
-  "description": "Lusion (https://lusion.co/) — Reference-Faithful Interactive 3D & WebGL Studio Reconstruction (Next.js App Router, Three.js / R3F, Custom GLSL Shaders, Clean-Room Asset Pipeline)",
+  "description": "Lusion (https://lusion.co/) \u2014 Reference-Faithful Interactive 3D & WebGL Studio Reconstruction (Next.js App Router, Three.js / R3F, Custom GLSL Shaders, Clean-Room Asset Pipeline)",
   "author": "Lusion Reconstruction Engineering",
   "license": "MIT",
   "engines": {
@@ -36,7 +36,10 @@
     "test:preloader-a11y": "node scripts/test-preloader-a11y.mjs",
     "test:navigation-a11y": "node scripts/test-navigation-a11y.mjs",
     "test:home-editorial": "node scripts/test-home-editorial.mjs",
-    "validate:home-editorial": "node scripts/validate-home-editorial.mjs"
+    "validate:home-editorial": "node scripts/validate-home-editorial.mjs",
+    "test:projects-contact": "node scripts/test-projects-contact-fluid.mjs",
+    "validate:projects-motion": "node scripts/validate-projects-motion.mjs",
+    "validate:projects-fallbacks": "node scripts/validate-projects-fallbacks.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

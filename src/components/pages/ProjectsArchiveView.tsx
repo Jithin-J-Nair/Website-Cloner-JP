@@ -1,82 +1,45 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { LUSION_PROJECTS_ARCHIVE } from "@/data/reference";
 import { FeaturedProjectCard } from "@/components/home/FeaturedProjectCard";
-import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
+import { ProjectsContactSection } from "@/components/projects/ProjectsContactSection";
+import { createProjectsArchiveMotion } from "@/components/projects/ProjectsArchiveMotion";
 import { StudioFooter } from "@/components/sections/StudioFooter";
 import { useStudioStore } from "@/lib/store";
+import "@/components/projects/projects.css";
 
-/**
- * Verified Lusion Projects Archive (`/projects` — All 19 Canonical Projects)
- *
- * Matches the captured `lusion.co/projects` layout (`projects-archive--1440x900.jpg`
- * & `projects-archive--390x844.jpg`):
- *   - Off-white `#f0f1fa` surface (`ice`)
- *   - Monumental display heading `PROJECTS` with superscript `19` + diagonal arrow `↘`
- *   - Full 19-card 2-column grid (1-column on `<= 812px`) reusing shared `FeaturedProjectCard`
- *   - Closing `ContactCtaSection` + `StudioFooter` portal (`About Us` -> `/about`)
- */
+/** Recorded Projects archive, with its own native depth/type and textured end
+ * owners. No renderer or stylesheet writes into the approved Home/About acts. */
 export function ProjectsArchiveView() {
-  const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
-
+  const rootRef = useRef<HTMLElement>(null);
+  const reduced = useStudioStore(s => s.reducedMotion);
+  const setActiveSurface = useStudioStore(s => s.setActiveSurface);
+  useEffect(() => { setActiveSurface("ice"); }, [setActiveSurface]);
   useEffect(() => {
-    setActiveSurface("ice");
-  }, [setActiveSurface]);
+    if (rootRef.current) return createProjectsArchiveMotion(rootRef.current, reduced);
+  }, [reduced]);
 
   return (
-    <main id="projects" className="relative overflow-x-clip bg-[#f0f1fa] text-[#000000]">
-      <section className="px-[var(--base-padding-x)] pt-28 pb-20 min-[813px]:pt-[27.4vh] min-[813px]:pb-28">
-        {/* Monumental `PROJECTS` Header Band with `19` Count + `↘` Arrow */}
-        <div className="flex items-stretch justify-between gap-4">
-          <h1
-            id="projects-title"
-            className="m-0 -ml-[0.04em] font-sans text-[17.4vw] leading-[0.86] font-normal tracking-[-0.03em] text-[#000000] uppercase min-[813px]:text-[17vw]"
-          >
-            {LUSION_PROJECTS_ARCHIVE.heading}
+    <main ref={rootRef} id="projects" className="relative overflow-x-clip bg-[#f0f1fa] text-black">
+      <section id="projects-main" className="px-[var(--base-padding-x)]">
+        <div id="projects-main-title-wrapper">
+          <h1 id="projects-title" className="m-0 font-sans font-normal uppercase" aria-label={LUSION_PROJECTS_ARCHIVE.heading}>
+            {[...LUSION_PROJECTS_ARCHIVE.heading].map((char, i) => <span key={i} data-project-heading-char aria-hidden="true">{char}</span>)}
           </h1>
-
-          <div className="flex shrink-0 flex-col items-end justify-between py-1">
-            <span
-              id="projects-count"
-              className="font-sans text-[4.8vw] leading-none font-normal tracking-[-0.02em] text-[#000000] min-[813px]:text-[2.6vw]"
-            >
-              {LUSION_PROJECTS_ARCHIVE.displayedCount}
-            </span>
-
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 36 36"
-              fill="none"
-              className="h-5 w-5 text-[#000000] min-[813px]:h-14 min-[813px]:w-14"
-            >
-              <path
-                d="M7 7L29 29M29 29V11M29 29H11"
-                stroke="currentColor"
-                strokeWidth="2.1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <span id="projects-count" aria-label={`${LUSION_PROJECTS_ARCHIVE.displayedCount} projects`}>
+            {[...String(LUSION_PROJECTS_ARCHIVE.displayedCount)].map((char, i) => <span key={i} data-project-count-char aria-hidden="true">{char}</span>)}
+          </span>
+          <svg id="projects-arrow" aria-hidden="true" viewBox="0 0 38 38" fill="none">
+            <path d="m2 2 34 34m0 0V6.046M36 36H6.046" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
-
-        {/* All 19 Verified Canonical Lusion Projects Grid */}
-        <div
-          id="projects-list"
-          className="project-list relative mt-[3.25rem] grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:mt-[8.7rem] min-[813px]:grid-cols-12"
-        >
-          {LUSION_PROJECTS_ARCHIVE.projects.map((project, idx) => (
-            <FeaturedProjectCard key={project.id} project={project} index={idx} />
-          ))}
+        <div id="projects-list" className="project-list relative grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:grid-cols-12">
+          {LUSION_PROJECTS_ARCHIVE.projects.map((project, idx) => <FeaturedProjectCard key={project.id} project={project} index={idx} />)}
         </div>
       </section>
-
-      <ContactCtaSection />
-      <StudioFooter
-        nextHref="/about"
-        nextLabel={LUSION_PROJECTS_ARCHIVE.scrollNav.targetTitle}
-      />
+      <ProjectsContactSection />
+      <StudioFooter nextHref="/about" nextLabel={LUSION_PROJECTS_ARCHIVE.scrollNav.targetTitle} />
     </main>
   );
 }

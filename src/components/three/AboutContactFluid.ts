@@ -8,12 +8,13 @@ const fit = (w: number, a: number, b: number) => a + (b - a) * clamp((w - 320) /
 const FLUID = 0, AIR = 1, SOLID = 2;
 type Collider = { left: number; right: number; bottom: number; top: number };
 
-export function aboutContactMetrics(width: number, height: number, limit = 5600) {
+export function aboutContactMetrics(width: number, height: number, limit = 5600, textured = false) {
   const w = Math.max(1, width), h = Math.max(1, height);
-  const columns = Math.ceil(fit(w, 20, 90)), particleColumns = Math.ceil(fit(w, 20, 80));
+  const scale = textured ? .4 : 1;
+  const columns = Math.ceil(fit(w, 20, 90) * scale), particleColumns = Math.ceil(fit(w, 20, 80) * scale);
   const tankHeight = 2 * h / w, spacing = 2 / columns;
   return { width: 2, height: tankHeight, spacing, radius: .2 * spacing,
-    gravity: Math.ceil(fit(w, -15, -3)),
+    gravity: Math.ceil(fit(w, -15, -3)) * (textured ? 1.5 : 1),
     count: Math.max(4, Math.min(limit, Math.ceil(particleColumns * Math.ceil(particleColumns * h / w) / 4) * 4)) };
 }
 
@@ -43,8 +44,8 @@ export class AboutContactFluid {
   get emitterPosition() { return [this.emitterX / this.width, this.emitterY / this.height]; }
 
   private random() { this.randomState = (Math.imul(this.randomState, 1664525) + 1013904223) >>> 0; return this.randomState / 4294967296; }
-  configure(pixelWidth: number, pixelHeight: number, limit = 5600, reduced = false) {
-    const m = aboutContactMetrics(pixelWidth, pixelHeight, limit);
+  configure(pixelWidth: number, pixelHeight: number, limit = 5600, reduced = false, textured = false) {
+    const m = aboutContactMetrics(pixelWidth, pixelHeight, limit, textured);
     this.nx = Math.ceil(m.width / m.spacing) + 1; this.ny = Math.ceil(m.height / m.spacing) + 1;
     this.h = Math.max(m.width / this.nx, m.height / this.ny);
     this.width = (this.nx - 2) * this.h; this.height = (this.ny - 2) * this.h;
