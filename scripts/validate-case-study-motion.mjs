@@ -27,6 +27,8 @@ try {
  }
  const context=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'no-preference'}), p=await boot(context,'/projects/of_the_oak');
  await p.waitForFunction(()=>document.querySelector('.case-panel').dataset.casePixels==='ready'&&document.querySelector('#case-gallery-canvas').dataset.plant==='ready');
+ const shadow=await p.locator('#case-gallery-canvas').evaluate(e=>({pipeline:e.dataset.shadowPipeline,noise:e.dataset.shadowNoise,gl:e.getContext('webgl2').getError()}));
+ assert.equal(shadow.pipeline,'native-rgb-projected');assert.equal(shadow.noise,'ready');assert.equal(shadow.gl,0);report.shadow=shadow;
  await p.waitForTimeout(800);await p.screenshot({path:out+'/normal-opening.jpg',quality:85});
  const frames=()=>p.locator('main').getAttribute('data-case-frames');
  const start=Number(await frames());await p.waitForFunction(n=>Number(document.querySelector('main').dataset.caseFrames)>n,start);assert.ok(Number(await frames())>start,'normal clock advances');

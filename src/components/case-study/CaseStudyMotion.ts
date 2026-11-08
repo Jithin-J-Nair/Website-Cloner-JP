@@ -61,7 +61,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
     if (!reduced) time += dt;
     const scroll = vertical ? scrollY : Math.max(0, Math.min(maximum, scrollY - start));
     const delta = (scroll - lastScroll) / Math.max(1, vertical ? height : width); lastScroll = scroll;
-    velocity = reduced ? 0 : Math.min(.15, (velocity + Math.abs(delta)) * Math.exp(-10 * dt));
+    velocity = reduced ? 0 : THREE.MathUtils.clamp((velocity + delta) * Math.exp(-10 * dt), -.15, .15);
     if (!vertical) track.style.transform = `translate3d(${-scroll}px,0,0)`;
     const enter = reduced ? 1 : clamp(time / 1.5), alpha = vertical ? 1 : 1 - fit(scroll, 0, width * .25);
     const activate = alpha > .05;
@@ -94,7 +94,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
     next.style.color = nextInk.copy(previewInk).lerp(targetInk, fit(morph, .75, 1)).getStyle();
     if (morph >= 1) { pause(); onNext(); return; }
     if (graphics && !lost) {
-      try { graphics.render(visiblePanels, time, velocity, vertical, pointerX, pointerY, (project.theme.shadow ?? 1) + ((project.nextProject.shadow ?? 1) - (project.theme.shadow ?? 1)) * morph); canvas.style.opacity = '1'; root.dataset.caseGraphics = 'ready'; }
+      try { graphics.render(visiblePanels, time, velocity, vertical, pointerX, pointerY, (project.theme.shadow ?? 1) + ((project.nextProject.shadow ?? 1) - (project.theme.shadow ?? 1)) * morph, dt, delta); canvas.style.opacity = '1'; root.dataset.caseGraphics = 'ready'; }
       catch { lost = true; fallback(); }
     }
     frames++; root.dataset.caseFrames = String(frames); root.dataset.caseScroll = scroll.toFixed(3); root.dataset.caseMaximum = maximum.toFixed(3); root.dataset.caseAxis = vertical ? 'vertical' : 'horizontal';

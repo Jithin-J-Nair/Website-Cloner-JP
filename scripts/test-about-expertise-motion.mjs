@@ -1,61 +1,44 @@
-import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import ts from 'typescript';
-const dir = fs.mkdtempSync(path.resolve('temp/expertise-motion-'));
-try {
- const source = fs.readFileSync('src/lib/about-expertise-motion.ts','utf8');
+#!/usr/bin/env node
+/** Native numerical contracts, replacing assertions for the removed invented
+ * sticky deck / monotone smoothstep fan. Not a rendered-parity certificate. */
+import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import{pathToFileURL}from'node:url';import ts from'typescript';
+fs.mkdirSync('temp',{recursive:true});const dir=fs.mkdtempSync(path.resolve('temp/expertise-motion-'));
+try{
+ const source=fs.readFileSync('src/lib/about-expertise-motion.ts','utf8');
  fs.writeFileSync(`${dir}/motion.mjs`,ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
- const {expertiseCardPose: pose, expertiseHeadingPose: heading} = await import(pathToFileURL(`${dir}/motion.mjs`));
- for (let i=0;i<4;i++) {
-  assert.equal(pose(0,i).flip,180); assert.equal(pose(1,i).flip,0);
-  assert.equal(pose(1,i).xVw,0); assert.equal(pose(1,i).dropVh,0);
-  assert.equal(pose(1,i).roll,0); assert.equal(pose(1,i).yaw,0);
-  assert.equal(pose(1,i).pitch,0); assert.equal(pose(1,i).scale,1);
-  assert.equal(pose(1,i).opacity,1);
-  assert.ok(Math.abs(pose(0,i).yaw) <= 13.5);
-  assert.ok(Math.abs(pose(0,i).pitch) <= 5);
-  assert.equal(pose(0,i).scale,.86);
-  assert.deepEqual(pose(-3,i),pose(0,i));assert.deepEqual(pose(5,i),pose(1,i));assert.deepEqual(pose(NaN,i),pose(0,i));
-  let last=pose(0,i);
-  for(let n=1;n<=1000;n++) {const p=pose(n/1000,i);assert.ok(Object.values(p).every(Number.isFinite));assert.ok(p.flip<=last.flip&&p.dropVh<=last.dropVh&&p.opacity>=last.opacity);
-  const yaw = Math.abs(p.yaw), previousYaw = Math.abs(last.yaw);
-  const pitch = Math.abs(p.pitch), previousPitch = Math.abs(last.pitch);
-  assert.ok(yaw <= 38 + 1e-9, "card yaw remains within its authored fan angle");
-  assert.ok(pitch <= 7 + 1e-9, "card pitch remains within its authored tilt");
-  if (n >= 120 && n <= 380) {
-   assert.ok(yaw >= previousYaw - 1e-9, "the spread phase progressively fans the card backs");
-   assert.ok(pitch >= previousPitch - 1e-9, "the spread phase progressively pitches the deck");
+ const{expertiseCardPose:pose,expertiseScreenRatio:range,expertisePinOffset:pin,expertiseLineProgress:line,expertiseMobileFlip:mobile}=await import(pathToFileURL(`${dir}/motion.mjs`));
+ assert.equal(range(900,3800,900),-1);assert.equal(range(-3800,3800,900),1);
+ assert.equal(range((900-3800)/2,3800,900),0);
+ for(let i=0;i<4;i++){
+  const args=[i,1296,302.4,0];
+  const start=pose(-1,...args),end=pose(1,...args);
+  assert.equal(start.flip,180);assert.equal(start.x,496.8);assert.ok(Math.abs(start.roll)<1e-12);assert.ok(Math.abs(start.y)<1e-10);
+  assert.equal(end.flip,0);assert.ok(Math.abs(end.x-i*331.2)<1e-9);assert.ok(Math.abs(end.roll)<1e-12);assert.ok(Math.abs(end.y)<1e-10);
+  assert.deepEqual(pose(-5,...args),start);assert.deepEqual(pose(5,...args),end);assert.deepEqual(pose(NaN,...args),start);
+  let previous=start,overshoot=false;
+  for(let n=1;n<=2000;n++){
+   const p=pose(-1+n/1000,...args);assert.ok(Object.values(p).every(Number.isFinite));
+   assert.ok(p.flip>=-18.1&&p.flip<=198.1,'native back easing is bounded, but deliberately NOT monotone');
+   assert.ok(Math.abs(p.flip-previous.flip)<2.5,'native sampled slope remains continuous');
+   assert.ok(Math.abs(p.roll)<=13.5&&Math.abs(p.y)<=10);assert.ok(Math.abs(p.x-previous.x)<10);
+   if(p.flip>180||p.flip<0)overshoot=true;
+   previous=p;
   }
-  if (n > 550) {
-   assert.ok(yaw <= previousYaw + 1e-9, "the settle phase unwinds card yaw");
-   assert.ok(pitch <= previousPitch + 1e-9, "the settle phase unwinds card pitch");
-  }
-  assert.ok(p.scale>=last.scale);
-  assert.ok(Math.abs(p.flip-last.flip)<1.8, "staggered 180-degree flip follows its authored maximum easing slope");
-  assert.ok(Math.abs(p.xVw-last.xVw)<.21);
-  assert.ok(Math.abs(p.yaw-last.yaw)<.2);
-  assert.ok(Math.abs(p.pitch-last.pitch)<.1);
-  assert.ok(Math.abs(p.scale-last.scale)<.001);
-  last=p;}
-  for(const p of [.01,.15,.35,.51,.79,.95]) {const a=pose(p,i);pose(1,i);pose(0,i);assert.deepEqual(pose(p,i),a,'reverse / intermediate re-entry is stateless');}
+  assert.equal(overshoot,true,'source back-in-out overshoot must not be replaced with smoothstep');
+  for(const sr of[-.55,-.3,-.11,.2,.55]){const expected=pose(sr,...args);pose(1,...args);pose(-1,...args);assert.deepEqual(pose(sr,...args),expected,'reversing scroll must recover the exact same pose at fixed time');}
+  assert.equal(mobile(-1,i),180);assert.equal(mobile(0,i),0);let prev=180;
+  for(let n=0;n<=1000;n++){const f=mobile(-1+n/1000,i);assert.ok(Number.isFinite(f)&&f<=prev+1e-10&&f>=0);prev=f;}
  }
- assert.equal(heading(0).opacity,1);assert.equal(heading(1).opacity,0);
- const pageStyles = fs.readFileSync("src/components/pages/AboutPageStyles.tsx", "utf8");
- const cardsSource = fs.readFileSync("src/components/pages/AboutExpertiseCards.tsx", "utf8");
- assert.match(pageStyles, /#about \{ --about-blue: #3733e8;/i, "About expertise section uses its route-owned live blue");
- assert.match(cardsSource, /M390 510C690 510 1220 240 1150 -120/, "the expertise flourish is one authored diagonal stroke");
- assert.ok(cardsSource.includes('className="about-card-back-art" src="/about/scene/card-back.png" width={628} height={876}'), "backs use the actual About card artwork, not invented replacement linework");
- assert.ok(fs.existsSync("media-bundle/images/cards/back.png"));
- assert.match(cardsSource, /feColorMatrix/, "recolor only the artwork’s blue to the recording’s route-owned blue, retaining white ink");
- assert.match(pageStyles, /filter: url\(#about-card-back-colors\)/);
-
- assert.equal(pose(.66,0).flip,0,'the first front is broad before the trailing card turns');
- assert.equal(pose(.66,1).flip,0,'the second front precedes the third edge');
- assert.ok(Math.abs(pose(.66,2).flip-90)<.00001,'third panel passes edge-on');
- assert.equal(pose(.66,3).flip,180,'fourth panel retains its engraved back');
- assert.ok(Math.abs(pose(.4,1).yaw)>=25,'the fan has genuine depth, not only in-plane roll');
- assert.notEqual(pose(.5,0).flip,pose(.5,3).flip,'authored stagger, not four simultaneous copies');
- console.log('PASS card poses: finite, bounded, continuous, monotonic, deterministic, reversible; aligned settled fronts; stagger; malformed scroll fallback. Not a reference-timing assertion.');
-} finally {fs.rmSync(dir,{recursive:true,force:true});}
+ assert.ok(pose(-.11,0,1296,302.4).flip<30);assert.ok(pose(-.11,1,1296,302.4).flip<60);
+ assert.ok(Math.abs(pose(-.11,2,1296,302.4).flip-90)<1e-8,'native third-card edge occurs at range -.11');assert.ok(pose(-.11,3,1296,302.4).flip>110);
+ assert.notEqual(pose(-.11,0,1296,302.4,0).y,pose(-.11,0,1296,302.4,1).y,'cosine bob stays live without scroll');
+ for(const office of[false,true]){let prev=0;for(let y=2000;y>=-6000;y-=1){const value=line(y,900,office);assert.ok(value>=prev&&value>=0&&value<=1);prev=value;}}
+ assert.equal(line(0,900),0);assert.equal(line(-900,900),.5);assert.equal(line(-1800,900),1);assert.equal(line(-1800,900,true),0);assert.equal(line(-3465,900,true),1);
+ let last=0;for(let x=-5000;x<6000;x+=1){const v=pin(x,900);assert.ok(Number.isFinite(v)&&v>=last-1e-9&&v-last<2);last=v;}
+ const styles=fs.readFileSync('src/components/pages/AboutPageStyles.tsx','utf8'),cards=fs.readFileSync('src/components/pages/AboutExpertiseCards.tsx','utf8'),lines=fs.readFileSync('src/components/pages/AboutExpertiseLines.ts','utf8');
+ assert.match(styles,/#about \{ --about-blue: #3733e8;/i);assert.ok(!cards.includes('M390 510C690 510'));
+ assert.ok(lines.includes('line_${office ? "office" : "capability"}.buf')&&lines.includes('editorialLineFragment'),'two real buffers use the native line/coverage program');
+ assert.ok(cards.includes('className="about-card-back-art" src="/about/scene/card-back.png" width={628} height={876}'));assert.ok(fs.existsSync('media-bundle/images/cards/back.png'));
+ assert.match(cards,/feColorMatrix/);assert.match(styles,/filter: url\(#about-card-back-colors\)/);
+ console.log('PASS native expertise: source range/pin/line endpoints, 4 bounded back-eased staggered turns, golden third-card edge, exponential spread, deterministic reversal, live bob, mobile cubic flips, actual ribbon/artwork contracts.');
+}finally{fs.rmSync(dir,{recursive:true});}

@@ -1,0 +1,41 @@
+/* Route/section scoped: does not retune the approved hero, awards, terrain or CTA. */
+#about #about-capability .about-expertise-stage { position:relative; height:auto; padding:var(--base-padding-y) var(--base-padding-x); overflow:clip; perspective:none; }
+#about #about-capability .about-expertise-lines { position:absolute; inset:0; pointer-events:none; z-index:0; }
+#about #about-capability .about-expertise-lines canvas { position:sticky; top:0; display:none; width:100%; height:100svh; }
+#about #about-capability .about-expertise-heading { position:relative; z-index:2; margin-top:calc(24vw - 2 * var(--base-padding-y)); }
+#about #about-capability .about-expertise-heading h2 { font-size:12vw; line-height:1; }
+#about #about-capability .about-expertise-heading h2 > .about-expertise-title-clip { display:block; overflow:hidden; }
+#about #about-capability .about-expertise-heading h2 > span + span { margin-left:24vw; }
+#about #about-capability .about-expertise-heading [data-expertise-title-word] { display:inline-block; margin:0; will-change:transform; }
+#about #about-capability .about-expertise-caption { position:absolute; top:0; right:0; margin:0; width:20em; font-size:clamp(12.25px,.875vw,24.5px); }
+#about #about-capability .about-expertise-caption p { font-size:inherit; line-height:1.2; }
+#about #about-capability .about-expertise-controls { margin-top:2em; }
+#about #about-capability .about-expertise-controls button { width:2.25em; height:3.125em; }
+#about #about-capability .about-expertise-cards-wrapper { position:relative; z-index:1; width:100%; margin:4em auto 0; }
+#about #about-capability .about-playing-cards { position:relative; inset:auto; display:grid; margin:0; perspective:300vw; transform-style:preserve-3d; }
+#about #about-capability .about-card-slot:nth-child(n) { position:relative; top:auto; left:0!important; width:100%; aspect-ratio:314/438; }
+#about #about-capability .about-card-face { border-radius:.8em; }
+#about #about-capability .about-card-front { padding:1.25em 1.875em; }
+#about #about-capability .about-card-corner { font-size:1.5em; }
+#about #about-capability .about-card-front li { font-size:.85em; padding:0; line-height:1.15; border:0; background-image:none; position:relative; }
+#about #about-capability .about-card-front li+li { margin-top:2em; }
+#about #about-capability .about-card-front li:not(:last-child)::after { content:".............................."; position:absolute; left:0; top:.6em; color:#1a2ffb; opacity:.2; font-size:1.5em; letter-spacing:.125em; white-space:nowrap; }
+#about #about-capability .about-card-slot { font-size:5vw; }
+@media(min-width:560px) and (max-width:812px) { #about #about-capability .about-card-slot { font-size:2.4vw; } }
+@media(max-width:812px) {
+ #about #about-capability .about-expertise-heading { margin-top:2em; }
+ #about #about-capability .about-expertise-heading h2 { font-size:18vw; }
+ #about #about-capability .about-expertise-heading h2 > span+span { margin-left:0; }
+ #about #about-capability .about-expertise-caption { position:relative; font-size:14px; width:100%; margin-top:2em; }
+}
+@media(min-width:813px) and (prefers-reduced-motion:no-preference) {
+ #about #about-capability:not([data-reduced="true"]) { height:auto; }
+ #about #about-capability:not([data-reduced="true"]) .about-expertise-stage { position:relative; top:auto; height:auto; padding:var(--base-padding-y) var(--base-padding-x); perspective:none; }
+ #about #about-capability:not([data-reduced="true"]) .about-expertise-cards-wrapper { margin-bottom:300svh; }
+ #about #about-capability:not([data-reduced="true"]) .about-playing-cards { display:block; position:relative; inset:auto; perspective:100svh; }
+ #about #about-capability:not([data-reduced="true"]) .about-card-slot:nth-child(n) { position:absolute; top:0; left:0!important; width:calc((100% - 6vw)/4); font-size:1.3vw; }
+}
+@media(min-width:813px) {
+ #about #about-capability[data-reduced="true"] .about-playing-cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
+ #about #about-capability[data-reduced="true"] .about-card-slot { font-size:1.3vw; }
+}

@@ -41,7 +41,10 @@
     "validate:projects-motion": "node scripts/validate-projects-motion.mjs",
     "validate:projects-fallbacks": "node scripts/validate-projects-fallbacks.mjs",
     "test:home-hdr": "node scripts/test-home-hdr-assets.mjs",
-    "validate:home-native": "node scripts/validate-home-native-hero.mjs"
+    "validate:home-native": "node scripts/validate-home-native-hero.mjs",
+    "test:about-expertise": "node scripts/test-about-expertise-motion.mjs",
+    "validate:about-expertise": "node scripts/validate-about-expertise.mjs",
+    "test:case-shadows": "node scripts/test-case-shadow-pipeline.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
