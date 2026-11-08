@@ -34,8 +34,23 @@ assert.match(styles, /#about \.about-source-record/);
 assert.match(styles, /#about \.about-source-award-group/);
 assert.match(styles, /#about \.about-source-articles/);
 assert.match(styles, /#about \.about-source-talks/);
-assert.match(styles, /prefers-reduced-motion:\s*reduce/, "the About route supplies a reduced-motion override for foil animation");
-assert.match(styles, /mask-image: radial-gradient\(ellipse 5vw 4vw/, "foil is a compact pointer-local highlight");
-assert.match(styles, /-webkit-text-stroke: 1.5px #d9ecff/, "glint follows the outline rather than filling a broad letter band");
-assert.match(styles, /drop-shadow/, "outline retains its prismatic color separation");
-console.log("PASS About recognition: 58 awards reconcile, 3 secure article links and 5 talks; split component, keyboard region, responsive scoped styles and reduced-motion foil support.");
+assert.match(styles, /prefers-reduced-motion:\s*reduce/, "the About route supplies a reduced-motion override");
+// The removed CSS-mask approximation was itself the visual bug. Test the
+// reference-shaped implementation instead of pinning that approximation.
+assert.doesNotMatch(component + styles, /paintFoil|--foil-|mask-image: radial-gradient/);
+assert.doesNotMatch(page, /data-awards-word|--recognition-progress/, "no competing page-level Awards scroll owner");
+assert.match(component, /createAboutRecognitionPaint/);
+assert.match(component, /createAboutRecognitionMotion/);
+assert.match(component, /IntersectionObserver/);
+assert.match(component, /webglcontextlost/);
+assert.match(component, /premultipliedAlpha: false/, "neutral (.5,.5,0,0) paint clear must not premultiply velocity to zero");
+assert.match(component, /visibilitychange/);
+assert.match(styles, /--record-left: 44vw; --record-org: 15vw/);
+assert.match(styles, /min-height: 130\.208333vw/);
+assert.match(styles, /overflow: clip/, "viewport canvas can stick without creating a nested scroller");
+assert.match(styles, /gap: 10vh/);
+const vector = fs.readFileSync("public/sites/lusion/about/award-title.svg", "utf8");
+assert.match(vector, /viewBox="0 0 1440 1250"/);
+assert.equal((vector.match(/<path /g) || []).length, 1);
+assert.doesNotMatch(vector, /<script|<text|<image|onload|href=/i, "static title artwork, not executable SVG or an external font");
+console.log("PASS About recognition content/structure: 58 awards, 3 secure articles, 5 talks; source vector and column metrics; one scoped GPU/editorial owner with fallback and reduced motion.");

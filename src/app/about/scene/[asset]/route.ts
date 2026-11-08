@@ -10,6 +10,7 @@ export const runtime = "nodejs";
 // The exact-About reconstruction also uses the existing About landscape, camera,
 // humanoid/idle animation and particle/rock LOD data. No global inspection mode.
 const assets: Readonly<Record<string, string>> = {
+  "award_gradient.png": "textures/award_gradient.png",
   "card-back.png": "images/cards/back.png",
   "edan.buf": "team/edan.buf", "ffi.buf": "team/ffi.buf",
   "pierre.buf": "team/pierre.buf", "yannic.buf": "team/yannic.buf",

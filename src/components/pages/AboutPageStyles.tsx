@@ -11,37 +11,51 @@ export function AboutPageStyles() {
     #about #about-clients .about-client-marquee-stack { margin-top: 3.8vw; gap: 0; }
     #about #about-clients .about-client-logo-tile { height: 14vw; }
     #about .about-client-logo-art { display: block; width: 100%; height: 100%; object-fit: contain; }
-    #about .about-source-recognition { position: relative; isolation: isolate; overflow: hidden; padding: 17vw 5vw 13vw; background: #000302; color: #f5f6f5; }
-    #about .about-source-monument { pointer-events: none; position: absolute; inset: 0; z-index: -1; overflow: hidden; }
-    #about .about-source-monument > div { transform: translateY(calc(var(--recognition-progress, 0) * -30vw)); }
-    #about .about-source-monument span { position: relative; display: block; font-size: 25.8vw; line-height: .96; letter-spacing: -.055em; white-space: nowrap; color: transparent; -webkit-text-stroke: 1px #ffffff18; }
-    #about .about-source-monument .is-slanted { font-style: italic; }
-    #about .about-source-monument span::selection { background: transparent; }
-    #about .about-source-monument span::after {
-      content: attr(data-word); position: absolute; inset: 0; color: transparent;
-      -webkit-text-stroke: 1.5px #d9ecff;
-      mask-image: radial-gradient(ellipse 5vw 4vw at var(--foil-x,-1000px) var(--foil-y,-1000px), #000, transparent 75%);
-      -webkit-mask-image: radial-gradient(ellipse 5vw 4vw at var(--foil-x,-1000px) var(--foil-y,-1000px), #000, transparent 75%);
-      filter: drop-shadow(.7px 0 #ffae81) drop-shadow(-.7px 0 #79bfff);
-      opacity: var(--foil-active,0); transition: opacity .35s ease;
+    #about .about-source-recognition { --record-left: 0px; --record-org: 30vw; --record-pad: 15px; position: relative; isolation: isolate; overflow: clip; padding: clamp(30px,4vw,50px) 0; min-height: 130.208333vw; display: flex; flex-direction: column; justify-content: center; background: #000302; color: #f5f6f5; font-size: clamp(12px,1vw,28px); }
+    #about .about-source-monument { pointer-events: none; position: absolute; inset: 0; z-index: -1; }
+    #about .about-source-monument > img { position: absolute; top: 0; left: 0; width: 150%; max-width: none; height: auto; }
+    #about .about-recognition-paint { position: absolute; inset: 0; }
+    #about .about-recognition-paint canvas { position: sticky; top: 0; display: block; width: 100%; height: 100vh; opacity: 0; }
+    #about [data-recognition-state="ready"] .about-recognition-paint canvas { opacity: 1; }
+    #about [data-recognition-state="ready"] .about-source-monument > img { visibility: hidden; }
+    #about #about-recognition-window { display: flex; flex-direction: column; gap: 10vh; outline-offset: -4px; scroll-margin-top: 16vh; }
+    #about .about-source-record { min-width: 0; }
+    #about .about-recognition-header { position: relative; margin-bottom: 3em; padding-inline: var(--record-pad); }
+    #about .about-source-record h2 { font-size: 4em; font-weight: 400; line-height: 1; letter-spacing: -.035em; overflow: hidden; }
+    #about [data-recognition-char], #about [data-recognition-word] { display: inline-block; transform-origin: left bottom; }
+    #about .about-recognition-word-clip { display: inline-block; overflow: hidden; vertical-align: top; white-space: pre; }
+    #about .about-source-record-count { position: absolute; top: 1em; right: var(--record-pad); display: flex; align-items: center; gap: 2em; font-weight: 400; }
+    #about [data-recognition-number] { font-family: var(--font-mono),monospace; font-size: 2em; line-height: 1.2; overflow: hidden; }
+    #about .about-recognition-mark { flex: none; width: 2.25em; height: 2.25em; }
+    #about .about-source-record-data { position: relative; padding-inline: var(--record-pad); line-height: 1.15; }
+    #about .about-source-award-group { display: grid; grid-template-columns: var(--record-org) minmax(0,1fr); position: relative; margin-left: var(--record-left); margin-bottom: 2em; }
+    #about .about-recognition-line { position: absolute; top: -1em; left: calc(-1 * (var(--record-pad) + var(--record-left))); width: 100vw; height: .0625em; background: #fff; opacity: .2; transform-origin: left; pointer-events: none; }
+    #about .about-source-award-group h3 { font-size: 1.25em; font-weight: 400; }
+    #about .about-source-award-group ul { margin-left: 2.5em; }
+    #about .about-source-award-group li { display: grid; grid-template-columns: calc(3ch + 3em) minmax(0,1fr); font-size: 1.25em; }
+    #about .about-source-award-group li + li { margin-top: .64em; }
+    #about .about-source-count { font-family: var(--font-mono),monospace; font-size: 1em; }
+    #about .about-source-articles, #about .about-source-talks { margin-left: var(--record-left); margin-bottom: 2em; }
+    #about .about-source-articles > .about-recognition-line, #about .about-source-talks > .about-recognition-line { left: calc(-1 * var(--record-left)); }
+    #about .about-source-articles li + li { margin-top: .5em; }
+    #about .about-source-talks li + li { margin-top: .64em; }
+    #about .about-source-articles a { position: relative; display: block; width: 100%; max-width: 100%; font-size: 1.25em; overflow: hidden; }
+    #about .about-recognition-link-title { display: inline-block; transition: transform .4s cubic-bezier(.4,0,.1,1); }
+    #about .about-recognition-link-arrow { position: absolute; top: 0; left: 0; transform: translateX(-1.3em); transition: transform .4s cubic-bezier(.4,0,.1,1); }
+    #about .about-source-articles a:hover .about-recognition-link-title, #about .about-source-articles a:focus-visible .about-recognition-link-title { transform: translateX(1.3em); }
+    #about .about-source-articles a:hover .about-recognition-link-arrow, #about .about-source-articles a:focus-visible .about-recognition-link-arrow { transform: translateX(0); }
+    #about .about-source-talks li { display: grid; grid-template-columns: calc(var(--record-org) + 9.5em) minmax(0,1fr); gap: .5em; font-size: 1.25em; opacity: .2; text-decoration: line-through; }
+    @media (min-width:401px) { #about .about-source-recognition { --record-pad: 25px; } }
+    @media (min-width:813px) { #about .about-source-recognition { --record-pad: max(5vw,40px); } }
+    @media (min-width:1001px) {
+      #about .about-source-recognition { --record-left: 44vw; --record-org: 15vw; }
+      #about .about-source-record-count { right: auto; left: calc(var(--record-pad) + var(--record-left)); }
+      #about .about-source-award-group li { grid-template-columns: calc(3ch + 4em) minmax(0,1fr); }
     }
-    #about #about-recognition-window { outline-offset: 14px; scroll-margin-top: 16vh; }
-    #about .about-source-record { display: grid; grid-template-columns: 1fr 1fr; column-gap: 0; row-gap: 1.8vw; margin-bottom: 6.3vw; }
-    #about .about-source-record:last-child { margin-bottom: 0; }
-    #about .about-source-record h2 { font-size: 3.8vw; font-weight: 400; line-height: 1; letter-spacing: -.035em; }
-    #about .about-source-record-count { display: flex; align-items: center; gap: 1.5vw; font-size: 2vw; font-weight: 400; }
-    #about .about-recognition-mark { flex: none; width: 2.5vw; height: 2.5vw; }
-    #about .about-source-record-data { grid-column: 2; font-size: clamp(12px,1.15vw,21px); line-height: 1.65; }
-    #about .about-source-award-group { display: grid; grid-template-columns: 37% 63%; position: relative; padding-block: .8vw; }
-    #about .about-source-award-group::before { content: ""; position: absolute; top: 0; left: -50vw; width: 100vw; height: 1px; background: #ffffff12; pointer-events: none; }
-    #about .about-source-award-group h3 { font-size: inherit; font-weight: 400; }
-    #about .about-source-award-group li { display: grid; grid-template-columns: 24% 76%; }
-    #about .about-source-count { font-family: var(--font-mono),monospace; font-size: .87em; }
-    #about .about-source-articles a { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-block: .18vw; }
-    #about .about-source-articles a:hover { text-decoration: underline; }
-    #about .about-source-articles a > span { opacity: 0; transition: opacity .2s; }
-    #about .about-source-articles a:hover > span, #about .about-source-articles a:focus-visible > span { opacity: 1; }
-    #about .about-source-talks li { display: flex; justify-content: space-between; gap: 24px; padding-block: .2vw; }
+    @media (max-width:480px) {
+      #about .about-source-recognition { font-size: 2.7vw; }
+      #about .about-source-talks li { grid-template-columns: calc(35vw + 4em) minmax(0,1fr); }
+    }
     #about .about-card-back-art { filter: url(#about-card-back-colors); }
     #about .about-card-back { box-shadow: inset 0 0 0 2px #fff; }
     #about .about-playing-expertise { --about-expertise-blue: var(--about-blue); }
@@ -146,19 +160,9 @@ export function AboutPageStyles() {
       #about #about-clients .about-client-marquee-set { flex: none; width: auto; }
       #about #about-clients .about-client-logo-tile { flex: 0 0 33.333333vw; width: 33.333333vw; }
       #about #about-clients .about-client-logo-tile { height: 28vw; }
-          #about .about-source-recognition { padding: 20vw 5vw 12vw; }
       #about .about-narrative-layout #about-who-desc-top, #about .about-narrative-layout #about-who-desc-bottom { font-size: clamp(20px,4.6vw,35px); }
       #about .about-narrative-layout #about-who-desc-top { top: 10vh; }
       #about .about-narrative-layout #about-who-desc-bottom { bottom: 12vh; }
-      #about .about-source-record { column-gap: 0; row-gap: 6vw; margin-bottom: 18vw; }
-      #about .about-source-record h2 { font-size: 8vw; }
-      #about .about-source-record-count { justify-content: flex-end; font-size: 4vw; gap: 3vw; }
-      #about .about-recognition-mark { width: 6vw; height: 6vw; }
-      #about .about-source-record-data { grid-column: 1 / -1; font-size: 12px; }
-      #about .about-source-award-group { grid-template-columns: 29% 71%; padding-block: 3vw; }
-      #about .about-source-award-group::before { left: -5vw; }
-      #about .about-source-award-group li { grid-template-columns: 20% 80%; }
-      #about .about-source-monument span { font-size: 32vw; line-height: 1.5; }
       #about .about-expertise-heading h2 { font-size: 14vw; line-height: 1.05; }
       #about #end-section-title { font-size: 19.5vw; }
       #about #end-section-content { top: 40%; }
@@ -173,8 +177,7 @@ export function AboutPageStyles() {
       #about #about-clients .about-client-logo-tile { width: 100%; }
     }
     @media (prefers-reduced-motion:reduce) {
-      #about .about-source-monument > div { transform: none; }
-      #about .about-source-monument span::after { animation: none; }
+      #about .about-recognition-link-title, #about .about-recognition-link-arrow { transition: none; }
       #about .about-team-cursor { display: none; }
     }
   `}</style>;

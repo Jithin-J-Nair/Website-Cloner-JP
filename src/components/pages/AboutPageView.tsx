@@ -1002,49 +1002,6 @@ export function AboutPageView() {
     };
   }, [setActiveSurface]);
 
-  useEffect(() => {
-    const award = document.getElementById("about-award");
-    const word = award?.querySelector<HTMLElement>("[data-awards-word]");
-    const revealTargets = award ? [...award.querySelectorAll<HTMLElement>("[data-award-reveal]")] : [];
-    let revealObserver: IntersectionObserver | null = null;
-    if (award && !reducedMotion && "IntersectionObserver" in window && revealTargets.length) {
-      award.dataset.awardsMotionReady = "true";
-      revealObserver = new IntersectionObserver(entries => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          (entry.target as HTMLElement).classList.add("is-in-view");
-          revealObserver?.unobserve(entry.target);
-        }
-      }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
-      revealTargets.forEach(target => revealObserver?.observe(target));
-    }
-    let raf = 0, dirty = true, disposed = false, awardTop = 0;
-    const measure = (el: HTMLElement | null) => el ? el.getBoundingClientRect().top + window.scrollY : 0;
-    const render = () => {
-      raf = 0;
-      if (document.hidden) return;
-      if (dirty) { awardTop = measure(award); dirty = false; }
-      const vh = Math.max(1, window.innerHeight), y = window.scrollY;
-      const awardsP = reducedMotion ? .5 : clamp01((y - awardTop + vh) / (vh * 2));
-      if (award) award.style.setProperty("--recognition-progress", String(clamp01((y - awardTop) / Math.max(1, award.offsetHeight - vh))));
-      if (word) word.style.transform = `translate3d(${lerp(3, -3, awardsP)}%,0,0)`;
-
-    };
-    const schedule = () => { if (!disposed && !raf && !document.hidden) raf = requestAnimationFrame(render); };
-    const reflow = () => { dirty = true; schedule(); };
-    const ro = new ResizeObserver(reflow);
-    if (award) ro.observe(award);
-    document.fonts.ready.then(reflow); schedule();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", reflow, { passive: true });
-    document.addEventListener("visibilitychange", reflow);
-    return () => {
-      disposed = true; cancelAnimationFrame(raf); ro.disconnect(); revealObserver?.disconnect();
-      if (award) delete award.dataset.awardsMotionReady;
-      window.removeEventListener("scroll", schedule); window.removeEventListener("resize", reflow);
-      document.removeEventListener("visibilitychange", reflow);
-    };
-  }, [reducedMotion]);
 
   const stepMember = (delta: number) => {
     soundEngine.playClick();
