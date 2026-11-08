@@ -47,6 +47,41 @@ jobs:
           path: temp/project-reference/
           if-no-files-found: error
 
+      # One-shot extraction of the Home and About recordings from Git LFS.
+      # Frames are uploaded as evidence so the source videos can be inspected without re-uploading.
+      - name: Extract Home and About reference frames from Git LFS
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-home-about-references]')
+        run: |
+          if ! command -v git-lfs >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y git-lfs
+          fi
+          git lfs install
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          mkdir -p temp/home-about-reference
+          for section in home about; do
+            video="public/videos/Lusion-${section}.mp4"
+            git lfs pull --include="${video}"
+            test -s "${video}"
+            out="temp/home-about-reference/${section}"
+            mkdir -p "${out}"
+            ffprobe -v error -show_entries format=duration,size -show_streams -of json "${video}" > "${out}/metadata.json"
+            sha256sum "${video}" > "${out}/sha256.txt"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/2,scale=960:-1" -q:v 3 "${out}/frame-%03d.jpg"
+            ffmpeg -hide_banner -loglevel error -i "${video}" -vf "fps=1/6,scale=480:-1,tile=4x4" -frames:v 1 -q:v 3 "${out}/contact-sheet.jpg"
+          done
+
+      - name: Upload Home and About reference frames
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[extract-home-about-references]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-about-reference-video-frames
+          path: temp/home-about-reference/
+          if-no-files-found: error
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
