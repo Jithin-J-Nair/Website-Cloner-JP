@@ -24,6 +24,9 @@ try {
     assert.equal(await page.locator('#about-who').getAttribute('data-scene-state'),'ready');
     assert.equal(await page.evaluate(()=>window.__aboutProbe().explorer),'source-rig','the archived humanoid, not a substitute astronaut, is active');
     assert.ok(await page.locator('.about-card-back-art').evaluateAll(es=>es.every(e=>e.getAttribute('src')==='/about/scene/card-back.png')));
+    const velocity = await page.evaluate(()=>window.__aboutProbe().motionBackground);
+    assert.equal(velocity.length,16);
+    assert.ok([0,4,8,12].some(i=>velocity.slice(i,i+3).every(v=>Math.abs(v-128)<=1)), 'opening velocity target has a neutral background and its live sampler is attached');
     const seek = async y => {
       await page.evaluate(y=>window.__lusionInspector.scrollManager.scrollToPixel(y),y);
       await page.waitForTimeout(800);

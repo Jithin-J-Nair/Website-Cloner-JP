@@ -492,7 +492,7 @@ function AboutWhoExperience({
       teamYaw: sourceTeam.head.rotation.y, teamPitch: sourceTeam.head.rotation.x,
       teamAsset: sourceTeam.member, teamReady: sourceTeam.ready, teamMorph: sourceTeam.morph,
       teamMember: teamOverlayRef.current?.querySelector("#about-who-team-name")?.textContent?.trim() ?? null,
-      count: referenceWorld.count,
+      count: referenceWorld.count, motionBackground: scenePost.velocityBackground(),
       portraitPoints: sourceTeam.count,
       streakCount: 0, qualityTier: tier, reducedMotion, frameTimes: [...frameTimes],
       draws: glRenderer.info.render.calls, triangles: glRenderer.info.render.triangles,

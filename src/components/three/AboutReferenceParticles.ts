@@ -90,7 +90,14 @@ export function createAboutReferenceParticles(renderer: THREE.WebGLRenderer, low
     u_simTextureSize: { value: new THREE.Vector2(width, height) }, u_strength: { value: 1 }, u_aspect: { value: 1.88 } },
     vertexShader: aboutMotionVertex, fragmentShader: aboutMotionFragment, depthWrite: false,
   });
-  const motionScene = new THREE.Scene(), motionMesh = new THREE.Mesh(motionGeometry, motionMaterial); motionMesh.frustumCulled = false; motionScene.add(motionMesh);
+  const motionScene = new THREE.Scene(), motionMesh = new THREE.Mesh(motionGeometry, motionMaterial); motionMesh.frustumCulled = false;
+  // Encode neutral velocity in the shader, not through Three's color-managed,
+  // premultiplied clear-color path. A non-neutral background creates diagonal
+  // trails across every pixel even when no particle is present there.
+  const motionClearMaterial = new THREE.ShaderMaterial({ vertexShader: screenVertex,
+    fragmentShader: `void main(){gl_FragColor=vec4(.5,.5,.5,1.);}`, depthTest: false, depthWrite: false });
+  const motionClear = new THREE.Mesh(quadGeometry, motionClearMaterial); motionClear.frustumCulled = false; motionClear.renderOrder = -1;
+  motionScene.add(motionClear, motionMesh);
   const fallbackSphere = new THREE.IcosahedronGeometry(1, 0);
   const lods = new Map<string, THREE.BufferGeometry>([["m", fallbackSphere], ["s", fallbackSphere], ["xs", fallbackSphere], ["l", fallbackSphere]]);
   function selectGeometry(id: string, k: number) {
@@ -158,7 +165,7 @@ export function createAboutReferenceParticles(renderer: THREE.WebGLRenderer, low
     dispose() {
       if (disposed) return; disposed = true; group.removeFromParent();
       for (const rt of [...positions, ...fields, drawn]) rt.dispose();
-      for (const material of [simMaterial, filterMaterial, splatMaterial, particleMaterial, emissiveMaterial, motionMaterial]) material.dispose();
+      for (const material of [simMaterial, filterMaterial, splatMaterial, particleMaterial, emissiveMaterial, motionMaterial, motionClearMaterial]) material.dispose();
       for (const geo of [...new Set(lods.values()), ...geometries, splatGeometry, quadGeometry, motionPlane, motionGeometry]) geo.dispose();
       defaultTexture.dispose();
     },

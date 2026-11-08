@@ -14,10 +14,14 @@ export function createAboutScenePost(renderer: THREE.WebGLRenderer, scene: THREE
   const composer = new EffectComposer(renderer, target);
   const render = new RenderPass(scene, camera);
   const velocity = new THREE.WebGLRenderTarget(1, 1, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: true });
-  const motion = new ShaderPass({ uniforms: { tDiffuse: { value: null }, u_motionTexture: { value: velocity.texture }, u_blurRatio: { value: 1 } },
+  const motion = new ShaderPass({ uniforms: { tDiffuse: { value: null }, u_motionTexture: { value: null }, u_blurRatio: { value: 1 } },
     vertexShader: `varying vec2 v_uv;void main(){v_uv=uv;gl_Position=vec4(position.xy,0.,1.);}`,
     fragmentShader: aboutMotionBlurFragment.replace("#include <getBlueNoise>", `vec3 getBlueNoise(vec2 p){return fract(sin(vec3(dot(p,vec2(12.9898,78.233)),dot(p,vec2(39.346,11.135)),dot(p,vec2(73.156,52.235))))*43758.5453);}`),
   });
+  // ShaderPass clones its initial uniforms. Render-target textures cannot be
+  // cloned: bind the live velocity attachment AFTER construction, or the blur
+  // samples black and creates constant diagonal streaks across the whole frame.
+  motion.uniforms.u_motionTexture.value = velocity.texture;
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 2.2, .25, .72);
   bloom.materialHighPassFilter.fragmentShader = bloom.materialHighPassFilter.fragmentShader.replace("float v = luminance( texel.xyz );", "float v = luminance( texel.xyz ) * clamp(texel.a,0.,1.);");
   const copy = new ShaderPass(CopyShader);
@@ -39,6 +43,14 @@ export function createAboutScenePost(renderer: THREE.WebGLRenderer, scene: THREE
       // silhouette through bloom produces an enormous, incorrect white flare.
       const auto = renderer.autoClear;
       try { renderer.autoClear = false; renderer.render(overlay, camera); } finally { renderer.autoClear = auto; }
+    },
+    velocityBackground() {
+      if (motion.uniforms.u_motionTexture.value !== velocity.texture) throw new Error("Detached About velocity sampler");
+      const pixel = new Uint8Array(4), samples: number[] = [];
+      for (const [x, y] of [[0, 0], [velocity.width - 1, 0], [0, velocity.height - 1], [velocity.width - 1, velocity.height - 1]]) {
+        renderer.readRenderTargetPixels(velocity, x, y, 1, 1, pixel); samples.push(...pixel);
+      }
+      return samples;
     },
     dispose() { if (disposed) return; disposed = true; render.dispose(); motion.dispose(); velocity.dispose(); bloom.dispose(); copy.dispose(); composer.dispose(); },
   };

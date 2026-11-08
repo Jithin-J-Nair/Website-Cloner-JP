@@ -10,7 +10,7 @@ import * as THREE from 'three';
 const directory=fs.mkdtempSync(path.resolve('temp/about-reference-unit-'));
 const nativeFetch=globalThis.fetch,nativeBitmap=globalThis.createImageBitmap;
 try{
- for(const name of ['about-reference-shaders','AboutReferenceParticles','AboutReferenceWorld','AboutWordmarkSweep']){
+ for(const name of ['about-reference-shaders','AboutReferenceParticles','AboutReferenceWorld','AboutWordmarkSweep','AboutScenePost']){
   let text=fs.readFileSync(`src/components/three/${name}.ts`,'utf8').replace('@/lib/about-source-buffer','./buffer.mjs');
   for(const dependency of ['about-reference-shaders','AboutReferenceParticles'])text=text.replaceAll(`"./${dependency}"`,`"./${dependency}.mjs"`);
   fs.writeFileSync(`${directory}/${name}.mjs`,ts.transpileModule(text,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
@@ -96,5 +96,11 @@ try{
  const logo=createAboutWordmarkSweep();for(let i=0;i<4;i++)await new Promise(resolve=>setImmediate(resolve));
  assert.equal(logo.ready,true);assert.equal(logo.mesh.geometry.getAttribute('position').count,1400);assert.equal(logo.mesh.geometry.index.count,6270);
  logo.layout(1440,764,{x:72,y:538,width:205,height:41});assert.equal(logo.uniforms.uFrom.value.z,1296);assert.equal(logo.uniforms.uFrom.value.w,1296*.200956762);logo.dispose();logo.dispose();
+ const {createAboutScenePost}=await import(pathToFileURL(`${directory}/AboutScenePost.mjs`));
+ const readTargets=[];
+ const postRenderer={getPixelRatio:()=>1,getSize:v=>v.set(1440,764),readRenderTargetPixels:(rt,x,y,w,h,buffer)=>{readTargets.push(rt);buffer.set([128,128,128,255])}};
+ const post=createAboutScenePost(postRenderer,new THREE.Scene(),camera,new THREE.Scene(),()=>{});
+ post.resize(1440,764,1);assert.deepEqual(post.velocityBackground(),Array.from({length:4},()=>[128,128,128,255]).flat(),'live velocity sampler identity is verified before GPU readback');
+ assert.ok(readTargets.every(rt=>rt.width===360&&rt.height===191));let targetDisposals=0;readTargets[0].addEventListener('dispose',()=>targetDisposals++);post.dispose();post.dispose();assert.equal(targetDisposals,1);
  console.log('PASS actual source world: 17 buffers/quantization; 54×85 skinning clip; 200-sample spline; native/rotated projection equivalence; finite/reversible seeks; persistent ping-pong state; renderer-state restoration including failure; zero per-frame allocations; abort/bitmap and exactly-once GPU cleanup; real vector-logo geometry.');
 }finally{globalThis.fetch=nativeFetch;globalThis.createImageBitmap=nativeBitmap;fs.rmSync(directory,{recursive:true,force:true});}
