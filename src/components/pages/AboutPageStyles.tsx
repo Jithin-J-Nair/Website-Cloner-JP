@@ -107,7 +107,7 @@ export function AboutPageStyles() {
       #about .about-expertise-studio { display: none; }
       #about .about-expertise-heading h2 { font-size: 14vw; line-height: 1.05; }
       #about #end-section-title-link { font-size: 16.4vw; }
-      #about #end-bottom { min-width: 228px; height: 50px; }
+      #about #end-bottom { min-width: 228px; }
       #about #end-section-content-crosses { inset-inline: 8%; }
     }
     @media (max-width:819px) and (prefers-reduced-motion:reduce) {

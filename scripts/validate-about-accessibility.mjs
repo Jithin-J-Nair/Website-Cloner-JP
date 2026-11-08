@@ -41,7 +41,8 @@ try {
       await page.waitForFunction(() => window.__aboutProbe && window.__aboutProbe().state === "ready", null, { timeout: 90000 });
 
       const logo = page.locator("#header-logo");
-      assert.equal((await logo.innerText()).trim(), "LUSION", "About header uses the authored text wordmark");
+      assert.equal((await logo.innerText()).trim(), "JITHIN", "About header preserves the merged site branding");
+      assert.equal(await logo.getAttribute("aria-label"), "JITHIN Home", "About home link has a matching accessible brand name");
       assert.equal(await logo.locator("svg").count(), 0, "About does not render the captured SVG wordmark");
       const logoWeight = await logo.locator("span").evaluate(el => getComputedStyle(el).fontWeight);
       assert.equal(logoWeight, "400", "About wordmark is regular weight");

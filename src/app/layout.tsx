@@ -12,19 +12,23 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jithinrp.com"),
+  alternates: {
+    canonical: "/",
+  },
   title: {
     default: "JITHIN",
     template: "JITHIN - %s",
   },
   description: "3D visual storytelling and interactive web experiences by Jithin.",
   keywords: [
-    "Jithin",
-    "Creative Production",
+    "JITHIN",
+    "Creative Production Studio",
     "WebGL",
     "3D Visual Storytelling",
     "Interactive Web Experiences",
   ],
-  authors: [{ name: "Jithin" }],
+  authors: [{ name: "JITHIN" }],
   openGraph: {
     title: "JITHIN",
     description: "3D visual storytelling and interactive web experiences by Jithin.",
@@ -34,6 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@jithin",
     title: "JITHIN",
     description: "3D visual storytelling and interactive web experiences by Jithin.",
   },

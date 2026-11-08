@@ -58,7 +58,9 @@ export function StudioFooter({
   const setActiveSurface = useStudioStore((s) => s.setActiveSurface);
   const setTransition = useStudioStore((s) => s.setTransition);
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
-  const footerCopyright = brandName === "Lusion"
+  const footerCopyright = pathname === "/"
+    ? "©2026 JITHIN"
+    : brandName === "Lusion"
     ? LUSION_GLOBAL_CHROME.footer.copyright
     : `©2026 ${brandName} Creative Studio`;
 

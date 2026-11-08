@@ -159,6 +159,9 @@ jobs:
           cat /tmp/website-cloner-jp-next.log
           exit 1
 
+      - name: Merged branding and metadata regression
+        run: node scripts/test-merged-branding.mjs
+
       - name: Capture About scroll sequence at 1440x900
         if: always() && !cancelled() && steps.build.outcome == 'success'
         env:

@@ -348,8 +348,12 @@ try {
       assert.ok(Math.abs(ctaLayout.pill.height - 54) <= 1, 'CTA scroll pill is 54px high');
       assert.ok(Math.abs(ctaLayout.pill.y - (height - 56 - 54)) <= 8, 'CTA scroll pill is 56px above the bottom');
       const topCrosses = ctaLayout.crosses.slice(0,2);
-      assert.ok(Math.abs(topCrosses[0].x / width - .206) < .035, 'left CTA cross is near 20.6vw');
-      assert.ok(Math.abs(topCrosses[1].x / width - .794) < .035, 'right CTA cross is near 79.4vw');
+      // The authored mobile layout uses 8% side insets; desktop uses 20.6%.
+      // Check the actual outside edges to one pixel instead of applying the
+      // desktop composition to touch layouts with a loose percentage tolerance.
+      const crossInset = width < 820 ? .08 : .206;
+      assert.ok(Math.abs(topCrosses[0].x - width * crossInset) <= 1, 'left CTA cross respects its responsive inset');
+      assert.ok(Math.abs(topCrosses[1].x + topCrosses[1].width - width * (1 - crossInset)) <= 1, 'right CTA cross respects its responsive inset');
       report.ctaLayout = ctaLayout;
 
       // The arm and broad particle mound enter as the CTA scroll playhead moves.
