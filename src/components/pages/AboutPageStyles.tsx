@@ -73,7 +73,7 @@ export function AboutPageStyles() {
     #about #end-section, #about #end-section > div, #about #end-section-outer { background: var(--about-blue) !important; }
     #about #end-section-content { top: 20.5vh; }
     #about #end-section-title-link { font-size: 9.6vw; line-height: 1.02; font-weight: 400; }
-    #about #end-bottom { min-width: 16.7vw; height: 7vh; bottom: 7vh; }
+    #about #end-bottom { min-width: 238px; height: 54px; bottom: 56px; }
     @media (hover: hover) and (pointer: fine) {
       #about .about-who-team-overlay[data-team-active="true"] { cursor: none; }
       #about .about-who-team-overlay button, #about .about-who-team-overlay a { cursor: pointer; }
