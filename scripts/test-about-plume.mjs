@@ -4,18 +4,18 @@ fs.mkdirSync('temp',{recursive:true});const dir=fs.mkdtempSync(path.resolve('tem
 try{
  const code=ts.transpileModule(fs.readFileSync('src/components/three/AboutPlume.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;fs.writeFileSync(`${dir}/plume.mjs`,code);
  const {createAboutPlume}=await import(pathToFileURL(`${dir}/plume.mjs`));
- for(const count of [900,1800,3200,4800]){
+ for(const count of [900,1800,3200,4800,7000,12000]){
   const a=createAboutPlume(count),b=createAboutPlume(count);assert.equal(a.group.children.length,2);const mesh=a.group.children[0],dust=a.group.children[1];
   assert.equal(mesh.geometry.attributes.position.count,4,'four analytical sphere vertices, not 240 repeated trajectory evaluations');
   assert.equal(mesh.geometry.index.count,6,'two triangles per analytical sphere at every quality tier');
   assert.match(mesh.material.fragmentShader,/sqrt\(max\(0\., 1\. - r2\)\)/,'curved sphere normal, not a flat billboard');
   assert.match(mesh.material.fragmentShader,/gl_FragDepth = .*surfaceClip\.z \/ surfaceClip\.w/,'write projected curved surface depth for world occlusion');
-  assert.equal(mesh.geometry.instanceCount,count);assert.equal(dust.geometry.attributes.position.count,count*4);assert.deepEqual(mesh.geometry.attributes.aSeed.array,b.group.children[0].geometry.attributes.aSeed.array);
+  assert.equal(mesh.geometry.instanceCount,count);assert.equal(dust.geometry.attributes.position.count,count*6);assert.deepEqual(mesh.geometry.attributes.aSeed.array,b.group.children[0].geometry.attributes.aSeed.array);
   assert.equal(mesh.material.uniforms.uFocusDistance.value, 6.9, 'initial focus matches the opening camera');
   assert.match(dust.material.vertexShader, /abs\(-eye\.z - uFocusDistance\)/, 'depth of field uses camera-relative focus, not a fixed opening depth');
   assert.match(dust.material.vertexShader, /clamp\(7\.5 \/ max\(1\., -eye\.z\), \.06, 2\.\)/, 'distant grains can shrink below the former perspective floor');
   const fine=dust.geometry.attributes.aSeed.array;
-  assert.equal(fine.length,count*16);assert.ok(fine.every(Number.isFinite));
+  assert.equal(fine.length,count*24);assert.ok(fine.every(Number.isFinite));
   assert.deepEqual(fine,b.group.children[1].geometry.attributes.aSeed.array);
   assert.notDeepEqual(fine.slice(0,16),mesh.geometry.attributes.aSeed.array.slice(0,16),'fine grains have independent positions, not duplicate overlapping instances');
   assert.match(dust.material.fragmentShader,/#include <colorspace_fragment>/);
@@ -29,7 +29,7 @@ try{
   assert.match(mesh.material.vertexShader, /mix\(1\.9, 1\., uCompact\)/, 'opening bead scale resolves into smaller basin grains on the same scroll uniform');
   assert.match(mesh.material.vertexShader, /smoothstep\(\.997, \.9998, aSeed\.w\)/, 'only the extreme seed tail creates large bokeh beads');
   assert.match(mesh.material.vertexShader, /pearlRadius = \.012 \+ \.022 \* pow\(aSeed\.w, 3\.2\)/, 'most hero beads stay small');
-  assert.match(mesh.material.fragmentShader, /specular \* 1\.05/, 'pearl beads carry a tight glossy highlight');
+  assert.match(mesh.material.fragmentShader, /specular \* 1\.45/, 'pearl beads carry a tight glossy highlight');
   assert.match(mesh.material.vertexShader, /smoothstep\(\.965, \.998, seed\.w\)/, 'only a sparse population scatters beyond the core');
   let disposed=0;for(const child of a.group.children){child.geometry.addEventListener('dispose',()=>disposed++);child.material.addEventListener('dispose',()=>disposed++);}a.dispose();assert.equal(disposed,4);b.dispose();
  }

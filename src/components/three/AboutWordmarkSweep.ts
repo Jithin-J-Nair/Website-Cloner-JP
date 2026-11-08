@@ -3,8 +3,7 @@ import * as THREE from "three";
 /** A single subdivided type surface, not individually tilted textPath glyphs.
  * The supplied About recording keeps the wordmark readable while it sweeps
  * across the valley. Keep the deformation continuous and restrained: the
- * letters may bend with the scene, but must never collapse into separate
- * wedges or expand asymmetrically. The About renderer owns its render/lifetime.
+ * letters stay connected as a fold travels across their shared surface. The About renderer owns its render/lifetime.
  */
 export function createAboutWordmarkSweep() {
   const canvas = document.createElement("canvas");
@@ -16,7 +15,7 @@ export function createAboutWordmarkSweep() {
     const context = canvas.getContext("2d");
     if (!context) return;
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.font = '450 490px LusionSansCalibrated, sans-serif';
+    context.font = '550 490px LusionSansCalibrated, sans-serif';
     context.textBaseline = "alphabetic";
     const metrics = context.measureText("LUSION");
     context.save();
@@ -36,19 +35,18 @@ export function createAboutWordmarkSweep() {
     vertexShader: `uniform float uPhase,uAspect; varying vec2 vUv;
       void main(){
         vUv=uv;
-        // Preserve the wordmark's original proportions. A small scroll-linked
-        // bend gives the line perspective without pinching the left glyphs or
-        // stretching the right glyphs into unreadable wedges.
-        float fold=.28*smoothstep(.05,.90,uPhase);
+        // A fold travels from left to right: the left letters curl nearly
+        // edge-on while the trailing N retains its opening cap height.
         float x=uv.x;
-        float curve=sin(x*3.14159265);
-        float thickness=mix(1.,.88+.12*smoothstep(.20,.85,x),fold);
-        float height=min(1.10,1.31/uAspect);
-        float baseline=mix(-.59,-.57-.015*x+.025*curve,fold);
-        vec2 p=vec2(mix(-.90,.91,pow(x,mix(1.,1.08,fold))),
-          baseline+(uv.y-.5)*height*thickness);
-        p.x+=(uv.y-.5)*.22*pow(curve,4.)*fold;
-        p.y+=.012*curve*fold;
+        float fold=smoothstep(0.,1.,uPhase);
+        float local=smoothstep(x*.66,x*.66+.34,fold);
+        float angle=local*1.52;
+        float height=min(1.36,1.74/uAspect);
+        float baseline=-.53 + .10*pow(x,3.)*fold;
+        float vertical=(uv.y-.5)*height;
+        vec2 p=vec2(mix(-.90,.91,x),baseline+vertical*cos(angle));
+        p.x+=sin(angle)*vertical*.46;
+        p.y+=sin(angle)*.10 + .08*pow(sin(x*3.14159265),2.)*fold;
         gl_Position=vec4(p,0.,1.);
       }`,
     fragmentShader: `uniform sampler2D uMap; uniform float uOpacity; varying vec2 vUv;

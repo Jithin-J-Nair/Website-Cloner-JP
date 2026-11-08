@@ -7,9 +7,9 @@ export function AboutPageStyles() {
     #about .about-narrative-layout #about-who-desc-bottom { position: absolute; right: 0; bottom: 1vh; max-width: 100%; text-align: right; font-size: 3.85vw; }
     #about #about-clients { background-color: #000302; }
     #about #about-clients { border-top: 0; padding-top: 8vw; padding-bottom: 8vw; }
-    #about #about-clients h2 { font-size: 3.55vw; letter-spacing: -.04em; line-height: 1; }
-    #about #about-clients .about-client-marquee-stack { margin-top: 6vw; gap: 4.8vw; }
-    #about #about-clients .about-client-logo-tile { height: 10vw; }
+    #about #about-clients h2 { font-size: 3.85vw; letter-spacing: -.04em; line-height: 1; }
+    #about #about-clients .about-client-marquee-stack { margin-top: 3.8vw; gap: 0; }
+    #about #about-clients .about-client-logo-tile { height: 14vw; }
     #about .about-client-logo-art { display: block; width: 100%; height: 100%; object-fit: contain; }
     #about .about-source-recognition { position: relative; isolation: isolate; overflow: hidden; padding: 17vw 5vw 13vw; background: #000302; color: #f5f6f5; }
     #about .about-source-monument { pointer-events: none; position: absolute; inset: 0; z-index: -1; overflow: hidden; }
@@ -19,18 +19,11 @@ export function AboutPageStyles() {
     #about .about-source-monument span::selection { background: transparent; }
     #about .about-source-monument span::after {
       content: attr(data-word); position: absolute; inset: 0; color: transparent;
-      -webkit-text-stroke: 0 transparent; background-clip: text; -webkit-background-clip: text;
-      background-image: radial-gradient(ellipse 9vw 13vw at var(--foil-x,-1000px) var(--foil-y,-1000px), #fff 0%, #fff 12%, #777 30%, #000 70%),
-        conic-gradient(from var(--foil-angle,30deg) at var(--foil-x,-1000px) var(--foil-y,-1000px), #e8f6ff, #348cbe 12%, #151830 20%, #ef9978 33%, #333446 42%, #d5dfe9 48%, #272a58 59%, #68cdf6 70%, #17151e 81%, #efb1a8 90%, #e8f6ff);
-      background-blend-mode: multiply; mix-blend-mode: screen;
+      -webkit-text-stroke: 1.5px #d9ecff;
+      mask-image: radial-gradient(ellipse 5vw 4vw at var(--foil-x,-1000px) var(--foil-y,-1000px), #000, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 5vw 4vw at var(--foil-x,-1000px) var(--foil-y,-1000px), #000, transparent 75%);
+      filter: drop-shadow(.7px 0 #ffae81) drop-shadow(-.7px 0 #79bfff);
       opacity: var(--foil-active,0); transition: opacity .35s ease;
-      background-repeat: no-repeat;
-      animation: about-foil-shimmer 3s ease-in-out infinite;
-      animation-play-state: var(--foil-play,paused);
-    }
-    @keyframes about-foil-shimmer {
-      0%,100% { background-position: 0 0, -12px 0; }
-      50% { background-position: 0 0, 12px 0; }
     }
     #about #about-recognition-window { outline-offset: 14px; scroll-margin-top: 16vh; }
     #about .about-source-record { display: grid; grid-template-columns: 1fr 1fr; column-gap: 0; row-gap: 1.8vw; margin-bottom: 6.3vw; }
@@ -52,8 +45,8 @@ export function AboutPageStyles() {
     #about .about-card-back { box-shadow: inset 0 0 0 2px #fff; }
     #about .about-playing-expertise { --about-expertise-blue: var(--about-blue); }
     #about .about-expertise-stage { background: var(--about-blue); }
-    #about .about-expertise-studio { position: absolute; top: -16vw; left: 17vw; font-size: 26vw; line-height: 1; letter-spacing: -.055em; font-weight: 400; pointer-events: none; }
     #about .about-expertise-flourish { right: 0; width: 100%; }
+    #about .about-expertise-stage { perspective: 950px; }
     #about .about-expertise-heading h2 { font-size: 12vw; line-height: .92; }
     #about .about-expertise-caption { top: 0; }
     @media (min-width:1000px) {
@@ -69,11 +62,30 @@ export function AboutPageStyles() {
     }
     #about .about-team-selector button > span { width: 2px; height: 5px; border-radius: 0; }
     #about .about-team-selector > span { display: none; }
-    #about .about-team-cursor { position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 104px; height: 104px; border-radius: 50%; color: white; background: #4330f5; font-size: 43px; font-weight: 300; pointer-events: none; opacity: 0; will-change: transform; z-index: 40; }
+    #about .about-team-cursor { position: absolute; left: 0; top: 0; display: grid; place-items: center; width: clamp(112px,9.2vw,160px); height: clamp(112px,9.2vw,160px); border-radius: 50%; color: white; background: #4330f5; font-size: clamp(40px,3.2vw,54px); font-weight: 300; pointer-events: none; opacity: 0; will-change: transform; z-index: 40; }
     #about #end-section, #about #end-section > div, #about #end-section-outer { background: var(--about-blue) !important; }
     #about #end-section-content { top: 20.5vh; }
-    #about #end-section-title-link { font-size: 9.6vw; line-height: 1.02; font-weight: 400; }
-    #about #end-bottom { min-width: 238px; height: 54px; bottom: 56px; }
+    #about #end-section-title-link { font-size: 10vw; line-height: 1.02; font-weight: 400; }
+    #about #end-bottom { min-width: clamp(238px,16.6vw,320px); height: clamp(56px,3.95vw,76px); bottom: 56px; }
+    #about #end-section-title-link { letter-spacing: -.025em; }
+    #about .about-cta-line { display: inline-block; background-position: 0 100%; background-repeat: no-repeat; background-size: 100% .055em; }
+    #about .about-cta-title:is(:hover,:focus-visible) .about-cta-line { background-image: linear-gradient(white,white); }
+    #about .about-card-front li { border-bottom: 0; background-image: radial-gradient(circle, #dedede 1px, transparent 1.5px); background-size: 8px 3px; background-position: 0 100%; background-repeat: repeat-x; }
+    #about .about-card-front li:last-child { background-image: none; }
+    @media (min-width:820px) {
+      #about #about-clients h2 { white-space: nowrap; }
+      #about #about-clients > .grid p { text-align: right; justify-self: end; max-width: 26ch; margin-left: auto; font-size: .85vw; line-height: 1.25; letter-spacing: -.01em; }
+      #about .about-who-team-overlay { padding-top: 16vh; }
+      #about [data-team-hud-title] { font-size: 5.2vw; }
+      #about [data-team-ruler] { letter-spacing: .36em; }
+      #about #about-who-team-name { font-size: 1vw; }
+      #about #about-who-team-desc-text { font-size: .85vw; line-height: 1.4; max-width: 33ch; }
+      #about .about-team-progress { width: 12.5vw; }
+      #about .about-who-team-overlay > div:last-child > div:last-child { gap: 5.8vw; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      #about #about-clients .about-client-logo-tile { height: 14vw; }
+    }
     @media (hover: hover) and (pointer: fine) {
       #about .about-who-team-overlay[data-team-active="true"] { cursor: none; }
       #about .about-who-team-overlay button, #about .about-who-team-overlay a { cursor: pointer; }
@@ -81,6 +93,16 @@ export function AboutPageStyles() {
     @media (min-width:1000px) and (min-height:650px) and (prefers-reduced-motion:no-preference) {
       #about .about-playing-expertise:not([data-reduced="true"]) { height: 360svh; }
       #about .about-playing-expertise:not([data-reduced="true"]) .about-expertise-stage { overflow: clip; }
+    }
+    @keyframes about-client-loop-three { from { transform: translate3d(0,0,0); } to { transform: translate3d(-33.333333333%,0,0); } }
+    @media (prefers-reduced-motion:no-preference) {
+      #about .about-client-marquee-track { animation-name: about-client-loop-three; }
+    }
+    @media (min-width:820px) and (prefers-reduced-motion:no-preference) {
+      #about #about-clients .about-client-marquee-stack { margin-inline: calc(-1 * var(--base-padding-x)); }
+      #about #about-clients .about-client-marquee-track { width: max-content; }
+      #about #about-clients .about-client-marquee-set { flex: none; width: max-content; }
+      #about #about-clients .about-client-logo-tile { flex: 0 0 15vw; width: 15vw; padding: 0; }
     }
     @media (max-width:819px) {
       #about #about-clients { padding-block: 18vw; }
@@ -104,7 +126,6 @@ export function AboutPageStyles() {
       #about .about-source-award-group::before { left: -5vw; }
       #about .about-source-award-group li { grid-template-columns: 20% 80%; }
       #about .about-source-monument span { font-size: 32vw; line-height: 1.5; }
-      #about .about-expertise-studio { display: none; }
       #about .about-expertise-heading h2 { font-size: 14vw; line-height: 1.05; }
       #about #end-section-title-link { font-size: 16.4vw; }
       #about #end-bottom { min-width: 228px; }
@@ -119,7 +140,7 @@ export function AboutPageStyles() {
     @media (prefers-reduced-motion:reduce) {
       #about .about-source-monument > div { transform: none; }
       #about .about-source-monument span::after { animation: none; }
-      #about .about-team-cursor, #about .about-expertise-studio { display: none; }
+      #about .about-team-cursor { display: none; }
     }
   `}</style>;
 }

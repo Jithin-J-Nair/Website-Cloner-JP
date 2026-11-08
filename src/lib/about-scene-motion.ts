@@ -14,8 +14,8 @@ export function aboutWordmarkSweepPose(progress: number, mobile: boolean) {
   const u = Number.isFinite(progress) ? Math.max(0, progress) : 0;
   const start = mobile ? 1.65 : .68;
   const peak = mobile ? 1.94 : .86;
-  const holdEnd = mobile ? 2.48 : 1.24;
-  const end = mobile ? 2.82 : 1.45;
+  const holdEnd = mobile ? 2.48 : 1.27;
+  const end = mobile ? 2.82 : 1.52;
   return {
     opacity: ease(start, peak, u) * (1 - ease(holdEnd, end, u)),
     deformation: ease(start, end, u),
@@ -30,9 +30,9 @@ export function aboutScenePose(progress: number, mobile: boolean) {
   const retreat = ease(mobile ? 2.75 : 1.7, mobile ? 3.5 : 3.15, u);
   const editorial = ease(3.6, 5, u);
   const team = ease(6.2, 6.95, u);
-  const valleyZ = mix(mobile ? 22 : 20, mobile ? 48 : 72, retreat);
-  const valleyY = mix(4.6, mobile ? 12 : 17, retreat);
-  const valleyLook = mix(4.1, mobile ? 8 : 9.8, retreat);
+  const valleyZ = mix(mobile ? 22 : 14, mobile ? 48 : 45, retreat);
+  const valleyY = mix(4.6, mobile ? 12 : 12, retreat);
+  const valleyLook = mix(4.1, mobile ? 8 : 3, retreat);
   return {
     pullback, editorial, team,
     x: Math.sin(editorial * 1.2) * .6,
@@ -49,7 +49,7 @@ export function aboutLetteringPose(progress: number, mobile: boolean) {
   return {
     opening: 1 - ease(mobile ? 1.65 : .68, mobile ? 1.94 : .86, u),
     openingTravel: ease(mobile ? 1.65 : .68, mobile ? 1.94 : .86, u),
-    manifesto: ease(mobile ? 1.95 : 1.44, mobile ? 2.42 : 1.6, u) * (1 - ease(3.65, 4.35, u)),
+    manifesto: ease(mobile ? 1.95 : .86, mobile ? 2.42 : 1.24, u) * (1 - ease(3.65, 4.35, u)),
     narrative: ease(4.45, 4.82, u) * (1 - ease(5.82, 6.42, u)),
   };
 }

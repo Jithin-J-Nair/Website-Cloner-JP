@@ -70,7 +70,7 @@ export class AboutGlyphFluid {
   reset(still: boolean) {
     this.still = still; this.randomState = 0x74a923;
     this.clock = 0; this.emission = 0; this.cursor = 0; this.steps = 0; this.pointerWasActive = false;
-    const pool = still ? this.count : Math.floor(this.count * .72);
+    const pool = still ? this.count : Math.floor(this.count * .68);
     const spacing = Math.sqrt(this.aspect * .48 / this.count);
     const columns = Math.max(10, Math.floor((this.aspect - .03) / spacing));
     for (let i = 0; i < this.count; i++) {
@@ -80,12 +80,12 @@ export class AboutGlyphFluid {
         this.vx[i] = still ? 0 : .16 * Math.sin(this.x[i] / this.aspect * Math.PI * 2);
         this.vy[i] = 0;
       } else {
-        const left = i % 2 === 0;
-        const edge = .025 + this.random() * Math.min(.22, this.aspect * .14);
+        const left = i % 3 === 0;
+        const edge = .025 + this.random() * Math.min(.50, this.aspect * .30);
         this.x[i] = left ? edge : this.aspect - edge;
-        this.y[i] = .68 + this.random() * .85;
-        this.vx[i] = (left ? 1 : -1) * (.30 + this.random() * .12);
-        this.vy[i] = -.12 - this.random() * .2;
+        this.y[i] = (left ? .22 : .48) + this.random() * .30;
+        this.vx[i] = (left ? 1 : -1) * (.25 + this.random() * .30);
+        this.vy[i] = -.10 - this.random() * .15;
       }
     }
   }
@@ -249,16 +249,17 @@ export class AboutGlyphFluid {
       }
       // A low-rate, mass-conserving edge recirculation sustains the pour without
       // increasing particle count or prescribing a wave surface.
-      this.emission = Math.min(12, this.emission + this.count * .06 * dt);
+      this.emission = Math.min(12, this.emission + this.count * .10 * dt);
       if (this.clock > 1.5 && this.emission >= 1) {
         for (let attempt = 0; attempt < 80 && this.emission >= 1; attempt++) {
           const k = this.cursor++ % this.count;
           if (this.y[k] > .065 || (this.x[k] > this.aspect * .2 && this.x[k] < this.aspect * .8)) continue;
           const left = k % 2 === 0;
-          const edge = .025 + this.random() * Math.min(.22, this.aspect * .14);
+          const edge = .025 + this.random() * Math.min(.50, this.aspect * .30);
           this.x[k] = left ? edge : this.aspect - edge;
-          this.y[k] = 1.01 + this.random() * .08;
-          this.vx[k] = (left ? 1 : -1) * (.25 + this.random() * .2); this.vy[k] = -.16; this.emission--;
+          // Alternating broad inlet heights feed the solver, not a prescribed surface.
+          this.y[k] = .4 + .22 * Math.sin(this.clock * .8 + (left ? Math.PI : 0)) + this.random() * .2;
+          this.vx[k] = (left ? 1 : -1) * (.28 + this.random() * .32); this.vy[k] = -.12 - this.random() * .15; this.emission--;
         }
       }
       this.steps++;

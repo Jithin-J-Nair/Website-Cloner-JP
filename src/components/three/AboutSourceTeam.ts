@@ -25,16 +25,19 @@ export function createAboutSourceTeam(invalidate: () => void, onState: (state: s
         vec3 raw=mix(aNormalFrom,aNormal,t)*2.-1.;vec3 n=raw*inversesqrt(max(dot(raw,raw),.000001));
         vec3 light=normalize(vec3(.35+uPointer.x*1.1,.2+uPointer.y*.45,.8));
         float diffuse=max(0.,dot(n,light));float shade=mix(aShadeFrom,aShade,t);
-        vShade=pow(shade,.90)*(.70+diffuse*.30);
+        vShade=pow(shade,1.1)*(.18+diffuse*.65);
         float hot=exp(-dot(p.xy-uPointer*vec2(1.4,1.1),p.xy-uPointer*vec2(1.4,1.1))*3.);
         vGlint=pow(max(0.,dot(n,normalize(light+vec3(0.,0.,1.)))),22.)*hot*shade*.8;
+        // Soft cheek emitter, modulated by the real captured per-point shade.
+        vec2 cheek=p.xy-vec2(.10,-.15);
+        vGlint+=exp(-dot(cheek,cheek)*24.)*shade*10.;
         float phase=clamp((p.y+1.8)/3.6,0.,1.);vBirth=smoothstep(phase-.22,phase+.12,uReveal)*smoothstep(-1.2,-.5,p.y);
         p.z+=sin(p.y*35.-uTime*.6)*.002;
         gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);gl_PointSize=uPointSize*uPixelRatio;
       }`,
     fragmentShader: `uniform float uOpacity;varying float vShade,vBirth,vGlint;
       void main(){float r=length(gl_PointCoord-.5);if(r>.5)discard;
-        float a=smoothstep(.5,.12,r)*uOpacity*vBirth;
+        float a=exp(-r*r*18.)*uOpacity*vBirth;
         gl_FragColor=vec4(vec3(.64,.78,.83)*(vShade*.90+vGlint),a);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -58,14 +61,14 @@ export function createAboutSourceTeam(invalidate: () => void, onState: (state: s
         float focus=exp(-pow(vSource.x/27.,2.))*exp(-pow((vSource.z-12.)/34.,2.));
         float fade=1.-smoothstep(35.,66.,abs(vSource.x));
         float far= mix(1.,smoothstep(-5.,15.,vSource.z),uTeam);
-        float alpha=(.10+band*(.40+uTeam*focus*1.25))*fade*far*uOpacity;
+        float alpha=(.24+band*(.62+uTeam*focus*1.65))*fade*far*uOpacity;
         gl_FragColor=vec4(mix(vec3(.24,.37,.39),vec3(.85,.95,.96),band),alpha);}` });
   const glowMaterial = new THREE.ShaderMaterial({ uniforms: terrainUniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: contourVertex, fragmentShader: `uniform float uOpacity,uTime,uTeam;varying vec3 vSource;
       void main(){float r=length(gl_PointCoord-.5);if(r>.5)discard;
         float band=pow(.5+.5*sin(vSource.y*2.8+vSource.z*.06-uTime*.65),10.);
         float fade=exp(-pow(vSource.x/32.,2.))*exp(-pow((vSource.z-12.)/34.,2.));
-        gl_FragColor=vec4(.60,.83,.87,pow(1.-r*2.,3.)*band*fade*uOpacity*uTeam*.35);}` });
+        gl_FragColor=vec4(.60,.83,.87,pow(1.-r*2.,3.)*band*fade*uOpacity*uTeam*.9);}` });
   contourGroup.add(new THREE.LineSegments(contourGeometry, contourMaterial), new THREE.Points(glowGeometry, glowMaterial));
   // Authored glyph atlas using the existing OFL IBM Plex Mono, not Lusion's
   // excluded font software. One texture/quad, no DOM rain/timer/extra renderer.
@@ -89,13 +92,13 @@ export function createAboutSourceTeam(invalidate: () => void, onState: (state: s
     fragmentShader: `uniform float uTime,uTeam;uniform sampler2D uGlyphs;varying vec2 vUv;
       float hash(float n){return fract(sin(n*127.1)*43758.5453);}
       void main(){float x=vUv.x*64.;float id=floor(x);float seed=hash(id);float y=vUv.y*112.+seed*100.+uTime*.25;
-        vec2 cell=vec2((fract(x)-.5)*3.+.5,fract(y));float glyph=floor(hash(id*53.+floor(y))*64.);
+        vec2 cell=vec2((fract(x)-(.25+seed*.5))*3.+.5,fract(y));float glyph=floor(hash(id*53.+floor(y))*64.);
         vec2 atlas=(vec2(mod(glyph,8.),7.-floor(glyph/8.))+clamp(cell,0.,1.))/8.;
         float ink=texture2D(uGlyphs,atlas).r*step(0.,cell.x)*step(cell.x,1.);
-        float trail=pow(.5+.5*sin(vUv.y*18.+seed*21.-uTime*.2),10.);
+        float trail=pow(.5+.5*sin(vUv.y*18.+seed*21.-uTime*.2),6.);
         float axis=fract(x)-.5;float core=exp(-pow(axis/.018,2.));float halo=exp(-pow(axis/.10,2.));
         float fade=smoothstep(0.,.12,vUv.y)*(1.-smoothstep(.85,1.,vUv.y));
-        float alpha=(ink*trail*.75+core*.012+halo*trail*.025)*(.15+seed*seed)*fade*uTeam;
+        float alpha=(ink*trail*1.2+core*.025+halo*trail*.07)*(.25+seed*seed)*fade*uTeam;
         gl_FragColor=vec4(.48,.64,.72,alpha);}` });
   const columns = new THREE.Mesh(columnGeometry, columnMaterial); columns.position.z = -.8; group.add(columns);
   const fetchGeometry = async (asset: string) => {
@@ -151,13 +154,16 @@ export function createAboutSourceTeam(invalidate: () => void, onState: (state: s
       camera.getWorldDirection(forward);
       group.position.copy(camera.position).addScaledVector(forward, 6); group.quaternion.copy(camera.quaternion);
       const mobile = width < 820;
-      head.position.set(mobile ? -.08 : -.53, mobile ? .12 : .24, .05); head.scale.setScalar(mobile ? 1.35 : 1.65);
+      head.position.set(mobile ? -.08 : -.53, mobile ? .12 : .50, .05); head.scale.setScalar(mobile ? 1.35 : 1.5);
       head.rotation.set(reduced ? 0 : -pointer.y * .035, reduced ? 0 : pointer.x * .09, 0);
+      // Static desktop presentation faces the recorded three-quarter view;
+      // pointer response remains a small additive tilt and stops in reduced motion.
+      head.rotation.y += mobile ? 0 : .28;
       head.visible = ready && team > .001;
-      uniforms.uOpacity.value = team; uniforms.uReveal.value = reveal; uniforms.uTime.value = reduced ? 0 : time;
-      uniforms.uPointer.value.copy(pointer); uniforms.uPointSize.value = 6.0 * Math.min(1.5, Math.max(.85, height / 832)); uniforms.uPixelRatio.value = dpr;
+      uniforms.uOpacity.value = team * .82; uniforms.uReveal.value = reveal; uniforms.uTime.value = reduced ? 0 : time;
+      uniforms.uPointer.value.copy(pointer); uniforms.uPointSize.value = 8.0 * Math.min(1.5, Math.max(.85, height / 832)); uniforms.uPixelRatio.value = dpr;
       terrainUniforms.uOpacity.value = Math.max(narrative * .55, team); terrainUniforms.uTeam.value = team; terrainUniforms.uTime.value = reduced ? 0 : time;
-      contourGroup.position.y = -narrative * .35;
+      contourGroup.position.y = team * .35 - narrative * .35;
     },
     dispose() { disposed = true; revision++; abort.abort(); cache.clear(); geometry.dispose(); material.dispose(); contourGeometry.dispose(); contourMaterial.dispose(); glowGeometry.dispose(); glowMaterial.dispose(); columnGeometry.dispose(); columnMaterial.dispose(); glyphTexture.dispose(); group.removeFromParent(); }
   };

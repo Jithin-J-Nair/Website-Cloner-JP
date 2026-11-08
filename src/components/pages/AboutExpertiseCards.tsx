@@ -26,7 +26,6 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   reducedMotion: boolean;
 }) {
   const headingRef = useRef<HTMLDivElement>(null);
-  const studioRef = useRef<HTMLSpanElement>(null);
   const flourishRef = useRef<SVGSVGElement>(null);
   const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const flipRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -55,10 +54,6 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
       section.dataset.cardProgress = p.toFixed(4);
       section.dataset.cardLayout = cinematic ? "cinematic" : "reading";
       const heading = expertiseHeadingPose(p);
-      if (studioRef.current) {
-        studioRef.current.style.transform = `translate3d(0,${-Math.min(1, p / .28) * 45}vh,0)`;
-        studioRef.current.style.opacity = cinematic ? String(Math.max(0, 1 - p / .22)) : "0";
-      }
       if (headingRef.current) {
         headingRef.current.style.transform = cinematic ? `translate3d(0,${heading.yVh + 7 * (1 - Math.min(1, p / .22))}vh,0)` : "";
         headingRef.current.style.opacity = cinematic ? String(heading.opacity) : "1";
@@ -66,8 +61,10 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
         headingRef.current.querySelectorAll("button").forEach(button => { button.tabIndex = cinematic && heading.opacity < .01 ? -1 : 0; });
       }
       if (flourishRef.current) {
-        flourishRef.current.style.opacity = String(.25 + .75 * Math.max(0, Math.min(1, (p - .12) / .24)));
-        flourishRef.current.style.transform = `rotate(${p * -105}deg)`;
+        const enter = Math.max(0, Math.min(1, (p - .08) / .14));
+        const exit = Math.max(0, Math.min(1, (p - .68) / .2));
+        flourishRef.current.style.opacity = String(enter * (1 - exit));
+        flourishRef.current.style.transform = `translate3d(${exit * 25}vw,${exit * -55}vh,0) rotate(${p * -12}deg)`;
       }
       cards.forEach((_, i) => {
         const pose = expertiseCardPose(p, i), slot = slotRefs.current[i], flip = flipRefs.current[i];
@@ -121,11 +118,8 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
   return (
     <section id="about-capability" ref={sectionRef} className="about-playing-expertise" data-reduced={reducedMotion} aria-labelledby="about-expertise-heading">
       <div className="about-expertise-stage">
-        {/* A clipped solid continuation at the blue boundary, distinct from
-            the outlined word behind the black recognition records. */}
-        <span ref={studioRef} className="about-expertise-studio" aria-hidden="true">STUDIO</span>
         <svg ref={flourishRef} className="about-expertise-flourish" viewBox="0 0 1440 900" preserveAspectRatio="none" fill="none" aria-hidden="true">
-          <path d="M420 30C650 110 1000 110 1230 65C1500 20 1490 270 1170 610" stroke="currentColor" strokeWidth="24" strokeLinecap="round" />
+          <path d="M390 510C690 510 1220 240 1150 -120" stroke="currentColor" strokeWidth="24" strokeLinecap="round" />
         </svg>
         {/* The overlapping editorial heading is not a hit target; keep the
             actual controls interactive without masking the cards underneath. */}

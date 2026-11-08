@@ -29,7 +29,7 @@ assert.match(css, /animation-play-state:\s*paused/);
 assert.match(css, /\.about-client-marquee\.is-in-view \.about-client-marquee-track\s*\{\s*animation-play-state:\s*running;/);
 assert.match(page, /role="list"/, "each marquee row is exposed as a semantic list");
 assert.match(page, /role="listitem"/, "each brand has a list-item relationship");
-assert.match(page, /aria-hidden=\{copy === 1 \? true : undefined\}/, "duplicated marquee row is hidden from assistive technology");
+assert.match(page, /aria-hidden=\{copy > 0 \? true : undefined\}/, "duplicated marquee row is hidden from assistive technology");
 assert.match(css, /@keyframes about-client-marquee/);
 assert.match(css, /prefers-reduced-motion:\s*reduce/);
 assert.match(css, /about-client-marquee-set\[aria-hidden="true"\]\s*\{\s*display:\s*none;/);

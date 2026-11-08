@@ -7,11 +7,11 @@ const smoothstep = (a: number, b: number, x: number) => THREE.MathUtils.smoothst
  * not captured topography. The real mesh, contour extraction and figure
  * placement share this function so their surfaces cannot drift apart. */
 export function terrainHeightAt(x: number, z: number): number {
-  const valleyDist = Math.hypot(x * 0.92, (z - 3.5) * 0.52);
+  const valleyDist = Math.hypot(x * 0.92, (z - 3.5) * 0.13);
   // Craggy lunar escarpments: the reference has sharp, irregular ridgelines
   // framing a broad pale basin. Keep the floor anchors stable while steepening
   // the outer walls and preserving the asymmetrical skyline.
-  const rimRise = smoothstep(5.2, 22.5, valleyDist) * lerp(4.6, 10.2, smoothstep(-4, 20, x));
+  const rimRise = smoothstep(5.2, 22.5, valleyDist) * lerp(3.4, 8.0, smoothstep(-4, 20, x));
 
   const flankMask = smoothstep(4.2, 14.8, Math.abs(x) + Math.max(0, -z) * 0.38);
 
@@ -28,7 +28,7 @@ export function terrainHeightAt(x: number, z: number): number {
   const ridgeA = 1 - Math.abs(noise(wx * .14, wz * .14) * 2 - 1);
   const ridgeB = 1 - Math.abs(noise(wx * .34 + 31, wz * .31 - 11) * 2 - 1);
   const ridgeC = 1 - Math.abs(noise(wx * .72 - 7, wz * .72 + 41) * 2 - 1);
-  const escarpment = (Math.pow(ridgeA, 2.55) - .24) * 1.18 + (Math.pow(ridgeB, 3.5) - .15) * .5 + ridgeC * .4;
+  const escarpment = (Math.pow(ridgeA, 2.55) - .24) * 1.18 + (Math.pow(ridgeB, 3.5) - .15) * .5 + ridgeC * .32;
   const detail = .72 * (noise(x * .65, z * .65) * .8 + noise(x * 1.3 + 17, z * 1.3) * .4 + noise(x * 2.2, z * 2.2 + 23) * .18) * (.32 + flankMask * 1.12);
   // Distinct narrow escarpments, not a single smooth bowl. Erosion runs
   // downhill in actual mesh relief and shares the floor/stone/figure sampler.
@@ -40,29 +40,29 @@ export function terrainHeightAt(x: number, z: number): number {
   // A broad outer shelf with a steep, irregular inner face, rather than a
   // rounded tent-shaped ridge. The supplied close still has a long left crest
   // dropping into the floor; its silhouette is not a pointed alpine summit.
-  const leftCrest = -9.6 + Math.sin(z * .14) * 1.1 + (noise(z * .4, 71) - .5) * .85;
+  const leftCrest = -13.2 + Math.sin(z * .14) * 1.1 + (noise(z * .4, 71) - .5) * .85;
   const leftShelf = smoothstep(-24, -16, x) * (1 - smoothstep(leftCrest - .9, leftCrest + 2.0, x));
-  const left = leftShelf * (5.8 + noise(z * .3, 2) * .85) * buttress * .9;
+  const left = leftShelf * (3.0 + noise(z * .3, 2) * .65) * buttress * .9;
   // The tall rear escarpment is separate from the lower foreground shoulder;
   // the supplied basin still has a high right skyline, not a symmetric mound.
   const rearWall = Math.exp(-Math.pow((x - 16) / 6, 2))
     * smoothstep(0, 10, -z) * (1 - smoothstep(24, 38, -z))
-    * (5.0 + Math.pow(1 - Math.abs(noise(z * .19, 61) * 2 - 1), 3) * 3.8);
+    * (2.5 + Math.pow(1 - Math.abs(noise(z * .19, 61) * 2 - 1), 3) * 1.8);
   const right = ridge(11.8 + Math.sin(z * .18 + 1) * 1.8, 6.6) * (2.35 + noise(z * .38, 7) * 1.0) * buttress;
   // Separate foreground escarpments enter only on the physical pullback.
   // Without these the distant view reads as a closed miniature volcano: the
   // supplied wide composition has tall, near-camera shoulders framing its floor.
   const frontDepth = smoothstep(1, 11, z) * Math.exp(-Math.pow((z - 19) / 14, 2));
-  const foreground = (ridge(-15 + Math.sin(z * .14) * 1.4, 5.8) * 8
-    + ridge(17.5 + Math.sin(z * .17) * 1.2, 6.2) * 5) * frontDepth * buttress;
+  const foreground = (ridge(-15 + Math.sin(z * .14) * 1.4, 5.8) * 4.8
+    + ridge(17.5 + Math.sin(z * .17) * 1.2, 6.2) * 3.5) * frontDepth * buttress;
   const channels = Math.pow(1 - Math.abs(noise(wx * .6, wz * .7) * 2 - 1), 3);
   const erosion = (channels - .38) * .46 * flankMask;
-  const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .24 * flankMask;
+  const micro = (noise(wx * 3.1, wz * 3.1) - .5) * .17 * flankMask;
   // Nonperiodic rills run down the escarpments rather than puffing them into
   // smooth dunes. All contact objects still evaluate this same surface.
   const rills = Math.pow(1 - Math.abs(noise(wx * .24, wz * 1.45 + wx * .14) * 2 - 1), 4);
   const incision = rills * .48 * flankMask;
-  const edge = 1 - smoothstep(27, 43, Math.hypot(x, z * .8));
+  const edge = 1 - smoothstep(44, 72, Math.hypot(x, z * .8));
   return (rimRise * .78 + (left + right) * nearRim + rearWall + foreground + escarpment * flankMask + erosion + micro + detail - incision) * edge - 1.7;
 }
 
@@ -114,13 +114,13 @@ export function createAboutTerrainMaterial() {
         // previously looked like crumpled paper rather than an eroded surface.
         // No atan seam: the former polar-UV derivative discontinuity made a
         // high-contrast checker/moire patch across the right mountain face.
-        vec2 channels = vec2(p.y * 1.65 + p.x * .25, p.x * .3 - p.y * .1);
+        vec2 channels = vec2(p.y * .9 + p.x * .45, p.x * .72 - p.y * .24);
         // Avoid long rubber-like grooves: cross-cut drainage with shorter
         // isotropic fractures while keeping the same mip-filtered noise tile.
-        channels += vec2(noise(p * .38), noise(p * .38 + 13.)) * .24;
+        channels += vec2(noise(p * .38), noise(p * .38 + 13.)) * 1.2;
         vec2 surfaceUV = mix(p, channels, smoothstep(4.5, 10., abs(p.x)));
         float footprint = max(length(dFdx(surfaceUV)), length(dFdy(surfaceUV)));
-        float grain = 0., relief = 0., frequency = 8.2, amplitude = .05;
+        float grain = 0., relief = 0., frequency = 5.4, amplitude = .036;
         for (int i = 0; i < 4; i++) {
           float weight = 1. - smoothstep(.25, .85, footprint * frequency);
           float n = noise(surfaceUV * frequency + float(i) * 17.3) - .5;
@@ -138,26 +138,26 @@ export function createAboutTerrainMaterial() {
         vec3 r1 = cross(dy, n), r2 = cross(n, dx);
         float det = dot(dx, r1);
         vec3 gradient = sign(det) * (dFdx(relief) * r1 + dFdy(relief) * r2);
-        n = normalize(max(abs(det), .0000001) * n - gradient);
+        n = normalize(max(abs(det), .0000001) * n - gradient * .65);
         vec3 lightDir = normalize(vec3(-.5, 12., 2.) - vWorldPos);
         vec3 eye = normalize(cameraPosition - vWorldPos);
         float diffuse = max(0., dot(n, lightDir));
         float specular = pow(max(0., dot(n, normalize(lightDir + eye))), 24.);
         float slope = clamp(vNormalW.y, 0., 1.);
-        float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 96.);
+        float pool = exp(-dot(p - vec2(0., 2.8), p - vec2(0., 2.8)) / 145.);
         float fractured = 1. - abs(noise(surfaceUV * 1.8) * 2. - 1.);
         float fractures = pow(fractured, 2.) * .55 + noise(surfaceUV * 6.3) * .3 + noise(p * 16.) * .15;
         // Fine mineral variation must not paint large black cavities onto
         // otherwise smooth rock. Actual mesh normals carry the broad shading.
         float crevice = mix(.96, clamp(.88 + (fractures - .5) * .18 + grain * 2.5, .72, 1.05), smoothstep(4., 8., abs(p.x)));
-        float flankExposure = mix(1., p.x < 0. ? 1.25 : .88, smoothstep(4., 8., abs(p.x)));
+        float flankExposure = mix(1., p.x < 0. ? 1.22 : .78, smoothstep(4., 8., abs(p.x)));
         vec3 rock = vec3(.004, .005, .006) + vec3(.044, .05, .054) * diffuse * crevice * flankExposure;
         // Linear-space pale regolith target; after ACES + sRGB output this is
         // tuned toward the measured 201/208/210 centre-floor sample.
-        vec3 sand = vec3(.53, .56, .57) * (.48 + diffuse * .52) * crevice;
+        vec3 sand = vec3(.32, .35, .36) * (.48 + diffuse * .52) * crevice;
         // Pale regolith belongs to the low, shallow floor, not every slope
         // inside the light pool. This keeps the flanks dark and dimensional.
-        float sandCoverage = pool * smoothstep(.55, .94, slope) * (1. - smoothstep(-.2, 2., vWorldPos.y));
+        float sandCoverage = pool * smoothstep(.85, .99, slope) * (1. - smoothstep(-1.25, .25, vWorldPos.y));
         vec3 color = mix(rock, sand, sandCoverage * uValleyBrightness);
         color += vec3(.045, .055, .06) * specular * (.12 + pool * .88);
         // Low reflected shaft light continues down the floor; it must not end
@@ -172,7 +172,7 @@ export function createAboutTerrainMaterial() {
         color *= mix(pow(pool, 2.) * .7, 1., uValleyBrightness);
         // Fade the distant sides, not the near foreground floor: a circular
         // world-space mask made the pullback look like a floating little island.
-        float farFade = 1. - smoothstep(23., 45., length(vec2(p.x, p.y * .52)));
+        float farFade = 1. - smoothstep(58., 96., length(vec2(p.x, p.y * .52)));
         gl_FragColor = vec4(color, uOpacity * farFade);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -202,7 +202,7 @@ export function createAboutGroundClasts(count: number) {
     const y = terrainHeightAt(x, z);
     // Keep steep cliffs and the astronaut's immediate footprint free of gravel.
     if (y > .3 || Math.hypot(x + .35, z + 1.8) < .85) continue;
-    const size = .018 + Math.pow(random(), 3) * .11;
+    const size = .018 + Math.pow(random(), 3) * .055;
     const aspect = .35 + random() * .35;
     stones.push({ x, y: y + size * aspect * .45, z, size, aspect, angle: random() * Math.PI * 2 });
   }

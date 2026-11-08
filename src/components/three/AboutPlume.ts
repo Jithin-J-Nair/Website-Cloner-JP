@@ -7,22 +7,22 @@ const flow = `
 vec3 plume(vec4 seed) {
   // A continuous, multi-strand spiral volume: vertically suspended at the opening,
   // with restrained lateral folding as the camera pulls back over the valley.
-  float h = (seed.z / 3.14159265 - .5) * mix(5.15, 5.65, uCompact);
+  float h = (seed.z / 3.14159265 - .5) * mix(3.6, 5.2, uCompact);
   // Uniform angle + a height offset is still statistically a uniform cylinder.
   // Two angular strata concentrate seeds into broad, twisting silver folds.
   // Each seed remains on a continuous trajectory; no respawn or CPU simulation.
   float strand = floor(seed.y / 3.14159265);
   float across = fract(seed.y / 3.14159265) - .5;
-  float phase = h * 1.62 + strand * 3.14159265 + across * 1.4
+  float phase = h * 1.04 + strand * 3.14159265 + across * 2.15
     + uTime * (.55 + .06 * sin(seed.w * 6.28));
-  float envelope = .72 + .52 * cos(h * 1.12 + .35) + .18 * sin(h * 2.4 - uTime * .7);
+  float envelope = .96 + .32 * cos(h * 1.12 + .35) + .20 * sin(h * 2.4 - uTime * .7);
   float radius = mix(.35, 1., pow(seed.x, .45)) * max(.22, envelope);
   // A small interior population fills the folds without washing out their form.
-  float interior = 1. - smoothstep(.28, .45, seed.w);
+  float interior = 1. - smoothstep(.36, .54, seed.w);
   phase = mix(phase, seed.y + uTime * .1, interior);
   radius = mix(radius, pow(seed.x, 1.4) * max(.22, envelope), interior);
   float arm = sin(phase * 2.0 + h * .55 + uTime * .12);
-  float x = cos(phase) * radius * 1.42 + sin(phase * .47 + h) * .34 + arm * .16;
+  float x = cos(phase) * radius * 1.62 + sin(phase * .47 + h) * .34 + arm * .16;
   float z = sin(phase) * radius * 1.12 + cos(phase * .62 - h) * .28;
   float turbulence = sin(phase * 3. + h * 2.1 + uTime * .32) * .12;
   vec3 p = vec3(x, h + turbulence, z);
@@ -42,11 +42,12 @@ vec3 plume(vec4 seed) {
   p += vec3(cos(seed.y * 1.3) * 3.0, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.4) * fringe;
   // Keep the opening cloud centered and vertical like the recording; the valley
   // pullback restores a little width without turning the plume into a horizontal ribbon.
-  p.x *= mix(1.05, 1.60, uCompact);
-  p.z *= mix(1.05, 1.28, uCompact);
+  p.x += cos(h * 2.8) * .22;
+  p.x *= mix(1.5, 1.05, uCompact);
+  p.z *= mix(1.05, 1.12, uCompact);
   p.y *= mix(.92, 1.08, uCompact);
-  p.z = min(p.z, 4.);
-  p += vec3(-.35, 8.4, 0.);
+  p.z = min(p.z, 2.6);
+  p += vec3(-.35, mix(10.1, 8.4, uCompact), 0.);
   vec3 away = p - uPointer;
   float distanceToPointer = length(away);
   p += away / max(.01, distanceToPointer) * pow(max(0., 1. - distanceToPointer / 2.4), 2.) * uPointerStrength * .62;
@@ -117,7 +118,7 @@ void main() {
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + normalize(vEye)))), 26.);
   float fresnel = pow(1. - max(0., dot(n, normalize(vEye))), 3.);
-  vec3 color = vec3(.07, .08, .09) + vec3(.40, .43, .45) * diffuse + specular * 1.05 + fresnel * .13;
+  vec3 color = vec3(.07, .08, .09) + vec3(.40, .43, .45) * diffuse + specular * 1.45 + fresnel * .13;
   color = mix(color, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   // Near/far grains share directional light but not identical exposure: the
   // back of the suspended volume is occluded, not a flat sheet of white beads.
@@ -131,7 +132,7 @@ void main() {
   const mesh = new THREE.Mesh(geometry, material); mesh.frustumCulled = false; group.add(mesh);
   const dustGeometry = new THREE.BufferGeometry();
   // Fine grains supply density cheaply; population is fixed at mount, not per-frame.
-  const dustCount = count * 4;
+  const dustCount = count * 6;
   const dustSeeds = new Float32Array(dustCount * 4);
   for (let i = 0; i < dustCount; i++) {
     dustSeeds.set([random(), random() * Math.PI * 2, Math.acos(2 * random() - 1), random()], i * 4);
@@ -151,8 +152,10 @@ void main() {
   float defocus = abs(-eye.z - uFocusDistance);
   vBlur = smoothstep(1.6, 5., defocus) * (.3 + .7 * pow(aSeed.w, 8.));
   float perspective = clamp(7.5 / max(1., -eye.z), .06, 2.);
-  gl_PointSize = clamp((1.9 + aSeed.x * 2.4 + vBlur * 18.) * perspective * uPixelRatio, 1., 32.);
-  vFade = uOpacity * mix(.65, .23, vBlur);
+  float diameter = mix(2.8 + aSeed.x * 4.2, 2.5 + aSeed.x * 2.2, uCompact) * perspective * uPixelRatio + vBlur * 12.;
+  gl_PointSize = clamp(diameter, 1., 32.);
+  // Preserve projected coverage when hardware clamps a subpixel grain to 1px.
+  vFade = uOpacity * mix(.72, .23, vBlur) * mix(min(1., diameter * diameter), max(.5, min(1., diameter * diameter)), uCompact);
   vSeed = aSeed.w;
   vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));
   gl_Position = projectionMatrix * eye;
@@ -168,10 +171,10 @@ void main() {
   vec3 light = normalize(vec3(-.3, .8, .7));
   float diffuse = max(0., dot(n, light));
   float specular = pow(max(0., dot(n, normalize(light + vec3(0., 0., 1.)))), 20.);
-  vec3 silver = vec3(.065, .075, .08) + vec3(.42, .46, .48) * diffuse + specular * 1.05;
+  vec3 silver = vec3(.065, .075, .08) + vec3(.42, .46, .48) * diffuse + specular * 1.45;
   silver = mix(silver, vec3(.001, 1.8, 2.4) * (diffuse + .6) + specular * .2, clamp(uCyanBoost * vCore * 1.6, 0., 1.));
   float edge = 1. - smoothstep(mix(.62, .05, vBlur), 1., r2);
-  gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed) * mix(.85, 1.6, uCompact), edge * vFade);
+  gl_FragColor = vec4(silver * mix(.8, 1.2, vSeed) * mix(.85, 2.4, uCompact), edge * vFade);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`,

@@ -58,7 +58,17 @@ export function upgradeAboutExplorer(parent: THREE.Group, invalidate: () => void
       suit.traverse(object => {
         if ((object as THREE.Bone).isBone && standing[object.name]) object.rotation.set(...standing[object.name]);
         const mesh = object as THREE.Mesh;
-        if (mesh.isMesh) mesh.frustumCulled = false;
+        if (mesh.isMesh) {
+          mesh.frustumCulled = false;
+          // Keep the licensed suit's texture and visor; reduce the white fabric
+          // albedo so the existing key light can reveal seams and shaded limbs.
+          for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              material.color.multiplyScalar(.68);
+              material.roughness = Math.max(.72, material.roughness);
+            }
+          }
+        }
       });
       suit.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(suit, true);

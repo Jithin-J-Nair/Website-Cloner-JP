@@ -208,16 +208,16 @@ function AboutWhoExperience({
     const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);
 
     // Moody monochrome lunar lighting matching 'about-01' & 'about-02'
-    const ambient = new THREE.AmbientLight(0xd4d9dd, .85);
+    const ambient = new THREE.AmbientLight(0xd4d9dd, .58);
     scene.add(ambient);
 
-    const overheadBeamLight = new THREE.SpotLight(0xf1f5f9, 48, 52, Math.PI * 0.22, 0.85, 1.3);
+    const overheadBeamLight = new THREE.SpotLight(0xf1f5f9, 36, 52, Math.PI * 0.22, 0.85, 1.3);
     overheadBeamLight.position.set(0, 24, 1.5);
     overheadBeamLight.target.position.set(0, 0, 2.5);
     scene.add(overheadBeamLight);
     scene.add(overheadBeamLight.target);
 
-    const coolRimLight = new THREE.DirectionalLight(0xe5edf1, 2.5);
+    const coolRimLight = new THREE.DirectionalLight(0xe5edf1, 1.8);
     coolRimLight.position.set(-8, 14, 10);
     scene.add(coolRimLight);
 
@@ -260,7 +260,7 @@ function AboutWhoExperience({
           void main() {
             // A finite overhead emitter and widening cone, not a laser joining
             // the cloud to the ground. Its top naturally enters the wide shot.
-            float x = (vUv.x - .5) * 38.;
+            float x = (vUv.x - .5) * 144.;
             float y = vUv.y * 56. - 2.5;
             // Opening needs only a compact cloud veil. Avoid evaluating every
             // shaft/emitter Gaussian over the entire screen while their weight
@@ -274,21 +274,21 @@ function AboutWhoExperience({
               #include <colorspace_fragment>
               return;
             }
-            float coneWidth = mix(3., .30, smoothstep(8., 23.2, y));
+            float coneWidth = mix(3., .30, smoothstep(8., 35.2, y));
             float beam = exp(-pow(x / coneWidth, 2.)) * smoothstep(6., 10., y)
-              * (1. - smoothstep(23.3, 24.4, y));
-            float emitter = exp(-pow(x / .42, 2.) - pow((y - 23.2) / .42, 2.));
-            float halo = exp(-pow(x / mix(1.6, 3.6, uWide), 2.)
-              - pow((y - 23.2) / mix(2.6, 6.8, uWide), 2.));
+              * (1. - smoothstep(35.3, 36.4, y));
+            float emitter = exp(-pow(x / .42, 2.) - pow((y - 35.2) / .42, 2.));
+            float halo = exp(-pow(x / mix(.9, 1.8, uWide), 2.)
+              - pow((y - 35.2) / mix(2.6, 4.8, uWide), 2.));
             float cloudHaze = exp(-pow(x / 3., 2.) - pow((y - 8.4) / 3., 2.));
-            float wideHaze = exp(-pow(x / 9., 2.)) * mix(.014, .035, uWide);
+            float wideHaze = exp(-pow(x / 18., 2.)) * mix(.008, .012, uWide);
             float beamVeil = exp(-pow(x / (coneWidth * 2.4), 2.))
-              * smoothstep(4., 11., y) * (1. - smoothstep(23.3, 25., y));
-            float atmosphere = exp(-pow(x / 7., 2.) - pow((y - 19.) / 11., 2.));
+              * smoothstep(4., 11., y) * (1. - smoothstep(35.3, 37., y));
+            float atmosphere = exp(-pow(x / 22., 2.) - pow((y - 19.) / 20., 2.));
             float vertFade = smoothstep(-2.5, 0., y) * (1. - smoothstep(42., 53.5, y));
             vec3 col = mix(vec3(.74, .82, .85), vec3(.1, .95, 1.), uCyanCore)
-              * ((beam * .22 + beamVeil * .075 + emitter * 4. + halo * .30
-                + atmosphere * .055 * uWide + wideHaze) * (1. - uOpening)
+              * ((beam * .12 + beamVeil * .025 + emitter * 3. + halo * .12
+                + atmosphere * .075 * uWide + wideHaze) * (1. - uOpening)
                 + cloudHaze * mix(.15, .09, 1. - uOpening));
             gl_FragColor = vec4(col, uOpacity * vertFade);
             #include <tonemapping_fragment>
@@ -297,7 +297,7 @@ function AboutWhoExperience({
         `,
       })
     );
-    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(38.0, 56.0)), godRayMat);
+    const godRayPlane = new THREE.Mesh(track(new THREE.PlaneGeometry(144.0, 56.0)), godRayMat);
     godRayPlane.position.set(-.35, 25.5, -2.5);
     godRayPlane.renderOrder = -1;
     scene.add(godRayPlane);
@@ -305,8 +305,8 @@ function AboutWhoExperience({
     // -------------------------------------------------------------------------
     // 2. Sculpted 3D Crater Basin & Mountain Ridge Terrain ('about-02', 'about-03', 'about-04')
     // -------------------------------------------------------------------------
-    const GRID = software || tier === "low" ? 136 : window.innerWidth < 820 ? 224 : 320;
-    const SPAN = 96;
+    const GRID = software || tier === "low" ? 176 : window.innerWidth < 820 ? 224 : 320;
+    const SPAN = 144;
     const terrainGeo = track(new THREE.PlaneGeometry(SPAN, SPAN, GRID, GRID));
     terrainGeo.rotateX(-Math.PI * 0.5);
     const tPos = terrainGeo.attributes.position as THREE.BufferAttribute;
@@ -315,7 +315,7 @@ function AboutWhoExperience({
     // expands for the distant shot. Height/contact/contours still share one field.
     const warp = (v: number) => {
       const t = v / (SPAN * .5);
-      return t * 24 + Math.pow(t, 5) * 24;
+      return t * 36 + Math.pow(t, 5) * 36;
     };
     for (let i = 0; i < tPos.count; i++) {
       const x = warp(tPos.getX(i)), z = warp(tPos.getZ(i));
@@ -466,7 +466,7 @@ function AboutWhoExperience({
       const rad = floating ? 1.6 + ((i * 29) % 100) / 100 * 9.5 : 1.2 + ((i * 37) % 100) / 100 * 8.5;
       const rx = floating ? Math.cos(ang) * rad : Math.sin(i * 7.31) * (2 + ((i * 37) % 100) * .095);
       const rz = floating ? 3.5 + Math.sin(ang) * rad * .72 : -11 + ((i * 43) % 100) * .39;
-      const scale = floating ? .38 + ((i * 19) % 10) * .078 : .06 + Math.pow(((i * 17) % 100) / 100, 4) * .58;
+      const scale = floating ? .20 + ((i * 19) % 10) * .045 : .04 + Math.pow(((i * 17) % 100) / 100, 4) * .32;
       // Half-embed small clasts instead of lifting every size eight centimetres
       // above the floor. Concentrate the same population on the visible basin.
       const ry = floating
@@ -499,7 +499,7 @@ function AboutWhoExperience({
     const sediment = createAboutGroundClasts(software ? 1100 : window.innerWidth < 820 ? 1600 : 3200);
     const sedimentGeo = track(new THREE.IcosahedronGeometry(1, 0));
     const sedimentMaterial = track(rockMat.clone());
-    const groundFlow = attachAboutGroundFlow(sedimentGeo, sedimentMaterial, sediment);
+    const groundFlow = attachAboutGroundFlow(sedimentGeo, sedimentMaterial, sediment, Math.floor(sediment.length * .7));
     const rockFlow = attachAboutGroundFlow(rockGeo, rockMat, rockSeeds.map(seed => ({
       x: seed.x, y: seed.y, z: seed.z, size: seed.scale * .24, aspect: .3, angle: seed.phase,
     })), FLOATING_ROCK_COUNT);
@@ -632,12 +632,13 @@ function AboutWhoExperience({
       // 1. Sphere storm uniforms
       const stormVis = 1 - smoothstep(3.35, 4.45, u);
       sphereStorm.visible = stormVis > 0.01;
+      sphereStorm.position.y = isMobile ? 0 : smoothstep(1.7, 3.15, u) * 2;
       if (sphereStorm.visible) {
         stormMat.uniforms.uTime.value = reducedMotion ? 0.5 : elapsedSec;
         stormMat.uniforms.uCompact.value = tPullback;
         // Focus follows the existing camera, rather than leaving distant grains
         // defocused and oversized as if the opening shot were still active.
-        stormMat.uniforms.uFocusDistance.value = Math.hypot(camX + .35, camY - 8.4, camZ);
+        stormMat.uniforms.uFocusDistance.value = Math.hypot(camX + .35, camY - 8.4 - sphereStorm.position.y, camZ);
         stormMat.uniforms.uMobile.value = isMobile ? 1.0 : 0.0;
         stormMat.uniforms.uPointer.value.copy(pointerWorld);
         stormMat.uniforms.uPointerStrength.value = pointerActive;
@@ -647,7 +648,7 @@ function AboutWhoExperience({
 
       // 2. Vertical volumetric God-Ray column & Valley Terrain & Explorer & Floating Rocks ('about-02')
       const landscapeVis = smoothstep(0.30, 1.05, u);
-      const darkHudFade = 1 - smoothstep(3.45, 4.55, u);
+      const darkHudFade = 1 - smoothstep(3.65, 5.65, u);
       const atmosphereVis = Math.max(landscapeVis, (1 - landscapeVis) * .34) * stormVis;
       godRayPlane.visible = atmosphereVis > 0.01;
       godRayMat.uniforms.uOpacity.value = atmosphereVis * 0.85;
@@ -662,7 +663,7 @@ function AboutWhoExperience({
       // on the later pullback cue.
       const terrainReveal = lerp(.04, 1, smoothstep(.12, .92, u));
       // Team mode returns to black to preserve portrait contrast.
-      const narrativeGround = (1 - tTeamPhase) * .22;
+      const narrativeGround = (1 - tTeamPhase) * .45;
       const terrainVis = terrainReveal * Math.max(darkHudFade, narrativeGround);
       // Do not shade a full terrain pass at four-percent opacity behind the
       // opening lettering. It enters with the existing pullback reveal.
@@ -734,8 +735,8 @@ function AboutWhoExperience({
         teamCursorRef.current.style.opacity = hasPointer && !pointerOverControl && !reducedMotion && !isMobile ? String(tTeamPhase) : "0";
         const x = (pointerNDC.x + 1) * window.innerWidth * .5;
         const y = (1 - pointerNDC.y) * window.innerHeight * .5;
-        const scale = .8 + Math.min(.6, pointerActive * .5);
-        teamCursorRef.current.style.transform = `translate3d(${x - 52}px,${y - 52}px,0) scale(${scale})`;
+        const scale = 1;
+        teamCursorRef.current.style.transform = `translate3d(${x}px,${y}px,0) translate(-50%,-50%) scale(${scale})`;
       }
       if (heroWordmarkRef.current) {
         const wordOut = lettering.opening;
@@ -1035,7 +1036,7 @@ function AboutWhoExperience({
               fill="#ffffff"
               fontFamily="LusionSansCalibrated, system-ui, sans-serif"
               fontSize="390"
-              fontWeight="450"
+              fontWeight="550"
             >
               LUSION
             </text>
@@ -1098,7 +1099,7 @@ function AboutWhoExperience({
             aria-label="A worldwide team of specialists in design, motion, 3D, and technology"
             className="font-sans text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.12] tracking-[-0.02em] text-white"
           >
-            {narrativeWords(["A", "worldwide", "team", "of"], 0, 3)}<br />
+            {narrativeWords(["A", "worldwide", "team", "of"], 0, 4)}<br />
             {narrativeWords(["specialists", "in", "design,"], 4)}<br />
             {narrativeWords(["motion,", "3D,", "and", "technology"], 7)}
           </p>
@@ -1124,7 +1125,7 @@ function AboutWhoExperience({
           data-reduced={reducedMotion}
           className="about-who-team-overlay absolute inset-0 z-30 flex flex-col justify-between px-[var(--base-padding-x)] pb-8"
         >
-          <div ref={teamCursorRef} className="about-team-cursor" aria-hidden="true">↗</div>
+          <div ref={teamCursorRef} className="about-team-cursor" aria-hidden="true">→</div>
           {/* Top Index Bar + Mobile Full-Width `T E A M` / Desktop Right-Aligned `T E A M` */}
           <div>
             {/* Mobile full-width spaced `T E A M` above index row (`390x844/about-04`) */}
@@ -1149,9 +1150,9 @@ function AboutWhoExperience({
               {/* Precision tick ruler (`1440x900/about-04`) */}
               <span
                 aria-hidden="true"
-                className="hidden font-mono text-[10px] tracking-[0.42em] text-white/75 min-[820px]:inline-block"
+                data-team-ruler="true" className="hidden font-mono text-[10px] tracking-[0.42em] text-white/75 min-[820px]:inline-block"
               >
-                |····|····|
+                |····|····|····|····|
               </span>
 
               {/* Interactive `2x7` / Dot-Matrix Specialist Selector + Desktop `T E A M` Title */}
@@ -1429,7 +1430,7 @@ export function AboutPageView() {
   };
 
   return (
-    <main id="about" data-scene-version="about-source-team-v5" className="relative overflow-x-clip bg-[#0d0c0f] text-white">
+    <main id="about" data-scene-version="about-video-reconstruction-v6" data-build-commit={process.env.NEXT_PUBLIC_BUILD_SHA ?? "development"} className="relative overflow-x-clip bg-[#0d0c0f] text-white">
       {/* Dark Studio Upper Monolith (`#about-who` + `#about-clients` + `#about-award`) */}
       <AboutPageStyles />
       <div ref={darkUpperRef} className="bg-[#0d0c0f] text-white">
@@ -1451,12 +1452,12 @@ export function AboutPageView() {
           className="border-t border-white/10 bg-[#0d0c0f] px-[var(--base-padding-x)] py-24 text-white min-[813px]:py-32"
         >
           <div className="grid grid-cols-6 gap-x-[var(--grid-gap)] min-[813px]:grid-cols-12">
-            <div className="col-span-6 min-[813px]:col-span-5">
+            <div className="col-span-6 min-[813px]:col-span-7">
               <h2 className="font-sans text-[10vw] leading-[0.98] font-normal tracking-[-0.025em] text-white min-[813px]:text-[3.6vw]">
                 {LUSION_ABOUT.clients.heading}
               </h2>
             </div>
-            <div className="col-span-6 mt-5 flex items-center min-[813px]:col-start-8 min-[813px]:col-span-5 min-[813px]:mt-0">
+            <div className="col-span-6 mt-5 flex items-center min-[813px]:col-start-9 min-[813px]:col-span-4 min-[813px]:mt-0">
               <p className="max-w-md font-sans text-xs leading-relaxed tracking-[0.05em] text-white/80 uppercase md:text-[13px]">
                 {LUSION_ABOUT.clients.description}
               </p>
@@ -1475,11 +1476,11 @@ export function AboutPageView() {
                 aria-label={`Client brands row ${rowIdx + 1}`}
               >
                 <div className="about-client-marquee-track">
-                  {[0, 1].map(copy => (
+                  {[0, 1, 2].map(copy => (
                     <div
                       key={copy}
                       className="about-client-marquee-set"
-                      aria-hidden={copy === 1 ? true : undefined}
+                      aria-hidden={copy > 0 ? true : undefined}
                     >
                       {row.map((client, cIdx) => (
                         <ClientLogoTile

@@ -35,5 +35,7 @@ assert.match(styles, /#about \.about-source-award-group/);
 assert.match(styles, /#about \.about-source-articles/);
 assert.match(styles, /#about \.about-source-talks/);
 assert.match(styles, /prefers-reduced-motion:\s*reduce/, "the About route supplies a reduced-motion override for foil animation");
-assert.match(styles, /about-foil-shimmer/, "the recognition foil keeps its named shimmer animation");
+assert.match(styles, /mask-image: radial-gradient\(ellipse 5vw 4vw/, "foil is a compact pointer-local highlight");
+assert.match(styles, /-webkit-text-stroke: 1.5px #d9ecff/, "glint follows the outline rather than filling a broad letter band");
+assert.match(styles, /drop-shadow/, "outline retains its prismatic color separation");
 console.log("PASS About recognition: 58 awards reconcile, 3 secure article links and 5 talks; split component, keyboard region, responsive scoped styles and reduced-motion foil support.");

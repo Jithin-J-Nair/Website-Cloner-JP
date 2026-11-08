@@ -35,7 +35,7 @@ try {
   assert.match(a.fragmentShader, /dFdx\(relief\)/);
   assert.match(a.fragmentShader, /#include <tonemapping_fragment>/);
   assert.match(a.fragmentShader, /#include <colorspace_fragment>/);
-  assert.match(source, /vec3 sand = vec3\(\.53, \.56, \.57\)/, 'pale regolith uses the measured high-luminance linear target');
+  assert.match(source, /vec3 sand = vec3\(\.32, \.35, \.36\)/, 'regolith keeps a grey base under a localized light pool');
   assert.match(source, /p\.x < 0\. \? 1\.22 : \.78/, 'left and right flanks retain the measured light/dark split');
   const about = fs.readFileSync('src/components/pages/AboutPageView.tsx', 'utf8');
   assert.match(about, /terrainHeightAt\(-\.35, -1\.8\)/, 'procedural explorer feet use the shared terrain sampler');

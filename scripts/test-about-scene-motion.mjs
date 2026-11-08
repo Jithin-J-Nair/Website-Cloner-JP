@@ -30,9 +30,9 @@ assert.match(aboutView, /createAboutWordmarkSweep\(\)/, 'About constructs one sh
 assert.match(aboutView, /wordmarkSweep\.uniforms\.uPhase\.value = sweep\.deformation/, 'scroll playhead controls the wordmark shader deformation');
 assert.match(aboutView, /wordmarkSweep\.uniforms\.uOpacity\.value = sweep\.opacity/, 'wordmark visibility follows the same scroll playhead');
 assert.match(wordmarkSweep, /geometry = new THREE\.PlaneGeometry\(2, 2, 160, 12\)/, 'wordmark uses a single subdivided surface instead of independently rotating letters');
-assert.match(wordmarkSweep, /float fold=\.28\*smoothstep\(\.05,\.90,uPhase\)/, 'wordmark deformation remains deliberately restrained');
-assert.match(wordmarkSweep, /pow\(x,mix\(1\.,1\.08,fold\)\)/, 'letter spacing remains close to the original wordmark proportions');
-assert.match(wordmarkSweep, /p\.x\+=\(uv\.y-\.5\)\*\.22\*pow\(curve,4\.\)\*fold/, 'wordmark keeps a subtle continuous surface bend');
+assert.match(wordmarkSweep, /float local=smoothstep\(x\*\.66,x\*\.66\+\.34,fold\)/, 'a continuous fold travels from left to right');
+assert.match(wordmarkSweep, /vertical\*cos\(angle\)/, 'fold projects the shared surface edge-on instead of uniformly skewing every glyph');
+assert.match(wordmarkSweep, /sin\(angle\)\*vertical\*\.46/, 'the curl has continuous lateral displacement');
 fs.mkdirSync('temp',{recursive:true});
 const dir=fs.mkdtempSync(path.resolve('temp/about-camera-'));
 try {
@@ -95,6 +95,7 @@ try {
   for (const {u, pose:p} of samples.reverse()) assert.deepEqual(lettering(u, mobile), p, 'lettering reverses and fast seeks without state');
   for (const u of [-1, NaN, Infinity]) assert.deepEqual(lettering(u, mobile), lettering(0, mobile));
   const basin = lettering(mobile ? 2.45 : 1.6, mobile), narrative = lettering(5.35, mobile);
+  assert.ok(lettering(mobile ? 2.3 : 1.15, mobile).manifesto > 0 && sweep(mobile ? 2.3 : 1.15, mobile).opacity > 0, 'manifesto is visible behind the travelling wordmark');
   assert.equal(basin.opening, 0); assert.equal(basin.manifesto, 1); assert.equal(basin.narrative, 0);
   assert.equal(narrative.opening, 0); assert.equal(narrative.manifesto, 0); assert.equal(narrative.narrative, 1);
  }

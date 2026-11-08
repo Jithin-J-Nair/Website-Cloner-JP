@@ -1,50 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="628" height="876" viewBox="0 0 628 876" fill="none">
-  <title>Original abstract linework card texture</title>
-  <defs>
-    <pattern id="micro-grid" width="28" height="28" patternUnits="userSpaceOnUse">
-      <circle cx="3" cy="4" r="0.8" fill="#fff" fill-opacity=".28"/>
-      <circle cx="18" cy="19" r="0.55" fill="#fff" fill-opacity=".2"/>
-      <path d="M0 27.5H28M27.5 0V28" stroke="#fff" stroke-opacity=".075" stroke-width=".5"/>
-    </pattern>
-    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff" stop-opacity=".12"/>
-      <stop offset=".48" stop-color="#fff" stop-opacity=".56"/>
-      <stop offset="1" stop-color="#fff" stop-opacity=".16"/>
-    </linearGradient>
-    <clipPath id="card-clip"><rect width="628" height="876" rx="2"/></clipPath>
-  </defs>
-  <g clip-path="url(#card-clip)">
-    <rect width="628" height="876" fill="url(#micro-grid)"/>
-    <g stroke="#fff" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" opacity=".52">
-      <path d="M-72 112C18 14 91 28 142 110S226 246 302 160 420 14 493 78 594 206 704 96"/>
-      <path d="M-76 148C17 50 94 63 150 145S235 281 310 195 426 50 500 114 601 241 704 132"/>
-      <path d="M-80 184C13 86 98 98 158 180S242 316 318 230 433 86 507 150 608 277 706 168"/>
-      <path d="M-78 220C15 122 101 134 165 216S250 352 326 266 440 122 514 186 614 313 706 204"/>
-      <path d="M-66 556C22 464 108 472 166 548S252 678 332 600 446 466 518 526 612 646 700 548"/>
-      <path d="M-70 592C18 500 104 508 172 584S258 714 338 636 452 502 524 562 618 682 704 584"/>
-      <path d="M-74 628C14 536 100 544 178 620S264 750 344 672 458 538 530 598 624 718 708 620"/>
-      <path d="M-78 664C10 572 96 580 184 656S270 786 350 708 464 574 536 634 630 754 712 656"/>
-    </g>
-    <g stroke="#fff" stroke-width=".72" stroke-linecap="round" opacity=".32">
-      <path d="M54 -40C164 80 122 190 246 280S414 365 354 470 244 615 342 740 490 835 594 930"/>
-      <path d="M88 -40C198 80 156 190 280 280S448 365 388 470 278 615 376 740 524 835 628 930"/>
-      <path d="M122 -40C232 80 190 190 314 280S482 365 422 470 312 615 410 740 558 835 662 930"/>
-      <path d="M-40 356C80 300 168 340 240 394S374 494 480 438 594 380 680 420"/>
-      <path d="M-42 388C78 332 166 372 238 426S372 526 478 470 592 412 678 452"/>
-      <path d="M-44 420C76 364 164 404 236 458S370 558 476 502 590 444 676 484"/>
-    </g>
-    <g fill="none" stroke="url(#fade)" stroke-width="2">
-      <path d="M-40 300C86 228 176 250 254 318S396 414 500 338 604 264 680 302"/>
-      <path d="M-40 720C86 648 176 670 254 738S396 834 500 758 604 684 680 722"/>
-    </g>
-    <g fill="#fff" opacity=".46">
-      <circle cx="92" cy="302" r="2.2"/><circle cx="116" cy="316" r="1.1"/><circle cx="144" cy="334" r="1.6"/>
-      <circle cx="492" cy="270" r="1.7"/><circle cx="520" cy="288" r="1.1"/><circle cx="548" cy="304" r="2"/>
-      <circle cx="72" cy="748" r="1.5"/><circle cx="104" cy="766" r="1"/><circle cx="138" cy="782" r="1.8"/>
-      <circle cx="478" cy="710" r="1.8"/><circle cx="510" cy="728" r="1.1"/><circle cx="542" cy="744" r="1.6"/>
-    </g>
-    <g stroke="#fff" stroke-width="1.4" opacity=".38">
-      <path d="M314 18v30m-15-15h30M34 444v22m-11-11h22M574 474v28m-14-14h28M292 832v26m-13-13h26"/>
-    </g>
-  </g>
+<title>Symmetric studio playing-card engraving</title>
+<g stroke="white" stroke-width="2.2" stroke-linejoin="round">
+<rect x="14" y="14" width="600" height="848" rx="22" stroke-width="5"/>
+<rect x="34" y="34" width="560" height="808" rx="10"/>
+<path d="M48 138Q138 138 138 48M58 172Q172 172 172 58M48 48H172L48 172ZM76 48V172M48 76H172"/>
+  <circle cx="48" cy="48" r="8"/><path d="M192 54V128M184 66H200M184 108H200"/>
+  <circle cx="192" cy="86" r="12"/><g transform="translate(628 0) scale(-1 1)"><path d="M48 138Q138 138 138 48M58 172Q172 172 172 58M48 48H172L48 172ZM76 48V172M48 76H172"/>
+  <circle cx="48" cy="48" r="8"/><path d="M192 54V128M184 66H200M184 108H200"/>
+  <circle cx="192" cy="86" r="12"/></g>
+<g transform="translate(0 876) scale(1 -1)"><path d="M48 138Q138 138 138 48M58 172Q172 172 172 58M48 48H172L48 172ZM76 48V172M48 76H172"/>
+  <circle cx="48" cy="48" r="8"/><path d="M192 54V128M184 66H200M184 108H200"/>
+  <circle cx="192" cy="86" r="12"/><g transform="translate(628 0) scale(-1 1)"><path d="M48 138Q138 138 138 48M58 172Q172 172 172 58M48 48H172L48 172ZM76 48V172M48 76H172"/>
+  <circle cx="48" cy="48" r="8"/><path d="M192 54V128M184 66H200M184 108H200"/>
+  <circle cx="192" cy="86" r="12"/></g></g>
+<path d="M104 188H524V350L470 410M104 188V350L158 410M104 188L280 366M524 188L348 366"/>
+  <g><path d="M100 128L100 242.5L257.8 368"/><path d="M113 128L113 237.95L254.94 368"/><path d="M126 128L126 233.4L252.08 368"/><path d="M139 128L139 228.85L249.22 368"/><path d="M152 128L152 224.3L246.36 368"/><path d="M165 128L165 219.75L243.5 368"/><path d="M178 128L178 215.2L240.64 368"/><path d="M191 128L191 210.65L237.78 368"/><path d="M204 128L204 206.1L234.92 368"/><path d="M217 128L217 201.55L232.06 368"/><path d="M230 128L230 197L229.2 368"/><path d="M243 128L243 192.45L226.34 368"/><path d="M256 128L256 187.9L223.48 368"/><g transform="translate(628 0) scale(-1 1)"><path d="M100 128L100 242.5L257.8 368"/><path d="M113 128L113 237.95L254.94 368"/><path d="M126 128L126 233.4L252.08 368"/><path d="M139 128L139 228.85L249.22 368"/><path d="M152 128L152 224.3L246.36 368"/><path d="M165 128L165 219.75L243.5 368"/><path d="M178 128L178 215.2L240.64 368"/><path d="M191 128L191 210.65L237.78 368"/><path d="M204 128L204 206.1L234.92 368"/><path d="M217 128L217 201.55L232.06 368"/><path d="M230 128L230 197L229.2 368"/><path d="M243 128L243 192.45L226.34 368"/><path d="M256 128L256 187.9L223.48 368"/></g></g>
+  <path d="M314 52V148M292 76A22 22 0 1 0 336 76A22 22 0 1 0 292 76M302 130A12 12 0 1 0 326 130A12 12 0 1 0 302 130"/>
+  <path d="M314 164C244 230 242 268 256 292M314 164C384 230 386 268 372 292"/>
+  <path d="M64 220V374L118 438L64 502V656M564 220V374L510 438L564 502V656"/>
+  <circle cx="64" cy="252" r="5"/><circle cx="64" cy="284" r="5"/>
+  <circle cx="564" cy="252" r="5"/><circle cx="564" cy="284" r="5"/><g transform="translate(0 876) scale(1 -1)"><path d="M104 188H524V350L470 410M104 188V350L158 410M104 188L280 366M524 188L348 366"/>
+  <g><path d="M100 128L100 242.5L257.8 368"/><path d="M113 128L113 237.95L254.94 368"/><path d="M126 128L126 233.4L252.08 368"/><path d="M139 128L139 228.85L249.22 368"/><path d="M152 128L152 224.3L246.36 368"/><path d="M165 128L165 219.75L243.5 368"/><path d="M178 128L178 215.2L240.64 368"/><path d="M191 128L191 210.65L237.78 368"/><path d="M204 128L204 206.1L234.92 368"/><path d="M217 128L217 201.55L232.06 368"/><path d="M230 128L230 197L229.2 368"/><path d="M243 128L243 192.45L226.34 368"/><path d="M256 128L256 187.9L223.48 368"/><g transform="translate(628 0) scale(-1 1)"><path d="M100 128L100 242.5L257.8 368"/><path d="M113 128L113 237.95L254.94 368"/><path d="M126 128L126 233.4L252.08 368"/><path d="M139 128L139 228.85L249.22 368"/><path d="M152 128L152 224.3L246.36 368"/><path d="M165 128L165 219.75L243.5 368"/><path d="M178 128L178 215.2L240.64 368"/><path d="M191 128L191 210.65L237.78 368"/><path d="M204 128L204 206.1L234.92 368"/><path d="M217 128L217 201.55L232.06 368"/><path d="M230 128L230 197L229.2 368"/><path d="M243 128L243 192.45L226.34 368"/><path d="M256 128L256 187.9L223.48 368"/></g></g>
+  <path d="M314 52V148M292 76A22 22 0 1 0 336 76A22 22 0 1 0 292 76M302 130A12 12 0 1 0 326 130A12 12 0 1 0 302 130"/>
+  <path d="M314 164C244 230 242 268 256 292M314 164C384 230 386 268 372 292"/>
+  <path d="M64 220V374L118 438L64 502V656M564 220V374L510 438L564 502V656"/>
+  <circle cx="64" cy="252" r="5"/><circle cx="64" cy="284" r="5"/>
+  <circle cx="564" cy="252" r="5"/><circle cx="564" cy="284" r="5"/></g>
+<path d="M314 300C334 300 342 318 358 330L420 394Q458 438 420 482L358 546Q314 584 270 546L208 482Q170 438 208 394L270 330C286 318 294 300 314 300Z" fill="#3733e8"/>
+<circle cx="314" cy="438" r="78"/><circle cx="314" cy="322" r="3" fill="white"/><circle cx="314" cy="554" r="3" fill="white"/>
+<circle cx="198" cy="438" r="3" fill="white"/><circle cx="430" cy="438" r="3" fill="white"/>
+</g><path fill="white" d="M285 399H306V454H285ZM310 458H352V477H310Z"/>
 </svg>

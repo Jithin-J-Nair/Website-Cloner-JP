@@ -33,7 +33,8 @@ export function createAboutContactWave(requestedCount = 3600) {
       varying float vShape,vAngle,vAlpha;
       void main(){
         vec4 eye=modelViewMatrix*vec4(position,1.);
-        gl_PointSize=(9.0+aSeed.w*2.5)*uPixelRatio*10./max(3.,-eye.z);
+        float elevation=smoothstep(-4.4,2.5,position.y);
+        gl_PointSize=mix(4.5+aSeed.w*3.,10.+aSeed.w*5.,elevation)*uPixelRatio*10./max(3.,-eye.z);
         vShape=mod(floor((aSeed.x+1.)*11.+aSeed.y*17.),4.);
         float speed=length(aFluidVelocity);
         vAngle=aSeed.w*6.283+atan(aFluidVelocity.y,aFluidVelocity.x+.00001)*smoothstep(.02,.4,speed)*.32;
