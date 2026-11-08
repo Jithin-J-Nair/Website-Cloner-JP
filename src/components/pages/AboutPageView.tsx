@@ -186,7 +186,7 @@ function AboutWhoExperience({
     const ctx = glRenderer.getContext(), debug = ctx.getExtension("WEBGL_debug_renderer_info");
     const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;
     const tier = useStudioStore.getState().qualityTier;
-    const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;
+    const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 7000 : 12000;
     glRenderer.setClearColor(0x000302, 1);
     glRenderer.outputColorSpace = THREE.SRGBColorSpace;
     glRenderer.toneMapping = THREE.ACESFilmicToneMapping;
