@@ -102,14 +102,15 @@ try {
     await page.keyboard.press('Tab');
     await page.locator('#end-section-title-link').focus();await page.waitForTimeout(800);
     assert.equal(await page.locator('.about-cta-arm').count(),0);
-    for(const line of await page.locator('.about-cta-line').all())assert.match(await line.evaluate(e=>getComputedStyle(e).backgroundImage),/linear-gradient/,'keyboard focus underlines both lines');
+    assert.equal(await page.locator('[data-cta-decoration]').count(),3);
+    for(const line of await page.locator('[data-cta-decoration]').all())assert.ok(await line.evaluate(e=>new DOMMatrixReadOnly(getComputedStyle(e).transform).m11>.99),'keyboard focus reveals the top underline and split lower underlines');
     assert.match(await page.locator('#end-section-title-link').getAttribute('href'),/^mailto:/);
     assert.equal(await page.locator('#end-bottom').getAttribute('href'),'#footer-section');
     await snap('cta');
     if(width>=820){
       await page.setViewportSize({width:1720,height:912});
       const pill=await page.locator('#end-bottom').evaluate(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}));
-      assert.ok(Math.abs(pill.width-286)<2&&Math.abs(pill.height-68)<1,'pill matches the recorded 1720px viewport footprint');
+      assert.ok(Math.abs(pill.width-284)<2&&Math.abs(pill.height-64)<1,'pill matches the recorded 1720px viewport footprint');
       await page.setViewportSize({width,height});
     }
     await page.emulateMedia({reducedMotion:'reduce'});

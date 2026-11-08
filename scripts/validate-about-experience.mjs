@@ -43,8 +43,10 @@ try{
     if(id==='end-section' && !baseline){
      await page.waitForFunction(()=>window.__ctaProbe?.().frames>0,null,{timeout:20000});
      const cta=await page.evaluate(()=>window.__ctaProbe());
-     assert.ok(width===390 ? cta.count===2600 : cta.count===3600 || cta.count===5600);
-     // Matches the integrated branch's CinematicContactField quality tiers and four shape families.
+     const columns=Math.ceil(20+60*Math.max(0,Math.min(1,(width-320)/2240)));
+     assert.equal(cta.count,Math.ceil(columns*Math.ceil(columns*height/width)/4)*4,'About uses the reference viewport-derived capacity');
+     // Four actual instanced geometric families, not the retired point sprites.
+
      assert.ok(cta.draws<=4,'CTA field must remain at four instanced shape-family draws');
      assert.ok(cta.triangles<=cta.count*24,'CTA geometry must remain within its triangle budget');
      if(width!==390){

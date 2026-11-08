@@ -1,83 +1,75 @@
 import * as THREE from "three";
-import { AboutGlyphFluid } from "./AboutGlyphFluid";
+import { AboutContactFluid } from "./AboutContactFluid";
 
-/** Actual pressure-projected particle/grid liquid, rendered as glyphs in one
- * Points draw. The renderer owns the active clock; no prescribed sine-wave
- * surface, ballistic recycling fan, independent RAF or production asset. */
-export function createAboutContactWave(requestedCount = 3600) {
-  const count = Math.max(120, Math.min(5600, Math.floor(Number.isFinite(requestedCount) ? requestedCount : 3600)));
-  const columns = Math.max(12, Math.round(Math.sqrt(count * 2.25)));
-  const rows = Math.ceil(count / columns);
-  const seed = new Float32Array(count * 4);
-  for (let i = 0; i < count; i++) {
-    const x = i % columns, y = Math.floor(i / columns);
-    seed.set([x / (columns - 1) * 2 - 1, y / Math.max(1, rows - 1),
-      Math.sin(i * 127.1) * .45, (Math.sin(i * 311.7) + 1) * .5], i * 4);
-  }
-  const geometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(count * 3), velocities = new Float32Array(count * 2);
-  const positionAttribute = new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage);
-  const velocityAttribute = new THREE.BufferAttribute(velocities, 2).setUsage(THREE.DynamicDrawUsage);
-  geometry.setAttribute("position", positionAttribute);
-  geometry.setAttribute("aFluidVelocity", velocityAttribute);
-  geometry.setAttribute("aSeed", new THREE.BufferAttribute(seed, 4));
+/** Reference-shaped, rotating geometric grains. Four instanced draws, not
+ * camera-facing point sprites with an elevation-dependent apparent size. */
+export function createAboutContactWave(requestedCount = 5600) {
+  const limit = Math.max(4, Math.min(5600, Math.floor(Number.isFinite(requestedCount) ? requestedCount : 5600)));
+  const fluid = new AboutContactFluid();
+  const group = new THREE.Group();
   const uniforms = {
     uTime: { value: 0 }, uProgress: { value: 0 }, uReduced: { value: 0 },
-    uViewport: { value: new THREE.Vector2(16, 9) }, uPointer: { value: new THREE.Vector3() },
-    uPixelRatio: { value: 1 },
+    uViewport: { value: new THREE.Vector2(1, 1) }, uPointer: { value: new THREE.Vector3(.5, .5, 0) },
+    uHeld: { value: 0 }, uPixelRatio: { value: 1 },
+    uTank: { value: new THREE.Vector2(2, 1) }, uRadius: { value: .006 },
   };
-  const material = new THREE.ShaderMaterial({
-    uniforms, transparent: true, depthWrite: false,
-    vertexShader: `attribute vec4 aSeed; attribute vec2 aFluidVelocity;
-      uniform float uPixelRatio;
-      varying float vShape,vAngle,vAlpha;
-      void main(){
-        vec4 eye=modelViewMatrix*vec4(position,1.);
-        float elevation=smoothstep(-4.4,2.5,position.y);
-        gl_PointSize=mix(4.5+aSeed.w*3.,10.+aSeed.w*5.,elevation)*uPixelRatio*10./max(3.,-eye.z);
-        vShape=mod(floor((aSeed.x+1.)*11.+aSeed.y*17.),4.);
-        float speed=length(aFluidVelocity);
-        vAngle=aSeed.w*6.283+atan(aFluidVelocity.y,aFluidVelocity.x+.00001)*smoothstep(.02,.4,speed)*.32;
-        vAlpha=.9+.1*aSeed.w;
-        gl_Position=projectionMatrix*eye;
-      }`,
-    fragmentShader: `varying float vShape,vAngle,vAlpha;
-      void main(){
-        vec2 p=(gl_PointCoord-.5)*2.;
-        p=mat2(cos(vAngle),-sin(vAngle),sin(vAngle),cos(vAngle))*p;
-        float d;
-        if(vShape<.5)d=length(p)-.74;
-        else if(vShape<1.5)d=min(max(abs(p.x)-.18,abs(p.y)-.86),max(abs(p.x)-.86,abs(p.y)-.18));
-        else if(vShape<2.5)d=max(abs(p.x),abs(p.y))-.66;
-        else d=max(abs(p.x)*.866+p.y*.5,-p.y)-.48;
-        float alpha=(1.-smoothstep(-.12,.12,d))*vAlpha;
-        if(alpha<.01)discard;
-        gl_FragColor=vec4(vec3(1.),alpha);
-      }`,
+  const cross = new THREE.BufferGeometry();
+  cross.setAttribute("position", new THREE.Float32BufferAttribute([
+    .0714286,-.5,0,-.0714286,-.5,0,.5,-.0714286,0,.0714286,-.0714286,0,
+    -.0714286,-.0714286,0,-.5,-.0714286,0,.5,.0714286,0,.0714286,.0714286,0,
+    -.0714286,.0714286,0,-.5,.0714286,0,.0714286,.5,0,-.0714286,.5,0,
+  ], 3));
+  cross.setIndex([4,5,9,0,4,3,8,7,3,7,2,3,7,6,2,11,10,7,7,8,11,3,4,8,0,1,4,4,9,8]);
+  const bases = [cross, new THREE.PlaneGeometry(.8, .8), new THREE.CircleGeometry(.4, 10), new THREE.CircleGeometry(.5, 3)];
+  const material = new THREE.ShaderMaterial({ uniforms, depthTest: false, depthWrite: false, side: THREE.DoubleSide,
+    vertexShader: `attribute vec4 aParticle;uniform vec2 uTank;uniform float uRadius;
+      void main(){float s=sin(aParticle.z),c=cos(aParticle.z);
+        vec2 p=aParticle.xy/uTank*2.-1.;
+        p+=mat2(c,-s,s,c)*position.xy*uRadius*4.*aParticle.w/uTank;
+        gl_Position=vec4(p,0.,1.);}`,
+    fragmentShader: `void main(){gl_FragColor=vec4(1.);}`,
   });
-  const points = new THREE.Points(geometry, material);
-  points.frustumCulled = false;
-  const group = new THREE.Group(); group.add(points);
-  const fluid = new AboutGlyphFluid(count, 16 / 9);
+  const attributes: THREE.InstancedBufferAttribute[] = [];
+  const geometries = bases.map(base => {
+    const geometry = new THREE.InstancedBufferGeometry();
+    geometry.setAttribute("position", base.getAttribute("position")); geometry.setIndex(base.index);
+    const data = new THREE.InstancedBufferAttribute(new Float32Array(Math.ceil(limit / 4) * 4), 4).setUsage(THREE.DynamicDrawUsage);
+    geometry.setAttribute("aParticle", data); attributes.push(data); geometry.instanceCount = 0;
+    const mesh = new THREE.Mesh(geometry, material); mesh.frustumCulled = false; group.add(mesh);
+    return geometry;
+  });
+  // CPU geometries only supplied the immutable base attributes; the instanced
+  // geometries own their uploaded buffers. Do not upload/dispose them twice.
   let lastTime: number | null = null, disposed = false;
-  return { group, uniforms, count,
+  let layoutWidth = 0, layoutHeight = 0;
+  return {
+    group, uniforms, fluid, get count() { return fluid.count; },
+    layout(width: number, height: number, pill?: { left: number; right: number; bottom: number; top: number }) {
+      if (disposed) return;
+      if (width !== layoutWidth || height !== layoutHeight) {
+        layoutWidth = width; layoutHeight = height;
+        fluid.configure(width, height, limit, uniforms.uReduced.value > .5); lastTime = null;
+        uniforms.uTank.value.set(fluid.width, fluid.height); uniforms.uRadius.value = fluid.radius;
+        uniforms.uViewport.value.set(width, height);
+        geometries.forEach((geometry, type) => { geometry.instanceCount = Math.max(0, Math.ceil((fluid.count - type) / 4)); });
+      }
+      if (pill) fluid.setCollider({ left: pill.left * fluid.width, right: pill.right * fluid.width, bottom: pill.bottom * fluid.height, top: pill.top * fluid.height });
+    },
     setTime(time: number) {
       if (disposed) return;
-      const t = Number.isFinite(time) ? time : 0;
-      const view = uniforms.uViewport.value, pointer = uniforms.uPointer.value;
-      fluid.resize(view.x / view.y);
+      const t = Number.isFinite(time) ? time : 0, pointer = uniforms.uPointer.value;
       const dt = lastTime === null ? 1 / 60 : Math.max(0, t - lastTime);
       lastTime = t; uniforms.uTime.value = t;
-      fluid.update(dt, (pointer.x / view.x + .5) * view.x / view.y,
-        pointer.y / view.y + .5, pointer.z > .02, uniforms.uReduced.value > .5);
-      for (let i = 0; i < count; i++) {
-        positions[i * 3] = (fluid.x[i] / (view.x / view.y) - .5) * view.x;
-        positions[i * 3 + 1] = (fluid.y[i] - .5) * view.y;
-        positions[i * 3 + 2] = seed[i * 4 + 2] * .035;
-        velocities[i * 2] = fluid.vx[i]; velocities[i * 2 + 1] = fluid.vy[i];
+      fluid.update(dt, pointer.x, pointer.y, pointer.z > .5, uniforms.uHeld.value > .5);
+      for (let k = 0; k < fluid.count; k++) {
+        const a = attributes[k % 4], index = Math.floor(k / 4);
+        a.setXYZW(index, fluid.outX[k], fluid.outY[k], fluid.angle[k], 1 + Math.min(1, Math.abs(fluid.spin[k]) * .01));
       }
-      positionAttribute.needsUpdate = true; velocityAttribute.needsUpdate = true;
+      attributes.forEach(a => { a.needsUpdate = true; });
     },
-    dispose() { if (disposed) return; disposed = true; geometry.dispose(); material.dispose(); }
+    dispose() {
+      if (disposed) return; disposed = true; group.removeFromParent();
+      geometries.forEach(g => g.dispose()); material.dispose();
+    },
   };
 }
