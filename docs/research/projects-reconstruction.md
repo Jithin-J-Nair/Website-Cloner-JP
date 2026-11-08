@@ -59,7 +59,25 @@ CHROMIUM_MULTIPROCESS=1 npm run validate:projects-fallbacks
 
 Existing approved-page regressions are `test-about-contact-browser.mjs` (1720×912, 1568×1230, 390×844), `validate-home-editorial.mjs` (1440×764 normal) and `validate-home-end.mjs` (1440×764 normal). Logs live under `temp/projects-reconstruction/*regression.log`. The broader historical full-normal tunnel timing gate is not retuned or claimed here.
 
-Final verification results are recorded after the production gates finish. Source/served JS and CSS fingerprints are kept in ignored `temp/projects-reconstruction/production-build.json` rather than trusting a port or parent commit marker alone.
+### Recorded verification
+
+Application commit/build: **`dbb5c27`**, production port **3003**. All 16 Projects HTML-referenced JavaScript/CSS responses were byte-compared with the built files; source SHA-256s, build ID and served response hashes are in ignored `temp/projects-reconstruction/production-build.json`.
+
+| Gate | Result |
+|---|---|
+| Production Projects 1720×912, normal | PASS; browser/shader errors `[]` |
+| Production Projects 1720×912, reduced | PASS; errors `[]`, static captured particle region |
+| Production Projects 390×844, normal/touch | PASS; browser/shader errors `[]` |
+| Production Projects 390×844, reduced/touch | PASS; errors `[]`, static captured particle region |
+| Missing depth / missing atlas / archive context recovery / no-WebGL mobile | PASS; no uncaught page errors; 19 links retained |
+| About CTA browser regression, all three existing viewport sizes | PASS |
+| Home editorial 1440×764 normal, including actual film/depth pixels and optional failures | PASS |
+| Home astronaut/end 1440×764 normal, live idle/hover/reversal and route cleanup | PASS |
+| Build, lint, strict typecheck, Projects data, textured fluid, default About fluid, Home motion/editorial units, diff check | PASS |
+
+The approved Home/About regressions ran after the shared solver's opt-in profile was introduced. The final application build additionally contains the Projects-only glyph clip, category spacing, section-bottom padding and feedback-contrast refinements; those are included in the final four-policy Projects rerun and do not change approved Home/About source or default solver behavior. Final desktop/mobile normal and reduced CTA captures were visually reviewed against the recording's composition; this is not an automated reference-similarity result.
+
+Evidence remains ignored rather than adding generated binaries to Git. The verification documentation commit does not change the application build.
 
 ## Honest limits
 
