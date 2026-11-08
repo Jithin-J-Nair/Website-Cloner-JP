@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { checkHomeEditorial } from "./lib/check-home-editorial.mjs";
 /** Hover restitution, shared scroll motion, solar shader and native UHD browser regression. */
 
 import assert from 'node:assert/strict';
@@ -140,50 +141,7 @@ try {
   // Wait for actual browser frames; keep all reverse-transform assertions unchanged.
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  };
-  // Sample against the reel-section intro playhead, not the later video container.
-  const ribbonSelector = width < 813 ? '#home-reel-ribbon-path-mobile' : '#home-reel-ribbon-path';
-  const ribbonStart = layout.intro - height * 0.75;
-  const ribbonEnd = layout.intro - height * 0.20;
-  const ribbonStates = [];
-  for (const y of [ribbonStart, ribbonEnd]) {
-    await seek(y);
-    ribbonStates.push(await page.locator(ribbonSelector).evaluate(el=>el.style.strokeDashoffset));
-  }
-  assert.ok(Number(ribbonStates[0]) > 0.95 && Number(ribbonStates[1]) < 0.05,
-    `cobalt ribbon should draw from its intro entrance to completion (offsets=${ribbonStates.join(',')})`);
-  await seek(ribbonStart);
-  const reversedRibbon = await page.locator(ribbonSelector).evaluate(el=>el.style.strokeDashoffset);
-  assert.equal(reversedRibbon, ribbonStates[0], 'reverse scroll restores the undrawn ribbon state');
-  report.ribbon = { forward:ribbonStates, reversed:reversedRibbon };
- const reel=[];
- for(const y of [layout.reel-height*.94,layout.reel-height*.5,layout.reel-height*.12]){
-  await seek(y);
-  reel.push(await page.locator('#home-reel-video-container').evaluate(el=>({transform:getComputedStyle(el).transform,radius:el.querySelector('.group').style.borderRadius})));
- }
- report.reel=reel;
- if(!reduced)assert.notEqual(reel[0].transform,reel[2].transform,'reel container expands with scroll');
- await seek(layout.reel-height*.94);
- const reversedReel=await page.locator('#home-reel-video-container').evaluate(el=>getComputedStyle(el).transform);
- assert.equal(reversedReel,reel[0].transform,'reverse scroll must restore the same container state');
- await seek(layout.reel-height*.12);
- report.reel=reel;
- report.reelReverse=true;
- report.reelBackground=await page.locator('#home-reel-video').evaluate(video=>({paused:video.paused,readyState:video.readyState}));
- assert.ok(report.reelBackground.readyState>=2,'paused footage must still have a decoded visible frame');
- if(reduced)assert.equal(report.reelBackground.paused,true);
- await page.screenshot({path:out+'/reel.png',timeout:90000});
- const featured=[];
- for(const y of [layout.featured-height*.8,layout.featured-height*.3,layout.featured+height*.2]){
-  await seek(y);
-  featured.push(await page.evaluate(()=>({heading:getComputedStyle(document.getElementById('home-featured-title')).transform,cards:[...document.querySelectorAll('.project-item')].slice(0,2).map(el=>({stage:el.querySelector('.project-item-main').style.transform,image:el.querySelector('img.project-item-image')?.style.transform}))})));
- }
- if(!reduced)assert.notEqual(featured[0].heading,featured[2].heading);
- await seek(layout.featured-height*.8);
- assert.equal(await page.locator('#home-featured-title').evaluate(el=>getComputedStyle(el).transform),featured[0].heading);
- await seek(layout.featured+height*.2);
- report.featured=featured;
- report.featuredReverse=true;
- await page.screenshot({path:out+'/featured.png',timeout:90000});
+ report.editorial=await checkHomeEditorial(page,{width,height,reduced,out});
  await page.waitForFunction(()=>window.__goalAstronautTelemetry?.glbLoaded);
  const titleY=await page.evaluate(()=>window.__goalAstronautTelemetry.scrollForEmergence(.80));
  await seek(titleY);
@@ -300,7 +258,7 @@ try {
      corridorVisible:window.__goalAstronautTelemetry?.sceneState?.corridorVisible??false,
      waitProgress:window.__goalAstronautTelemetry?.sceneState?.waitProgress??0};
  });
- await seek(layout.reel-height*.12);
+ await seek(layout.reel+(width>812&&!reduced?height*.65:-height*.12));
  await page.locator('#home-reel-video-watch-btn').click();
  await page.locator('#video-overlay[role="dialog"]').waitFor({state:'visible'});
  await page.waitForFunction(()=>[...document.querySelectorAll('#home-reel video')].every(video=>video.paused));

@@ -8,9 +8,9 @@ import { GoalTunnelSection } from "@/components/home/GoalTunnelSection";
 import { ContactCtaSection } from "@/components/sections/ContactCtaSection";
 import { StudioFooter } from "@/components/sections/StudioFooter";
 import { TransitionLink } from "@/components/studio/TransitionLink";
-import { ProceduralReelStream } from "@/components/studio/ProceduralReelStream";
+import { HomeReelSection } from "@/components/home/HomeReelSection";
+import { createHomeEditorialMotion } from "@/components/home/HomeEditorialMotion";
 import { LUSION_HOME } from "@/data/reference";
-import { motionEase } from "@/lib/home-motion";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
 
@@ -96,25 +96,10 @@ export function HomePageView() {
   const heroHeadingRef = useRef<HTMLHeadingElement>(null);
   const heroStageRef = useRef<HTMLDivElement>(null);
   const heroCueRef = useRef<HTMLDivElement>(null);
-  const featuredSectionRef = useRef<HTMLElement>(null);
-  const featuredTitleRef = useRef<HTMLHeadingElement>(null);
-  const reelSectionRef = useRef<HTMLElement>(null);
-  const reelContainerRef = useRef<HTMLDivElement>(null);
-  const reelVideoStageRef = useRef<HTMLDivElement>(null);
-  const reelViewportRef = useRef<HTMLDivElement>(null);
-  const reelThumbCardRef = useRef<HTMLDivElement>(null);
-  const reelTitleLine1Ref = useRef<HTMLSpanElement>(null);
-  const reelRibbonDesktopPathRef = useRef<SVGPathElement>(null);
-  const reelRibbonMobilePathRef = useRef<SVGPathElement>(null);
-  const reelRibbonDesktopRunnerRef = useRef<SVGCircleElement>(null);
-  const reelRibbonMobileRunnerRef = useRef<SVGCircleElement>(null);
-  const reelOverlayTitleRef = useRef<HTMLDivElement>(null);
-  const reelWordRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const reelWords = React.useMemo(() => LUSION_HOME.reel.description.split(" "), []);
 
   useEffect(() => {
     setActiveSurface("ice");
-    const syncVp = () => setIsMobileReel(window.innerWidth <= 812);
+    const syncVp = () => setIsMobileReel(window.innerWidth <= 560);
     syncVp();
     window.addEventListener("resize", syncVp, { passive: true });
     return () => window.removeEventListener("resize", syncVp);
@@ -136,156 +121,12 @@ export function HomePageView() {
     return () => io.disconnect();
   }, [setActiveSurface]);
 
-  // One scroll sampler for the upper homepage. Read natural layout on resize, then only
-  // composite transforms/opacity in scroll frames; never measure each card after writing styles.
+  // The reel mesh, captured ribbon, type and depth cards share one upper-Home owner.
   useEffect(() => {
-    let rafId = 0;
-    let layoutDirty = true;
-    let disposed = false;
-    let introTop = 0, reelTop = 0, featuredTop = 0, heroHeight = 1;
-    let desktopRibbonLength = 0, mobileRibbonLength = 0;
-    const cards = Array.from(featuredSectionRef.current?.querySelectorAll<HTMLElement>(".project-item") ?? []).map((el) => ({
-      el, stage: el.querySelector<HTMLElement>(".project-item-main"),
-      image: el.querySelector<HTMLImageElement>("img.project-item-image"),
-      top: 0, height: 0, imageTravel: 0,
-    }));
-    const introWords = Array.from(reelTitleLine1Ref.current?.querySelectorAll<HTMLElement>("span") ?? []).slice(1);
-    const splitWords = Array.from(reelOverlayTitleRef.current?.children ?? []) as HTMLElement[];
-    const naturalTop = (el: HTMLElement | null) => {
-      if (!el) return 0;
-      let top = 0;
-      for (let node: HTMLElement | null = el; node; node = node.offsetParent as HTMLElement | null) top += node.offsetTop;
-      return top;
-    };
-    const sample = () => {
-      rafId = 0;
-      if (document.hidden) return;
-      const vh = Math.max(1,window.innerHeight);
-      const y = window.scrollY;
-      if (layoutDirty) {
-        heroHeight = Math.max(1, heroSectionRef.current?.offsetHeight ?? vh);
-        introTop = naturalTop(reelSectionRef.current);
-        reelTop = naturalTop(reelContainerRef.current);
-        featuredTop = naturalTop(featuredSectionRef.current);
-        desktopRibbonLength = reelRibbonDesktopPathRef.current?.getTotalLength() ?? 0;
-        mobileRibbonLength = reelRibbonMobilePathRef.current?.getTotalLength() ?? 0;
-        for (const card of cards) {
-          card.top = naturalTop(card.el);
-          card.height = card.el.offsetHeight;
-          // Stay inside the image's 4% overscan, including narrow portrait cards.
-          card.imageTravel = Math.min(18, (card.image?.offsetHeight ?? card.height) * 0.035);
-        }
-        layoutDirty = false;
-      }
-      // Hand the invitation to the next act; do not touch the journey's own clock.
-      const heroProgress = reducedMotion ? 0 : Math.max(0, Math.min(1, y / heroHeight));
-      if (heroCueRef.current) heroCueRef.current.style.opacity = (1 - motionEase((heroProgress - .06) / .54)).toFixed(4);
-      if (heroHeadingRef.current) heroHeadingRef.current.style.transform = `translate3d(0,${(heroProgress * 24).toFixed(2)}px,0)`;
-      if (heroStageRef.current) {
-        const exit = reducedMotion ? 0 : motionEase((heroProgress - .02) / .98);
-        heroStageRef.current.style.transform = `translate3d(0,${(-exit * 28).toFixed(2)}px,0) scale(${(1 - exit * 0.045).toFixed(5)})`;
-        heroStageRef.current.style.opacity = (1 - exit * 0.68).toFixed(4);
-      }
-      const intro = reducedMotion ? 1 : motionEase((vh*0.76-(introTop-y))/(vh*0.7));
-      const ribbonProgress = reducedMotion ? 1 : motionEase((intro - 0.04) / 0.88);
-      for (const path of [reelRibbonDesktopPathRef.current,reelRibbonMobilePathRef.current]) {
-        if (path) path.style.strokeDashoffset = (1 - ribbonProgress).toFixed(4);
-      }
-      const narrowRibbon = window.innerWidth <= 812;
-      const activeRibbon = narrowRibbon ? reelRibbonMobilePathRef.current : reelRibbonDesktopPathRef.current;
-      const activeRunner = narrowRibbon ? reelRibbonMobileRunnerRef.current : reelRibbonDesktopRunnerRef.current;
-      const activeLength = narrowRibbon ? mobileRibbonLength : desktopRibbonLength;
-      if (activeRibbon && activeRunner && activeLength > 0) {
-        const point = activeRibbon.getPointAtLength(activeLength * ribbonProgress);
-        activeRunner.setAttribute("cx", point.x.toFixed(2));
-        activeRunner.setAttribute("cy", point.y.toFixed(2));
-        activeRunner.style.opacity = !reducedMotion && ribbonProgress > 0.06 && ribbonProgress < 0.99 ? "1" : "0";
-      }
-      // A translated word gives spacing motion without reflowing the editorial headline.
-      for (const word of introWords) word.style.transform = `translate3d(${((1-intro)*0.34).toFixed(4)}em,0,0)`;
-      for (let i = 0; i < reelWordRefs.current.length; i++) {
-        const word = reelWordRefs.current[i];
-        if (!word) continue;
-        const threshold = i/Math.max(1,reelWordRefs.current.length-1)*0.86;
-        word.style.opacity = reducedMotion ? "1" : Math.max(0.38,Math.min(1,(intro-threshold+0.24)/0.24)).toFixed(3);
-      }
-      const expansion = reducedMotion ? 1 : motionEase((vh*0.98-(reelTop-y))/(vh*0.85));
-      if (reelVideoStageRef.current) {
-        reelVideoStageRef.current.style.transform = `translate3d(0,${((1-expansion)*52).toFixed(2)}px,0) scale(${(0.86+expansion*0.14).toFixed(5)})`;
-      }
-      if (reelViewportRef.current) {
-        reelViewportRef.current.style.borderRadius = `${(36-expansion*16).toFixed(2)}px`;
-      }
-      // Keep the flex layout fixed; equal/opposite offsets reproduce the old visual gap.
-      const split = (1.95 + expansion * 0.55 - 2.25) / 2;
-      splitWords.forEach((word, i) => {
-        word.style.transform = `translate3d(${((i === 0 ? -1 : 1) * split).toFixed(4)}em,0,0)`;
-      });
-      if (reelThumbCardRef.current) reelThumbCardRef.current.style.opacity = reducedMotion ? "1" : (1-expansion*0.75).toFixed(3);
-      const heading = reducedMotion ? 1 : motionEase((vh*0.9-(featuredTop-y))/(vh*0.48));
-      if (featuredTitleRef.current) featuredTitleRef.current.style.transform = `translate3d(0,${((1-heading)*0.32).toFixed(4)}em,0)`;
-      for (const card of cards) {
-        const top = card.top-y;
-        if (top>vh+180 || top+card.height < -180) continue;
-        const entrance = reducedMotion ? 1 : motionEase((vh*1.02-top)/(vh*0.45));
-        const parallax = reducedMotion ? 0 : Math.max(-1,Math.min(1,(top+card.height*0.5-vh*0.5)/vh))*card.imageTravel;
-        if (card.stage) card.stage.style.transform = `translate3d(0,${((1-entrance)*44).toFixed(2)}px,0) scale(${(0.97+entrance*0.03).toFixed(5)})`;
-        if (card.image) card.image.style.transform = reducedMotion ? "none" : `translate3d(0,${parallax.toFixed(2)}px,0) scale(1.08)`;
-      }
-    };
-    const schedule = () => { if (!disposed && !rafId && !document.hidden) rafId = window.requestAnimationFrame(sample); };
-    const resize = () => { layoutDirty = true; schedule(); };
-    const observer = new ResizeObserver(resize);
-    for (const el of [reelSectionRef.current,reelContainerRef.current,featuredSectionRef.current]) if (el) observer.observe(el);
-    window.addEventListener("scroll",schedule,{passive:true});
-    window.addEventListener("resize",resize,{passive:true});
-    const visibility = () => {
-      layoutDirty = true; schedule();
-    };
-    document.addEventListener("visibilitychange",visibility);
-    document.fonts.ready.then(resize);
-    schedule();
-    return () => {
-      disposed = true;
-      observer.disconnect();
-      window.removeEventListener("scroll",schedule);
-      window.removeEventListener("resize",resize);
-      document.removeEventListener("visibilitychange",visibility);
-      if (rafId) window.cancelAnimationFrame(rafId);
-    };
-  }, [reducedMotion]);
-
-  // Decode/play only visible background footage; the deliberate modal playback is separate.
-  useEffect(() => {
-    const section = reelSectionRef.current;
-    if (!section) return;
-    const videos = Array.from(section.querySelectorAll("video"));
-    const visible = new Set<HTMLVideoElement>();
-    let disposed = false;
-    const sync = () => {
-      for (const video of videos) {
-        if (!disposed && !document.hidden && !reducedMotion && !reelOpen && visible.has(video)) {
-          void video.play().catch(() => { /* muted autoplay can still be denied by the browser */ });
-        } else video.pause();
-      }
-    };
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        const video = entry.target as HTMLVideoElement;
-        if (entry.isIntersecting) visible.add(video); else visible.delete(video);
-      }
-      sync();
-    },{threshold:0.01});
-    for (const video of videos) observer.observe(video);
-    document.addEventListener("visibilitychange",sync);
-    sync();
-    return () => {
-      disposed = true;
-      observer.disconnect();
-      document.removeEventListener("visibilitychange",sync);
-      for (const video of videos) video.pause();
-    };
-  },[reducedMotion,reelOpen,isMobileReel,reelVideoAvailable]);
+    const root = document.getElementById("home");
+    if (!root) return;
+    return createHomeEditorialMotion(root, reducedMotion, reelOpen);
+  }, [reducedMotion, reelOpen, isMobileReel, reelVideoAvailable]);
 
   const heroWords = LUSION_HOME.hero.headline.split(" ");
   const reelLoopSrc = isMobileReel
@@ -374,313 +215,13 @@ export function HomePageView() {
       {/* =====================================================================
           2. SHOWREEL SECTION (`#home-reel`)
          ===================================================================== */}
-      <section
-        id="home-reel"
-        ref={reelSectionRef}
-        className="section relative grid grid-cols-6 gap-x-[var(--grid-gap)] overflow-hidden px-[var(--base-padding-x)] pt-14 pb-20 text-[clamp(0.875rem,1vw,2rem)] min-[813px]:grid-cols-12 min-[813px]:pt-36 min-[813px]:pb-32"
-      >
-        {/* Scroll-drawn cobalt ribbon: layered like a rounded glossy tube, with a travelling highlight. */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 1440 900"
-          fill="none"
-          className="pointer-events-none absolute top-0 left-0 z-0 h-[760px] w-full overflow-visible max-[812px]:hidden"
-        >
-          <defs>
-            <linearGradient id="homeReelRibbonGradient" x1="0%" y1="8%" x2="100%" y2="92%">
-              <stop offset="0%" stopColor="#2638ff" />
-              <stop offset="46%" stopColor="#162cf7" />
-              <stop offset="100%" stopColor="#7188ff" />
-            </linearGradient>
-            <radialGradient id="homeReelRibbonSpark">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
-              <stop offset="38%" stopColor="#9eafff" stopOpacity="0.95" />
-              <stop offset="100%" stopColor="#4160ff" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <path
-            d="M -28 86 C 128 142, 238 308, 256 548 C 270 650, 340 710, 430 666 C 520 622, 548 520, 624 424 C 704 324, 816 312, 900 378 C 1000 456, 1018 576, 1122 618 C 1230 662, 1358 602, 1468 520"
-            stroke="#162cf7"
-            strokeOpacity="0.16"
-            strokeWidth="54"
-            strokeLinecap="round"
-          />
-          <path
-            id="home-reel-ribbon-path"
-            ref={reelRibbonDesktopPathRef}
-            pathLength={1}
-            d="M -28 86 C 128 142, 238 308, 256 548 C 270 650, 340 710, 430 666 C 520 622, 548 520, 624 424 C 704 324, 816 312, 900 378 C 1000 456, 1018 576, 1122 618 C 1230 662, 1358 602, 1468 520"
-            stroke="url(#homeReelRibbonGradient)"
-            strokeWidth="26"
-            strokeLinecap="round"
-            style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
-          />
-          <path
-            pathLength={1}
-            d="M -28 86 C 128 142, 238 308, 256 548 C 270 650, 340 710, 430 666 C 520 622, 548 520, 624 424 C 704 324, 816 312, 900 378 C 1000 456, 1018 576, 1122 618 C 1230 662, 1358 602, 1468 520"
-            stroke="#a9b6ff"
-            strokeOpacity="0.68"
-            strokeWidth="5"
-            strokeLinecap="round"
-            style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
-          />
-          <circle ref={reelRibbonDesktopRunnerRef} r="15" fill="url(#homeReelRibbonSpark)" opacity="0" />
-        </svg>
-
-        {/* Mobile adapts the same scroll-drawn tube to the narrow editorial rail. */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 390 420"
-          fill="none"
-          className="pointer-events-none absolute top-8 left-0 z-0 w-full min-[813px]:hidden"
-        >
-          <path
-            d="M -18 56 C 48 78, 96 132, 118 205 C 140 276, 188 326, 246 308 C 302 292, 330 240, 410 214"
-            stroke="#1a2ffb"
-            strokeOpacity="0.14"
-            strokeWidth="36"
-            strokeLinecap="round"
-          />
-          <path
-            id="home-reel-ribbon-path-mobile"
-            ref={reelRibbonMobilePathRef}
-            pathLength={1}
-            d="M -18 56 C 48 78, 96 132, 118 205 C 140 276, 188 326, 246 308 C 302 292, 330 240, 410 214"
-            stroke="#1a2ffb"
-            strokeWidth="18"
-            strokeLinecap="round"
-            style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
-          />
-          <circle ref={reelRibbonMobileRunnerRef} r="10" fill="#ffffff" opacity="0" />
-        </svg>
-
-        {/* Display Eyebrow Heading (`#home-reel-title`) */}
-        <h2
-          id="home-reel-title"
-          className="relative z-10 col-span-6 mt-[0.1em] mb-[0.52em] -ml-[0.03em] font-sans text-[17.6vw] leading-[1.03] font-normal tracking-[-0.025em] text-[#000000] min-[813px]:col-span-12 min-[813px]:mt-[0.18em] min-[813px]:mb-[0.42em] min-[813px]:text-[10vw] min-[813px]:leading-[0.98]"
-        >
-          <span id="home-reel-title-inner" className="inline-block">
-            <span
-              id="home-reel-title-line-1"
-              ref={reelTitleLine1Ref}
-              style={{ wordSpacing: "0.52em" }}
-              className="block max-[812px]:max-w-[5.1ch] min-[813px]:pl-[calc(var(--grid-space)*0.92+var(--grid-gap))]"
-            >
-              {LUSION_HOME.reel.eyebrowLine1.split(" ").filter(Boolean).map((word,i) => (
-                <React.Fragment key={word}>{i>0 ? " " : ""}<span className="inline-block">{word}</span></React.Fragment>
-              ))}
-            </span>
-            <span id="home-reel-title-line-2" className="block max-[812px]:max-w-[8.8ch]">
-              {LUSION_HOME.reel.eyebrowLine2}
-            </span>
-          </span>
-        </h2>
-
-        {/* Left 5-col Cobalt-Duotone Reel Preview Card (`#home-reel-thumb-wrapper`) */}
-        <div
-          id="home-reel-thumb-wrapper"
-          className="relative z-10 col-span-5 flex items-end pb-14 max-[812px]:hidden"
-        >
-          <div
-            id="home-reel-thumb"
-            ref={reelThumbCardRef}
-            onClick={handleOpenReel}
-            className="group relative aspect-[16/10] w-full max-w-[440px] cursor-pointer overflow-hidden rounded-[18px] bg-[#142df9] shadow-[0_22px_52px_rgba(22,44,247,0.28)]"
-          >
-            {reelVideoAvailable ? (
-              <video
-                src={reelLoopSrc}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-hidden="true"
-                onError={() => setReelVideoFailed(true)}
-                className="h-full w-full object-cover mix-blend-luminosity opacity-85 transition-transform duration-500 group-hover:scale-105"
-              />
-            ) : (
-              <ProceduralReelStream variant="thumb" />
-            )}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[#0b20eb]/38 mix-blend-multiply"
-            />
-          </div>
-        </div>
-
-        {/* Right 6-col Editorial Statement + `Our Approach` CTA (`#home-reel-content`) */}
-        <div
-          id="home-reel-content"
-          className="relative z-10 col-span-6 h-fit leading-[1.42] min-[813px]:col-start-7 min-[813px]:col-span-6"
-        >
-          <p
-            id="home-reel-desc"
-            className="m-0 font-sans text-[clamp(1.05rem,1.5vw,2.15rem)] font-normal text-[#000000]"
-          >
-            {reelWords.map((word, wIdx) => (
-              <React.Fragment key={wIdx}>
-                <span
-                  ref={(el) => {
-                    reelWordRefs.current[wIdx] = el;
-                  }}
-                  className="inline-block transition-opacity duration-150"
-                >
-                  {word}
-                </span>
-                {wIdx < reelWords.length - 1 ? " " : ""}
-              </React.Fragment>
-            ))}
-          </p>
-
-          <div className="mt-10 mb-14 min-[813px]:mt-12 min-[813px]:mb-20">
-            <LusionExpandingCta
-              id="home-reel-cta"
-              dotId="home-reel-cta-dot"
-              textId="home-reel-cta-text"
-              arrowId="home-reel-cta-arrow"
-              href={LUSION_HOME.reel.ctaHref}
-              label={LUSION_HOME.reel.ctaLabel}
-            />
-          </div>
-        </div>
-
-        {/* Scroll-Driven Showreel Stage (`#home-reel-container` -> `#home-reel-video-container`) */}
-        <div
-          id="home-reel-container"
-          ref={reelContainerRef}
-          className="relative z-10 col-span-6 mt-6 min-[813px]:col-span-12 min-[813px]:mt-20 min-[813px]:px-4 min-[813px]:pt-24"
-        >
-          <div id="home-reel-container-inner" className="relative w-full">
-            <div
-              id="home-reel-video-container"
-              ref={reelVideoStageRef}
-              style={{ transform: "scale(0.86)" }}
-              className="relative w-full origin-center will-change-transform"
-            >
-              {/* Top `▶▶▶ PLAY REEL` Ticker on Mobile (`ref-03-reel-stage--390x844.png`) */}
-              <div
-                id="home-reel-video-container-decoration"
-                aria-hidden="true"
-                className="pointer-events-none mb-2.5 flex w-full items-center justify-between text-black min-[813px]:hidden"
-              >
-                <div className="flex w-full items-center justify-between overflow-hidden py-1 font-sans text-[13px] font-medium tracking-[0.04em] text-[#000000] uppercase">
-                  <span className="inline-flex items-center gap-2">
-                    <span aria-hidden="true" className="tracking-[-0.1em]">&#9658;&#9658;&#9658;</span>
-                    <span>PLAY REEL</span>
-                  </span>
-                  <span className="inline-flex items-center gap-2">
-                    <span aria-hidden="true" className="tracking-[-0.1em]">&#9658;&#9658;&#9658;</span>
-                    <span>PLAY REEL</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Rounded Interactive Reel Viewport (`aspect-[1.85/1]` desktop matching `ref-03-reel-stage`) */}
-              <div
-                onClick={handleOpenReel}
-                ref={reelViewportRef}
-                className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#0b0d14] shadow-[0_24px_64px_rgba(12,18,42,0.18)] min-[813px]:aspect-[1.85/1]"
-              >
-                {reelVideoAvailable ? (
-                  <video
-                    id="home-reel-video"
-                    key={reelLoopSrc}
-                    src={reelLoopSrc}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    onError={() => setReelVideoFailed(true)}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
-                  />
-                ) : (
-                  <ProceduralReelStream variant="stage" />
-                )}
-
-                {/* Monumental Split `PLAY REEL` Display Overlay (`ref-03-reel-stage--1440x900.png`) */}
-                <div
-                  id="home-reel-video-placeholder"
-                  className="pointer-events-none absolute inset-0 flex items-center justify-center"
-                >
-                  <div
-                    id="home-reel-video-title"
-                    ref={reelOverlayTitleRef}
-                    style={{ gap: "2.25em" }}
-                    className="flex items-center font-sans text-[clamp(3.2rem,7.5vw,6.9rem)] leading-none font-normal tracking-[-0.015em] text-white uppercase drop-shadow-[0_2px_18px_rgba(20,32,68,0.16)] select-none max-[812px]:hidden"
-                  >
-                    <span>Play</span>
-                    <span>Reel</span>
-                  </div>
-                </div>
-
-                {/* Mobile Vertical Center Guide Ticks (`ref-03-reel-stage--390x844.png`) */}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute top-1/2 left-1/2 h-28 w-[2px] -translate-x-1/2 -translate-y-1/2 bg-white/95 min-[813px]:hidden"
-                />
-
-                {/* Centered Pill Play Button (`#home-reel-video-watch-btn`) */}
-                <button
-                  type="button"
-                  id="home-reel-video-watch-btn"
-                  aria-label="Play Showreel"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenReel();
-                  }}
-                  className="group/btn absolute top-1/2 left-1/2 z-10 flex h-[4.6rem] w-[7.4rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center overflow-hidden rounded-full shadow-[0_12px_32px_rgba(12,20,48,0.18)] focus-visible:outline-2 focus-visible:outline-white md:h-[5.5rem] md:w-[8.8rem]"
-                >
-                  <span
-                    id="home-reel-video-watch-btn-base"
-                    aria-hidden="true"
-                    className="absolute inset-0 rounded-full bg-white transition-colors duration-300 group-hover/btn:bg-[#1a2ffb]"
-                  />
-                  <span
-                    id="home-reel-video-watch-btn-background"
-                    aria-hidden="true"
-                    className="absolute inset-0 origin-bottom scale-y-0 bg-[#1a2ffb] transition-transform duration-400 ease-[cubic-bezier(0.4,0,0.1,1)] group-hover/btn:scale-y-100"
-                  />
-                  <svg
-                    id="home-reel-video-watch-btn-svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    className="relative z-10 ml-0.5 h-6 w-6 text-black transition-colors duration-300 group-hover/btn:text-white md:h-7 md:w-7"
-                  >
-                    <path d="M8 5.2v13.6L19.2 12 8 5.2z" />
-                  </svg>
-                </button>
-              </div>
-
-              <div
-                id="home-reel-video-container-bottom"
-                aria-hidden="true"
-                className="pointer-events-none mt-2.5 flex w-full items-center justify-between text-black min-[813px]:hidden"
-              >
-                <div className="flex w-full items-center justify-between overflow-hidden py-1 font-sans text-[13px] font-medium tracking-[0.04em] text-[#000000] uppercase">
-                  <span className="inline-flex items-center gap-2">
-                    <span aria-hidden="true" className="tracking-[-0.1em]">&#9658;&#9658;&#9658;</span>
-                    <span>PLAY REEL</span>
-                  </span>
-                  <span className="inline-flex items-center gap-2">
-                    <span aria-hidden="true" className="tracking-[-0.1em]">&#9658;&#9658;&#9658;</span>
-                    <span>PLAY REEL</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeReelSection videoSrc={reelLoopSrc} videoFailed={reelVideoFailed} onVideoError={() => setReelVideoFailed(true)} onOpenReel={handleOpenReel} />
 
       {/* =====================================================================
           3. FEATURED WORK SECTION (`#home-featured` — 12 Current Projects)
          ===================================================================== */}
       <section
         id="home-featured"
-        ref={featuredSectionRef}
         className="section relative grid grid-cols-6 gap-x-[var(--grid-gap)] px-[var(--base-padding-x)] pt-12 pb-16 min-[813px]:grid-cols-12 min-[813px]:pt-20 min-[813px]:pb-28"
       >
         {/* Header Band (`#home-featured-title-top`) */}
@@ -691,10 +232,10 @@ export function HomePageView() {
           >
             <h2
               id="home-featured-title"
-              ref={featuredTitleRef}
+              aria-label={LUSION_HOME.featured.heading}
               className="m-0 -ml-[0.06em] inline-block pt-[0.2em] leading-[0.92] font-normal text-[#000000]"
             >
-              {LUSION_HOME.featured.heading}
+              {LUSION_HOME.featured.heading.split(" ").map((word, i) => <React.Fragment key={word}><span className="inline-block whitespace-nowrap" aria-hidden="true">{[...word].map((char, j) => <span data-featured-char key={j}>{char}</span>)}</span>{i === 0 ? " " : ""}</React.Fragment>)}
             </h2>
           </div>
 
@@ -702,7 +243,7 @@ export function HomePageView() {
             id="home-featured-disclaimer"
             className="my-[2.4em] w-full font-sans text-[3.3vw] leading-[1.4] tracking-[0.02em] text-black/85 uppercase min-[481px]:text-[2.5vw] min-[813px]:absolute min-[813px]:right-0 min-[813px]:bottom-1 min-[813px]:my-0 min-[813px]:w-[calc(var(--grid-space)*3.2+var(--grid-gap)*2)] min-[813px]:text-[0.9vw]"
           >
-            {LUSION_HOME.featured.disclaimer}
+            {LUSION_HOME.featured.disclaimer.split(" ").map((word, i) => <React.Fragment key={i}><span className="inline-block overflow-hidden align-top"><span data-featured-disclaimer-word className="inline-block">{word}</span></span>{" "}</React.Fragment>)}
           </p>
         </div>
 
