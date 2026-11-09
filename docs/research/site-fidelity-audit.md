@@ -1,3 +1,5 @@
+> **New recorded-reference update:** [project-opening-video-audit.md](project-opening-video-audit.md) analyzes the supplied opening film, adds two 1720×912 Home/case/Back reproductions, confirms the reverse zoom and identifies Atlas theme, DOM-disclosure, media-readiness/playback and special text-panel gaps (F20–F24). Audit only; no application behavior changed.
+
 > **Latest audit-only review:** [full-experience-fidelity-audit.md](full-experience-fidelity-audit.md) documents the current `203e5a6` build, freshly observed project opening/return behavior, the missing selected-list depth zoom, exact reconstruction requirements, all 22 canonical routes / 19 case studies, and evidence-qualified whole-site follow-up. No application changes were made in that audit.
 
 > **Latest round-four update:** shared native aperture/menu/chapter navigation is shipped on production 3003, build `TZ8s1xwpgRD_kZgq9MSFp`. See [motion-fidelity-round4.md](motion-fidelity-round4.md) for the before-edit differences, source provenance, final production identity, 44 canonical observations plus alias/utility coverage, and remaining limitations. Older build identities below are historical.

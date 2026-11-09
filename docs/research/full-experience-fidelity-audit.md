@@ -1,5 +1,7 @@
 # Full-experience fidelity audit
 
+> **New opening-video update:** the supplied `lusion-project-opening.mp4` has now been inspected. See [project-opening-video-audit.md](project-opening-video-audit.md) for timestamped Home→Oryzo, reverse and Home→Atlas comparisons, two additional normal-motion reproductions, and **F20–F24**. It confirms the selected-image/reverse sequence and reveals an additional **Atlas dark-reference versus light-build theme mismatch**. This supersedes the earlier absence of a rendered project-click reference; application behavior is still unchanged.
+
 **Audit baseline:** application commit `203e5a6`, production preview on port **3003**, Next build **`TZ8s1xwpgRD_kZgq9MSFp`**. This is an **audit and implementation specification**, not another application-remediation release. No application source, approved scene, branding, font policy or running server was changed in this pass.
 
 ## Executive finding
@@ -8,12 +10,14 @@ The largest remaining perceptual difference is **how a project opens**. The buil
 
 This is not fixed by increasing hover zoom, scaling an HTML screenshot, adding particles, or moving a camera straight forward. The underlying depth shader already contains much of the necessary selected-state shading, but the selection/lifecycle input and list transform are missing.
 
+**Additional film-confirmed discrepancy:** Atlas settles on a dark charcoal page in the new reference, but the build uses a pale background/black text. Correcting its card fog, detail theme and incoming next-preview roles must accompany the opening work; a correct zoom into the wrong theme is not sufficient.
+
 The second important mismatch is continuity: the build's Back control always returns to `/projects` at the top. A freshly observed **Home → Oryzo → Back** also returned to `/projects`, losing its Home origin. The reference remembers the last non-project page and reverses into its selected card.
 
 ### Recommended order
 
 1. **P0 — selected-project opening and reverse:** one source-aware route transaction, live selected depth mesh, native list transform, renderer-ready handoff and source restoration.
-2. **P1 — case choreography:** lifecycle-driven metadata/title entrance, gated scroll, consistent clicked/scroll-triggered next-project morph and destination continuity.
+2. **P1 — case choreography and theme:** lifecycle-driven metadata/title entrance, gated scroll, consistent clicked/scroll-triggered next-project morph, media playback/readiness separation and Atlas theme continuity.
 3. **P2 — remaining shared polish:** real cold-load progress/rolling digits, source footer entrances, residual menu/header differences, card fallback/hover styling, matched-phase lighting/paint review.
 4. **Evidence work, not speculative retuning:** synchronized normal-motion reference captures and native downstream regression coverage. Preserve the praised Home/About/Projects scenes unless those comparisons establish a discrepancy.
 
@@ -27,14 +31,17 @@ The second important mismatch is continuity: the build's Back control always ret
 |---|---|---|
 | **E1 — supplied videos:** `public/videos/Lusion-home.mp4`, `Lusion-about.mp4`, `Lusion-project.mp4`, and `2026-11-06 17-30-56.mp4` | Visible scene identity, composition, sequencing, scroll-driven effects and the approved visual direction. Fresh Home/About/Projects overview contact sheets were generated and opened. Earlier detailed About/scene comparisons are linked below. | Sparse overview frames do not establish easing or full temporal equality. The sampled Projects overview shows archive scrolling/contact, **not a clicked-project opening**. Do not present the zoom equations below as measured from that clip. The About video does not establish footer parity. A filename is not an audit-date authority. |
 | **E2 — archived reference source/CSS** | Selected-card geometry, page-manager relationships, shaders, native durations, reveal windows, menu/footer/loader behavior. Inspected as text, never executed as this application's runtime. | Archive constants are a technical reference, not certification that every constant remains identical on the current live website. |
-| **E3 — live page text** at [Home](https://lusion.co/), [Projects](https://lusion.co/projects), [Atlas](https://lusion.co/projects/atlas_motion) | Content/order cross-check, canonical routes and next links. | Successful text fetches are **not** rendered live WebGL inspection. No fresh synchronized live/reference click film was available in this pass. |
+| **E3 — live page text** at [Home](https://lusion.co/), [Projects](https://lusion.co/projects), [Atlas](https://lusion.co/projects/atlas_motion) | Content/order cross-check, canonical routes and next links. | Successful text fetches are **not** rendered live WebGL inspection. No fresh live browser session was rendered in this audit. The subsequently supplied opening film adds recorded click/reverse evidence under E7. |
 | **E4 — fresh served-build opening probe** | Three normal-motion click flows, actual captured click timestamp, route phases, selected DOM bounds/focus, screencast frames, opened/back states, browser exceptions and failed HTTP responses. | Chromium uses software graphics; mobile is emulated. Sampling is bounded and can be sparse under software rendering. DOM bounds alone cannot establish GPU geometry, visual equality or hardware frame rate. |
 | **E5 — fresh canonical route capture** | All **22 canonical routes × 2 viewports = 44 observations**; route openings and selected section bands. | Deliberately **reduced-motion** captures. Not 44 moving reference comparisons, every media frame, or every pointer/scroll history. |
 | **E6 — prior final-build regression** | The existing final serial round-four navigation, utility, layout, media, Home, Projects and CTA regression results for this unchanged application build. | Historical execution on this build, not a newly rerun full regression in this audit. Functional success does not imply fidelity. |
+| **E7 — new opening-film comparison** | `lusion-project-opening.mp4`: 24.57s, 1920×1080/60fps encoded recording; 68 extracted samples; fresh 1720×912 Home→Oryzo/interior/Back and Home→Atlas/Back observations, zero uncaught errors or HTTP ≥400. Rechecked 22 HTML/27 assets. | Recorded browser content size is inferred; no source DPR/input instrumentation, mobile reverse or fresh live WebGL certification. See the [video update](project-opening-video-audit.md) for hashes, timestamps, limitations and F20–F24. |
 
 **Reference provenance:** repository [quangminh1212/Design_Lusion.co](https://github.com/quangminh1212/Design_Lusion.co), `_astro/hoisted.CUO_IjfL.js`, Git blob `0c57277a2102a61f761357ce2cd432d035cd0a13`. Local inspected/pretty-printed file: `temp/preview-recovery/inspection/reference.js`; accompanying `reference.css`. Line ranges below refer to that **local inspection file**, not original minified GitHub line numbers. Generated captures and inspection binaries remain ignored under `temp/`.
 
-### Fresh results
+### Original whole-site audit results and later update
+
+The three scenarios and 44 captures below are retained evidence from the original audit on this same application build. The later opening-film pass adds two normal-motion 1720×912 scenarios and a repeated fingerprint check; it does not claim the entire old regression/capture series was rerun.
 
 The served **22 HTML responses and 27 JS/CSS assets** were hashed again and all matched the shipped round-four fingerprint. This avoids auditing a stale port or assuming the checkout identifies the running application.
 
@@ -187,6 +194,11 @@ Status key: **Confirmed** = active implementation/source discrepancy; **Observed
 | **F17 / P1 verification, not blind remediation** | **Home tunnel/vortex/blue corridor/astronaut/end** | Approved native geometry, FFT bloom, glass animation, camera progression, astronaut/visor, gems/sticker atlas and end interaction remain. The legacy broad Home validator is still **historically red** on synthetic vortex/cage expectations; round three diagnosed contracts incompatible with the native runtime. It was not rerun or made green here. Build native phase/pixel/geometry gates and reconcile full autoplay/return timing at matched viewport/scroll/input; preserve praised scenes while doing so. Do not tune intensity merely to satisfy the stale threshold or count unused `GoalDownstreamScenes` factories as active scenes—follow actual imports/calls. |
 | **F18 / P2 verification** | **Shared cursor, sound waveform, hover/press micro-interactions and scroll indicator** | Functional custom pointer/sound controls exist; exact ring/badge styling, sound-button canvas/waveform phase, click envelope, header entry and scroll indicator minimum are not newly reference-matched. Inventory each against the native header/section-specific cursor rather than assume one generic ring reproduces them. Port only observed/source-supported curves (reference header includes a 32-segment sound wave and hover fill). Preserve keyboard/fine-pointer/reduced/audio-permission behavior; no autoplay audio or perpetual offscreen loop. Source code alone does not prove audible waveform equality. |
 | **F19 / Intentional boundary** | **Typography, branding, fallback/a11y and utility pages** | Commercial fonts remain disabled under **Font Option 2**; permitted substitutes alter outlines, wrapping and optical dimensions. JITHIN customization remains deliberate. Reduced/fallback/static states, Skip/focus semantics and accessible controls intentionally differ from a WebGL-only original. Document these instead of silently enabling commercial fonts, undoing branding or removing safeguards. See utility scope below. |
+| **F20 / P1 — Confirmed + filmed** | **Specialized DOM disclosure** | Heading/disclaimer/card labels fade separately while the GPU list zooms. Implement source hide **0→.5** / show **.5→1** DOM alpha without fading the live image or persistent header. [Details](project-opening-video-audit.md#f20--p1-dom-fade-and-live-image-zoom-need-separate-layers). |
+| **F21 / P1 — Confirmed** | **Panel readiness/fullscreen/screen state** | Current single reveal/direct sampling differs from native separate active/readiness/highlight/opacity states; fullscreen masks should not shrink like ordinary panels. Preserve existing RGB foliage; connect its page-active disclosure and preview threshold. See video update. |
+| **F22 / P1 — Observed** | **Atlas theme / card fog / incoming preview** | New film is dark after settling; fresh build capture is pale. Active Atlas data is `#f0f1fa`/black. Establish reference role tokens and update the connected theme chain, not a global inversion. Exact compressed-pixel color is not an authoritative CSS token. |
+| **F23 / P1 — Confirmed** | **Destination render vs film playback permissions** | `isTransitioning` is cleared in preparing, so visible destination films may advance under cover; native playback follows page-manager idle. Separate rendering, scrolling and timeline permissions. Do not infer a numeric movie-time offset from unmatched screenshots. |
+| **F24 / P2 — Confirmed** | **Of The Oak / Worldcoin text-panel emphasis** | Native position-encoded progressive text emphasis is absent from static paragraphs. Add owner-driven, semantic, permitted-font emphasis in the native viewport window; keep reduced text fully readable. Source-backed; not depicted in the new opening film. |
 
 ### Effects that should not be invented
 
@@ -284,11 +296,15 @@ With the identified production build already running on port 3003:
 BASE_URL=http://127.0.0.1:3003 CHROMIUM_MULTIPROCESS=1 \
   node scripts/audit-project-openings.mjs
 
+# Additional recorded-reference comparison: see the video update for output options.
+OPENING_AUDIT_REFERENCE=1 CHROMIUM_MULTIPROCESS=1 \
+  node scripts/audit-project-openings.mjs
+
 BASE_URL=http://127.0.0.1:3003 CHROMIUM_MULTIPROCESS=1 \
   AUDIT_PHASE=opening-audit node scripts/audit-site-fidelity.mjs
 ```
 
-The first script is a **read-only observer**, not a parity assertion: it records actual trusted card click timing, source bounds/phase samples, browser screencasts, destination state and the current explicit desktop Back behavior. It skips the cold loader intentionally to isolate project opening; it does not validate F05. The second uses the existing reduced-motion route-capture policy. Neither script modifies application state outside its disposable browser context or changes application files.
+The first script is a **read-only observer**, not a parity assertion: it records actual trusted card click timing, source bounds/phase samples, browser screencasts, destination state and the current explicit desktop Back behavior. It skips the cold loader intentionally to isolate project opening; it does not validate F05. The canonical-route capture script uses the existing reduced-motion policy. Neither script modifies application state outside its disposable browser context or changes application files.
 
 ### Relevant implementation owners
 
@@ -300,6 +316,8 @@ The first script is a **read-only observer**, not a parity assertion: it records
 
 ## Bottom line
 
+The [new film update](project-opening-video-audit.md) strengthens the opening/reverse evidence and adds F20–F24, particularly Atlas theme continuity, scoped DOM disclosure and media timeline ownership. It does not supply new evidence for every Home/About scene or mobile/device state.
+
 The build already contains the major scene techniques; it should **not** be globally restyled or have its approved scenes replaced. The next meaningful improvement is the missing **selected-list → case → selected-list continuity**, followed by lifecycle-correct case entrances and consistent next-project activation. Loader/footer/menu residuals and remaining optical/physics/paint calibration come after that.
 
-This report inventories confirmed gaps and unverified risks across every canonical page family and all 19 cases. It does **not** claim every possible discrepancy has been proven, all live-site frames were compared, or the site is an exact clone. Those stronger claims require synchronized reference interaction recordings and device testing that are not available in this audit.
+This report inventories confirmed gaps and unverified risks across every canonical page family and all 19 cases. It does **not** claim every possible discrepancy has been proven, all live-site frames were compared, or the site is an exact clone. Those stronger claims require additional synchronized reference interaction recordings and device testing beyond the two recorded opening examples available here.
