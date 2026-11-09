@@ -17,6 +17,33 @@ export function goalWorldRatios(tunnel: number, shatter: number) {
   return { black, white, drop: clamp(shatter, 0, 1), transform: 1 - Math.cos(fit(black, .6, 1) * Math.PI / 2) };
 }
 
+/** Native blue flight has weight 2, followed by a weight-1 monitor pull-back.
+ * Do not drive flight turbulence, aperture projection or bloom with the later
+ * DOM monitor easing: that leaves a five-unit displacement alive in the corridor.
+ */
+export function goalWhiteFlightState(white: number) {
+  const progress = clamp(white, 0, 1), frame = clamp(progress * 1.5, 0, 1);
+  const moving = Math.min(progress, .3);
+  // Integrate the changing frequency instead of multiplying absolute time by it.
+  // Start at the existing black-flight terminal phases (10*.7 and 10*.15).
+  const positionPhase = 7 + 3 * (.5 * moving - .5 * moving * moving + .2 * Math.max(0, progress - .3));
+  const rotationPhase = 1.5 + 3 * (.4 * moving - 5 / 12 * moving * moving + .15 * Math.max(0, progress - .3));
+  return {
+    frame, frameOut: clamp(progress * 3 - 2, 0, 1),
+    positionAmplitude: 5 * (1 - fit(frame, 0, .75)),
+    rotationAmplitude: 15 * (1 - fit(frame, 0, .75)),
+    bloom: fit(frame, 0, .05, 4, 2), positionPhase, rotationPhase,
+  };
+}
+
+/** The captured 15-frame break starts immediately; no second impact delay. */
+export function goalGlassState(drop: number, frames: number) {
+  const progress = clamp(drop, 0, 1);
+  return { visible: progress > 0 && progress < 1,
+    frame: Math.sin(progress * Math.PI / 2) * Math.max(0, frames - 1),
+    fragmentScale: 1 - fit(progress, .75, 1) };
+}
+
 // Integrate the reference pulse/linear rates along the authored playhead.
 // Multiplying the current rate by elapsed time adds artificial acceleration.
 const integrationSteps = 4096;
@@ -218,8 +245,13 @@ export function goalFbm(time: number) { return valueNoise(time) * .5 + valueNois
 const brownianEuler = new THREE.Euler();
 export function sampleGoalBrownian(time: number, seed: number, posAmplitude: number, rotAmplitude: number,
   posFrequency: number, rotFrequency: number, position: THREE.Vector3, rotation: THREE.Quaternion) {
+  sampleGoalBrownianPhases(time * posFrequency, time * rotFrequency, seed, posAmplitude, rotAmplitude, position, rotation);
+}
+
+export function sampleGoalBrownianPhases(positionPhase: number, rotationPhase: number, seed: number,
+  posAmplitude: number, rotAmplitude: number, position: THREE.Vector3, rotation: THREE.Quaternion) {
   const shift = -5713 + seed * 173;
-  position.set(goalFbm(shift + time * posFrequency), goalFbm(shift + 137 + time * posFrequency), goalFbm(shift + 277 + time * posFrequency)).multiplyScalar(posAmplitude / .75);
-  rotation.setFromEuler(brownianEuler.set(goalFbm(shift + 87 + time * rotFrequency) * rotAmplitude / .75,
-    goalFbm(shift + 321 + time * rotFrequency) * rotAmplitude / .75, 0));
+  position.set(goalFbm(shift + positionPhase), goalFbm(shift + 137 + positionPhase), goalFbm(shift + 277 + positionPhase)).multiplyScalar(posAmplitude / .75);
+  rotation.setFromEuler(brownianEuler.set(goalFbm(shift + 87 + rotationPhase) * rotAmplitude / .75,
+    goalFbm(shift + 321 + rotationPhase) * rotAmplitude / .75, 0));
 }

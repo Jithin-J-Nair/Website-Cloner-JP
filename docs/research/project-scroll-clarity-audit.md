@@ -1,5 +1,7 @@
 # Project-scroll clarity audit and whole-site delta register
 
+> **Latest Home cinematic follow-up:** [home-tunnel-framing-audit.md](home-tunnel-framing-audit.md) records the astronaut/blue-flight phase correction, glass timing, post-display foreground composition and near-camera glass depth (F29–F33), final-build evidence, the still-failing software autonomous sampling gate, and the refreshed whole-site backlog. Current preview 3003 is build `eVMxYxj-7MeL2vwLW0AY3`; identities below describe their historical passes. Approved gallery/thumbnail fixes are retained.
+
 ## Result
 
 **Four confirmed rendering/motion defects are fixed in the shared renderer used by all 19 case studies.** The accepted thumbnail opening/reverse is retained. Production preview **3003** serves build **`6xmQgQMijkAfWzQ5gJRNF`**, verified against **22 generated HTML files and 26 referenced JS/CSS assets**, all byte-identical and HTTP 200.

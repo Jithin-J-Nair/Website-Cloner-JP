@@ -1,5 +1,7 @@
 # Full-experience fidelity audit
 
+> **Latest Home cinematic follow-up:** [home-tunnel-framing-audit.md](home-tunnel-framing-audit.md) records the astronaut/blue-flight phase correction, glass timing, post-display foreground composition and near-camera glass depth (F29–F33), final-build evidence, the still-failing software autonomous sampling gate, and the refreshed whole-site backlog. Current preview 3003 is build `eVMxYxj-7MeL2vwLW0AY3`; identities below describe their historical passes. Approved gallery/thumbnail fixes are retained.
+
 > **Latest scroll-clarity follow-up:** [project-scroll-clarity-audit.md](project-scroll-clarity-audit.md) records the new blur investigation and fixes F25–F28 (per-frame scroll input, image resolution, exact render-target grid, fullscreen mask), with fresh all-19-case and all-22-page checks. Production 3003 is now build `6xmQgQMijkAfWzQ5gJRNF`. Prior build identities and unresolved wording below are historical; the new report distinguishes shipped fixes from remaining fidelity work.
 
 > **Implementation follow-up:** the selected thumbnail/list zoom, origin-aware reverse, Atlas dark runtime theme and related lifecycle corrections are now implemented and verified on production 3003, build `Q-EZhr3zZU6Ewin09idjd`. See [implementation and production checks](../validation/project-thumbnail-zoom.md). The audit findings/build identities below describe the earlier baseline; they are not all unresolved, and this release does not claim whole-site exact parity.

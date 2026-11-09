@@ -10,7 +10,7 @@ import * as THREE from 'three';
 fs.mkdirSync('temp', { recursive: true });
 const dir = fs.mkdtempSync(path.resolve('temp/goal-unit-'));
 try {
-  for (const name of ['lib/lusion-buf-loader', 'components/home/GoalDownstreamScenes', 'components/home/AstronautEmergenceAssets', 'components/home/GoalReferenceShaders', 'components/home/GoalReferenceWorlds', 'components/home/GoalReferenceBloomPass', 'components/home/GoalReferenceEnd', 'components/home/GoalReferenceEndShaders']) {
+  for (const name of ['lib/lusion-buf-loader', 'components/home/GoalDownstreamScenes', 'components/home/AstronautEmergenceAssets', 'components/home/GoalReferenceShaders', 'components/home/GoalReferenceWorlds', 'components/home/GoalReferenceBloomPass', 'components/home/GoalReferenceOverlayPass', 'components/home/GoalReferenceEnd', 'components/home/GoalReferenceEndShaders']) {
     const source = fs.readFileSync(`src/${name}.ts`, 'utf8').replaceAll('@/lib/lusion-buf-loader', './lusion-buf-loader.mjs').replaceAll('./GoalReferenceShaders', './GoalReferenceShaders.mjs').replaceAll('./GoalReferenceWorlds', './GoalReferenceWorlds.mjs').replaceAll('./GoalReferenceEndShaders', './GoalReferenceEndShaders.mjs');
     const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
     fs.writeFileSync(path.join(dir, `${path.basename(name)}.mjs`), compiled);
@@ -18,10 +18,11 @@ try {
   const { parseLusionBuf } = await import(pathToFileURL(path.join(dir, 'lusion-buf-loader.mjs')));
   const { createGlassFrameSampler, createGoalPlaybackPath } = await import(pathToFileURL(path.join(dir, 'GoalDownstreamScenes.mjs')));
   const { createCapturedPoseSampler, createCapturedRootSampler, applyCapturedDualQuaternionSkinning } = await import(pathToFileURL(path.join(dir, 'AstronautEmergenceAssets.mjs')));
-  const { createGoalBlackGeometry, createGoalWhiteGeometry, createGoalGlassAnimationTextures, goalBlackTravelOffset, goalWorldRatios, sampleGoalBrownian } = await import(pathToFileURL(path.join(dir, 'GoalReferenceWorlds.mjs')));
+  const { createGoalBlackGeometry, createGoalWhiteGeometry, createGoalGlassAnimationTextures, goalBlackTravelOffset, goalWorldRatios, goalWhiteFlightState, goalGlassState, sampleGoalBrownian, sampleGoalBrownianPhases } = await import(pathToFileURL(path.join(dir, 'GoalReferenceWorlds.mjs')));
   const { createGoalDiamondGeometry, createGoalStickerGeometry, createGoalEndRandom } = await import(pathToFileURL(path.join(dir, 'GoalReferenceEnd.mjs')));
   const { GOAL_STICKER_RECTS, GOAL_DIAMOND_PLANES } = await import(pathToFileURL(path.join(dir, 'GoalReferenceEndShaders.mjs')));
   const { GoalReferenceBloomPass } = await import(pathToFileURL(path.join(dir, 'GoalReferenceBloomPass.mjs')));
+  const { GoalReferenceOverlayPass } = await import(pathToFileURL(path.join(dir, 'GoalReferenceOverlayPass.mjs')));
   const load = (name) => {
     const data = fs.readFileSync(`media-bundle/models/tunnels/${name}.buf`);
     return parseLusionBuf(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
@@ -88,6 +89,34 @@ try {
   sampleGoalBrownian(0,3,12,10,.2,.6,noiseP,noiseQ); sampleGoalBrownian(7,0,5,60,.4,.15,noiseP,noiseQ);
   assert.deepEqual([...noiseP.toArray(),...noiseQ.toArray()],noiseState);
   assert.ok(Math.abs(noiseQ.length()-1)<1e-8);
+  const whiteStart=goalWhiteFlightState(0), whiteMid=goalWhiteFlightState(.5), whiteEnd=goalWhiteFlightState(1);
+  assert.equal(whiteStart.frame,0);assert.equal(whiteStart.bloom,4);
+  assert.equal(whiteStart.positionAmplitude,5);assert.equal(whiteStart.rotationAmplitude,15);
+  assert.equal(whiteStart.positionPhase,7);assert.equal(whiteStart.rotationPhase,1.5);
+  assert.equal(whiteMid.frame,.75);assert.equal(whiteMid.positionAmplitude,0);assert.equal(whiteMid.rotationAmplitude,0);
+  assert.equal(whiteEnd.frame,1);assert.equal(whiteEnd.frameOut,1);
+  for(let i=0;i<=1000;i++) {
+    const w=i/1000, flight=goalWhiteFlightState(w), previous=goalWhiteFlightState(Math.max(0,w-.001));
+    assert.equal(flight.frame,Math.min(1,w*1.5),'native weight-2 flight / weight-1 pull-back');
+    assert.ok(Math.abs(flight.positionAmplitude-5*(1-Math.min(1,flight.frame/.75)))<1e-12);
+    assert.ok(Math.abs(flight.bloom-(4-2*Math.min(1,flight.frame/.05)))<1e-12);
+    assert.ok(flight.positionPhase>=previous.positionPhase&&flight.rotationPhase>=previous.rotationPhase);
+    if(w>=.5) {
+      sampleGoalBrownianPhases(flight.positionPhase,flight.rotationPhase,0,flight.positionAmplitude,flight.rotationAmplitude,noiseP,noiseQ);
+      assert.equal(noiseP.length(),0);assert.equal(noiseQ.angleTo(new THREE.Quaternion()),0,'no late blue-flight spin');
+    }
+    const glass=goalGlassState(w,15);
+    assert.ok(Math.abs(glass.frame-Math.sin(w*Math.PI/2)*14)<1e-12);
+    assert.equal(glass.visible,w>0&&w<1);
+    assert.ok(Math.abs(glass.fragmentScale-(1-Math.max(0,(w-.75)/.25)))<1e-12);
+  }
+  for(const field of ['positionPhase','rotationPhase']) {
+    const eps=1e-6, mid=goalWhiteFlightState(.3)[field];
+    const left=(mid-goalWhiteFlightState(.3-eps)[field])/eps,right=(goalWhiteFlightState(.3+eps)[field]-mid)/eps;
+    assert.ok(Math.abs(left-right)<1e-5,'integrated white-flight frequency is C1 at the clamp');
+  }
+  assert.ok(goalGlassState(.01,15).frame>0,'no invented 18-percent dead zone');
+  console.log('PASS: 1,001 native blue phase/bloom/noise and glass trajectory/visibility/shrink samples; integrated noise is continuous and stops before monitor pull-back');
   console.log('PASS: native 96/456 grid instances, encoded attributes, immutable cache, 16+16 blue blocks, fold ratios and deterministic FBM');
 
   const diamondSource = load('diamond'), gems = createGoalDiamondGeometry(diamondSource), gemsAgain = createGoalDiamondGeometry(diamondSource);
@@ -140,6 +169,29 @@ try {
     assert.ok(pass.targets.every(t=>t.texture.type===THREE.FloatType));
     pass.dispose(); input.dispose();output.dispose();
   }
+  const overlayScene=new THREE.Scene(),overlayCamera=new THREE.PerspectiveCamera();
+  const overlayRead=new THREE.WebGLRenderTarget(32,24),overlayWrite=new THREE.WebGLRenderTarget(32,24),savedTarget=new THREE.WebGLRenderTarget(1,1);
+  let overlayTarget=savedTarget,prepared=false,throwOverlay=false;const overlayDraws=[];
+  const overlayPass=new GoalReferenceOverlayPass(overlayScene,overlayCamera,(texture,w,h)=>{
+    assert.equal(texture,overlayRead.texture);assert.equal(w,32);assert.equal(h,24);prepared=true;
+  });
+  const overlayRenderer={autoClear:true,getRenderTarget:()=>overlayTarget,setRenderTarget:t=>{overlayTarget=t},
+    clear:(color,depth,stencil)=>{assert.equal(color,false);assert.equal(depth,true);assert.equal(stencil,true)},
+    render(object){assert.ok(prepared);assert.notEqual(overlayTarget?.texture,overlayRead.texture,'never read from the output attachment');
+      overlayDraws.push(object===overlayScene?'foreground':'copy');if(throwOverlay&&object===overlayScene)throw new Error('intentional overlay failure');}};
+  for(const toScreen of [false,true]) {
+    overlayPass.renderToScreen=toScreen;overlayPass.render(overlayRenderer,overlayWrite,overlayRead);
+    assert.equal(overlayTarget,savedTarget);assert.equal(overlayRenderer.autoClear,true);
+  }
+  assert.deepEqual(overlayDraws,['copy','foreground','copy','foreground']);
+  throwOverlay=true;assert.throws(()=>overlayPass.render(overlayRenderer,overlayWrite,overlayRead),/intentional overlay failure/);
+  assert.equal(overlayTarget,savedTarget);assert.equal(overlayRenderer.autoClear,true);
+  overlayPass.dispose();overlayRead.dispose();overlayWrite.dispose();savedTarget.dispose();
+  const ownerSource=fs.readFileSync('src/components/home/GoalTunnelSection.tsx','utf8');
+  assert.ok(ownerSource.indexOf('composer.addPass(overlayPass)')>ownerSource.indexOf('composer.addPass(outputPass)'));
+  assert.ok(ownerSource.includes('2 * GOAL_WORLD_SCALE')&&!ownerSource.includes('glassRefractionTarget'));
+  assert.ok(ownerSource.includes('nativeRatios.white >= 1')&&ownerSource.includes('copy.intensity = light.intensity'));
+  console.log('PASS: post-display copy/foreground order, source refraction input, no read/write alias, throw-path state restoration, native glass depth and illuminated late astronaut ownership');
   console.log('PASS: square/wide/tall FFT target scheduling, no read/write alias, unitary stage normalization, cached kernel and renderer state restoration');
 
   for (const name of ['astronaut_in_animation','astronaut_out_animation']) {

@@ -7,9 +7,10 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { advanceCinematicProgress, cinematicRenderDpr, GOAL_CINEMATIC_SECONDS } from "@/lib/home-motion";
-import { createGoalReferenceWorlds, createGoalGlassAnimationTextures, goalWorldRatios, sampleGoalBrownian, GOAL_WORLD_SCALE } from "./GoalReferenceWorlds";
+import { createGoalReferenceWorlds, createGoalGlassAnimationTextures, goalWorldRatios, goalWhiteFlightState, goalGlassState, sampleGoalBrownian, sampleGoalBrownianPhases, GOAL_WORLD_SCALE } from "./GoalReferenceWorlds";
 import { createGoalReferenceEnd, createGoalReferenceVisor } from "./GoalReferenceEnd";
 import { GoalReferenceBloomPass } from "./GoalReferenceBloomPass";
+import { GoalReferenceOverlayPass } from "./GoalReferenceOverlayPass";
 import { glassVertex, glassFragment } from "./GoalReferenceShaders";
 import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
 import { createGpuFrameTimer } from "@/lib/gpu-frame-timer";
@@ -92,6 +93,12 @@ declare global {
         bakedFrame: number;
         astronautMatrix: number[];
         cameraMatrix: number[];
+        cameraFov: number;
+        astronautRootNdc: number[];
+        whiteFlightRatio: number;
+        noisePositionAmplitude: number;
+        glassFrame: number;
+        glassFragmentScale: number;
         endLoaded: boolean;
         endDiamondCount: number;
         endStickerCount: number;
@@ -380,6 +387,7 @@ export function GoalTunnelSection() {
     // 4. Load captured Lusion astronaut meshes first; the unrelated GLB is last-resort fallback only.
     // -------------------------------------------------------------------------
     const nativeLightMask = { value: 0 };
+    const nativeDisplayAlpha = { value: 0 };
     let mainAstro: LoadedAstronautRig | null = null;
     const clones: LoadedAstronautRig[] = [];
     const visorLed = createGoalReferenceVisor(track);
@@ -410,8 +418,14 @@ export function GoalTunnelSection() {
       } else renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * .001);
     });
 
-    // Live scene color buffer: animated fragments refract the current tunnel and astronaut.
-    let glassRefractionTarget: THREE.WebGLRenderTarget | null = null;
+    // Native PreUfx: finished display -> glass and emerged astronaut, after bloom.
+    const overlayScene = new THREE.Scene();
+    // The current suit uses PBR materials, unlike the source's self-lit program.
+    // Transfer its illumination as well as its geometry; never leave it black
+    // merely because native foreground ownership changed after the blue flight.
+    const overlayLights = scene.children.filter((object): object is THREE.Light => object instanceof THREE.Light)
+      .map(light => { const copy = light.clone(); overlayScene.add(copy); return { light, copy }; });
+    let glassRefractionReady = false;
 
     // Captured rigid-body shard transforms are interpolated continuously at each scroll sample.
     let shardsMesh: THREE.Mesh | null = null;
@@ -457,7 +471,7 @@ export function GoalTunnelSection() {
         shardsMesh.userData = { restBounds, shardSpread: 1, sampleFrame(frame: number) {
           mat.uniforms.u_frameFrom.value = Math.floor(frame); mat.uniforms.u_frameTo.value = Math.min(framesPerShard - 1, Math.floor(frame) + 1); mat.uniforms.u_frameRatio.value = frame % 1;
         } };
-        scene.add(shardsMesh);
+        overlayScene.add(shardsMesh);
 
       })
       .catch((error: unknown) => {
@@ -478,14 +492,14 @@ export function GoalTunnelSection() {
             nativeBridgedMaterials.add(material);
             const compile = material.onBeforeCompile, key = material.customProgramCacheKey();
             material.onBeforeCompile = function(shader, renderer) {
-              compile.call(this, shader, renderer); shader.uniforms.u_goalNativeLightMask = nativeLightMask;
-              shader.fragmentShader = "uniform float u_goalNativeLightMask;\n" + shader.fragmentShader;
+              compile.call(this, shader, renderer); shader.uniforms.u_goalNativeLightMask = nativeLightMask; shader.uniforms.u_goalDisplayAlpha = nativeDisplayAlpha;
+              shader.fragmentShader = "uniform float u_goalNativeLightMask;uniform float u_goalDisplayAlpha;\n" + shader.fragmentShader;
               const end = shader.fragmentShader.lastIndexOf("}");
               shader.fragmentShader = shader.fragmentShader.slice(0, end) +
-                "gl_FragColor.a=mix(gl_FragColor.a,max(0.,dot(gl_FragColor.rgb,vec3(.299,.587,.114))-1.)*.5,u_goalNativeLightMask);\n" +
+                "gl_FragColor.a=mix(mix(gl_FragColor.a,max(0.,dot(gl_FragColor.rgb,vec3(.299,.587,.114))-1.)*.5,u_goalNativeLightMask),1.,u_goalDisplayAlpha);\n" +
                 "gl_FragColor.rgb=mix(gl_FragColor.rgb,sRGBTransferOETF(vec4(max(gl_FragColor.rgb,vec3(0.)),1.)).rgb,u_goalNativeLightMask);\n" + shader.fragmentShader.slice(end);
             };
-            material.customProgramCacheKey = () => key + "-goal-light-selection-display-v2"; material.needsUpdate = true;
+            material.customProgramCacheKey = () => key + "-goal-light-selection-display-v3"; material.needsUpdate = true;
           }
         };
         applyNativeDisplayBridge(primary);
@@ -566,20 +580,13 @@ export function GoalTunnelSection() {
     let referenceBloom: GoalReferenceBloomPass | null = null;
     let outputPass: OutputPass | null = null;
 
-    const glassRefractionScale = isMobileInit ? 0.58 : isSoftwareRenderer ? 0.68 : 0.92;
-    glassRefractionTarget = track(new THREE.WebGLRenderTarget(
-      Math.max(2, Math.floor(initW * initDpr * glassRefractionScale)),
-      Math.max(2, Math.floor(initH * initDpr * glassRefractionScale)),
-      {
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType,
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        depthBuffer: true,
-        stencilBuffer: true,
-      }
-    ));
-    glassRefractionTarget.texture.colorSpace = THREE.LinearSRGBColorSpace;
+    const overlayPass = new GoalReferenceOverlayPass(overlayScene, camera, (texture, width, height) => {
+      if (!shardsMesh?.visible) return;
+      const material = shardsMesh.material as THREE.ShaderMaterial;
+      material.uniforms.u_backgroundTexture.value = texture;
+      material.uniforms.u_resolution.value.set(width, height);
+      glassRefractionReady = true;
+    });
 
     {
       const bufW = Math.max(2, Math.floor(initW * initDpr));
@@ -630,6 +637,7 @@ export function GoalTunnelSection() {
       referenceBloom = new GoalReferenceBloomPass(); referenceBloom.enabled = false; composer.addPass(referenceBloom);
       outputPass = new OutputPass();
       composer.addPass(outputPass);
+      composer.addPass(overlayPass);
     }
 
     // -------------------------------------------------------------------------
@@ -723,6 +731,8 @@ export function GoalTunnelSection() {
         tunnelProgress: 0, shatterProgress: 0, waitProgress: 0, bakedFrame: 0,
         astronautMatrix: new Array<number>(16).fill(0),
         cameraMatrix: new Array<number>(16).fill(0),
+        cameraFov: 45, astronautRootNdc: [0, 0, 0], whiteFlightRatio: 0,
+        noisePositionAmplitude: 0, glassFrame: 0, glassFragmentScale: 1,
         endLoaded: false, endDiamondCount: 0, endStickerCount: 0, endTime: 0, visorAtlasReady: false, ctaReveal: 0,
         nativeWorldsReady: false, worldError: null, blackInstances: 0, whiteInstances: 0, blackOffset: 0, bloomTechnique: "emergence",
         trussLoaded: false, shardsLoaded: false, portalFlash: 0, flashVisible: false,
@@ -901,10 +911,7 @@ export function GoalTunnelSection() {
         composer.setSize(W, H);
         bloomPass.setSize(W, H);
       }
-      glassRefractionTarget?.setSize(
-        Math.max(2, Math.floor(W * dpr * glassRefractionScale)),
-        Math.max(2, Math.floor(H * dpr * glassRefractionScale))
-      );
+
 
       if (window.__goalAstronautTelemetry) {
         window.__goalAstronautTelemetry.renderWidth = Math.floor(W * dpr);
@@ -1000,6 +1007,7 @@ export function GoalTunnelSection() {
     const _headWorld = new THREE.Vector3();
     const _camLook = new THREE.Vector3();
     const _monitorCenter = new THREE.Vector3();
+    const _glassCenter = new THREE.Vector3();
     const _monitorRotation = new THREE.Quaternion();
     const _screenRotation = new THREE.Quaternion();
     const _zAxis = new THREE.Vector3(0, 0, 1);
@@ -1055,6 +1063,8 @@ export function GoalTunnelSection() {
       const shatterStart = m.imgOutTop - H * 0.55;
       const shatterEnd = m.endTop;
       const tShatter = clamp01((sy - shatterStart) / Math.max(1, shatterEnd - shatterStart));
+      const whiteFlight = goalWhiteFlightState(goalWorldRatios(tTunnel, tShatter).white);
+      const glassState = goalGlassState(tShatter, framesPerShard);
       const tWait = clamp01((sy - m.endTop) / Math.max(1, m.endHeight));
       if (tShatter < 1) idleEpoch = null;
       else if (idleEpoch === null) idleEpoch = elapsedSec;
@@ -1132,10 +1142,12 @@ export function GoalTunnelSection() {
         const ratios = goalWorldRatios(tTunnel, tShatter);
         const offset = tTunnel >= .815 ? 60 * (1 - ratios.white) : Math.sin(ratios.black * 10 + (reducedMotion ? 1 : playing() ? elapsedSec : ratios.black * 10 + ratios.white * 3)) * 7.5 * smoothstep(0, .2, ratios.black);
         const expectedFov = m.isMobile ? 54 : 45;
-        const frameFraction = lerp(1, m.imgOutHeight / H, tOutPull);
+        // Native projection follows the weight-2 blue flight, not the later
+        // weight-1 monitor animation. Keep the approved late CTA adaptation.
+        const frameFraction = lerp(1, m.imgOutHeight / H, whiteFlight.frame);
         const apertureFov = 2 * Math.atan(Math.tan(expectedFov * Math.PI / 360) / frameFraction) * 180 / Math.PI;
-        // After leaving the monitor, use the wider portrait framing observed in
-        // the recording. Keep the approved tunnel/aperture camera unchanged.
+        // Retain the existing late CTA framing adaptation. The desktop film
+        // does not establish a native mobile FOV of 76 degrees.
         const baseFov = lerp(apertureFov, m.isMobile ? 76 : 60, smoothstep(.75, 1, tShatter));
         // Reference dolly compensates distance, not an independently banked camera.
         const dolly = Math.tan(baseFov * Math.PI / 720) / Math.tan((baseFov + offset) * Math.PI / 720) - 1;
@@ -1356,7 +1368,7 @@ export function GoalTunnelSection() {
       nativeLightMask.value = inEmergencePhase ? 0 : 1;
       if (referenceBloom) {
         referenceBloom.enabled = !inEmergencePhase;
-        referenceBloom.amount = tTunnel < .815 ? 6 : tShatter < 1 ? lerp(4, 2, clamp01(tOutPull / .05)) : lerp(0, 20, clamp01(tWait / .1));
+        referenceBloom.amount = tTunnel < .815 ? 6 : tShatter < 1 ? whiteFlight.bloom : lerp(0, 20, clamp01(tWait / .1));
         referenceBloom.saturation = tTunnel < .815 ? lerp(1, 3, clamp01(nativeRatios.black / .7)) : 1;
         referenceBloom.haloStrength = tTunnel < .815 ? lerp(.15 + .25 * smoothstep(.2, .4, nativeRatios.black), .08, smoothstep(.65, .75, nativeRatios.black)) : 0;
       }
@@ -1392,17 +1404,23 @@ export function GoalTunnelSection() {
         worlds.white.scale.setScalar(GOAL_WORLD_SCALE);
       }
       if (shardsMesh) {
-        shardsMesh.visible = tShatter > .18 && tShatter < 1 && tWait <= .001;
+        shardsMesh.visible = glassState.visible && tWait <= .001;
         if (shardsMesh.visible) {
           const material = shardsMesh.material as THREE.ShaderMaterial;
           // Source sine-out rigid trajectories persist through the drop; fragments
           // shrink only in the last quarter rather than vanishing after .42.
-          const burst = clamp01((tShatter - .18) / .78);
-          shardsMesh.userData.sampleFrame(Math.sin(burst * Math.PI / 2) * (framesPerShard - 1));
-          material.uniforms.u_fragmentScale.value = 1 - clamp01((tShatter - .75) / .25);
+          shardsMesh.userData.sampleFrame(glassState.frame);
+          material.uniforms.u_fragmentScale.value = glassState.fragmentScale;
           const bounds = shardsMesh.userData.restBounds as THREE.Box3;
-          const scale = monWorldH / (bounds.max.y - bounds.min.y);
-          shardsMesh.position.copy(_monitorCenter); shardsMesh.quaternion.copy(_monitorRotation); shardsMesh.scale.setScalar(scale);
+          // Native EndCameraDepthToFrame = 2, in the same .208 world scale.
+          // Sharing the world-z=0 stencil plane stretches the rigid trajectories
+          // across five world units instead of placing the glass near the camera.
+          const depth = 2 * GOAL_WORLD_SCALE;
+          const glassWorldH = 2 * depth * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+          _glassCenter.set((outCenterX / W * 2 - 1) * glassWorldH * camera.aspect / 2,
+            (1 - outBaseY / H * 2) * glassWorldH / 2, -depth).applyMatrix4(camera.matrixWorld);
+          const scale = monWorldH * depth / camera.position.z / (bounds.max.y - bounds.min.y);
+          shardsMesh.position.copy(_glassCenter); shardsMesh.quaternion.copy(_monitorRotation); shardsMesh.scale.setScalar(scale);
         }
       }
 
@@ -1533,9 +1551,15 @@ export function GoalTunnelSection() {
           const whiteActive = tTunnel >= .815;
           const frame = whiteActive ? (nativeRatios.white < 1 ? nativeRatios.white * 79 : 79 + tShatter * 20) : 99;
           mainAstro.sampleCapturedRoot(whiteActive ? "out" : "in", frame, _rootPosition, _rootOrientation);
-          const noiseFade = whiteActive ? 1 - smoothstep(0, .75, tOutPull) : nativeRatios.black;
-          sampleGoalBrownian(motionTime, 0, 5 * noiseFade, (whiteActive ? 15 : 60) * noiseFade,
-            whiteActive ? lerp(.5, .2, tOutPull) : .2 + .5 * nativeRatios.black, .15, _noisePosition, _noiseRotation);
+          if (whiteActive) {
+            sampleGoalBrownianPhases(whiteFlight.positionPhase, whiteFlight.rotationPhase, 0,
+              whiteFlight.positionAmplitude, whiteFlight.rotationAmplitude, _noisePosition, _noiseRotation);
+          } else {
+            // Preserve the approved black flight while carrying its terminal
+            // noise phases continuously into the reference's blue-flight fade.
+            sampleGoalBrownian(motionTime, 0, 5 * nativeRatios.black, 60 * nativeRatios.black,
+              .2 + .5 * nativeRatios.black, .15, _noisePosition, _noiseRotation);
+          }
           _noisePosition.applyQuaternion(_rootOrientation);
           _rootPosition.add(_noisePosition); _rootOrientation.multiply(_noiseRotation);
           _rootPosition.y -= (m.isMobile ? 0 : .4) * smoothstep(0, 1, tShatter);
@@ -1622,39 +1646,20 @@ export function GoalTunnelSection() {
       gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.18 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "vortex");
       glRenderer.info.reset();
       worlds.renderFeedback(glRenderer, camera, Boolean(reducedMotion));
-      let glassRefractionReady = false;
-      if (shardsMesh?.visible && glassRefractionTarget) {
-        const wasVisible = shardsMesh.visible;
-        const previousTarget = glRenderer.getRenderTarget();
-        const previousToneMapping = glRenderer.toneMapping;
-        const previousOutputColorSpace = glRenderer.outputColorSpace;
-        const previousAutoClear = glRenderer.autoClear;
-        const previousClearColor = glRenderer.getClearColor(new THREE.Color()).clone();
-        const previousClearAlpha = glRenderer.getClearAlpha();
-        try {
-          shardsMesh.visible = false;
-          glRenderer.setRenderTarget(glassRefractionTarget);
-          glRenderer.autoClear = true;
-          glRenderer.toneMapping = THREE.NoToneMapping;
-          glRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-          glRenderer.setClearColor(0x000000, 1);
-          glRenderer.clear(true, true, true);
-          glRenderer.render(scene, camera);
-          glassRefractionReady = true;
-          const shardMaterial = shardsMesh.material as THREE.ShaderMaterial;
-          shardMaterial.uniforms.u_backgroundTexture.value = glassRefractionTarget.texture;
-          shardMaterial.uniforms.u_resolution.value.set(glRenderer.domElement.width, glRenderer.domElement.height);
-        } catch {
-          glassRefractionReady = false;
-        } finally {
-          glRenderer.setRenderTarget(previousTarget);
-          glRenderer.toneMapping = previousToneMapping;
-          glRenderer.outputColorSpace = previousOutputColorSpace;
-          glRenderer.autoClear = previousAutoClear;
-          glRenderer.setClearColor(previousClearColor, previousClearAlpha);
-          shardsMesh.visible = wasVisible;
-        }
+      glassRefractionReady = false;
+      // The source transfers the astronaut out of the tunnel stage when the
+      // blue root curve ends. Render that foreground once, after bloom, with
+      // display alpha rather than reusing its light-selection alpha as coverage.
+      const astronautOverlay = !inEmergencePhase && nativeRatios.white >= 1;
+      if (mainAstro && mainAstro.root.parent !== (astronautOverlay ? overlayScene : scene)) {
+        (astronautOverlay ? overlayScene : scene).add(mainAstro.root);
       }
+      nativeDisplayAlpha.value = astronautOverlay ? 1 : 0;
+      for (const { light, copy } of overlayLights) {
+        copy.intensity = light.intensity; copy.color.copy(light.color);
+        copy.position.copy(light.position); copy.quaternion.copy(light.quaternion);
+      }
+      overlayPass.enabled = Boolean(shardsMesh?.visible) || astronautOverlay;
       if (composer) {
         composer.render(1 / 60);
       } else {
@@ -1683,6 +1688,13 @@ export function GoalTunnelSection() {
         state.visorAtlasReady = visorLed.loaded; state.ctaReveal = endReveal;
         mainAstro?.root.matrixWorld.toArray(state.astronautMatrix);
         camera.matrixWorld.toArray(state.cameraMatrix);
+        state.cameraFov = camera.fov;
+        if (mainAstro) {
+          mainAstro.root.getWorldPosition(_headWorld).project(camera).toArray(state.astronautRootNdc);
+        }
+        state.whiteFlightRatio = whiteFlight.frame;
+        state.noisePositionAmplitude = tTunnel >= .815 ? whiteFlight.positionAmplitude : 5 * nativeRatios.black;
+        state.glassFrame = glassState.frame; state.glassFragmentScale = glassState.fragmentScale;
         state.nativeWorldsReady = worlds.blackReady && worlds.whiteReady; state.worldError = worlds.error;
         state.blackInstances = worlds.blackReady ? 552 : 0; state.whiteInstances = worlds.whiteReady ? 32 : 0;
         state.blackOffset = worlds.blackUniforms.u_offsetZ.value; state.bloomTechnique = inEmergencePhase ? "emergence" : "source-fft";
@@ -1729,6 +1741,8 @@ export function GoalTunnelSection() {
         const composerToScreen = composer.renderToScreen;
         const mask = nativeLightMask.value, ledVisible = visorLed.mesh.visible;
         const oldPasses = [referenceBloom.enabled, outputPass.enabled, bloomPass.enabled];
+        const oldOverlay = overlayPass.enabled, oldShards = shardsMesh?.visible ?? false;
+        const oldAstronautParent = mainAstro?.root.parent, oldDisplayAlpha = nativeDisplayAlpha.value;
         const fullW = metrics?.viewportW || initW, fullH = metrics?.viewportH || initH;
         try {
           composer.renderToScreen = true; composer.setSize(8, 8);
@@ -1751,15 +1765,16 @@ export function GoalTunnelSection() {
           worlds.update(.93, 0, 1, true); composer.render(0);
           worlds.update(1, .5, 1, true); worlds.setMonitorClip(true); worlds.monitorStencilMask.visible = true; composer.render(0);
           worlds.setMonitorClip(false); worlds.monitorStencilMask.visible = false; endDecor.update(8, .2, 1); visorLed.update(0, 1);
-          if (shardsMesh && glassRefractionTarget) {
-            glRenderer.setRenderTarget(glassRefractionTarget); glRenderer.setClearColor(0, 1); glRenderer.clear();
-            (shardsMesh.material as THREE.ShaderMaterial).uniforms.u_backgroundTexture.value = glassRefractionTarget.texture;
-            shardsMesh.visible = true;
-          }
+          if (shardsMesh) shardsMesh.visible = true;
+          if (mainAstro) overlayScene.add(mainAstro.root);
+          nativeDisplayAlpha.value = 1; overlayPass.enabled = true;
           composer.render(0);
         } finally {
           worlds.update(0, 0, 1, true); nativeLightMask.value = mask; visorLed.mesh.visible = ledVisible;
           [referenceBloom.enabled, outputPass.enabled, bloomPass.enabled] = oldPasses;
+          overlayPass.enabled = oldOverlay; if (shardsMesh) shardsMesh.visible = oldShards;
+          if (mainAstro && oldAstronautParent) oldAstronautParent.add(mainAstro.root);
+          nativeDisplayAlpha.value = oldDisplayAlpha;
           for (const [child, visible] of visibility) child.visible = visible;
           composer.renderToScreen = composerToScreen; composer.setSize(fullW, fullH);
           glRenderer.setRenderTarget(target); glRenderer.autoClear = autoClear; glRenderer.setClearColor(color, alpha);
@@ -2059,7 +2074,7 @@ export function GoalTunnelSection() {
       for (const item of disposables) {
         item.dispose();
       }
-      scene.clear();
+      scene.clear(); overlayScene.clear();
       glRenderer.dispose();
       if (glRenderer.domElement.parentElement === hostEl) {
         hostEl.removeChild(glRenderer.domElement);

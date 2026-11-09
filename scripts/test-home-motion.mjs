@@ -108,7 +108,7 @@ try {
     'the blue bands use the captured 81-neighbour 4D Voronoi field');
   assert.ok(nativeShaders.includes('cross(fdx,fdy)') && nativeShaders.includes('normalize(mix(posFrom,posTo,u_frameRatio))') && nativeShaders.includes('u_backgroundTexture'),
     'glass uses derivative normals, captured rigid endpoints and the live scene buffer');
-  assert.ok(goalSource.includes('depthWrite: false, side: THREE.DoubleSide') && !goalSource.includes('buildGlassShardSideGeometry') && goalSource.includes('(tShatter - .75) / .25'),
+  assert.ok(goalSource.includes('depthWrite: false, side: THREE.DoubleSide') && !goalSource.includes('buildGlassShardSideGeometry') && goalSource.includes('material.uniforms.u_fragmentScale.value = glassState.fragmentScale') && nativeWorlds.includes('1 - fit(progress, .75, 1)'),
     'transparent, non-depth-writing shards have no invented thickness and only shrink during the final quarter');
   assert.ok(nativeBloom.includes('THREE.UnsignedByteType') && nativeBloom.includes('THREE.FloatType') && nativeBloom.includes('gl_FragColor=vec4(texture2D(u_texture,v_uv).rgb+texture2D(u_bloom'),
     'clamped scene/bloom-cache and float FFT boundaries feed an opaque final display');
