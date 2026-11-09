@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { createRouteTransitionMotion } from "./RouteTransitionMotion";
 
-/** One persistent Canvas2D owner, not an extra WebGL context or link-local timer. */
+/** Persistent route owner: Canvas2D for generic routes, transaction-owned depth
+ * handoff for selected projects. Both use the same lifecycle and input guard. */
 export function PageTransitionCurtain() {
   const pathname = usePathname();
   const root = useRef<HTMLDivElement>(null);

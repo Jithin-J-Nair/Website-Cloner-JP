@@ -1,3 +1,5 @@
+import { useStudioStore } from "@/lib/store";
+import { registerProjectListSource } from "@/lib/project-transition";
 import * as THREE from "three";
 import { loadLusionBuf } from "@/lib/lusion-buf-loader";
 import { LUSION_HOME } from "@/data/reference";
@@ -29,6 +31,7 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
     width:1,height:1,
   }));
   const canvas = document.createElement("canvas"); canvas.id="home-editorial-canvas"; canvas.setAttribute("aria-hidden","true"); root.append(canvas);
+  const unregisterProjectSource = registerProjectListSource(root,canvas,cardStates);
   let renderer: THREE.WebGLRenderer | null = null, disposed=false, failed=false, raf=0, dirty=true, last=0, frames=0, pointerX=0, pointerY=0, mousePointer=true;
   let titleTime=0, descTime=0, featuredTime=0, disclaimerTime=0, archiveTime=0, playTime=0, playShow=0, decorationTime=0, hoverTime=0, hoverRatio=0;
   const noiseTexture=new THREE.DataTexture(new Uint8Array([128,128,128,255]),1,1);noiseTexture.needsUpdate=true;
@@ -108,7 +111,7 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
   };
   let lastY=scrollY, scrollStrength=0;
   function frame(now:number) {
-    raf=0;if(disposed || document.hidden)return;
+    raf=0;if(disposed || document.hidden || useStudioStore.getState().isTransitioning){last=0;return;}
     const dt=last?Math.max(0,(now-last)/1000):0;last=now;
     if(dirty)measure();
     const vw=innerWidth,vh=innerHeight,y=scrollY,narrow=vw<=812;
@@ -201,7 +204,7 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
       u.u_rotation.value=reduced?0:(1-entrance)*((c.index%2)-.5)*.1;
       c.stage.dataset.depthReady="true";c.stage.dataset.focus=`${c.focusX.value.toFixed(3)},${c.focusY.value.toFixed(3)},${c.zoom.value.toFixed(4)}`;drawn++;
     }
-    if(renderer&&!failed&&active&&!reelOpen){try{renderer.render(scene,camera);frames++;}catch{failed=true;resetFallback();root.dataset.editorialWebgl="fallback";}}
+    if(renderer&&!failed&&active&&!reelOpen&&canvas.style.visibility!=="hidden"){try{renderer.render(scene,camera);frames++;}catch{failed=true;resetFallback();root.dataset.editorialWebgl="fallback";}}
     canvas.style.display=active&&!reelOpen&&!failed?"block":"none";
     root.dataset.editorialFrames=String(frames);root.dataset.editorialPixel=String(y);root.dataset.editorialMorph=morph.toFixed(5);root.dataset.editorialCards=String(drawn);
     if(active&&!reduced&&!reelOpen)schedule();else last=0;
@@ -215,10 +218,11 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
   listen(canvas,"webglcontextrestored",()=>{failed=false;dirty=true;schedule();});
   listen(document,"visibilitychange",()=>{if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;last=0;video?.pause();}else{dirty=true;schedule();}});
   if(video){listen(video,"loadeddata",schedule);listen(video,"seeked",schedule);}
+  const unsubscribeTransition = useStudioStore.subscribe((state,before)=>{if(state.isTransitioning){if(raf)cancelAnimationFrame(raf);raf=0;last=0;}else if(before.isTransitioning)schedule();});
   const observer=new ResizeObserver(()=>{dirty=true;schedule();});for(const el of [reel,featured,hero])if(el)observer.observe(el);
   void document.fonts.ready.then(()=>{if(!disposed){dirty=true;schedule();}});schedule();
   return () => {
-    disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();cleanupListeners.forEach(fn=>fn());video?.pause();resetFallback();
+    unsubscribeTransition();unregisterProjectSource();disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();cleanupListeners.forEach(fn=>fn());video?.pause();resetFallback();
     textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());renderer?.dispose();renderer?.forceContextLoss();canvas.remove();
     for(const key of Object.keys(root.dataset))if(key.startsWith("editorial"))delete root.dataset[key];
   };

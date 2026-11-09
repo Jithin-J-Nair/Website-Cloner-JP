@@ -48,7 +48,11 @@ export function TransitionLink({
     soundEngine.playChime(523.25, 0.08);
     setMenuOpen(false);
 
-    navigateStudioRoute(href, router, transitionLabel || (href === "/" ? "Home" : href.split("/").filter(Boolean).join(" ")));
+    const anchor = e.currentTarget;
+    const project = anchor.classList.contains("project-item") && anchor.dataset.id
+      ? { id: anchor.dataset.id, direction: "open" as const, anchor } : undefined;
+    if (project) router.prefetch(href);
+    navigateStudioRoute(href, router, transitionLabel || (href === "/" ? "Home" : href.split("/").filter(Boolean).join(" ")), project);
   };
 
   return (

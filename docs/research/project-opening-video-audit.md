@@ -1,5 +1,7 @@
 # Project-opening film comparison — audit update
 
+> **Implementation follow-up:** the selected thumbnail/list zoom, origin-aware reverse, Atlas dark runtime theme and related lifecycle corrections are now implemented and verified on production 3003, build `Q-EZhr3zZU6Ewin09idjd`. See [implementation and production checks](../validation/project-thumbnail-zoom.md). The audit findings/build identities below describe the earlier baseline; they are not all unresolved, and this release does not claim whole-site exact parity.
+
 **Scope:** audit only; no application behavior changed. This report supplements the [full-experience audit](full-experience-fidelity-audit.md), which contains the all-page inventory, all 19 case-study rows, architectural handoff plan and F01–F19 recommendations. Read this update first for the newly supplied opening film and F20–F24 findings.
 
 ## 1. What the new reference changes

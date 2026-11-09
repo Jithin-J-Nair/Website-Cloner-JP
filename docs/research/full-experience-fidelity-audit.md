@@ -1,5 +1,7 @@
 # Full-experience fidelity audit
 
+> **Implementation follow-up:** the selected thumbnail/list zoom, origin-aware reverse, Atlas dark runtime theme and related lifecycle corrections are now implemented and verified on production 3003, build `Q-EZhr3zZU6Ewin09idjd`. See [implementation and production checks](../validation/project-thumbnail-zoom.md). The audit findings/build identities below describe the earlier baseline; they are not all unresolved, and this release does not claim whole-site exact parity.
+
 > **New opening-video update:** the supplied `lusion-project-opening.mp4` has now been inspected. See [project-opening-video-audit.md](project-opening-video-audit.md) for timestamped Home→Oryzo, reverse and Home→Atlas comparisons, two additional normal-motion reproductions, and **F20–F24**. It confirms the selected-image/reverse sequence and reveals an additional **Atlas dark-reference versus light-build theme mismatch**. This supersedes the earlier absence of a rendered project-click reference; application behavior is still unchanged.
 
 **Audit baseline:** application commit `203e5a6`, production preview on port **3003**, Next build **`TZ8s1xwpgRD_kZgq9MSFp`**. This is an **audit and implementation specification**, not another application-remediation release. No application source, approved scene, branding, font policy or running server was changed in this pass.

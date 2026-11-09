@@ -14,7 +14,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   const menuOpen = useStudioStore((s) => s.menuOpen);
-  const isTransitioning = useStudioStore((s) => s.isTransitioning);
+  const isTransitioning = useStudioStore((s) => s.isTransitioning || s.routeTransitionActive);
   const reelOpen = useStudioStore((s) => s.reelOpen);
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const setReducedMotion = useStudioStore((s) => s.setReducedMotion);

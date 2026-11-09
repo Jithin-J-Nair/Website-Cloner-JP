@@ -78,6 +78,7 @@ interface StudioState {
   videoConfig: VideoOverlayConfig;
   preloaderDone: boolean;
 
+  routeTransitionActive: boolean;
   isTransitioning: boolean;
   transitionLabel: string;
 
@@ -131,6 +132,7 @@ export const useStudioStore = create<StudioState>((set) => ({
   videoConfig: DEFAULT_REEL_CONFIG,
   preloaderDone: false,
 
+  routeTransitionActive: false,
   isTransitioning: false,
   transitionLabel: "",
 

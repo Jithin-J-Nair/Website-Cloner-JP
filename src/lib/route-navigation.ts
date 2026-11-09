@@ -1,6 +1,7 @@
 import { useStudioStore } from "@/lib/store";
 
-export type RouteNavigationRequest = { href: string; label: string; commit: () => void };
+export type ProjectNavigation = { id: string; direction: "open" | "return"; anchor?: HTMLAnchorElement };
+export type RouteNavigationRequest = { href: string; label: string; commit: () => void; project?: ProjectNavigation };
 type NavigationOwner = (request: RouteNavigationRequest) => boolean;
 let owner: NavigationOwner | null = null;
 
@@ -10,9 +11,9 @@ export function registerRouteNavigation(handler: NavigationOwner) {
   return () => { if (owner === handler) owner = null; };
 }
 
-export function navigateStudioRoute(href: string, router: { push: (href: string) => void }, label = "page"): boolean {
+export function navigateStudioRoute(href: string, router: { push: (href: string) => void }, label = "page", project?: ProjectNavigation): boolean {
   const state = useStudioStore.getState();
-  const request = { href, label, commit: () => router.push(href) };
+  const request = { href, label, project, commit: () => router.push(href) };
   if (typeof window !== "undefined" && new URL(href, location.href).pathname === location.pathname) {
     state.setMenuOpen(false);
     request.commit(); // query/hash changes do not produce a pathname commit signal

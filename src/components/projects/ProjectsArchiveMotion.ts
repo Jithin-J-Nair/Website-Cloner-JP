@@ -1,3 +1,4 @@
+import { registerProjectListSource } from "@/lib/project-transition";
 import * as THREE from "three";
 import { LUSION_PROJECTS_ARCHIVE } from "@/data/reference";
 import { homeRenderDpr } from "@/lib/home-motion";
@@ -12,7 +13,7 @@ export function createProjectsArchiveMotion(root: HTMLElement, reduced: boolean)
   const heading=[...root.querySelectorAll<HTMLElement>("[data-project-heading-char]")];
   const count=[...root.querySelectorAll<HTMLElement>("[data-project-count-char]")];
   const arrow=root.querySelector<SVGElement>("#projects-arrow")!;
-  const blocked=()=>{const s=useStudioStore.getState();return s.menuOpen||s.reelOpen;};
+  const blocked=()=>{const s=useStudioStore.getState();return s.menuOpen||s.reelOpen||s.isTransitioning;};
   type Box = { left: number; top: number; width: number; height: number };
   const boxes = new Map<HTMLElement,Box>();
   const cardStates = [...root.querySelectorAll<HTMLAnchorElement>(".project-item")].map((el,index) => ({
@@ -24,6 +25,7 @@ export function createProjectsArchiveMotion(root: HTMLElement, reduced: boolean)
     width:1,height:1,
   }));
   const canvas=document.createElement("canvas");canvas.id="projects-depth-canvas";canvas.setAttribute("aria-hidden","true");root.append(canvas);
+  const unregisterProjectSource = registerProjectListSource(root,canvas,cardStates);
   let renderer:THREE.WebGLRenderer|null=null,disposed=false,failed=false,raf=0,dirty=true,last=0,frames=0,pointerX=0,pointerY=0,mousePointer=true;
   let titleTime=0;
   const noiseTexture=new THREE.DataTexture(new Uint8Array([128,128,128,255]),1,1);noiseTexture.needsUpdate=true;
@@ -111,7 +113,7 @@ export function createProjectsArchiveMotion(root: HTMLElement, reduced: boolean)
       u.u_rotation.value=reduced?0:(1-entrance)*((c.index%2)-.5)*.1;
       c.stage.dataset.depthReady="true";c.stage.dataset.focus=`${c.focusX.value.toFixed(3)},${c.focusY.value.toFixed(3)},${c.zoom.value.toFixed(4)}`;drawn++;
     }
-    if(renderer&&!failed&&active&&!blocked()){try{renderer.render(scene,camera);frames++;root.dataset.editorialWebgl="ready";}catch{failed=true;resetFallback();root.dataset.editorialWebgl="fallback";}}
+    if(renderer&&!failed&&active&&!blocked()&&canvas.style.visibility!=="hidden"){try{renderer.render(scene,camera);frames++;root.dataset.editorialWebgl="ready";}catch{failed=true;resetFallback();root.dataset.editorialWebgl="fallback";}}
     canvas.style.display=active&&!blocked()&&!failed?"block":"none";
     root.dataset.editorialFrames=String(frames);root.dataset.editorialCards=String(drawn);
     if(active&&!reduced&&!blocked())schedule();else last=0;
@@ -128,7 +130,7 @@ export function createProjectsArchiveMotion(root: HTMLElement, reduced: boolean)
   const observer=new ResizeObserver(()=>{dirty=true;schedule();});observer.observe(section);
   void document.fonts.ready.then(()=>{if(!disposed){dirty=true;schedule();}});schedule();
   return ()=>{
-    disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();unsubscribe();cleanupListeners.forEach(fn=>fn());resetFallback();
+    unregisterProjectSource();disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();unsubscribe();cleanupListeners.forEach(fn=>fn());resetFallback();
     textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());renderer?.dispose();renderer?.forceContextLoss();canvas.remove();
     for(const key of Object.keys(root.dataset))if(key.startsWith("editorial"))delete root.dataset[key];
   };

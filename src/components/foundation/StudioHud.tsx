@@ -1,5 +1,7 @@
 "use client";
 
+import { getProjectReturnPath } from "@/lib/project-transition";
+
 import "./studio-menu-motion.css";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -363,8 +365,9 @@ export function StudioHud() {
       router.push("/");
       return;
     }
-    const target = pathname.startsWith("/work/") ? "/work" : "/projects";
-    navigateStudioRoute(target, router, "Projects");
+    const target = pathname.startsWith("/work/") ? "/work" : getProjectReturnPath();
+    const id = pathname.split("/").filter(Boolean).at(-1);
+    navigateStudioRoute(target, router, "Projects", id ? { id, direction: "return" } : undefined);
   };
 
   const handleMenuNewsletterSubmit = (e: React.FormEvent) => {

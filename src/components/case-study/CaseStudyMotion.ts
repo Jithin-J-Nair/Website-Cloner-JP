@@ -1,8 +1,10 @@
+import { shouldTransitionAnchor } from "@/lib/route-navigation";
+import { getProjectDisclosure } from "@/lib/project-transition";
 import type Lenis from "lenis";
 import * as THREE from "three";
 import type { LusionProjectDetail } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
-import { editorialClamp as clamp, editorialEase as ease, editorialExpoOut as expoOut, editorialFit as fit } from "@/lib/home-editorial-motion";
+import { editorialClamp as clamp, editorialEase as ease, editorialExpoOut as expoOut, editorialExpoInOut as expoInOut, editorialFit as fit } from "@/lib/home-editorial-motion";
 import { createCaseStudyGraphics, type CasePanelFrame } from "./CaseStudyGraphics";
 
 /** A single case clock. Existing document/Lenis scroll supplies the horizontal
@@ -21,6 +23,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
   const visiblePanels: CasePanelFrame[] = [];
   let disposed = false, lost = false, dirty = true, raf = 0, previous = 0, time = 0, frames = 0;
   let vertical = innerWidth <= 812, width = innerWidth, height = innerHeight, start = 0, maximum = 0, lastScroll = 0, velocity = 0;
+  let titleCenterOffset = 0, enteredViaHandoff = false;
   let morph = 0, nextTop = 0, nextTitleHeight = 0, targetTitleTop = 0;
   let touchY: number | null = null;
   let charge = 0, lastWheel = -1000, wheelDirection = 0, triggered = false, pointerX = 0, pointerY = 0;
@@ -52,6 +55,8 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
     nextTop = next.getBoundingClientRect().top + (vertical ? scrollY : 0);
     nextTitleHeight = next.querySelector("h2")!.getBoundingClientRect().height;
     targetTitleTop = vertical ? title.offsetTop : (height - meta.offsetHeight) * .5;
+    title.style.removeProperty("transform");
+    const titleBox = title.getBoundingClientRect(); titleCenterOffset = vertical ? 0 : height * .5 - titleBox.top - titleBox.height * .5;
     graphics?.resize(width, height); dirty = false; root.dataset.caseReady = 'true';
   };
   function frame(now: number) {
@@ -63,7 +68,9 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
     const delta = (scroll - lastScroll) / Math.max(1, vertical ? height : width); lastScroll = scroll;
     velocity = reduced ? 0 : THREE.MathUtils.clamp((velocity + delta) * Math.exp(-10 * dt), -.15, .15);
     if (!vertical) track.style.transform = `translate3d(${-scroll}px,0,0)`;
-    const enter = reduced ? 1 : clamp(time / 1.5), alpha = vertical ? 1 : 1 - fit(scroll, 0, width * .25);
+    const disclosure = getProjectDisclosure();
+    if (disclosure !== null) enteredViaHandoff = true;
+    const enter = reduced || (enteredViaHandoff && disclosure === null) ? 1 : disclosure ?? clamp(time / 1.5), alpha = vertical ? 1 : 1 - fit(scroll, 0, width * .25);
     const activate = alpha > .05;
     meta.style.pointerEvents = activate ? 'auto' : 'none'; meta.inert = !activate;
     const move = (el: HTMLElement | null, divisor: number, delay: number) => {
@@ -71,7 +78,9 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
       const p = reduced ? 1 : expoOut(fit(enter, delay, delay + .45));
       el.style.opacity = String(Math.min(alpha, p)); el.style.transform = `translate3d(${vertical ? 0 : -scroll / divisor}px,${(1 - p) * 30}px,0)`;
     };
-    move(title, 2, 0); move(desc, 3, .2); move(services, 5, .3); move(links, 4, .35); move(launch, Infinity, .25);
+    title.style.opacity = String(Math.min(alpha,fit(enter,.5,1)));
+    title.style.transform = `translate3d(${vertical ? 0 : -scroll/2}px,${titleCenterOffset*(1-expoInOut(fit(enter,0,.65)))}px,0)`;
+    move(desc, 3, .4); move(services, 5, .5); move(links, 4, .55); move(launch, Infinity, .45);
     cue.style.opacity = String(reduced ? 1 : 1 - ease(fit(scroll, 0, width * .1)));
     visiblePanels.length = 0;
     for (const p of panels) {
@@ -127,6 +136,16 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
   listen(stage, 'touchstart', event => { touchY = (event as TouchEvent).touches[0]?.clientY ?? null; }, { passive: true });
   listen(stage, 'touchmove', event => { const y = (event as TouchEvent).touches[0]?.clientY; if (vertical && !reduced && !blocked() && y !== undefined && touchY !== null) { wheelDirection = Math.sign(touchY - y); lastWheel = performance.now(); schedule(); } touchY = y ?? null; }, { passive: true });
   listen(stage, 'touchend', () => { touchY = null; }, { passive: true });
+  // Click, Enter and end-scroll share this case owner's existing quintic morph.
+  // Modified/new-tab clicks remain native; no generic L on a case chain.
+  listen(next, 'click', event => {
+    const anchor = (event.target as Element).closest<HTMLAnchorElement>('a');
+    if (!anchor || !shouldTransitionAnchor(event as MouseEvent,anchor)) return;
+    event.preventDefault();
+    if (blocked() || triggered) return;
+    if (reduced) { triggered = true; onNext(); return; }
+    triggered = true; schedule();
+  });
   listen(stage, 'click', event => { if (suppressClick) { event.preventDefault(); event.stopPropagation(); suppressClick = false; } }, { capture: true });
   listen(window, 'pointerup', () => { drag = null; }); listen(window, 'pointercancel', () => { drag = null; }); listen(window, 'blur', pause); listen(window, 'focus', schedule);
   listen(document, 'visibilitychange', () => { if (document.hidden) pause(); else schedule(); });

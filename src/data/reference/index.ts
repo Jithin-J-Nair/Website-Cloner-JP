@@ -44,8 +44,14 @@ const detailEntries: Array<[string, LusionProjectDetail]> = [
   })
 ];
 
-const cardsById = new Map<string, LusionProjectCard>(cardEntries);
-const detailsById = new Map<string, LusionProjectDetail>(detailEntries);
+// Supplied opening film shows a charcoal Atlas page, unlike the older light
+// capture. #181818 is an approximation of compressed film pixels, not a verified
+// live CSS token. Keep the captures intact; apply one coherent runtime theme to
+// the card fog, case/chrome, and previous project's incoming preview.
+const atlasFilmTheme = { colorBg: "#181818", colorText: "#ffffff", colorHighlight: "#ffffff" };
+const cardsById = new Map<string, LusionProjectCard>(cardEntries.map(([id, card]) => [id, id === "atlas_motion" ? { ...card, colorBg: atlasFilmTheme.colorBg, colorText: atlasFilmTheme.colorText } : card]));
+const applyAtlasFilmTheme = <T extends { id: string; theme: { colorBg: string; colorText: string; colorHighlight: string } }>(project: T): T => project.id === "atlas_motion" ? { ...project, theme: { ...project.theme, ...atlasFilmTheme } } : project;
+const detailsById = new Map<string, LusionProjectDetail>(detailEntries.map(([id, detail]) => [id, applyAtlasFilmTheme(detail)]));
 const featuredIndexById = new Map<string, number>(
   currentLiveProjects.featuredOrder.map((id, index): [string, number] => [id, index + 1])
 );

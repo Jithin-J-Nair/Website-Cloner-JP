@@ -15,7 +15,7 @@ export function ProjectPreviewVideo({ desktopSrc, mobileSrc, poster, onError }: 
   const ref = useRef<HTMLVideoElement>(null);
   const reduced = useStudioStore(state => state.reducedMotion);
   const menuOpen = useStudioStore(state => state.menuOpen);
-  const transitioning = useStudioStore(state => state.isTransitioning);
+  const transitioning = useStudioStore(state => state.isTransitioning || state.routeTransitionActive);
   const reelOpen = useStudioStore(state => state.reelOpen);
   useEffect(() => {
     const video = ref.current;
@@ -27,11 +27,11 @@ export function ProjectPreviewVideo({ desktopSrc, mobileSrc, poster, onError }: 
     const sync = () => {
       const source = media.matches ? mobileSrc : desktopSrc;
       video.dataset.previewSource = source;
-      if (!canPlay()) { video.pause(); return; }
-      if (video.getAttribute("src") !== source) {
+      if (visible && !reduced && video.getAttribute("src") !== source) {
         video.src = source;
         video.load();
       }
+      if (!canPlay()) { video.pause(); return; }
       // Autoplay refusal is not a missing asset. Keep the poster and let the
       // existing, user-activated modal remain the accessible playback control.
       void video.play().then(() => { if (!canPlay()) video.pause(); }).catch(() => {});
