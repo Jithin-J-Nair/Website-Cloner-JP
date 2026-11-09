@@ -153,7 +153,54 @@ Prior **44 route/viewport observations** on this unchanged build remain valid as
 
 Acceptance requires matched-phase reference clips for left/right/Home/archive/deep-card/reverse and the normal/reduced/fallback/cancellation matrix in the full report. Physical-phone/hardware-GPU and complete live mobile/reference motion remain **unverified**. No percentage-parity score or claim of “every difference proven” is justified.
 
-## 6. Evidence and reproducibility
+## 6. Consolidated opening-experience fix specification
+
+### Recheck and conclusion
+
+A subsequent repository/runtime recheck at documentation HEAD `fd75c9d` found no application changes: all **22 HTML / 27 JS/CSS** fingerprints still match build `TZ8s1xwpgRD_kZgq9MSFp`, and the supplied film's SHA-256 is unchanged. Evidence: `temp/project-opening-video-audit/recheck-identity.json`. This is a fresh identity check, **not another browser-motion run**. The previously recorded normal-motion observations remain the relevant build evidence.
+
+The problem is primarily **missing coordination between existing renderers and the route lifecycle**, not a general lack of animation. Implementing a smooth `scale()` alone would leave the selected depth state, neighbour movement, DOM fade, destination theme, film timing and reverse route wrong.
+
+### Phase-by-phase acceptance contract
+
+| Phase | Required behavior | Failure to reject |
+|---|---|---|
+| **Hover / idle** | Preserve current depth-map focus/DOF, title-arrow motion and semantic focus. Touch must not inherit a stale desktop hover. | Replacing working depth hover with a generic scale or invented glow/particles. |
+| **Select / prepare** | Capture source list/route, selected ID, measured bounds, viewport, scroll/card-relative anchor and theme. Prefetch/decode required destination resources. Reject duplicate activation while preserving modified-click/new-tab intent. | No source identity, stale geometry, multiple pushes or loading all 19 case films. |
+| **Outbound text** | Hide heading/disclaimer/card labels through the specialized DOM disclosure range, independently of the selected image and persistent header. | The whole page/canvas fading as one layer, duplicated header, or invisible text remaining interactive. |
+| **Outbound geometry** | Run the source-derived 1.5-second listing lifecycle; recenter/scale/tilt its shared list group, retaining neighbour exit and selected depth/focus response. | Generic aperture over the zoom, fixed centre pivot, frozen source renderer or identical left/right trajectories. |
+| **Depth / color boundary** | Drive selected active input, depth raymarch and depth-sensitive color blending; match the destination's settled theme. | Flat thumbnail enlargement, fabricated full cup/cloud 3D simulation, or dark-to-light flash on Atlas. |
+| **Route commit / ownership transfer** | Retain a valid source visual until a destination frame or readable fallback owns the viewport. Scope retained GPU resources to this transaction and dispose once. | Source canvas unmounts before the bridge exists, duplicate visible images, transparent gaps, leaked textures or two transition owners. |
+| **Destination reveal** | Use lifecycle-driven title centring and metadata ranges; distinguish regular/fullscreen masks, decode/readiness and page-active shadows. | Common 30px reveal for every field, title jump, decode pop-in, or every panel shrinking identically. |
+| **Playback / input release** | Allow destination rendering during preparation, but release film advancement and gallery scroll at their intended boundaries. Keep one document/Lenis scroll owner. | Introductory film consumed under cover, early wheel displacement, nested smoothers or a post-transition input lock. |
+| **Reverse** | From any interior case position, resolve the stored eligible Home/archive origin; restore the selected card at its native quarter-viewport anchor and reverse depth/list/text disclosure. | Unconditional archive-top return, history-dependent external navigation, wrong selected card or restoring raw scroll into a changed layout. |
+| **Next case** | Click, Enter and end-scroll request the same specialized case-chain transaction; retain the original non-case origin. | Generic click transition versus scroll morph, double overlays, or losing Home origin after the second case. |
+| **Interrupt / fallback** | Define pre-commit reversal versus post-commit late-delivery recovery; handle resize, hidden tab, context loss, missing media and live reduced-motion changes. | Indefinite readiness wait, stale overlay resurrection, abandoned inert/focus state or failure of ordinary links without WebGL. |
+
+**Source versus proposed behavior:** the 1.5-second listing duration, list equations, selected-depth shading, metadata windows and reverse anchor come from archived native source, corroborated in appearance by the film. Prefetch strategy, shell-owned bridge, cancellation safeguards and permission separation are the proposed Next.js adaptation—not claims about the original site's internal framework.
+
+### State and ownership requirements
+
+Use one persistent transaction with a unique ID and explicit phases, for example:
+
+```text
+idle → prepare → depart → await-commit → prepare-destination → reveal → idle
+                         ↘ bounded recovery / cancellation ↗
+```
+
+The exact enum names are an implementation choice. Required permissions are separate:
+
+- **Source participant rendering:** allowed while performing the selected zoom/reverse, even while user input is locked.
+- **Destination rendering:** allowed under retained coverage so layout, texture upload and first-frame readiness can settle.
+- **Media advancement:** withheld until the intended playback boundary; a decoded first frame/poster is not permission to advance the movie.
+- **User scroll/drag:** gated separately from rendering and released only after sufficient content disclosure.
+- **Nonparticipants:** pause unrelated scenes/media; no second global clock, per-card perpetual RAF or additional scroll engine.
+
+### What this audit does not recommend
+
+Do not add page-level particles, cloth or rigid-body simulations to reproduce objects that are already part of the supplied case-study films. Do not apply a global light/exposure change to imitate a depth-to-background blend. Do not replace the approved Home/About renderers, enable restricted fonts or undo branding as part of this fix. The all-page inventory remains in the [full report](full-experience-fidelity-audit.md); the opening film cannot certify unrelated scenes or every mobile/device state.
+
+## 7. Evidence and reproducibility
 
 ```bash
 # Uses bundled inspection FFmpeg when present; otherwise set FFMPEG_PATH or install ffmpeg.
