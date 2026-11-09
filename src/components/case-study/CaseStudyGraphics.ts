@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { caseStudyRenderDpr, caseStudyScrollStrength } from "@/lib/case-study-motion";
 import { createCaseStudyShadows } from "./CaseStudyShadows";
 
 export type CasePanelFrame = { element: HTMLElement; left: number; top: number; width: number; height: number; reveal: number; fullscreen: boolean };
@@ -40,19 +41,24 @@ export function createCaseStudyGraphics(canvas: HTMLCanvasElement, shadow: numbe
   });
   finalScene.add(new THREE.Mesh(quad, finalMaterial));
   const materialVertex = `uniform vec4 uBox;uniform vec2 uViewport;varying vec2 vUv;void main(){vUv=uv;vec2 p=uBox.xy+vec2(uv.x,1.-uv.y)*uBox.zw;gl_Position=vec4(p/uViewport*vec2(2.,-2.)+vec2(-1.,1.),0.,1.);}`;
-  const materialFragment = `uniform sampler2D uTexture;uniform vec2 uSize;uniform float uReveal,uRadius;varying vec2 vUv;
-    void main(){vec2 halfSize=uSize*.5*mix(.6,1.,uReveal);vec2 p=abs((vUv-.5)*uSize)-halfSize+uRadius;float d=min(max(p.x,p.y),0.)+length(max(p,0.))-uRadius;
+  const materialFragment = `uniform sampler2D uTexture;uniform vec2 uSize;uniform float uReveal,uRadius,uFullscreen;varying vec2 vUv;
+    void main(){vec2 halfSize=uSize*.5*mix(.6,1.,max(uFullscreen,uReveal));vec2 p=abs((vUv-.5)*uSize)-halfSize+uRadius;float d=min(max(p.x,p.y),0.)+length(max(p,0.))-uRadius;
       float a=1.-smoothstep(-1.,1.,d);if(a<=0.)discard;vec2 uv=(vUv-.5)*mix(.6,1.,uReveal)+.5;gl_FragColor=vec4(texture2D(uTexture,uv).rgb,a);}`;
   const entries = new Map<HTMLElement, { mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>; texture: THREE.Texture; source: string; media: HTMLVideoElement | HTMLImageElement }>();
   let disposed = false, width = 1, height = 1;
+  const drawingSize = new THREE.Vector2();
   const clearFallback = () => { for (const element of entries.keys()) delete element.dataset.casePixels; };
   return {
     renderer,
     resize(w: number, h: number) {
-      width = w; height = h; const dpr = Math.min(devicePixelRatio || 1, 1.5, Math.sqrt(1400000 / (w * h)));
-      renderer.setPixelRatio(dpr); renderer.setSize(w, h, false); screen.setSize(Math.ceil(w * dpr), Math.ceil(h * dpr)); shadows.resize(w, h);
+      width = w; height = h; const dpr = caseStudyRenderDpr(w, h, devicePixelRatio || 1, renderer.capabilities.maxTextureSize);
+      renderer.setPixelRatio(dpr); renderer.setSize(w, h, false);
+      // Three floors the drawing-buffer dimensions. Ceil here used to produce
+      // a different sampling grid, rescaling the entire image again at rest.
+      renderer.getDrawingBufferSize(drawingSize); screen.setSize(drawingSize.x, drawingSize.y); shadows.resize(w, h);
+      canvas.dataset.renderDpr = dpr.toFixed(4); canvas.dataset.mediaBuffer = `${screen.width}x${screen.height}`;
     },
-    render(frames: CasePanelFrame[], time: number, velocity: number, vertical: boolean, pointerX: number, pointerY: number, shadowLevel: number, dt: number, scrollDelta: number) {
+    render(frames: CasePanelFrame[], time: number, scrollStrength: number, vertical: boolean, pointerX: number, pointerY: number, shadowLevel: number, dt: number, scrollDelta: number) {
       if (disposed) return;
       entries.forEach(entry => { entry.mesh.visible = false; });
       for (const frame of frames) {
@@ -66,7 +72,7 @@ export function createCaseStudyGraphics(canvas: HTMLCanvasElement, shadow: numbe
           const texture = media instanceof HTMLVideoElement ? new THREE.VideoTexture(media) : new THREE.Texture(media);
           texture.colorSpace = THREE.NoColorSpace; texture.needsUpdate = true;
           const material = new THREE.ShaderMaterial({ vertexShader: materialVertex, fragmentShader: materialFragment, transparent: true, depthTest: false, depthWrite: false,
-            uniforms: { uTexture: { value: texture }, uBox: { value: new THREE.Vector4() }, uViewport: { value: new THREE.Vector2() }, uSize: { value: new THREE.Vector2() }, uReveal: { value: 1 }, uRadius: { value: 20 } },
+            uniforms: { uTexture: { value: texture }, uBox: { value: new THREE.Vector4() }, uViewport: { value: new THREE.Vector2() }, uSize: { value: new THREE.Vector2() }, uReveal: { value: 1 }, uRadius: { value: 20 }, uFullscreen: { value: 0 } },
           });
           const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material); mesh.frustumCulled = false; scene.add(mesh);
           entry = { mesh, texture, source, media }; entries.set(element, entry);
@@ -74,13 +80,13 @@ export function createCaseStudyGraphics(canvas: HTMLCanvasElement, shadow: numbe
         entry.mesh.visible = true; const u = entry.mesh.material.uniforms;
         (u.uBox.value as THREE.Vector4).set(frame.left, frame.top, frame.width, frame.height); (u.uViewport.value as THREE.Vector2).set(width, height);
         (u.uSize.value as THREE.Vector2).set(frame.width, frame.height); u.uReveal.value = reduced ? 1 : frame.reveal;
-        u.uRadius.value = frame.fullscreen && !vertical ? 0 : 20;
+        u.uRadius.value = frame.fullscreen && !vertical ? 0 : 20; u.uFullscreen.value = frame.fullscreen ? 1 : 0;
         element.dataset.casePixels = "ready";
       }
       shadows.render(time, dt, scrollDelta, pointerX, pointerY, reduced);
       uniforms.uNoiseOffset.value.set(reduced ? 0 : time * .618033989 % 1, reduced ? 0 : time * .414213562 % 1);
       renderer.setRenderTarget(screen); renderer.clear(); renderer.render(scene, camera);
-      renderer.setRenderTarget(null); renderer.clear(); uniforms.uShadow.value = shadowLevel; uniforms.uVelocity.value = reduced ? 0 : THREE.MathUtils.clamp(velocity, -.15, .15); uniforms.uVertical.value = vertical ? 1 : 0;
+      renderer.setRenderTarget(null); renderer.clear(); uniforms.uShadow.value = shadowLevel; uniforms.uVelocity.value = caseStudyScrollStrength(scrollStrength, reduced); uniforms.uVertical.value = vertical ? 1 : 0;
       renderer.render(finalScene, finalCamera);
     },
     clearFallback,

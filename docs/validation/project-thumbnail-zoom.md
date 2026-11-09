@@ -1,5 +1,7 @@
 # Project thumbnail zoom — implementation and production verification
 
+> **Follow-up:** project-gallery clarity fixes and the latest production build/checks are documented in [the scroll-clarity audit](../research/project-scroll-clarity-audit.md). The accepted opening/reverse described below was regression-tested and retained.
+
 ## Shipped change
 
 The project-card opening is now implemented, not just specified in an audit. Production preview **3003** serves Next build **`Q-EZhr3zZU6Ewin09idjd`**. The previous audit baseline, application `203e5a6` / build `TZ8s1xwpgRD_kZgq9MSFp`, is historical.

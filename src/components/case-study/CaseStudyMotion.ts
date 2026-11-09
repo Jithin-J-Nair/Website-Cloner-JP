@@ -1,3 +1,4 @@
+import { caseStudyScrollStrength } from "@/lib/case-study-motion";
 import { shouldTransitionAnchor } from "@/lib/route-navigation";
 import { getProjectDisclosure } from "@/lib/project-transition";
 import type Lenis from "lenis";
@@ -22,7 +23,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
   const canvas = document.createElement('canvas'); canvas.id = 'case-gallery-canvas'; canvas.setAttribute('aria-hidden', 'true'); canvas.style.opacity = '0'; stage.append(canvas);
   const visiblePanels: CasePanelFrame[] = [];
   let disposed = false, lost = false, dirty = true, raf = 0, previous = 0, time = 0, frames = 0;
-  let vertical = innerWidth <= 812, width = innerWidth, height = innerHeight, start = 0, maximum = 0, lastScroll = 0, velocity = 0;
+  let vertical = innerWidth <= 812, width = innerWidth, height = innerHeight, start = 0, maximum = 0, lastScroll = 0;
   let titleCenterOffset = 0, enteredViaHandoff = false;
   let morph = 0, nextTop = 0, nextTitleHeight = 0, targetTitleTop = 0;
   let touchY: number | null = null;
@@ -57,6 +58,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
     targetTitleTop = vertical ? title.offsetTop : (height - meta.offsetHeight) * .5;
     title.style.removeProperty("transform");
     const titleBox = title.getBoundingClientRect(); titleCenterOffset = vertical ? 0 : height * .5 - titleBox.top - titleBox.height * .5;
+    lastScroll = vertical ? scrollY : Math.max(0, Math.min(maximum, scrollY - start));
     graphics?.resize(width, height); dirty = false; root.dataset.caseReady = 'true';
   };
   function frame(now: number) {
@@ -66,7 +68,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
     if (!reduced) time += dt;
     const scroll = vertical ? scrollY : Math.max(0, Math.min(maximum, scrollY - start));
     const delta = (scroll - lastScroll) / Math.max(1, vertical ? height : width); lastScroll = scroll;
-    velocity = reduced ? 0 : THREE.MathUtils.clamp((velocity + delta) * Math.exp(-10 * dt), -.15, .15);
+    const scrollStrength = caseStudyScrollStrength(delta, reduced);
     if (!vertical) track.style.transform = `translate3d(${-scroll}px,0,0)`;
     const disclosure = getProjectDisclosure();
     if (disclosure !== null) enteredViaHandoff = true;
@@ -103,10 +105,10 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
     next.style.color = nextInk.copy(previewInk).lerp(targetInk, fit(morph, .75, 1)).getStyle();
     if (morph >= 1) { pause(); onNext(); return; }
     if (graphics && !lost) {
-      try { graphics.render(visiblePanels, time, velocity, vertical, pointerX, pointerY, (project.theme.shadow ?? 1) + ((project.nextProject.shadow ?? 1) - (project.theme.shadow ?? 1)) * morph, dt, delta); canvas.style.opacity = '1'; root.dataset.caseGraphics = 'ready'; }
+      try { graphics.render(visiblePanels, time, scrollStrength, vertical, pointerX, pointerY, (project.theme.shadow ?? 1) + ((project.nextProject.shadow ?? 1) - (project.theme.shadow ?? 1)) * morph, dt, delta); canvas.style.opacity = '1'; root.dataset.caseGraphics = 'ready'; }
       catch { lost = true; fallback(); }
     }
-    frames++; root.dataset.caseFrames = String(frames); root.dataset.caseScroll = scroll.toFixed(3); root.dataset.caseMaximum = maximum.toFixed(3); root.dataset.caseAxis = vertical ? 'vertical' : 'horizontal';
+    frames++; root.dataset.caseFrames = String(frames); root.dataset.caseScroll = scroll.toFixed(3); root.dataset.caseScrollStrength = scrollStrength.toFixed(6); root.dataset.caseMaximum = maximum.toFixed(3); root.dataset.caseAxis = vertical ? 'vertical' : 'horizontal';
     if (!reduced) schedule(); else previous = 0;
   }
   listen(window, 'scroll', schedule, { passive: true });

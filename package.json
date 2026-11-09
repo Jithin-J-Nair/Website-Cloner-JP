@@ -49,7 +49,9 @@
     "validate:navigation-motion": "node scripts/validate-shared-navigation.mjs",
     "test:project-zoom": "node scripts/test-project-zoom-motion.mjs",
     "validate:project-zoom": "node scripts/validate-project-zoom.mjs",
-    "validate:project-zoom-lifecycle": "node scripts/validate-project-zoom-lifecycle.mjs"
+    "validate:project-zoom-lifecycle": "node scripts/validate-project-zoom-lifecycle.mjs",
+    "test:case-clarity": "node scripts/test-case-study-clarity.mjs",
+    "validate:case-clarity": "node scripts/validate-case-study-clarity.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

@@ -1,5 +1,7 @@
 # Full-experience fidelity audit
 
+> **Latest scroll-clarity follow-up:** [project-scroll-clarity-audit.md](project-scroll-clarity-audit.md) records the new blur investigation and fixes F25–F28 (per-frame scroll input, image resolution, exact render-target grid, fullscreen mask), with fresh all-19-case and all-22-page checks. Production 3003 is now build `6xmQgQMijkAfWzQ5gJRNF`. Prior build identities and unresolved wording below are historical; the new report distinguishes shipped fixes from remaining fidelity work.
+
 > **Implementation follow-up:** the selected thumbnail/list zoom, origin-aware reverse, Atlas dark runtime theme and related lifecycle corrections are now implemented and verified on production 3003, build `Q-EZhr3zZU6Ewin09idjd`. See [implementation and production checks](../validation/project-thumbnail-zoom.md). The audit findings/build identities below describe the earlier baseline; they are not all unresolved, and this release does not claim whole-site exact parity.
 
 > **New opening-video update:** the supplied `lusion-project-opening.mp4` has now been inspected. See [project-opening-video-audit.md](project-opening-video-audit.md) for timestamped Home→Oryzo, reverse and Home→Atlas comparisons, two additional normal-motion reproductions, and **F20–F24**. It confirms the selected-image/reverse sequence and reveals an additional **Atlas dark-reference versus light-build theme mismatch**. This supersedes the earlier absence of a rendered project-click reference; application behavior is still unchanged.
