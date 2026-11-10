@@ -1,3 +1,4 @@
+import { advanceCaseMediaReadiness } from "@/lib/case-media-readiness";
 import { caseStudyScrollStrength } from "@/lib/case-study-motion";
 import { shouldTransitionAnchor } from "@/lib/route-navigation";
 import { getProjectDisclosure } from "@/lib/project-transition";
@@ -19,7 +20,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
   const launch = root.querySelector<HTMLElement>('#project-details-launch-cta'), cue = root.querySelector<HTMLElement>('#project-details-header-info')!;
   const next = root.querySelector<HTMLElement>('#project-next')!;
   const nextBackground = new THREE.Color(), nextInk = new THREE.Color(), previewBackground = new THREE.Color("#f3f4f9"), previewInk = new THREE.Color("#c2c3c7"), targetBackground = new THREE.Color(project.nextProject.colorBg), targetInk = new THREE.Color(project.nextProject.colorText);
-  const panels = [...root.querySelectorAll<HTMLElement>('.case-panel')].map(element => ({ element, left: 0, top: 0, width: 1, height: 1, time: 0, frame: { element, left: 0, top: 0, width: 1, height: 1, reveal: 1, fullscreen: element.dataset.fullscreen === "true" } as CasePanelFrame, fullscreen: element.dataset.fullscreen === 'true' }));
+  const panels = [...root.querySelectorAll<HTMLElement>('.case-panel')].map(element => ({ element, media: element.querySelector<HTMLVideoElement | HTMLImageElement>("video,img"), readiness: { source: "", loaded: false, ratio: 0 }, left: 0, top: 0, width: 1, height: 1, time: 0, frame: { element, left: 0, top: 0, width: 1, height: 1, reveal: 1, ready: 0, fullscreen: element.dataset.fullscreen === "true" } as CasePanelFrame, fullscreen: element.dataset.fullscreen === 'true' }));
   const canvas = document.createElement('canvas'); canvas.id = 'case-gallery-canvas'; canvas.setAttribute('aria-hidden', 'true'); canvas.style.opacity = '0'; stage.append(canvas);
   const visiblePanels: CasePanelFrame[] = [];
   let disposed = false, lost = false, dirty = true, raf = 0, previous = 0, time = 0, frames = 0;
@@ -37,7 +38,7 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
   const schedule = () => { if (!disposed && !raf && !document.hidden && !blocked()) raf = requestAnimationFrame(frame); };
   const pause = () => { if (raf) cancelAnimationFrame(raf); raf = 0; previous = 0; drag = null; lastWheel = -1000; };
   const fallback = () => { graphics?.clearFallback(); canvas.style.opacity = '0'; root.dataset.caseGraphics = 'fallback'; };
-  try { if (new URLSearchParams(location.search).get("forceWebglFallback") === "1") fallback(); else graphics = createCaseStudyGraphics(canvas, project.theme.shadow ?? 1, reduced, schedule); }
+  try { if (new URLSearchParams(location.search).get("forceWebglFallback") === "1") fallback(); else graphics = createCaseStudyGraphics(canvas, project.theme.shadow ?? 1, reduced, schedule, project.theme.colorHighlight || project.theme.colorText); }
   catch { fallback(); }
   const measure = () => {
     width = innerWidth; height = innerHeight; vertical = width <= 812;
@@ -89,6 +90,10 @@ export function createCaseStudyMotion(root: HTMLElement, project: LusionProjectD
       const left = p.left - (vertical ? 0 : scroll), top = p.top - (vertical ? scrollY : 0);
       const visible = left < width && left + p.width > 0 && top < height && top + p.height > 0;
       p.time = visible ? p.time + dt : 0;
+      const media = p.media;
+      const decoded = media instanceof HTMLVideoElement ? media.readyState >= 2 : Boolean(media?.complete && media.naturalWidth > 0);
+      p.frame.ready = advanceCaseMediaReadiness(p.readiness, media?.currentSrc || media?.src || "", decoded, dt, reduced);
+      p.element.dataset.caseReadiness = p.frame.ready.toFixed(4);
       p.element.dataset.caseVisible = String(visible);
       if (visible) { p.frame.left = left; p.frame.top = top; p.frame.width = p.width; p.frame.height = p.height; p.frame.reveal = reduced ? 1 : expoOut(clamp(p.time)); visiblePanels.push(p.frame); }
     }

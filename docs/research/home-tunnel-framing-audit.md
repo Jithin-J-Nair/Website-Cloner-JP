@@ -1,5 +1,7 @@
 # Home cinematic framing, glass and whole-site follow-up
 
+> **Current corrective pass:** [whole-project-graphics-audit.md](whole-project-graphics-audit.md) covers all 18 requested areas, the new native instanced/additive clone and decoded-media-readiness corrections (F34–F38), final build `o5CuzEoJWvEJZ5UwY8yTV`, 44 route/viewport observations, and the still-failing autonomous distinct-blue-pose gate. It also identifies About-footer footage in the supplementary recording at ~33s, superseding older blanket evidence-gap wording. Build identities and unresolved statuses below are historical.
+
 ## Result
 
 The reported framing problem was reproducible. In the middle of the blue flight, the astronaut was substantially below the tunnel’s center. This was not solved by enlarging the viewport, clamping the astronaut to the screen, or arbitrarily moving the camera. The build was applying the later monitor pull-back coordinate to effects that belong to the earlier blue-flight coordinate.

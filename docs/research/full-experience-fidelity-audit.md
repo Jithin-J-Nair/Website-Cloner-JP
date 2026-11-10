@@ -1,5 +1,7 @@
 # Full-experience fidelity audit
 
+> **Current corrective pass:** [whole-project-graphics-audit.md](whole-project-graphics-audit.md) covers all 18 requested areas, the new native instanced/additive clone and decoded-media-readiness corrections (F34–F38), final build `o5CuzEoJWvEJZ5UwY8yTV`, 44 route/viewport observations, and the still-failing autonomous distinct-blue-pose gate. It also identifies About-footer footage in the supplementary recording at ~33s, superseding older blanket evidence-gap wording. Build identities and unresolved statuses below are historical.
+
 > **Latest Home cinematic follow-up:** [home-tunnel-framing-audit.md](home-tunnel-framing-audit.md) records the astronaut/blue-flight phase correction, glass timing, post-display foreground composition and near-camera glass depth (F29–F33), final-build evidence, the still-failing software autonomous sampling gate, and the refreshed whole-site backlog. Current preview 3003 is build `eVMxYxj-7MeL2vwLW0AY3`; identities below describe their historical passes. Approved gallery/thumbnail fixes are retained.
 
 > **Latest scroll-clarity follow-up:** [project-scroll-clarity-audit.md](project-scroll-clarity-audit.md) records the new blur investigation and fixes F25–F28 (per-frame scroll input, image resolution, exact render-target grid, fullscreen mask), with fresh all-19-case and all-22-page checks. Production 3003 is now build `6xmQgQMijkAfWzQ5gJRNF`. Prior build identities and unresolved wording below are historical; the new report distinguishes shipped fixes from remaining fidelity work.
