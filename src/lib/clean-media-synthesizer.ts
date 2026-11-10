@@ -130,7 +130,7 @@ const APPROVED_SYNTHETIC_PATHS: Map<
   map.set("meta/social_sharing.jpg", {
     width: 1200,
     height: 630,
-    slotLabel: "LUSION CREATIVE STUDIO",
+    slotLabel: "JITHIN CREATIVE STUDIO",
     kind: "og",
   });
 
@@ -372,7 +372,7 @@ export function synthesizeCleanAssetSvg(relPath: string): SynthesizedMediaResult
     return { svg, width, height };
   }
 
-  const rawTitle = project ? getCanonicalProjectTitle(project.id, project.title) : "LUSION";
+  const rawTitle = project ? getCanonicalProjectTitle(project.id, project.title) : "JITHIN";
   const title = escapeXml(rawTitle);
 
   if (kind === "card" && project) {
@@ -415,7 +415,7 @@ export function synthesizeCleanAssetSvg(relPath: string): SynthesizedMediaResult
     ? `<rect x="${Math.round(cx1 - r1 * 0.42)}" y="${Math.round(cy1 - r1 * 0.42)}" width="${Math.round(r1 * 0.84)}" height="${Math.round(r1 * 0.84)}" rx="28" fill="${fg}" fill-opacity="0.08" stroke="${fg}" stroke-opacity="0.28" stroke-width="2" transform="rotate(${Math.round(seededFloat(seed, 9) * 32 - 16)} ${cx1} ${cy1})"/>`
     : `<line x1="${padX}" y1="${padY + metaFontSize + 14}" x2="${width - padX}" y2="${padY + metaFontSize + 14}" stroke="${fg}" stroke-opacity="0.14" stroke-width="1"/>
     <text x="${padX}" y="${padY}" fill="${fg}" fill-opacity="0.68" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="${metaFontSize}" letter-spacing="2.2">${escapeXml(slotLabel)}</text>
-    <text x="${width - padX}" y="${padY}" text-anchor="end" fill="${accent}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="${metaFontSize}" letter-spacing="1.6">LUSION ARCHIVE</text>
+    <text x="${width - padX}" y="${padY}" text-anchor="end" fill="${accent}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="${metaFontSize}" letter-spacing="1.6">JITHIN ARCHIVE</text>
     <text x="${padX}" y="${height - padY - metaFontSize * 1.9}" fill="${fg}" font-family="system-ui, -apple-system, Helvetica Neue, Arial, sans-serif" font-size="${titleFontSize}" font-weight="500" letter-spacing="-1.2">${title}</text>
     <text x="${padX}" y="${height - padY}" fill="${fg}" fill-opacity="0.66" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="${metaFontSize}" letter-spacing="1.8">${categories}</text>`;
 

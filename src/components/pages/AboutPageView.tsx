@@ -101,10 +101,10 @@ function AboutWhoExperience({
   const memberRef = useRef(activeMemberIdx);
   const team = LUSION_ABOUT.who.team;
   const activeMember = team[activeMemberIdx] ?? team[0];
-  const narrativeWords = (words: string[], offset: number, italicCount = 0) =>
+  const narrativeWords = (words: string[], offset: number, italicCount = 0, separated = true) =>
     words.map((word, index) => (
       <React.Fragment key={offset + index}>
-        {index > 0 ? " " : null}
+        {separated && index > 0 ? " " : null}
         <span
           ref={el => { narrativeWordRefs.current[offset + index] = el; }}
           className={`about-narrative-word${index < italicCount ? " is-italic" : ""}`}
@@ -293,9 +293,9 @@ function AboutWhoExperience({
       if (manifestoLogoLine) {
         const range = document.createRange(); range.selectNodeContents(manifestoLogoLine);
         const rect = range.getBoundingClientRect();
-        const capHeight = rect.width * .200956762;
+        const capHeight = rect.height * .75;
         const parentShift = manifestoOverlayRef.current ? new DOMMatrixReadOnly(getComputedStyle(manifestoOverlayRef.current).transform).m41 : 0;
-        wordmarkSweep.layout(W, H, { x: rect.left - parentShift, y: rect.top + (rect.height - capHeight) * .56, width: rect.width / .92, height: capHeight });
+        wordmarkSweep.layout(W, H, { x: rect.left - parentShift, y: rect.top + (rect.height - capHeight) * .5, width: rect.width / .92, height: capHeight });
       } else wordmarkSweep.layout(W, H);
       syncInspector();
     };
@@ -591,10 +591,10 @@ function AboutWhoExperience({
       {/* Screen-Reader Accessible Complete Manifesto Heading & Copy */}
       <div className="sr-only">
         <h1>
-          Lusion — {LUSION_ABOUT.who.leftLines.join(" ")} {LUSION_ABOUT.who.rightHeadline}
+          I AM JITHIN AN AI PRODUCT ENGINEER. BLENDING DESIGN, CODE &amp; 3D TO BUILD IMMERSIVE DIGITAL EXPERIENCES.
         </h1>
-        <p>{LUSION_ABOUT.who.detailsTop}</p>
-        <p>{LUSION_ABOUT.who.detailsBottom}</p>
+        <p lang="ja">プロンプトエンジニアリング、 AIエージェント向けスキルの設計・開発、 業務自動化。</p>
+        <p lang="ja">ひらめきで終わらせず、動くかたちに。 試行錯誤を重ね、細部まで磨き上げ、 実際に使えるプロダクトへと仕上げる。</p>
       </div>
 
       {/* Sticky 100vh Full-Bleed WebGL + Architectural HUD Stage */}
@@ -625,7 +625,7 @@ function AboutWhoExperience({
           className="relative z-40 min-h-svh flex-col items-start justify-center gap-6 bg-[#0d0c0f] px-[var(--base-padding-x)] py-32"
         >
           <h2 className="max-w-3xl text-5xl">We are a creative production studio.</h2>
-          <p className="max-w-xl text-xl">A worldwide team of specialists in design, motion, 3D, and technology working together to turn ambitious ideas into immersive digital experiences.</p>
+          <p className="max-w-xl text-xl">プロンプトエンジニアリング、AIエージェント向けスキルの設計・開発、業務自動化。 ひらめきで終わらせず、動くかたちに。試行錯誤を重ね、細部まで磨き上げ、実際に使えるプロダクトへと仕上げる。</p>
           <p>The interactive scene is unavailable. All studio information remains below; a restored graphics context will retry automatically.</p>
           <a className="underline" href="#about-clients">Continue to studio information</a>
           <ul>{team.map(member => <li key={member.id}>{member.name} — {member.rolePlain}</li>)}</ul>
@@ -665,7 +665,7 @@ function AboutWhoExperience({
               fontSize="390"
               fontWeight="550"
             >
-              LUSION
+              JITHIN
             </text>
           </svg>
 
@@ -696,9 +696,13 @@ function AboutWhoExperience({
           className="pointer-events-none absolute inset-x-[var(--base-padding-x)] bottom-10 min-[820px]:bottom-[5.7vh] z-20 grid grid-cols-1 gap-6 min-[820px]:grid-cols-12 will-change-transform"
         >
           <div id="about-who-title-left" className="min-[820px]:col-span-6">
-            <h2 className="font-sans text-[9.6vw] font-normal uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[3.85vw] min-[820px]:leading-[1.19]">
-              {[LUSION_ABOUT.who.leftLines[0], "LUSION", ...LUSION_ABOUT.who.leftLines.slice(1)].map((line, idx) => (
-                <span key={idx} className={idx === LUSION_ABOUT.who.leftLines.length ? "block italic" : "block"}>
+            <h2 className="font-sans text-[9.6vw] font-[550] uppercase leading-[0.95] tracking-[-0.025em] text-white min-[820px]:text-[3.85vw] min-[820px]:leading-[1.19]">
+              {["I AM", "JITHIN", "AN AI PRODUCT", "ENGINEER."].map((line, idx) => (
+                <span
+                  key={idx}
+                  className={idx === 1 ? "block" : "block origin-left min-[820px]:scale-y-[1.15]"}
+                  style={idx === 1 ? undefined : { translate: idx === 2 ? "-0.018em 0" : "-0.055em 0" }}
+                >
                   {line}
                 </span>
               ))}
@@ -707,9 +711,9 @@ function AboutWhoExperience({
           <div className="flex items-end min-[820px]:col-span-6">
             <p
               id="about-who-title-right"
-              className="w-full whitespace-pre-line font-sans text-right italic text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[3.85vw] min-[820px]:leading-[1.19]"
+              className="w-full whitespace-pre-line font-sans text-right italic text-[5.6vw] font-normal uppercase leading-[1.06] tracking-[-0.02em] text-white/95 min-[820px]:text-[2.9vw] min-[820px]:leading-[1.19]"
             >
-              {LUSION_ABOUT.who.rightHeadline.replace(" DIGITAL", "\nDIGITAL")}
+              {"BLENDING DESIGN, CODE & 3D\nTO BUILD IMMERSIVE\nDIGITAL EXPERIENCES."}
             </p>
           </div>
         </div>
@@ -723,21 +727,23 @@ function AboutWhoExperience({
         >
           <p
             id="about-who-desc-top"
-            aria-label="A worldwide team of specialists in design, motion, 3D, and technology"
-            className="font-sans text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.12] tracking-[-0.02em] text-white"
+            lang="ja"
+            aria-label="プロンプトエンジニアリング、 AIエージェント向けスキルの設計・開発、 業務自動化。"
+            className="about-narrative-japanese text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.35] tracking-[-0.02em] text-white"
           >
-            {narrativeWords(["A", "worldwide", "team", "of"], 0, 4)}<br />
-            {narrativeWords(["specialists", "in", "design,"], 4)}<br />
-            {narrativeWords(["motion,", "3D,", "and", "technology"], 7)}
+            {narrativeWords(["プロン", "プト", "エンジニア", "リング、"], 0, 0, false)}<br />
+            {narrativeWords(["AIエージェント向け", "スキルの", "設計・開発、"], 4, 0, false)}<br />
+            {narrativeWords(["業", "務", "自動", "化。"], 7, 0, false)}
           </p>
           <p
             id="about-who-desc-bottom"
-            aria-label="working together to turn ambitious ideas into immersive digital experiences."
-            className="font-sans text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.12] tracking-[-0.02em] text-white"
+            lang="ja"
+            aria-label="ひらめきで終わらせず、動くかたちに。 試行錯誤を重ね、細部まで磨き上げ、 実際に使えるプロダクトへと仕上げる。"
+            className="about-narrative-japanese text-[clamp(1.35rem,3.9vw,3.55rem)] font-normal leading-[1.35] tracking-[-0.02em] text-white"
           >
-            {narrativeWords(["working", "together", "to"], 11)}<br />
-            {narrativeWords(["turn", "ambitious", "ideas", "into"], 14)}<br />
-            {narrativeWords(["immersive", "digital", "experiences."], 18)}
+            {narrativeWords(["ひらめきで", "終わらせず、", "動くかたちに。"], 11, 0, false)}<br />
+            {narrativeWords(["試行錯誤を", "重ね、", "細部まで", "磨き上げ、"], 14, 0, false)}<br />
+            {narrativeWords(["実際に使える", "プロダクトへと", "仕上げる。"], 18, 0, false)}
           </p>
         </div>
 

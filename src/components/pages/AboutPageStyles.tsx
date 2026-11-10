@@ -3,8 +3,8 @@ export function AboutPageStyles() {
   return <style>{`
     #about { --about-blue: #3733e8; background: #000302; }
     #about > div:first-of-type, #about #about-who, #about #about-who > .sticky, #about #about-clients { background-color: #000302; }
-    #about .about-narrative-layout #about-who-desc-top { position: absolute; left: 0; top: 2vh; text-align: left; font-size: 3.85vw; }
-    #about .about-narrative-layout #about-who-desc-bottom { position: absolute; right: 0; bottom: 1vh; max-width: 100%; text-align: right; font-size: 3.85vw; }
+    #about .about-narrative-layout #about-who-desc-top { position: absolute; left: 0; top: 2vh; text-align: left; font-size: 3.2vw; }
+    #about .about-narrative-layout #about-who-desc-bottom { position: absolute; right: 0; bottom: 1vh; max-width: 100%; text-align: right; font-size: 3.2vw; }
     #about #about-clients { background-color: #000302; }
     #about #about-clients { border-top: 0; padding-top: 8vw; padding-bottom: 8vw; }
     #about #about-clients h2 { font-size: 3.85vw; letter-spacing: -.04em; line-height: 1; }
@@ -160,7 +160,7 @@ export function AboutPageStyles() {
       #about #about-clients .about-client-marquee-set { flex: none; width: auto; }
       #about #about-clients .about-client-logo-tile { flex: 0 0 33.333333vw; width: 33.333333vw; }
       #about #about-clients .about-client-logo-tile { height: 28vw; }
-      #about .about-narrative-layout #about-who-desc-top, #about .about-narrative-layout #about-who-desc-bottom { font-size: clamp(20px,4.6vw,35px); }
+      #about .about-narrative-layout #about-who-desc-top, #about .about-narrative-layout #about-who-desc-bottom { font-size: clamp(18px,4.1vw,31px); }
       #about .about-narrative-layout #about-who-desc-top { top: 10vh; }
       #about .about-narrative-layout #about-who-desc-bottom { bottom: 12vh; }
       #about .about-expertise-heading h2 { font-size: 14vw; line-height: 1.05; }

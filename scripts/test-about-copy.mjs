@@ -19,7 +19,8 @@ assert.equal(
 );
 
 const view = fs.readFileSync("src/components/pages/AboutPageView.tsx", "utf8");
-assert.match(view, /<p>\{LUSION_ABOUT\.who\.detailsTop\}<\/p>/);
-assert.match(view, /<p>\{LUSION_ABOUT\.who\.detailsBottom\}<\/p>/);
+assert.ok(view.includes('プロンプトエンジニアリング、 AIエージェント向けスキルの設計・開発、 業務自動化。'));
+assert.match(view, /<p lang="ja">プロンプトエンジニアリング、/);
+assert.match(view, /<p lang="ja">ひらめきで終わらせず、/);
 
-console.log("PASS About accessible introduction matches current live copy with correct word spacing.");
+console.log("PASS About accessible Japanese introduction and Japanese continuation.");

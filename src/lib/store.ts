@@ -110,7 +110,7 @@ interface StudioState {
 }
 
 const DEFAULT_REEL_CONFIG: VideoOverlayConfig = {
-  title: "Lusion Showreel",
+  title: "Jithin Showreel",
   desktopSrc: "/assets/textures/reel/desktop.mp4",
   mobileSrc: "/assets/textures/reel/mobile.mp4",
   vimeoId: "761102167",

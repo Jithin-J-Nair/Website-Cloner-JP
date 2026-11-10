@@ -26,7 +26,7 @@ export function ProceduralReelStream({
   progressRatio,
   variant = "stage",
   accentColor = "#1a2ffb",
-  label = "LUSION SHOWREEL",
+  label = "JITHIN SHOWREEL",
   className = "",
 }: ProceduralReelStreamProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -128,7 +128,12 @@ export function HomePageView() {
     return createHomeEditorialMotion(root, reducedMotion, reelOpen);
   }, [reducedMotion, reelOpen, isMobileReel, reelVideoAvailable]);
 
-  const heroWords = LUSION_HOME.hero.headline.split(" ");
+  const heroLines = [
+    "アイデアを、確かな技術で形にする。",
+    "Web・AI・自動化を通じて、",
+    "課題を解決する仕組みをつくる。",
+  ];
+  const featuredLines = ["アイデアと技術を融合させて生み出した、", "こだわりのデジタルプロジェクトをご紹介します。"] as const;
   const reelLoopSrc = isMobileReel
     ? LUSION_HOME.reel.mobileLoopVideo
     : LUSION_HOME.reel.desktopLoopVideo;
@@ -156,26 +161,21 @@ export function HomePageView() {
         <h1
           id="home-hero-title"
           ref={heroHeadingRef}
-          className="relative col-span-6 m-0 h-fit font-sans text-[6.6vw] leading-[1.09] font-normal tracking-[-0.02em] text-[#000000] max-[380px]:text-[6.8vw] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.7vw]"
+          lang="ja"
+          aria-label={heroLines.join(" ")}
+          className="relative col-span-6 m-0 h-fit home-japanese-headline text-[5vw] leading-[1.35] font-light tracking-[-0.02em] text-[#000000] min-[813px]:col-start-4 min-[813px]:col-span-5 min-[813px]:text-[2.25vw]"
         >
-          {heroWords.map((word, idx) => (
-            <React.Fragment key={idx}>
-              <motion.span
-                initial={reducedMotion ? false : { transform: "translate3d(0,115%,0) rotate(7deg)", opacity: 0 }}
-                animate={{ transform: "translate3d(0,0%,0) rotate(0deg)", opacity: 1 }}
-                transition={{
-                  duration: 0.62,
-                  delay: Math.min(0.45, idx * 0.024),
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="inline-block will-change-transform"
-              >
-                {word}
-              </motion.span>
-              {idx < heroWords.length - 1 ? " " : ""}
-              {/* The source uses three editorial lines on desktop; mobile flows naturally. */}
-              {(idx === 4 || idx === 8) && <br className="hidden min-[813px]:block" />}
-            </React.Fragment>
+          {heroLines.map((line, idx) => (
+            <motion.span
+              key={line}
+              aria-hidden="true"
+              initial={reducedMotion ? false : { transform: "translate3d(0,115%,0) rotate(7deg)", opacity: 0 }}
+              animate={{ transform: "translate3d(0,0%,0) rotate(0deg)", opacity: 1 }}
+              transition={{ duration: 0.62, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="block whitespace-nowrap will-change-transform"
+            >
+              {line}
+            </motion.span>
           ))}
         </h1>
 
@@ -241,9 +241,19 @@ export function HomePageView() {
 
           <p
             id="home-featured-disclaimer"
-            className="my-[2.4em] w-full font-sans text-[3.3vw] leading-[1.4] tracking-[0.02em] text-black/85 uppercase min-[481px]:text-[2.5vw] min-[813px]:absolute min-[813px]:right-0 min-[813px]:bottom-1 min-[813px]:my-0 min-[813px]:w-[calc(var(--grid-space)*3.2+var(--grid-gap)*2)] min-[813px]:text-[0.9vw]"
+            lang="ja"
+            aria-label={featuredLines.join(" ")}
+            className="my-[2.4em] w-full home-japanese-featured font-light text-[3.3vw] leading-[1.4] tracking-[0.02em] text-black/85 uppercase min-[481px]:text-[2.5vw] min-[813px]:absolute min-[813px]:right-0 min-[813px]:bottom-1 min-[813px]:my-0 min-[813px]:w-[calc(var(--grid-space)*3.2+var(--grid-gap)*2)] min-[813px]:text-[0.9vw]"
           >
-            {LUSION_HOME.featured.disclaimer.split(" ").map((word, i) => <React.Fragment key={i}><span className="inline-block overflow-hidden align-top"><span data-featured-disclaimer-word className="inline-block">{word}</span></span>{" "}</React.Fragment>)}
+            {featuredLines.map(line => (
+              <span key={line} className="block" aria-hidden="true">
+                {Array.from(line).reduce<string[]>((units, char) => {
+                  if ((char === "、" || char === "。") && units.length) units[units.length - 1] += char;
+                  else units.push(char);
+                  return units;
+                }, []).map((unit, i) => <span key={i} className="inline-block overflow-hidden align-top"><span data-featured-disclaimer-word className="inline-block">{unit}</span></span>)}
+              </span>
+            ))}
           </p>
         </div>
 

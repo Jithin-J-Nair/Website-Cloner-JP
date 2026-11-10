@@ -10,8 +10,8 @@ import * as THREE from 'three';
 fs.mkdirSync('temp', { recursive: true });
 const dir = fs.mkdtempSync(path.resolve('temp/goal-unit-'));
 try {
-  for (const name of ['lib/lusion-buf-loader', 'components/home/GoalDownstreamScenes', 'components/home/AstronautEmergenceAssets', 'components/home/GoalReferenceClones', 'components/home/GoalCloneReflection', 'components/home/GoalReferenceCloneShaders', 'components/home/GoalReferenceShaders', 'components/home/GoalReferenceWorlds', 'components/home/GoalReferenceBloomPass', 'components/home/GoalReferenceOverlayPass', 'components/home/GoalReferenceEnd', 'components/home/GoalReferenceEndShaders']) {
-    const source = fs.readFileSync(`src/${name}.ts`, 'utf8').replaceAll('@/lib/lusion-buf-loader', './lusion-buf-loader.mjs').replaceAll('./GoalReferenceShaders', './GoalReferenceShaders.mjs').replaceAll('./GoalReferenceWorlds', './GoalReferenceWorlds.mjs').replaceAll('./GoalReferenceEndShaders', './GoalReferenceEndShaders.mjs').replaceAll('./GoalCloneReflection', './GoalCloneReflection.mjs').replaceAll('./GoalReferenceClones', './GoalReferenceClones.mjs').replaceAll('./GoalReferenceCloneShaders', './GoalReferenceCloneShaders.mjs');
+  for (const name of ['lib/lusion-buf-loader', 'components/home/GoalDownstreamScenes', 'components/home/AstronautEmergenceAssets', 'components/home/GoalReferenceShaders', 'components/home/GoalReferenceWorlds', 'components/home/GoalReferenceBloomPass', 'components/home/GoalReferenceOverlayPass', 'components/home/GoalReferenceEnd', 'components/home/GoalReferenceEndShaders']) {
+    const source = fs.readFileSync(`src/${name}.ts`, 'utf8').replaceAll('@/lib/lusion-buf-loader', './lusion-buf-loader.mjs').replaceAll('./GoalReferenceShaders', './GoalReferenceShaders.mjs').replaceAll('./GoalReferenceWorlds', './GoalReferenceWorlds.mjs').replaceAll('./GoalReferenceEndShaders', './GoalReferenceEndShaders.mjs');
     const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
     fs.writeFileSync(path.join(dir, `${path.basename(name)}.mjs`), compiled);
   }
@@ -27,57 +27,6 @@ try {
     const data = fs.readFileSync(`media-bundle/models/tunnels/${name}.buf`);
     return parseLusionBuf(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
   };
-
-  {
-  const { createGoalReferenceClones, createGoalCloneAnimationTextures, goalCloneMainWeight } = await import(pathToFileURL(path.join(dir, 'GoalReferenceClones.mjs')));
-  const { createGoalCloneReflection } = await import(pathToFileURL(path.join(dir, 'GoalCloneReflection.mjs')));
-  const animationSource = load('astronaut_animations');
-  const clonePalette = createGoalCloneAnimationTextures(animationSource);
-  assert.equal(clonePalette.position.image.width, 53); assert.equal(clonePalette.position.image.height, 288);
-  for (let i = 0; i < 53 * 288; i++) {
-    assert.deepEqual([...clonePalette.position.image.data.slice(i*4,i*4+3)], [...animationSource.attributes.position.slice(i*3,i*3+3)]);
-  }
-  assert.deepEqual(clonePalette.orient.image.data, animationSource.attributes.orient);
-  for (const texture of Object.values(clonePalette)) { assert.equal(texture.minFilter,THREE.NearestFilter); assert.equal(texture.flipY,false); texture.dispose(); }
-  for (let c=0;c<4;c++) {
-    assert.equal(goalCloneMainWeight(c,0),1); let previous=1;
-    for(let i=0;i<=2000;i++){const value=goalCloneMainWeight(c,i/2000);assert.ok(value>=0&&value<=previous);previous=value;}
-  }
-  assert.ok(goalCloneMainWeight(3,1)>0,'preserve native g=1..4 delay, including its late fourth clone');
-  const cloneResources=[]; const trackClone=r=>(cloneResources.push(r),r);
-  const cloneMaps=Array.from({length:4},()=>({arm:new THREE.Texture(),normal:new THREE.Texture()}));
-  const cloneParts=['helmet','helmet_glass','glove_shoes','wearpack'].map(name=>load('astronaut_'+name));
-  const field=createGoalReferenceClones(cloneParts,animationSource,cloneMaps,trackClone);
-  assert.equal(field.group.children.length,4);
-  for (let i=0;i<4;i++) {
-    const mesh=field.group.children[i];assert.equal(mesh.geometry.instanceCount,4);assert.equal(mesh.isSkinnedMesh,undefined);
-    assert.equal(mesh.material.blending,THREE.CustomBlending);assert.equal(mesh.material.blendSrc,THREE.OneFactor);assert.equal(mesh.material.blendDst,THREE.OneFactor);assert.equal(mesh.material.depthTest,false);
-    assert.deepEqual(mesh.geometry.getAttribute('boneWeights').array,cloneParts[i].geometry.getAttribute('boneWeights').array);
-    assert.equal(mesh.material.uniforms.u_alpha,field.uniforms.u_alpha,'per-frame values stay shared across parts');
-  }
-  const main=new THREE.Vector3(.1,.2,-.3);
-  field.update(true,4,23.25,.4,1,main);const state=[...field.position.array,...field.orient.array,...field.frame.array];
-  field.update(true,9,40,.8,.1,main);field.update(true,4,23.25,.4,1,main);
-  assert.deepEqual([...field.position.array,...field.orient.array,...field.frame.array],state,'reversible authored clone sampling');
-  assert.equal(field.uniforms.u_alpha.value,1);assert.equal(field.frame.getX(0),40);assert.equal(field.frame.getZ(0),.25);
-  const expectedPosition=new THREE.Vector3(),expectedRotation=new THREE.Quaternion();
-  sampleGoalBrownian(4,1,12,10,.2,.6,expectedPosition,expectedRotation);
-  assert.ok(expectedPosition.distanceTo(new THREE.Vector3().fromArray(field.position.array))<1e-6,'fully separated first clone does not inherit primary root noise');
-  field.update(false,100,100,1,0,main);assert.equal(field.group.visible,false);
-  const reflection=createGoalCloneReflection(trackClone);const originalTarget=new THREE.WebGLRenderTarget(1,1),input=new THREE.Texture();
-  let target=originalTarget;const records=[];
-  const renderer={autoClear:true,getDrawingBufferSize:v=>v.set(1440,900),getRenderTarget:()=>target,setRenderTarget:t=>target=t,render:mesh=>{
-    const u=mesh.material.uniforms;assert.notEqual(u.u_texture.value,target.texture,'reflection cannot sample the active attachment');
-    records.push({width:target.width,height:target.height,delta:u.u_delta.value.toArray()});
-  }};
-  reflection.render(renderer,input);assert.equal(records.length,5);assert.equal(target,originalTarget);assert.equal(renderer.autoClear,true);
-  assert.deepEqual(records.map(r=>[r.width,r.height]),[[512,256],[256,128],[512,256],[256,128],[512,256]]);
-  assert.deepEqual(records.slice(1).map(r=>r.delta),[[16/256*.25,0],[0,16/128*.25],[4/256*.25,0],[0,4/128*.25]]);
-  renderer.render=()=>{throw new Error('expected renderer failure');};
-  assert.throws(()=>reflection.render(renderer,input),/expected renderer/);assert.equal(target,originalTarget);assert.equal(renderer.autoClear,true);
-  for(const resource of cloneResources)resource.dispose();for(const maps of cloneMaps){maps.arm.dispose();maps.normal.dispose();}originalTarget.dispose();input.dispose();
-  console.log('PASS: exact 53x288 GPU clone palettes, native stagger, 4x4 instancing, additive reflected materials, deterministic independent roots, 16/4 reflection filters and exception-safe target ownership');
-  }
 
   for (const height of [844, 900, 1200]) {
     const m = { emergenceStart: height * 8, emergenceSpan: height * 2.5,

@@ -53,7 +53,7 @@ function DiagonalSocialArrow() {
 export function StudioFooter({
   nextHref = "/about",
   nextLabel = "About Us",
-  brandName = "Lusion",
+  brandName = "JITHIN",
 }: StudioFooterProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -61,7 +61,7 @@ export function StudioFooter({
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const footerCopyright = pathname === "/"
     ? "©2026 JITHIN"
-    : brandName === "Lusion"
+    : brandName === "JITHIN"
     ? LUSION_GLOBAL_CHROME.footer.copyright
     : `©2026 ${brandName} Creative Studio`;
 
@@ -216,7 +216,7 @@ export function StudioFooter({
                 href={LUSION_GLOBAL_CHROME.footer.enquiriesHref}
                 className="group relative inline-block pb-1"
               >
-                <span>{LUSION_GLOBAL_CHROME.footer.enquiriesEmail}</span>
+                <span>Email for enquiries</span>
                 <span
                   aria-hidden="true"
                   className="absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-black transition-transform duration-300 ease-[cubic-bezier(0.35,0,0,1)] group-hover:scale-x-100"
@@ -235,7 +235,7 @@ export function StudioFooter({
                 href={LUSION_GLOBAL_CHROME.footer.businessHref}
                 className="group relative inline-block pb-1"
               >
-                <span>{LUSION_GLOBAL_CHROME.footer.businessEmail}</span>
+                <span>Email for business</span>
                 <span
                   aria-hidden="true"
                   className="absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-black transition-transform duration-300 ease-[cubic-bezier(0.35,0,0,1)] group-hover:scale-x-100"
@@ -323,7 +323,7 @@ export function StudioFooter({
                   role="status"
                   className="mt-2.5 text-sm text-[#1a2ffb]"
                 >
-                  Saved locally (static reconstruction — write hello@lusion.co for studio dispatch).
+                  Saved locally on this device.
                 </p>
               )}
             </form>
@@ -349,7 +349,7 @@ export function StudioFooter({
             rel="noopener noreferrer"
             className="group relative col-span-6 w-fit pb-0.5 text-[0.95em] max-[1000px]:order-1 min-[1001px]:col-span-3"
           >
-            <span>{LUSION_GLOBAL_CHROME.footer.labsText}</span>
+            <span>R&amp;D: Labs</span>
             <span
               aria-hidden="true"
               className="absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-black transition-transform duration-300 ease-[cubic-bezier(0.35,0,0,1)] group-hover:scale-x-100"

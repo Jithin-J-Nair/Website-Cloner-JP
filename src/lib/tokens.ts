@@ -8,8 +8,8 @@ export type SurfaceTheme = "ice" | "void" | "cobalt";
 
 export const DESIGN_TOKENS = {
   brand: {
-    name: "Lusion",
-    mark: "LUSION",
+    name: "Jithin",
+    mark: "JITHIN",
     domain: "lusion.co",
     labsDomain: "labs.lusion.co",
     emailGeneral: "hello@lusion.co",

@@ -6,13 +6,11 @@ import {launchMotionBrowser} from './lib/browser-runtime.mjs';
 import {loadCurrentLiveGroundTruth} from './lib/load-ground-truth.mjs';
 const base=process.env.BASE_URL||'http://127.0.0.1:3003',phase=process.env.AUDIT_PHASE||'before';
 const out=`temp/site-fidelity-audit/${phase}`;fs.mkdirSync(out,{recursive:true});
-const manifest=loadCurrentLiveGroundTruth(),report=[];
-const widths=(process.env.AUDIT_WIDTHS||"1440,390").split(",").map(Number);
-for(const width of widths) {
- const browser=await launchMotionBrowser();
- try {
+const manifest=loadCurrentLiveGroundTruth(),browser=await launchMotionBrowser(),report=[];
+try {
+ for(const width of [1440,390]) {
   const context=await browser.newContext({viewport:{width,height:width===390?844:900},hasTouch:width===390,reducedMotion:'reduce'});
-  await context.addInitScript(()=>{try{sessionStorage.setItem('lusion_booted_v1','1')}catch{}});
+  await context.addInitScript(()=>sessionStorage.setItem('lusion_booted_v1','1'));
   const page=await context.newPage();
   for(const route of ['/', '/about','/projects',...manifest.projectDetails.map(p=>p.route)]) {
    const row={route,width,errors:[],shots:[]};report.push(row);
@@ -27,6 +25,6 @@ for(const width of widths) {
    page.off('pageerror',error);fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));
   }
   await context.close();
- } finally {await browser.close();}
-}
-console.log(`Captured ${report.length} route/viewport observations into ${out}; ${report.reduce((n,r)=>n+r.errors.length,0)} uncaught errors. Not a source-pixel parity result.`);
+ }
+ console.log(`Captured ${report.length} route/viewport observations into ${out}; ${report.reduce((n,r)=>n+r.errors.length,0)} uncaught errors. Not a source-pixel parity result.`);
+} finally {await browser.close();}

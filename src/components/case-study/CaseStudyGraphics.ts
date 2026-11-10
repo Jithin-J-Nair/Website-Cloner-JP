@@ -2,11 +2,11 @@ import * as THREE from "three";
 import { caseStudyRenderDpr, caseStudyScrollStrength } from "@/lib/case-study-motion";
 import { createCaseStudyShadows } from "./CaseStudyShadows";
 
-export type CasePanelFrame = { element: HTMLElement; left: number; top: number; width: number; height: number; reveal: number; ready: number; fullscreen: boolean };
+export type CasePanelFrame = { element: HTMLElement; left: number; top: number; width: number; height: number; reveal: number; fullscreen: boolean };
 
 /** Optional viewport compositor. No scroll, observers, listeners or RAF here:
  * the case-study owner supplies measured frames and owns the whole lifetime. */
-export function createCaseStudyGraphics(canvas: HTMLCanvasElement, shadow: number, reduced: boolean, wake: () => void, highlight = "#ffffff") {
+export function createCaseStudyGraphics(canvas: HTMLCanvasElement, shadow: number, reduced: boolean, wake: () => void) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, premultipliedAlpha: false, powerPreference: "low-power" });
   renderer.setClearColor(0, 0); renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene(), camera = new THREE.OrthographicCamera(0, 1, 0, -1, -1, 1);
@@ -41,9 +41,9 @@ export function createCaseStudyGraphics(canvas: HTMLCanvasElement, shadow: numbe
   });
   finalScene.add(new THREE.Mesh(quad, finalMaterial));
   const materialVertex = `uniform vec4 uBox;uniform vec2 uViewport;varying vec2 vUv;void main(){vUv=uv;vec2 p=uBox.xy+vec2(uv.x,1.-uv.y)*uBox.zw;gl_Position=vec4(p/uViewport*vec2(2.,-2.)+vec2(-1.,1.),0.,1.);}`;
-  const materialFragment = `uniform sampler2D uTexture;uniform vec2 uSize;uniform vec3 uHighlight;uniform float uReady,uReveal,uRadius,uFullscreen;varying vec2 vUv;
+  const materialFragment = `uniform sampler2D uTexture;uniform vec2 uSize;uniform float uReveal,uRadius,uFullscreen;varying vec2 vUv;
     void main(){vec2 halfSize=uSize*.5*mix(.6,1.,max(uFullscreen,uReveal));vec2 p=abs((vUv-.5)*uSize)-halfSize+uRadius;float d=min(max(p.x,p.y),0.)+length(max(p,0.))-uRadius;
-      float a=1.-smoothstep(-1.,1.,d);if(a<=0.)discard;vec2 uv=(vUv-.5)*mix(.6,1.,uReveal)+.5;gl_FragColor=vec4(mix(uHighlight,texture2D(uTexture,uv).rgb,uReady),a);}`;
+      float a=1.-smoothstep(-1.,1.,d);if(a<=0.)discard;vec2 uv=(vUv-.5)*mix(.6,1.,uReveal)+.5;gl_FragColor=vec4(texture2D(uTexture,uv).rgb,a);}`;
   const entries = new Map<HTMLElement, { mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>; texture: THREE.Texture; source: string; media: HTMLVideoElement | HTMLImageElement }>();
   let disposed = false, width = 1, height = 1;
   const drawingSize = new THREE.Vector2();
@@ -72,14 +72,14 @@ export function createCaseStudyGraphics(canvas: HTMLCanvasElement, shadow: numbe
           const texture = media instanceof HTMLVideoElement ? new THREE.VideoTexture(media) : new THREE.Texture(media);
           texture.colorSpace = THREE.NoColorSpace; texture.needsUpdate = true;
           const material = new THREE.ShaderMaterial({ vertexShader: materialVertex, fragmentShader: materialFragment, transparent: true, depthTest: false, depthWrite: false,
-            uniforms: { uTexture: { value: texture }, uBox: { value: new THREE.Vector4() }, uViewport: { value: new THREE.Vector2() }, uSize: { value: new THREE.Vector2() }, uReveal: { value: 1 }, uReady: { value: 0 }, uHighlight: { value: new THREE.Color().setStyle(highlight, THREE.LinearSRGBColorSpace) }, uRadius: { value: 20 }, uFullscreen: { value: 0 } },
+            uniforms: { uTexture: { value: texture }, uBox: { value: new THREE.Vector4() }, uViewport: { value: new THREE.Vector2() }, uSize: { value: new THREE.Vector2() }, uReveal: { value: 1 }, uRadius: { value: 20 }, uFullscreen: { value: 0 } },
           });
           const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material); mesh.frustumCulled = false; scene.add(mesh);
           entry = { mesh, texture, source, media }; entries.set(element, entry);
         }
         entry.mesh.visible = true; const u = entry.mesh.material.uniforms;
         (u.uBox.value as THREE.Vector4).set(frame.left, frame.top, frame.width, frame.height); (u.uViewport.value as THREE.Vector2).set(width, height);
-        (u.uSize.value as THREE.Vector2).set(frame.width, frame.height); u.uReveal.value = reduced ? 1 : frame.reveal; u.uReady.value = reduced ? 1 : frame.ready;
+        (u.uSize.value as THREE.Vector2).set(frame.width, frame.height); u.uReveal.value = reduced ? 1 : frame.reveal;
         u.uRadius.value = frame.fullscreen && !vertical ? 0 : 20; u.uFullscreen.value = frame.fullscreen ? 1 : 0;
         element.dataset.casePixels = "ready";
       }

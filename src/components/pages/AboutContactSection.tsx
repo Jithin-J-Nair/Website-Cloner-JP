@@ -109,7 +109,7 @@ export function AboutContactSection() {
                 role="status"
                 className="mt-5 font-mono text-xs uppercase tracking-[0.08em] text-[#c1ff00]"
               >
-                {LUSION_GLOBAL_CHROME.footer.businessEmail} copied to clipboard
+                Email address copied to clipboard
               </p>
             )}
           </div>

@@ -21,7 +21,7 @@ export function NotFoundView() {
           This page could not be found.
         </h1>
         <p className="mt-6 max-w-xl font-sans text-base leading-relaxed text-black/75 md:text-lg">
-          The requested URL does not match an active Lusion studio page or project archive entry.
+          The requested URL does not match an active Jithin studio page or project archive entry.
         </p>
 
         <div className="mt-10 flex flex-wrap gap-4">
@@ -49,7 +49,7 @@ export function NotFoundView() {
         </div>
       </div>
 
-      <p className="font-mono text-xs text-black/50">&copy;2026 LUSION Creative Studio</p>
+      <p className="font-mono text-xs text-black/50">&copy;2026 JITHIN Creative Studio</p>
     </main>
   );
 }

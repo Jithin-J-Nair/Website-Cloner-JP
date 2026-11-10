@@ -38,7 +38,7 @@ try{
  const styles=fs.readFileSync('src/components/pages/AboutPageStyles.tsx','utf8'),cards=fs.readFileSync('src/components/pages/AboutExpertiseCards.tsx','utf8'),lines=fs.readFileSync('src/components/pages/AboutExpertiseLines.ts','utf8');
  assert.match(styles,/#about \{ --about-blue: #3733e8;/i);assert.ok(!cards.includes('M390 510C690 510'));
  assert.ok(lines.includes('line_${office ? "office" : "capability"}.buf')&&lines.includes('editorialLineFragment'),'two real buffers use the native line/coverage program');
- assert.ok(cards.includes('className="about-card-back-art" src="/about/scene/card-back.png" width={628} height={876}'));assert.ok(fs.existsSync('media-bundle/images/cards/back.png'));
- assert.match(cards,/feColorMatrix/);assert.match(styles,/filter: url\(#about-card-back-colors\)/);
+ assert.ok(cards.includes('className="about-card-back-art" src="/sites/jithin/expertise-card-back.png" width={628} height={876}'));assert.ok(fs.existsSync('media-bundle/images/cards/back.png'));
+ assert.ok(cards.includes('["ジ", "テ", "ィ", "ン"]'));assert.ok(cards.includes('<CardBack index={i} />'));assert.match(cards,/feColorMatrix/);assert.match(styles,/filter: url\(#about-card-back-colors\)/);
  console.log('PASS native expertise: source range/pin/line endpoints, 4 bounded back-eased staggered turns, golden third-card edge, exponential spread, deterministic reversal, live bob, mobile cubic flips, actual ribbon/artwork contracts.');
 }finally{fs.rmSync(dir,{recursive:true});}

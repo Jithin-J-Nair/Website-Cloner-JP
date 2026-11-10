@@ -11,7 +11,6 @@ import { createGoalReferenceWorlds, createGoalGlassAnimationTextures, goalWorldR
 import { createGoalReferenceEnd, createGoalReferenceVisor } from "./GoalReferenceEnd";
 import { GoalReferenceBloomPass } from "./GoalReferenceBloomPass";
 import { GoalReferenceOverlayPass } from "./GoalReferenceOverlayPass";
-import type { GoalReferenceCloneField } from "./GoalReferenceClones";
 import { glassVertex, glassFragment } from "./GoalReferenceShaders";
 import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
 import { createGpuFrameTimer } from "@/lib/gpu-frame-timer";
@@ -391,7 +390,6 @@ export function GoalTunnelSection() {
     const nativeDisplayAlpha = { value: 0 };
     let mainAstro: LoadedAstronautRig | null = null;
     const clones: LoadedAstronautRig[] = [];
-    let nativeClones: GoalReferenceCloneField | undefined;
     const visorLed = createGoalReferenceVisor(track);
 
     const glbPromise = forceAssetFailure
@@ -518,9 +516,7 @@ export function GoalTunnelSection() {
         applySuitJointPose(primary, SUIT_POSE_TABLET_FLOAT);
         scene.add(primary.root);
 
-        nativeClones = primary.referenceClones;
-        if (nativeClones) scene.add(nativeClones.group);
-        const cloneCount = nativeClones ? 0 : 4;
+        const cloneCount = 4;
         for (let c = 0; c < cloneCount; c++) {
           const cl = createClone();
           applyNativeDisplayBridge(cl);
@@ -544,7 +540,6 @@ export function GoalTunnelSection() {
           endDecor.group.visible = true;
           visorLed.mesh.visible = true;
           if (clones[0]) clones[0].root.visible = true;
-          if (nativeClones) nativeClones.group.visible = true;
           glRenderer.compile(scene, camera);
           worlds.black.visible = prevTruss;
           worlds.white.visible = prevBlue;
@@ -552,7 +547,6 @@ export function GoalTunnelSection() {
           endDecor.group.visible = prevDecor;
           visorLed.mesh.visible = prevLed;
           if (clones[0]) clones[0].root.visible = false;
-          if (nativeClones) nativeClones.group.visible = false;
         }
 
         if (window.__goalAstronautTelemetry) {
@@ -621,7 +615,7 @@ export function GoalTunnelSection() {
         // Source feedback is captured after LD/HD architecture and before the
         // foreground astronaut. Copy the resolved scene target instead of drawing
         // a second 130k-vertex lattice every normal-playback frame.
-        const foreground = [...(mainAstro ? [mainAstro.root] : []), ...clones.map(clone => clone.root), ...(nativeClones ? [nativeClones.group] : [])];
+        const foreground = [...(mainAstro ? [mainAstro.root] : []), ...clones.map(clone => clone.root)];
         const visibility = foreground.map(object => object.visible), autoClear = renderer.autoClear;
         try {
           for (const object of foreground) object.visible = false;
@@ -1596,13 +1590,9 @@ export function GoalTunnelSection() {
           optics.visorFlareMesh.visible = false;
         }
 
-        // Native additive/reflection clone family is separate from the approved
-        // primary PBR suit; one four-instance draw per part, no extra owner/RAF.
+        // Four full-suit clones separate during black .2→.4, then disappear
+        // for the white corridor. They are not green translucent orbiting ghosts.
         const clonesShow = smoothstep(.2, .4, nativeRatios.black);
-        nativeClones?.update(!inEmergencePhase && tTunnel < .815 && clonesShow > .001,
-          motionTime, loopFrame, nativeRatios.black, clonesShow, mainAstro.root.position);
-        // Preserve the legacy GLB failure-isolation fallback.
-
         for (let c = 0; c < clones.length; c++) {
           const cl = clones[c];
           cl.root.visible = !inEmergencePhase && tTunnel < .815 && clonesShow > .001;
@@ -1656,7 +1646,6 @@ export function GoalTunnelSection() {
       gpuTimer?.begin(inEmergencePhase ? "solar" : tShatter > 0.18 ? "shatter" : tShatter > 0 ? "glass" : tTunnel > 0.845 ? "blue" : "vortex");
       glRenderer.info.reset();
       worlds.renderFeedback(glRenderer, camera, Boolean(reducedMotion));
-      nativeClones?.renderReflection(glRenderer, worlds.blackUniforms.u_feedbackTexture.value);
       glassRefractionReady = false;
       // The source transfers the astronaut out of the tunnel stage when the
       // blue root curve ends. Render that foreground once, after bloom, with
@@ -1768,13 +1757,11 @@ export function GoalTunnelSection() {
           optics.spaceHaloMesh.visible = optics.chromaticRingMesh.visible = optics.visorFlareMesh.visible = false;
           nativeLightMask.value = 1; outputPass.enabled = bloomPass.enabled = false; referenceBloom.enabled = true;
           for (const clone of clones) clone.root.visible = true;
-          if (nativeClones) nativeClones.group.visible = true;
           worlds.update(.4, 0, 1, true); worlds.blackUniforms.u_resolution.value.set(8, 8);
-          worlds.renderFeedback(glRenderer, camera, true); nativeClones?.renderReflection(glRenderer, worlds.blackUniforms.u_feedbackTexture.value); composer.render(0);
+          worlds.renderFeedback(glRenderer, camera, true); composer.render(0);
           // Exercise the folded vertex path too, not only the straight shaft.
           worlds.update(.78, 0, 1, true); worlds.renderFeedback(glRenderer, camera, true); composer.render(0);
           for (const clone of clones) clone.root.visible = false;
-          if (nativeClones) nativeClones.group.visible = false;
           worlds.update(.93, 0, 1, true); composer.render(0);
           worlds.update(1, .5, 1, true); worlds.setMonitorClip(true); worlds.monitorStencilMask.visible = true; composer.render(0);
           worlds.setMonitorClip(false); worlds.monitorStencilMask.visible = false; endDecor.update(8, .2, 1); visorLed.update(0, 1);
@@ -2169,9 +2156,14 @@ export function GoalTunnelSection() {
             <div
               ref={copyColRef}
               id="home-goal-texts"
-              className="w-full min-[820px]:w-[34.5%] min-[820px]:mr-0 space-y-4 min-[820px]:space-y-6 font-sans text-[clamp(0.92rem,1.22vw,1.16rem)] min-[820px]:text-[1.65vw] font-normal leading-[1.38] text-[#151821] will-change-transform"
+              lang="ja"
+              className="w-full min-[820px]:w-[34.5%] min-[820px]:mr-0 space-y-4 min-[820px]:space-y-6 home-goal-japanese text-[clamp(0.92rem,1.22vw,1.16rem)] min-[820px]:text-[1.65vw] font-normal leading-[1.38] text-[#151821] will-change-transform"
             >
-              {LUSION_HOME.goal.paragraphs.map((para, idx) => (
+              {[
+                "流行や既成の型にとらわれず、一つひとつのアイデアや課題に向き合い、その本質が伝わる表現を追求しています。",
+                "見た目のインパクトだけでなく、使う人の興味を引き、心に残るデジタル体験を大切にしています。",
+                "クリエイティブな発想を起点に、3D表現とインタラクティブな開発を組み合わせ、目的に合った体験を細部まで丁寧に形にしています。",
+              ].map((para, idx) => (
                 <p key={idx} className="home-goal-texts-paragraph">
                   <span className="home-goal-texts-p block">{para}</span>
                 </p>

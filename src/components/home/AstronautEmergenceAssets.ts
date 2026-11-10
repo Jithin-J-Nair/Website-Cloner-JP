@@ -3,7 +3,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { loadLusionBuf, type ParsedBufData } from "@/lib/lusion-buf-loader";
-import { createGoalReferenceClones, type GoalReferenceCloneField } from "./GoalReferenceClones";
 
 export interface AstronautBoneMap {
   Hips?: THREE.Bone;
@@ -35,7 +34,6 @@ export interface LoadedAstronautRig {
   visorOrientationLocal?: THREE.Quaternion;
   drawCalls: number;
   triangles: number;
-  referenceClones?: GoalReferenceCloneField;
   /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
   sampleBakedPose?: (frame: number, influence: number, blendFrame?: number, blendWeight?: number) => void;
   sampleCapturedRoot?: (stage: "in" | "out", frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void;
@@ -875,10 +873,6 @@ export async function loadLusionAstronautParts(
     };
   };
   const primary = buildCapturedRig();
-  primary.referenceClones = createGoalReferenceClones(parts, animation, [
-    { arm: helmetArm, normal: helmetNormal }, { arm: helmetArm, normal: helmetNormal },
-    { arm: glovesArm, normal: glovesNormal }, { arm: packArm, normal: packNormal },
-  ], track);
   const createClone = () => buildCapturedRig();
 
   return { primary, createClone };

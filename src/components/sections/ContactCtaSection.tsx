@@ -186,7 +186,7 @@ export function ContactCtaSection({
                 </a>
               </div>
               {copiedNotice && <p role="status" className="mt-5 font-mono text-xs uppercase tracking-[0.08em] text-[#c1ff00]">
-                {LUSION_GLOBAL_CHROME.footer.businessEmail} copied to clipboard
+                Email address copied to clipboard
               </p>}
             </div>
             <div id="home-end-bottom" className="pointer-events-none absolute inset-x-0 bottom-[7vh] z-30 flex w-full justify-center">
@@ -265,7 +265,7 @@ export function ContactCtaSection({
                 role="status"
                 className="mt-5 font-mono text-xs uppercase tracking-[0.08em] text-[#c1ff00]"
               >
-                {LUSION_GLOBAL_CHROME.footer.businessEmail} copied to clipboard
+                Email address copied to clipboard
               </p>
             )}
           </div>

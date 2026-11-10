@@ -170,7 +170,7 @@ export function HeroCrossesStage() {
   const key = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); } }, [activate]);
   const fallback = <StaticSculpturalFallback accentHex={HERO_ACCENT_PALETTE[0]} />;
   return <div id="home-hero-visual-container" ref={containerRef} role="button" tabIndex={0}
-    aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to pulse the sculpture"
+    aria-label="Interactive 3D Jithin connector stage — move pointer to sculpt or activate to pulse the sculpture"
     data-color-index="0" data-cluster-mode="source-balloon-cloud" data-cluster-envelope="native-gravity-contact-drag"
     data-accent-color={HERO_ACCENT_PALETTE[0]} data-webgl-status={status} data-pointer-interactions={hits}
     onClick={activate} onKeyDown={key} onPointerMove={move} onPointerLeave={leave} onMouseLeave={leave} onPointerCancel={leave}

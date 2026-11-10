@@ -14,6 +14,23 @@ interface HomeReelSectionProps {
   onOpenReel: () => void;
 }
 
+const japaneseDescription = [
+  "デザイン、モーション、3D、開発を融合し、",
+  "視覚的な魅力と技術的な完成度を兼ね備えた",
+  "デジタル体験を生み出しています。",
+  "見る人を惹きつけ、思わず操作したくなる体験を追求しています。",
+];
+
+// Japanese has no word spaces. Animate individual glyphs, while keeping
+// punctuation attached to the preceding glyph at natural line breaks.
+function reelDescriptionUnits(line: string) {
+  return Array.from(line).reduce<string[]>((parts, char) => {
+    if (parts.length && ((char === "、" || char === "。") || (/^[A-Za-z0-9]$/.test(char) && /^[A-Za-z0-9]+$/.test(parts[parts.length - 1])))) parts[parts.length - 1] += char;
+    else parts.push(char);
+    return parts;
+  }, []);
+}
+
 export function HomeReelSection({ videoSrc, videoFailed, onVideoError, onOpenReel }: HomeReelSectionProps) {
   return <section id="home-reel" className="section home-reel-section">
     <h2 id="home-reel-title" aria-label={LUSION_HOME.reel.eyebrowFull}>
@@ -25,7 +42,13 @@ export function HomeReelSection({ videoSrc, videoFailed, onVideoError, onOpenRee
       </span>
     </h2>
     <div id="home-reel-content">
-      <p id="home-reel-desc">{LUSION_HOME.reel.description.split(" ").map((word, i) => <React.Fragment key={i}><span data-reel-desc-word>{word}</span>{" "}</React.Fragment>)}</p>
+      <p id="home-reel-desc" lang="ja" aria-label={japaneseDescription.join(" ")}>
+        {japaneseDescription.map((line, index) => (
+          <span className={index === 3 ? "reel-description-line reel-description-closing" : "reel-description-line"} aria-hidden="true" key={line}>
+            {reelDescriptionUnits(line).map((unit, i) => <span data-reel-desc-word key={i}>{unit}</span>)}
+          </span>
+        ))}
+      </p>
       <TransitionLink id="home-reel-cta" href={LUSION_HOME.reel.ctaHref} transitionLabel="Our Approach" onMouseEnter={() => soundEngine.playHover()}>
         <span className="reel-cta-dot" aria-hidden="true" /><span className="reel-cta-text">{LUSION_HOME.reel.ctaLabel}</span><span className="reel-cta-arrow" aria-hidden="true">→</span>
       </TransitionLink>

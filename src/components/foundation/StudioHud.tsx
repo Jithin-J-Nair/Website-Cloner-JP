@@ -431,11 +431,11 @@ export function StudioHud() {
         />
 
         <div id="header-container" className="relative z-10 flex items-center justify-between">
-          {/* Brand Wordmark (`#header-logo` exact vector path from `LUSION_GLOBAL_CHROME`) */}
+          {/* One responsive brand wordmark shared by every route. */}
           <TransitionLink
             href="/"
             transitionLabel="Home"
-            aria-label={pathname === "/about" ? "LUSION Home" : "JITHIN Home"}
+            aria-label="JITHIN Home"
             id="header-logo"
             style={logoColorStyle}
             onClick={() => setNavMenuOpen(false)}
@@ -443,19 +443,9 @@ export function StudioHud() {
               navMenuOpen ? "max-[812px]:!text-black" : ""
             }`}
           >
-            {pathname === "/" ? (
-              <span className="inline-flex h-6 w-[6em] items-center font-sans text-[1.5rem] font-semibold leading-none tracking-[-0.055em] text-current min-[813px]:w-[7.5em] min-[813px]:origin-left min-[813px]:scale-x-[1.8] min-[813px]:scale-y-[1.1] min-[813px]:-translate-y-1">
-                JITHIN
-              </span>
-            ) : pathname === "/about" ? (
-              <span className="font-sans text-[1.65rem] min-[813px]:text-[1.85rem] font-medium leading-none tracking-[-0.025em] text-current">
-                LUSION
-              </span>
-            ) : (
-              <span className="font-sans text-[1.16rem] font-medium leading-none tracking-[-0.075em] text-current">
-                JITHIN
-              </span>
-            )}
+            <span className="inline-flex h-6 w-[6em] items-center font-sans text-[1.5rem] font-semibold leading-none tracking-[-0.055em] text-current min-[813px]:w-[7.5em] min-[813px]:origin-left min-[813px]:scale-x-[1.8] min-[813px]:scale-y-[1.1] min-[813px]:-translate-y-1">
+              JITHIN
+            </span>
           </TransitionLink>
 
           {/* Right Header Controls + Project Details Back Control */}
@@ -795,7 +785,7 @@ export function StudioHud() {
             <a
               href={`mailto:${LUSION_GLOBAL_CHROME.footer.enquiriesEmail}`}
               tabIndex={navMenuOpen ? 0 : -1}
-              aria-label="Email hello@lusion.co"
+              aria-label="Email for enquiries"
               className="absolute inset-0 z-10"
             />
             <span id="header-menu-text" className="text-[1.45em] uppercase">

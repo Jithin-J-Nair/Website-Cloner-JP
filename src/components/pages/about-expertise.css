@@ -1,3 +1,10 @@
+@font-face {
+ font-family:"JithinCardMarks";
+ src:url("/assets/fonts/NotoSansJP-CardMarks-Bold.woff2") format("woff2");
+ font-style:normal; font-weight:700; font-display:swap;
+}
+#about #about-capability .about-card-back-mark { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+#about #about-capability .about-card-back-mark text { fill:#fff; font-family:"JithinCardMarks",sans-serif; font-weight:700; font-size:92px; }
 /* Route/section scoped: does not retune the approved hero, awards, terrain or CTA. */
 #about #about-capability .about-expertise-stage { position:relative; height:auto; padding:var(--base-padding-y) var(--base-padding-x); overflow:clip; perspective:none; }
 #about #about-capability .about-expertise-lines { position:absolute; inset:0; pointer-events:none; z-index:0; }

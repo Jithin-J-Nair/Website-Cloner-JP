@@ -16,10 +16,16 @@ function CapabilityGlyph({ index }: { index: number }) {
   return <svg aria-hidden="true" viewBox="0 0 18 21" className="about-card-glyph"><path fill="currentColor" fillRule="evenodd" d={paths[index]} /></svg>;
 }
 
-/** Archived About card artwork, delivered only through the About allowlist. */
-function CardBack() {
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img className="about-card-back-art" src="/about/scene/card-back.png" width={628} height={876} alt="" aria-hidden="true" />;
+/** Keep the captured linework; replace only the old center mark. */
+function CardBack({ index }: { index: number }) {
+  const marks = ["ジ", "テ", "ィ", "ン"] as const;
+  return <>
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img className="about-card-back-art" src="/sites/jithin/expertise-card-back.png" width={628} height={876} alt="" aria-hidden="true" />
+    <svg className="about-card-back-mark" viewBox="0 0 628 876" aria-hidden="true" focusable="false">
+      <text x="314" y="438" textAnchor="middle" dominantBaseline="central">{marks[index]}</text>
+    </svg>
+  </>;
 }
 
 export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
@@ -90,7 +96,7 @@ export function AboutExpertiseCards({ sectionRef, reducedMotion }: {
                   <ul id={`expertise-services-${i}`}>{card.items.map(item => <li key={item}>{item}</li>)}</ul>
                   <div className="about-card-corner about-card-corner-inverted" aria-hidden="true"><span>{card.title}</span><CapabilityGlyph index={i} /></div>
                 </div>
-                <div className="about-card-face about-card-back"><CardBack /></div>
+                <div className="about-card-face about-card-back"><CardBack index={i} /></div>
               </div>
             </div>
           </div>)}

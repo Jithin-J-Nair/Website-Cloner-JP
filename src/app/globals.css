@@ -6,6 +6,56 @@
    verified reference OpenType vertical & advance metrics (0 proprietary fonts).
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* About narrative uses a single normal-weight face for Japanese and AI. */
+.about-narrative-japanese { font-family: "JithinAboutJapanese", sans-serif; font-weight: 400; font-synthesis: none; }
+@font-face {
+  font-family: "JithinAboutJapanese";
+  src: url("/assets/fonts/NotoSansJP-AboutNarrative-Regular-v2.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* One normal-weight face covers both Japanese and Latin in the goal copy. */
+.home-goal-japanese { font-family: "JithinGoalJapanese", sans-serif; font-weight: 400; font-synthesis: none; }
+@font-face {
+  font-family: "JithinGoalJapanese";
+  src: url("/assets/fonts/NotoSansJP-GoalCopy-Regular-v1.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Use one light OFL face for all characters in the Home headline so Latin
+   and Japanese do not acquire different weights from font fallback. */
+.home-japanese-headline { font-family: "JithinHeadlineLight", sans-serif; }
+/* A distinct URL avoids cached older subsets without the Featured glyphs. */
+.home-japanese-featured { font-family: "JithinFeaturedLight", sans-serif; font-weight: 300; font-synthesis: none; }
+
+@font-face {
+  font-family: "JithinFeaturedLight";
+  src: url("/assets/fonts/NotoSansJP-FeaturedCopy-Light-v1.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JithinHeadlineLight";
+  src: url("/assets/fonts/NotoSansJP-HomeHeadline-Light.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JithinHomeJapanese";
+  src: url("/assets/fonts/NotoSansJP-HomeSubset-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 @font-face {
   font-family: "LusionSansCalibrated";
   src: url("/assets/fonts/InstrumentSans-Variable.woff2") format("woff2");

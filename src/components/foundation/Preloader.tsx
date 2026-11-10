@@ -81,7 +81,7 @@ export function Preloader() {
           key="lusion-preloader"
           role="progressbar"
           aria-live="off"
-          aria-label="Loading Lusion experience"
+          aria-label="Loading Jithin experience"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={progress}

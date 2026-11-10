@@ -103,7 +103,20 @@ const routes = [
   ...projectRoutes
 ];
 
-export const LUSION_GROUND_TRUTH = {
+// Rebrand only presentation copy. Keep route IDs, URLs, captured asset paths,
+// email addresses and the immutable reference files intact.
+const brandedFields = new Set(["title", "ogTitle", "description", "ogDescription", "text", "html", "brandName", "copyright", "tagline", "mainReelTitle"]);
+function rebrandCopy<T>(value: T, key = ""): T {
+  if (typeof value === "string") {
+    if (!brandedFields.has(key)) return value;
+    return value.replace(/\bLUSION\b/g, "JITHIN").replace(/\bLusion\b/g, "Jithin").replace(/\blusion\b/g, "jithin") as T;
+  }
+  if (Array.isArray(value)) return value.map(item => rebrandCopy(item, key)) as T;
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([name, item]) => [name, rebrandCopy(item, name)])) as T;
+  return value;
+}
+
+export const LUSION_GROUND_TRUTH = rebrandCopy({
   ...groundTruthJson,
   routeCount: routes.length,
   routes,
@@ -122,7 +135,7 @@ export const LUSION_GROUND_TRUTH = {
     projects: archiveProjects
   },
   projectDetails
-} as LusionGroundTruth;
+}) as LusionGroundTruth;
 
 export const LUSION_ROUTES = LUSION_GROUND_TRUTH.routes;
 export const LUSION_TOKENS = LUSION_GROUND_TRUTH.tokens;
