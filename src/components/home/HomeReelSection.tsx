@@ -65,11 +65,11 @@ export function HomeReelSection({ videoSrc, videoFailed, onVideoError, onOpenRee
         </div>)}
       </div>
       <div id="home-reel-video-placeholder" onClick={onOpenReel}>
-        <div id="home-reel-video-title" aria-hidden="true">{["Play", "Reel"].map(word => <span className="reel-play-word" key={word}>{[...word].map((char, i) => <span className="reel-glyph-slot" key={i}><span data-reel-glyph><span>{char}</span><span>{char}</span></span></span>)}</span>)}</div>
         <button type="button" id="home-reel-video-watch-btn" aria-label="Play Showreel" onMouseEnter={() => soundEngine.playHover()} onClick={event => { event.stopPropagation(); onOpenReel(); }}>
           <span id="home-reel-video-watch-btn-base" /><span id="home-reel-video-watch-btn-background" />
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6L19.2 12 8 5.2z" /></svg>
         </button>
+        <button type="button" id="home-reel-sound-btn" aria-label="Enable reel sound" aria-pressed="false" onClick={event => event.stopPropagation()}>Sound on</button>
       </div>
     </div></div></div>
   </section>;

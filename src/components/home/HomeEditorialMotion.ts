@@ -1,3 +1,4 @@
+import { createHomeReelPlayback } from "./HomeReelPlayback";
 import { useStudioStore } from "@/lib/store";
 import { registerProjectListSource } from "@/lib/project-transition";
 import * as THREE from "three";
@@ -14,11 +15,12 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
   const reel = query("#home-reel")!, title = query("#home-reel-title")!, titleInner = query("#home-reel-title-inner")!, content = query("#home-reel-content")!, desc = query("#home-reel-desc")!, cta = query("#home-reel-cta")!;
   const thumb = query("#home-reel-thumb")!, outer = query("#home-reel-container")!, stage = query("#home-reel-video-container")!, placeholder = query("#home-reel-video-placeholder")!, button = query<HTMLButtonElement>("#home-reel-video-watch-btn")!;
   const video = query<HTMLVideoElement>("#home-reel-video");
+  const soundButton = query<HTMLButtonElement>("#home-reel-sound-btn")!;
+  const playback = video ? createHomeReelPlayback(video, soundButton) : null;
   const featured = query("#home-featured")!, featuredTitle = query("#home-featured-title")!, disclaimer = query("#home-featured-disclaimer")!, archiveCta = query("#home-featured-cta")!;
   const titleWords = [...title.querySelectorAll<HTMLElement>("[data-reel-word]")], descWords = [...desc.querySelectorAll<HTMLElement>("[data-reel-desc-word]")], featuredChars = [...featuredTitle.querySelectorAll<HTMLElement>("[data-featured-char]")];
   const disclaimerWords=[...disclaimer.querySelectorAll<HTMLElement>("[data-featured-disclaimer-word]")];
   const disclaimerLines:number[]=[];
-  const glyphs = [...root.querySelectorAll<HTMLElement>("[data-reel-glyph]")];
   const rails = [...root.querySelectorAll<HTMLElement>(".reel-decoration-rail")];
   type Box = { left: number; top: number; width: number; height: number };
   const boxes = new Map<HTMLElement,Box>();
@@ -33,7 +35,7 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
   const canvas = document.createElement("canvas"); canvas.id="home-editorial-canvas"; canvas.setAttribute("aria-hidden","true"); root.append(canvas);
   const unregisterProjectSource = registerProjectListSource(root,canvas,cardStates);
   let renderer: THREE.WebGLRenderer | null = null, disposed=false, failed=false, raf=0, dirty=true, last=0, frames=0, pointerX=0, pointerY=0, mousePointer=true;
-  let titleTime=0, descTime=0, featuredTime=0, disclaimerTime=0, archiveTime=0, playTime=0, playShow=0, decorationTime=0, hoverTime=0, hoverRatio=0;
+  let titleTime=0, descTime=0, featuredTime=0, disclaimerTime=0, archiveTime=0, playTime=0, decorationTime=0, hoverTime=0, hoverRatio=0;
   const noiseTexture=new THREE.DataTexture(new Uint8Array([128,128,128,255]),1,1);noiseTexture.needsUpdate=true;
   const noiseUniforms={u_blueNoiseTexture:{value:noiseTexture as THREE.Texture},u_blueNoiseCoordOffset:{value:new THREE.Vector2()}};
   const scene = new THREE.Scene(), camera = new THREE.OrthographicCamera(0,1,0,-1,-100,100), textures = new Set<THREE.Texture>(), materials = new Set<THREE.ShaderMaterial>(), geometries = new Set<THREE.BufferGeometry>();
@@ -142,22 +144,24 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
     stage.style.transform=`translate3d(0,${pin}px,0)`;
     const targetY=target.top-y+pin;
     const reelVisible=active && (narrow ? targetY<vh&&targetY+target.height>0 : from.top-y<vh&&targetY+target.height>0);
-    if(video){const shouldPlay=reelVisible&&!document.hidden&&!reduced&&!reelOpen;if(shouldPlay && video.paused)void video.play().catch(()=>{});else if(!shouldPlay && !video.paused)video.pause();}
+    const stageVisible = targetY < vh && targetY + target.height > 0;
+    const expanded = morph >= .98 && stageVisible;
+    playback?.update(reelVisible && !document.hidden && !reduced && !reelOpen && !useStudioStore.getState().menuOpen, expanded);
     if(reelMesh){
       reelMesh.visible=reelVisible&&!!video&&video.readyState>=2&&!reelOpen&&!failed;
       const u=reelMesh.material.uniforms;
       const fromHold=Math.max(0,y-from.top+(vh-from.height)*.5);
       (u.u_domXYFrom.value as THREE.Vector2).set(from.left,from.top-y+fromHold);(u.u_domWHFrom.value as THREE.Vector2).set(from.width,from.height);
       (u.u_domXY.value as THREE.Vector2).set(target.left,targetY);(u.u_domWH.value as THREE.Vector2).set(target.width,target.height);(u.u_domPivot.value as THREE.Vector2).set(target.width*.5,target.height*.5);
-      u.u_showRatio.value=morph;u.u_aspectScale.value=narrow?1:target.height/(target.width/2);u.u_globalRadius.value=borderRadius;u.u_time.value=now/1000;
+      (u.u_textureSize.value as THREE.Vector2).set(video?.videoWidth || 3840, video?.videoHeight || 2160);
+      u.u_showRatio.value=morph;u.u_aspectScale.value=1;u.u_globalRadius.value=borderRadius;u.u_time.value=now/1000;
       if(reelMesh.visible){if(video?.paused)(u.u_texture.value as THREE.VideoTexture).needsUpdate=true;root.dataset.editorialWebgl="ready";}
     }
     const buttonRatio=reduced||narrow?1:expoInOut(fit(morph,.3,1));
-    const canPlay=reduced||narrow||morph>.9;button.tabIndex=canPlay?0:-1;placeholder.style.pointerEvents=canPlay?"auto":"none";placeholder.style.opacity=String(buttonRatio);button.style.transform=`scale(${buttonRatio})`;
+    const canPlay=reduced||narrow||morph>.9;button.tabIndex=canPlay?0:-1;soundButton.tabIndex=canPlay && !!video && !reduced?0:-1;soundButton.hidden=!video || reduced;placeholder.style.pointerEvents=canPlay?"auto":"none";placeholder.style.opacity=String(buttonRatio);button.style.transform=`scale(${buttonRatio})`;
     const buttonHover=button.matches(":hover,:focus-visible")&&canPlay;
     hoverRatio=reduced?(buttonHover?1:0):clamp(hoverRatio+(buttonHover?1:-1)*dt*1.5);if(buttonHover)hoverTime+=dt*2;
-    if(reelVisible&&morph===1&&!reelOpen){playTime+=reduced?0:dt;playShow=clamp(playShow+dt);decorationTime=Math.min(1.4,decorationTime+dt);}else{playShow=clamp(playShow-dt);decorationTime=Math.max(0,decorationTime-dt*2);}
-    glyphs.forEach((glyph,i)=>{const word=i<4?0:1,letter=i<4?i:i-4;const cycle=Math.floor(playTime/2),selected=(cycle*3+word*2)%4;const roll=letter===selected?-100*ease(fit(playTime%2-word/10,.5,1.3)):0;const show=200*(1-ease(fit(playShow-word/4-letter/20,0,.6)));glyph.style.transform=`translate3d(0,${reduced?0:show+roll}%,0)`;});
+    if(reelVisible&&morph===1&&!reelOpen){playTime+=reduced?0:dt;decorationTime=Math.min(1.4,decorationTime+dt);}else{decorationTime=Math.max(0,decorationTime-dt*2);}
     rails.forEach((rail,ri)=>{rail.querySelectorAll<HTMLElement>(".reel-cross").forEach((cross,i)=>{const p=reduced?1:ease(fit(decorationTime-i/10,0,.6));cross.style.transform=`translateY(${expoInOut(fit(hoverRatio-i/10,0,.7))}em) scale(${p}) rotate(${180*p}deg)`;});const marquee=rail.querySelector<HTMLElement>(".reel-marquee")!;const phase=(narrow?playTime:hoverTime)%15/15;marquee.style.transform=`translate3d(${(ri===0?-phase:phase-1)*railWidths[ri]*.5}px,0,0)`;marquee.querySelectorAll<HTMLElement>("span").forEach((el,i)=>{el.style.transform=`translateY(${narrow?0:reduced?(buttonHover?0:1.2):1.2*(1-expoInOut(fit(hoverRatio-i/25,.2,1)))}em)`;});});
     if(lineMesh&&lineData&&tip){
       const diagonal=Math.hypot(vw,vh),radius=.008*(2-fit(vw,540,1920)),p=reduced?1:reelLineProgress(rect(reel).top-y,vh);
@@ -216,13 +220,13 @@ export function createHomeEditorialMotion(root: HTMLElement, reduced: boolean, r
   listen(window,"pointerdown",event=>{if((event as PointerEvent).pointerType==="touch"){mousePointer=false;schedule();}},{passive:true});
   listen(canvas,"webglcontextlost",event=>{event.preventDefault();failed=true;resetFallback();root.dataset.editorialWebgl="fallback";canvas.style.display="none";});
   listen(canvas,"webglcontextrestored",()=>{failed=false;dirty=true;schedule();});
-  listen(document,"visibilitychange",()=>{if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;last=0;video?.pause();}else{dirty=true;schedule();}});
+  listen(document,"visibilitychange",()=>{if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;last=0;playback?.update(false,false);}else{dirty=true;schedule();}});
   if(video){listen(video,"loadeddata",schedule);listen(video,"seeked",schedule);}
-  const unsubscribeTransition = useStudioStore.subscribe((state,before)=>{if(state.isTransitioning){if(raf)cancelAnimationFrame(raf);raf=0;last=0;}else if(before.isTransitioning)schedule();});
+  const unsubscribeTransition = useStudioStore.subscribe((state,before)=>{if(state.isTransitioning){if(raf)cancelAnimationFrame(raf);raf=0;last=0;playback?.update(false,false);}else if(before.isTransitioning || state.menuOpen !== before.menuOpen)schedule();});
   const observer=new ResizeObserver(()=>{dirty=true;schedule();});for(const el of [reel,featured,hero])if(el)observer.observe(el);
   void document.fonts.ready.then(()=>{if(!disposed){dirty=true;schedule();}});schedule();
   return () => {
-    unsubscribeTransition();unregisterProjectSource();disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();cleanupListeners.forEach(fn=>fn());video?.pause();resetFallback();
+    unsubscribeTransition();unregisterProjectSource();disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();cleanupListeners.forEach(fn=>fn());playback?.dispose();resetFallback();
     textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());renderer?.dispose();renderer?.forceContextLoss();canvas.remove();
     for(const key of Object.keys(root.dataset))if(key.startsWith("editorial"))delete root.dataset[key];
   };

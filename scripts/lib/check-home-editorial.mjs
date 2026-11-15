@@ -46,13 +46,10 @@ export async function checkHomeEditorial(page,{width,height,reduced,out}) {
  result.filmPixels=difference(a,await pixels(filmRect));
  if(!reduced)assert.ok(result.filmPixels.changed>100,'the visible shared film actually advances');
  else {assert.equal(result.filmPixels.changed,0,'reduced film stays pixel-static');assert.equal(await page.locator('#home-reel-video').evaluate(v=>v.paused),true);}
- if(!reduced&&width>812){
-   const glyphs=()=>page.locator('[data-reel-glyph]').evaluateAll(es=>es.map(e=>e.style.transform).join('|'));
-   await page.waitForTimeout(1500);const before=await glyphs();await page.waitForFunction(before=>[...document.querySelectorAll('[data-reel-glyph]')].map(e=>e.style.transform).join('|')!==before,before,{timeout:10000});result.glyphRoll=true;
-   await page.waitForFunction(()=>[...document.querySelectorAll('[data-reel-glyph]')].some(el=>{const y=new DOMMatrix(getComputedStyle(el).transform).m42,h=parseFloat(getComputedStyle(el).fontSize);return Math.abs(y+h)<.1;}),null,{timeout:10000});
-   const coverage=await page.locator('.reel-glyph-slot').evaluateAll(slots=>slots.map(slot=>{const r=slot.getBoundingClientRect();return [...slot.querySelectorAll('[data-reel-glyph]>span')].reduce((sum,el)=>{const b=el.getBoundingClientRect();return sum+Math.max(0,Math.min(r.bottom,b.bottom)-Math.max(r.top,b.top));},0)/r.height;}));
-   assert.ok(coverage.every(value=>value>.98),'rolling a full em must reveal the duplicate glyph, not leave a blank letter');result.glyphCoverage=coverage;
- }
+ const stageBounds=await page.locator('#home-reel-video-container').boundingBox();
+ const playBounds=await page.locator('#home-reel-video-watch-btn').boundingBox();
+ assert.ok(playBounds.x-stageBounds.x<stageBounds.width*.15 && stageBounds.y+stageBounds.height-playBounds.y-playBounds.height<stageBounds.height*.2,'reel button is positioned in the bottom-left corner');
+ result.cornerButton=true;
  const first=page.locator('#home-featured .project-item').first(),firstStage=first.locator('.project-item-main');
  const firstBox=await box('#home-featured .project-item-main');await seek(firstBox.top-170);
  await page.waitForFunction(()=>document.querySelector('#home-featured .project-item-main').dataset.depthReady==='true');

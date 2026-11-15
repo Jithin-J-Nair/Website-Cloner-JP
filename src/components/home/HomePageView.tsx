@@ -134,16 +134,15 @@ export function HomePageView() {
     "課題を解決する仕組みをつくる。",
   ];
   const featuredLines = ["アイデアと技術を融合させて生み出した、", "こだわりのデジタルプロジェクトをご紹介します。"] as const;
-  const reelLoopSrc = isMobileReel
-    ? LUSION_HOME.reel.mobileLoopVideo
-    : LUSION_HOME.reel.desktopLoopVideo;
+  const reelLoopSrc = "/videos/hero%20video.mp4";
 
   const handleOpenReel = () => {
     soundEngine.playClick();
     setReelOpen(true, {
       title: "JITHIN Showreel",
-      desktopSrc: LUSION_HOME.reel.desktopLoopVideo,
-      mobileSrc: LUSION_HOME.reel.mobileLoopVideo,
+      desktopSrc: reelLoopSrc,
+      mobileSrc: reelLoopSrc,
+      startWithSound: true,
     });
   };
 

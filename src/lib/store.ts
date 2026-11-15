@@ -42,6 +42,7 @@ export interface VideoOverlayConfig {
   desktopSrc: string;
   mobileSrc: string;
   vimeoId?: string;
+  startWithSound?: boolean;
 }
 
 /**

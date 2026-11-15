@@ -40,13 +40,15 @@
 .reel-glyph-slot { display:inline-block; height:1em; overflow:hidden; }
 [data-reel-glyph] { display:flex; flex-direction:column; height:1em; }
 [data-reel-glyph]>span { display:block; height:1em; flex-shrink:0; }
-#home-reel-video-watch-btn { cursor:pointer; position:absolute; left:calc(50% - 4.7em); top:calc(50% - 3em); width:9.4em; height:6em; display:flex; justify-content:center; align-items:center; overflow:hidden; border-radius:22.5em; }
+#home-reel-video-watch-btn { cursor:pointer; position:absolute; left:clamp(16px,2vw,32px); bottom:clamp(16px,2vw,32px); width:5.4em; height:3.5em; display:flex; justify-content:center; align-items:center; overflow:hidden; border-radius:22.5em; }
 #home-reel-video-watch-btn-base,#home-reel-video-watch-btn-background { position:absolute; inset:0; border-radius:22.5em; background:white; }
 #home-reel-video-watch-btn-background { background:#1a2ffb; transform:scale3d(1,0,1); transform-origin:bottom; transition:transform .4s cubic-bezier(.4,0,.1,1); }
 #home-reel-video-watch-btn svg { position:relative; width:2em; height:2em; color:black; transition:color .3s; }
 #home-reel-video-watch-btn:hover #home-reel-video-watch-btn-background { transform:scale3d(1,1,1); }
 #home-reel-video-watch-btn:hover svg { color:white; }
-#home-reel-cta:focus-visible,#home-reel-video-watch-btn:focus-visible { outline:2px solid #1a2ffb; outline-offset:5px; }
+#home-reel-sound-btn { position:absolute; left:calc(clamp(16px,2vw,32px) + 6.2em); bottom:clamp(16px,2vw,32px); height:3.5em; padding:0 1.35em; border-radius:22.5em; background:rgba(0,0,0,.65); color:white; font-size:.9em; font-weight:500; cursor:pointer; }
+#home-reel-sound-btn:hover { background:#1a2ffb; }
+#home-reel-cta:focus-visible,#home-reel-video-watch-btn:focus-visible,#home-reel-sound-btn:focus-visible { outline:2px solid #1a2ffb; outline-offset:5px; }
 #home-editorial-canvas { position:fixed; inset:0; z-index:1; width:100%; height:100%; pointer-events:none; }
 #home-featured-title-top,#home-featured-cta { z-index:2; }
 #home-featured [data-featured-char] { display:inline-block; transform-origin:0 100%; }

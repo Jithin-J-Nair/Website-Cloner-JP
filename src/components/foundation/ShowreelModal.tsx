@@ -369,7 +369,7 @@ export function ShowreelModal() {
         <VideoOverlaySession
           key={videoConfig.desktopSrc}
           videoConfig={videoConfig}
-          initialAudioEnabled={audioEnabled}
+          initialAudioEnabled={videoConfig.startWithSound || audioEnabled}
           onClose={() => setOpen(false)}
         />
       )}
