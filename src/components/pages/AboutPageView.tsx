@@ -603,7 +603,7 @@ function AboutWhoExperience({
     >
       {/* Retained local scroll span: `100vh + 950vw` on desktop, `1225vh` on mobile */}
       <style>{`
-        .about-team-scan-frame { position:absolute; z-index:10; pointer-events:none; border:0; background:transparent; opacity:0; visibility:hidden; left:18%; top:0; width:54%; height:100%; }
+        .about-team-scan-frame { position:absolute; z-index:10; pointer-events:none; border:0; background:transparent; opacity:0; visibility:hidden; left:18%; top:0; width:54%; height:100%; transform:scale(1.1); }
         @media (max-width:819px) { .about-team-scan-frame { left:0; top:20%; width:100%; height:54%; } }
         .about-who-track {
           height: calc(100vh + 950vw);
