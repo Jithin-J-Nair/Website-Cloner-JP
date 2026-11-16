@@ -225,13 +225,11 @@ function AboutWhoExperience({
       if (!disposed) { wordmarkSweep.repaint(); resize(); ensureLoop(); }
     });
 
-    // Authorized source roster points and captured topographic contours. This
-    // replaces the user's photo, reconstructed mesh and invented anatomical bust.
-    let teamAssemblyStart = -1, teamWasVisible = false;
+    // Supplied scan points and the existing captured topographic contours.
     const sourceTeam = track(createAboutSourceTeam(() => ensureLoop(), (state, id) => {
       if (disposed) return;
       if (id === "contours") { sectionEl.dataset.teamTerrainState = state; return; }
-      sectionEl.dataset.teamPortraitSource = "source-roster";
+      sectionEl.dataset.teamPortraitSource = "supplied-face-scan";
       sectionEl.dataset.teamAssetState = state;
       sectionEl.dataset.teamAssetId = id;
       setSourceTeamState(state);
@@ -334,13 +332,9 @@ function AboutWhoExperience({
 
       // Source portrait and terrain share one camera-aligned stage. Terrain
       // does not rotate with the head and is not disguised as a shirt/torso.
-      const teamVisible = tTeamPhase > .02 && sourceTeam.ready;
-      if (teamVisible && !teamWasVisible) teamAssemblyStart = elapsedSec;
-      teamWasVisible = teamVisible;
       sourceTeam.update(camera, elapsedSec, tTeamPhase,
-        smoothstep(5.25, 6.125, u) * (1 - tTeamPhase), pointerNDC,
-        window.innerWidth, window.innerHeight, glRenderer.getPixelRatio(), reducedMotion,
-        reducedMotion ? 1.2 : 1.2 * smoothstep(0, 1.1, Math.max(0, elapsedSec - teamAssemblyStart)));
+        smoothstep(5.25, 6.125, u) * (1 - tTeamPhase),
+        window.innerWidth, window.innerHeight, glRenderer.getPixelRatio(), reducedMotion);
 
       // -----------------------------------------------------------------------
       // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
@@ -865,7 +859,7 @@ function AboutWhoExperience({
               <div className="about-team-progress mt-3" aria-hidden="true">
                 <span key={activeMemberIdx} className="about-team-progress-fill" />
               </div>
-              <p className="sr-only" aria-live="polite">{sourceTeamState === "ready" ? `Original point portrait of ${activeMember.name}.` : sourceTeamState === "unavailable" ? "Team portrait unavailable." : "Loading team portrait."}</p>
+              <p className="sr-only" aria-live="polite">{sourceTeamState === "ready" ? "Particle face scan." : sourceTeamState === "unavailable" ? "Team portrait unavailable." : "Loading team portrait."}</p>
             </div>
 
             <div className="flex items-end gap-6">
