@@ -11,9 +11,12 @@ export function AboutPageStyles() {
     #about #about-clients .about-client-marquee-stack { margin-top: 3.8vw; gap: 0; }
     #about #about-clients .about-client-logo-tile { height: 14vw; }
     #about .about-client-logo-art { display: block; width: 100%; height: 100%; object-fit: contain; }
+    #about #about-clients .about-program-icon { width: clamp(58px,5.5vw,90px); height: clamp(58px,5.5vw,90px); max-width: 78%; filter: grayscale(1) brightness(1.3); }
+    #about #about-clients .about-program-icon.is-inverted { filter: grayscale(1) invert(1) brightness(1.2); }
+    #about #about-clients .about-program-icon.is-wide { width: clamp(100px,9.8vw,150px); height: clamp(100px,9.8vw,150px); max-width: 88%; }
     #about .about-source-recognition { --record-left: 0px; --record-org: 30vw; --record-pad: 15px; position: relative; isolation: isolate; overflow: clip; padding: clamp(30px,4vw,50px) 0; min-height: 130.208333vw; display: flex; flex-direction: column; justify-content: center; background: #000302; color: #f5f6f5; font-size: clamp(12px,1vw,28px); }
     #about .about-source-monument { pointer-events: none; position: absolute; inset: 0; z-index: -1; }
-    #about .about-source-monument > img { position: absolute; top: 0; left: 0; width: 150%; max-width: none; height: auto; }
+    #about .about-source-monument > img { position: absolute; top: 0; left: 0; width: 100%; max-width: none; height: auto; }
     #about .about-recognition-paint { position: absolute; inset: 0; }
     #about .about-recognition-paint canvas { position: sticky; top: 0; display: block; width: 100%; height: 100vh; opacity: 0; }
     #about [data-recognition-state="ready"] .about-recognition-paint canvas { opacity: 1; }
@@ -175,6 +178,10 @@ export function AboutPageStyles() {
       #about #about-clients .about-client-marquee-set { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; flex: 0 0 100%; }
       #about #about-clients .about-client-marquee-set[aria-hidden="true"] { display: none; }
       #about #about-clients .about-client-logo-tile { width: 100%; }
+    }
+    @media (min-width:820px) and (prefers-reduced-motion:reduce) {
+      #about #about-clients .about-client-marquee-set { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); width: 100%; flex: 0 0 100%; }
+      #about #about-clients .about-client-marquee-set[aria-hidden="true"] { display: none; }
     }
     @media (prefers-reduced-motion:reduce) {
       #about .about-recognition-link-title, #about .about-recognition-link-arrow { transition: none; }

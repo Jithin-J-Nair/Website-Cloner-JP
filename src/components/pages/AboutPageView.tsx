@@ -603,7 +603,7 @@ function AboutWhoExperience({
     >
       {/* Retained local scroll span: `100vh + 950vw` on desktop, `1225vh` on mobile */}
       <style>{`
-        .about-team-scan-frame { position:absolute; z-index:10; pointer-events:none; border:0; background:transparent; opacity:0; visibility:hidden; left:18%; top:0; width:54%; height:100%; }
+        .about-team-scan-frame { position:absolute; z-index:10; pointer-events:none; border:0; background:transparent; opacity:0; visibility:hidden; left:18%; top:0; width:54%; height:100%; transform:scale(1.1); }
         @media (max-width:819px) { .about-team-scan-frame { left:0; top:20%; width:100%; height:54%; } }
         .about-who-track {
           height: calc(100vh + 950vw);
@@ -919,16 +919,41 @@ function AboutWhoExperience({
   );
 }
 
-/** Verified bundled brand artwork. Duplicate marquee copies remain hidden from AT. */
-function ClientLogoTile({ name, src, id }: { name: string; src: string; id: string }) {
-  // The supplied About recording identifies this mark as European Partners;
-  // preserve the frozen manifest's provenance instead of rewriting its old label.
-  const label = id === "cocacola" ? "Coca-Cola European Partners" : name;
+// The supplied program SVGs replace the old client marks without changing the
+// existing marquee timing, row directions, or duplicate accessibility behavior.
+const programIconRows = [
+  [
+    ["Android Studio", "androidstudio-original-wordmark.svg"], ["Antigravity", "antigravity-original.svg"],
+    ["Bash", "bash-original.svg"], ["Claude", "claude-original.svg"], ["Claude Code", "claudecode-original.svg"],
+    ["Cloudflare", "cloudflare-original-wordmark.svg"], ["Codex", "codex-original.svg"], ["CSS", "css-original.svg"],
+    ["CSS3", "css3-original-wordmark.svg"], ["Cursor", "cursor-original-wordmark.svg"],
+    ["Docker", "docker-original-wordmark.svg"], ["Figma", "figma-original.svg"],
+  ],
+  [
+    ["Firebase", "firebase-original-wordmark.svg"], ["GitHub", "github-original-wordmark.svg"],
+    ["Hugging Face", "huggingface-original-wordmark.svg"], ["Illustrator", "illustrator-original.svg"],
+    ["JavaScript", "javascript-original.svg"], ["Kubernetes", "kubernetes-line-wordmark.svg"],
+    ["Laravel", "laravel-original-wordmark.svg"], ["Markdown", "markdown-original.svg"],
+    ["Next.js", "nextjs-plain.svg"], ["npm", "npm-plain.svg"], ["Ollama", "ollama-original.svg"], ["PHP", "php-plain.svg"],
+  ],
+  [
+    ["Python", "python-original-wordmark.svg"], ["React", "react-original-wordmark.svg"],
+    ["Supabase", "supabase-original-wordmark.svg"], ["TensorFlow", "tensorflow-line-wordmark.svg"],
+    ["Three.js", "threejs-original-wordmark.svg"], ["TypeScript", "typescript-original.svg"],
+    ["VS Code", "vscode-original-wordmark.svg"], ["Vue.js", "vuejs-line-wordmark.svg"],
+    ["Vulkan", "vulkan-original.svg"], ["Web3.js", "web3js-original.svg"], ["YAML", "yaml-original.svg"],
+  ],
+] as const;
+const darkProgramIcons = new Set(["Android Studio", "Bash", "Cursor", "GitHub", "Hugging Face", "Illustrator", "Markdown", "Next.js", "Ollama", "PHP", "Supabase", "TensorFlow", "Three.js", "Vue.js", "Vulkan", "YAML"]);
+const wideProgramIcons = new Set(["Android Studio", "Cloudflare", "Cursor", "Hugging Face", "Kubernetes", "Laravel", "Supabase", "TensorFlow", "Vulkan"]);
+
+function ClientLogoTile({ name, file }: { name: string; file: string }) {
   return (
     <div role="listitem" className="about-client-logo-tile flex h-24 min-w-0 flex-1 items-center justify-center overflow-hidden px-2 md:px-4">
-      {/* Native SVG image preserves the verified mark's exact viewBox and linework. */}
+      {/* Source SVGs are intentionally left unchanged. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={label} width={240} height={240} loading="lazy" decoding="async" className="about-client-logo-art" />
+      <img src={`/assets/Program%20icons/${file}`} alt={name} width={128} height={128} loading="lazy" decoding="async"
+        className={`about-client-logo-art about-program-icon${wideProgramIcons.has(name) ? " is-wide" : ""}${darkProgramIcons.has(name) ? " is-inverted" : ""}`} />
     </div>
   );
 }
@@ -1087,14 +1112,14 @@ export function AboutPageView() {
 
           <AboutClientMarqueeLifecycle />
           <div className="about-client-marquee-stack mt-16 flex flex-col gap-6 md:mt-20 md:gap-8">
-            {LUSION_ABOUT.clients.carouselRows.map((row, rowIdx) => (
+            {programIconRows.map((row, rowIdx) => (
               <div
                 key={rowIdx}
                 role="list"
                 className="about-client-marquee group"
                 data-direction={rowIdx === 1 ? "reverse" : "forward"}
                 style={{ "--marquee-duration": `${34 + rowIdx * 7}s` } as React.CSSProperties}
-                aria-label={`Client brands row ${rowIdx + 1}`}
+                aria-label={`Program icons row ${rowIdx + 1}`}
               >
                 <div className="about-client-marquee-track">
                   {[0, 1, 2].map(copy => (
@@ -1103,12 +1128,11 @@ export function AboutPageView() {
                       className="about-client-marquee-set"
                       aria-hidden={copy > 0 ? true : undefined}
                     >
-                      {row.map((client, cIdx) => (
+                      {row.map(([name, file], cIdx) => (
                         <ClientLogoTile
-                          key={`${copy}-${client.id}-${cIdx}`}
-                          name={client.name}
-                          id={client.id}
-                          src={client.src}
+                          key={`${copy}-${file}-${cIdx}`}
+                          name={name}
+                          file={file}
                         />
                       ))}
                     </div>

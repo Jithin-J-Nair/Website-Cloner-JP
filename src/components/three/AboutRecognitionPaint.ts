@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 
 const passVertex = `varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`;
-// Reference ScreenPaint: quarter-resolution advected velocity + two independently
+// Advected velocity at half resolution + two independently
 // dissipating weights. A swept segment, not a cursor-following circular mask.
 const paintFragment = `
   uniform sampler2D uPrevious,uLow;uniform vec2 uSize,uVelocity,uScroll;
@@ -37,8 +37,7 @@ const titleVertex = `
     #else
       vec2 source=position.xy;
     #endif
-    vec2 p=source/vec2(1438.,1252.);float row=floor(p.y*6.)/6.;p*=1.5;
-    p.x-=clamp((uScrollRatio-row*.4)/.56,0.,1.)*.5;
+    vec2 p=source/vec2(1440.,1250.);
     vec2 pixel=p*vec2(uViewport.x,uViewport.x*1250./1440.);pixel.y+=uTop;
     #ifdef IS_EDGE
       vec2 ab=(aStart-aEnd)*vec2(1.,1250./1440.*1438./1252.);float angle=atan(ab.y,ab.x)+1.5707963;
@@ -55,13 +54,14 @@ const titleFragment = `
       t+=3.1415926;
     #endif
     float d=cos((uv.x+uv.y)*4.+t)*.5+.5,alpha=1.,strength=1.,constantStrength=0.;
-    vec3 base=vec3(.004+d*d*.015);
+    vec3 base=vec3(.012+d*d*.025);
     #ifdef IS_EDGE
       float dist=length(vNode);alpha=1.-smoothstep(1.,1.+fwidth(dist),dist);
-      base=vec3(.004+d*d*.15);strength=4.;constantStrength=max(0.,d*2.-1.)*.15;
+      base=vec3(.025+d*d*.18);strength=4.;constantStrength=max(0.,d*2.-1.)*.2;
     #endif
     float hue=(paint.x+paint.y)*1.5+d*2.;
-    vec3 color=mix(base,texture2D(uGradient,vec2(hue,0.)).rgb,max(paint.z,paint.w)*strength+constantStrength);
+    vec3 vivid=clamp((texture2D(uGradient,vec2(hue,0.)).rgb-.12)*1.8+.22,0.,1.);
+    vec3 color=mix(base,vivid,clamp(max(paint.z,paint.w)*strength*1.65+constantStrength,0.,1.));
     float noise=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)*.004;
     gl_FragColor=vec4(mix(color+noise,1.-color-noise,uInvert),alpha);
   }`;
@@ -138,8 +138,8 @@ export function createAboutRecognitionPaint(renderer: THREE.WebGLRenderer, svg: 
     uniforms: titleUniforms, edgeCount: edgeGeometry.instanceCount,
     resize(w: number, h: number, dpr: number) {
       width = w; height = h;
-      const qw = Math.max(1, w >> 2), qh = Math.max(1, h >> 2);
-      previous.setSize(qw, qh); current.setSize(qw, qh); low.setSize(Math.max(1, w >> 3), Math.max(1, h >> 3)); scratch.setSize(low.width, low.height);
+      const qw = Math.max(1, w >> 1), qh = Math.max(1, h >> 1);
+      previous.setSize(qw, qh); current.setSize(qw, qh); low.setSize(Math.max(1, w >> 2), Math.max(1, h >> 2)); scratch.setSize(low.width, low.height);
       paintUniforms.uSize.value.set(qw, qh); titleUniforms.uViewport.value.set(w, h); titleUniforms.uResolution.value.set(w * dpr, h * dpr);
       titleUniforms.uRadius.value = Math.max(1, w / 1200); clear();
     },
