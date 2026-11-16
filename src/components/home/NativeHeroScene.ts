@@ -103,13 +103,13 @@ export function createNativeHeroScene(canvas: HTMLCanvasElement, mobile: boolean
       for (let i = 0; i < 4; i++) { bw = Math.max(1, bw >> 1); bh = Math.max(1, bh >> 1); blurTargets[i].setSize(bw, bh); blurInter[i].setSize(bw, bh); textureSizes[i].set(bw, bh); }
       camera.aspect = w / h; backgroundMaterial.uniforms.uAspect.value = w / h;
     },
-    render(elapsed: number, visibleTime: number, reduced: boolean, x: number, y: number, active: boolean) {
+    render(elapsed: number, visibleTime: number, reduced: boolean, x: number, y: number, active: boolean, tiltX = 0, tiltY = 0) {
       const aspect = width / height, fit = THREE.MathUtils.clamp((aspect - 2.2) / (2 / 3 - 2.2), 0, 1), nativeFov = 18 + fit * 12;
       const backOut = (t: number) => 1 + 2.70158 * (t - 1) ** 3 + 1.70158 * (t - 1) ** 2;
       const arrival = reduced ? 1 : THREE.MathUtils.clamp((visibleTime - .3) / 1.7, 0, 1), lens = reduced ? 1 : THREE.MathUtils.clamp((visibleTime - .3) / 2.7, 0, 1);
       const distance = 25 + (17.5 - 25) * backOut(arrival), dolly = 100 * (1 - backOut(lens)), totalFov = nativeFov + dolly;
       camera.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(totalFov) * .5) * height / viewportHeight));
-      camera.position.set(0, 0, distance * Math.tan(nativeFov * Math.PI / 720) / Math.tan(totalFov * Math.PI / 720)); camera.lookAt(0, 0, 0); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+      camera.position.set(mobile && !reduced ? tiltX * 1.15 : 0, mobile && !reduced ? -tiltY * .85 : 0, distance * Math.tan(nativeFov * Math.PI / 720) / Math.tan(totalFov * Math.PI / 720)); camera.lookAt(0, 0, 0); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
       pointer.set(x, y); raycaster.setFromCamera(pointer, camera);
       const stats = physics.step(firstFrame ? 0 : elapsed, active && !reduced ? raycaster.ray : null, reduced); firstFrame = false;
       noiseOffset.value.set(reduced ? 0 : (visibleTime * .618033989) % 1, reduced ? 0 : (visibleTime * .414213562) % 1);

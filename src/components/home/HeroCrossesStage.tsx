@@ -4,6 +4,7 @@ import React, { Component, useCallback, useEffect, useRef, useState } from "reac
 import { createNativeHeroScene } from "./NativeHeroScene";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
+import { heroTiltFromOrientation, smoothHeroTilt } from "@/lib/home-hero-tilt";
 
 export const HERO_ACCENT_PALETTE = ["#061dfb"] as const;
 
@@ -79,15 +80,49 @@ export function HeroCrossesStage() {
   const wakeRef = useRef<() => void>(() => {}), resizeRef = useRef<() => void>(() => {});
   const pointer = useRef({ x: 0, y: 0, active: false });
   const reported = useRef(false);
+  const tilt = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
+  const [motionState, setMotionState] = useState<"off" | "requesting" | "on" | "denied" | "unavailable">("off");
+  const [motionSupported, setMotionSupported] = useState(false);
   const [status, setStatus] = useState<"booting" | "ready" | "fallback">("booting");
   const [hits, setHits] = useState(0);
   const [mobile, setMobile] = useState<boolean | null>(null);
   useEffect(() => {
     const query = matchMedia("(max-width:812px)");
-    const update = () => setMobile(query.matches);
-    update(); query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
+    const coarse = matchMedia("(pointer: coarse)");
+    const update = () => { setMobile(query.matches); setMotionSupported(query.matches && coarse.matches && window.isSecureContext && "DeviceOrientationEvent" in window); };
+    update(); query.addEventListener("change", update); coarse.addEventListener("change", update);
+    return () => { query.removeEventListener("change", update); coarse.removeEventListener("change", update); };
   }, []);
+  useEffect(() => {
+    if (!mobile || reduced || motionState !== "on") {
+      tilt.current = { x: 0, y: 0, targetX: 0, targetY: 0 };
+      return;
+    }
+    let baseline: { beta: number; gamma: number; angle: number } | null = null;
+    let received = false;
+    const timeout = window.setTimeout(() => {
+      const box = containerRef.current?.getBoundingClientRect(), s = useStudioStore.getState();
+      if (!received && !document.hidden && s.preloaderDone && !s.menuOpen && !s.reelOpen && !s.isTransitioning && box && box.bottom > 0 && box.top < innerHeight) setMotionState("unavailable");
+    }, 6000);
+    const reset = () => { baseline = null; tilt.current.targetX = 0; tilt.current.targetY = 0; wakeRef.current(); };
+    const onOrientation = (event: DeviceOrientationEvent) => {
+      const box = containerRef.current?.getBoundingClientRect(), s = useStudioStore.getState();
+      if (!box || box.bottom <= 0 || box.top >= innerHeight || document.hidden || s.menuOpen || s.reelOpen || s.isTransitioning || !s.preloaderDone) { reset(); return; }
+      if (event.beta == null || event.gamma == null || !Number.isFinite(event.beta) || !Number.isFinite(event.gamma)) return;
+      received = true;
+      const angle = screen.orientation?.angle ?? 0;
+      if (!baseline || baseline.angle !== angle) { baseline = { beta: event.beta, gamma: event.gamma, angle }; return; }
+      const target = heroTiltFromOrientation(event.beta, event.gamma, baseline.beta, baseline.gamma, angle);
+      tilt.current.targetX = target.x; tilt.current.targetY = target.y; wakeRef.current();
+    };
+    const onScroll = () => { const box = containerRef.current?.getBoundingClientRect(); if (!box || box.bottom <= 0 || box.top >= innerHeight) reset(); };
+    window.addEventListener("deviceorientation", onOrientation);
+    document.addEventListener("visibilitychange", reset);
+    window.addEventListener("orientationchange", reset);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const unsubscribe = useStudioStore.subscribe((s, previous) => { if (s.menuOpen !== previous.menuOpen || s.reelOpen !== previous.reelOpen || s.isTransitioning !== previous.isTransitioning) reset(); });
+    return () => { clearTimeout(timeout); window.removeEventListener("deviceorientation", onOrientation); document.removeEventListener("visibilitychange", reset); window.removeEventListener("orientationchange", reset); window.removeEventListener("scroll", onScroll); unsubscribe(); reset(); };
+  }, [mobile, motionState, reduced]);
   useEffect(() => { reducedRef.current = reduced; if (reduced) { pointer.current.active = false; reported.current = false; } resizeRef.current(); wakeRef.current(); }, [reduced]);
   useEffect(() => {
     const host = mountRef.current, root = containerRef.current;
@@ -121,7 +156,11 @@ export function HeroCrossesStage() {
       const isStatic = reducedRef.current || !s.preloaderDone;
       const start = performance.now();
       try {
-        const stats = api.render(isStatic ? 0 : elapsed, isStatic ? 3 : time, isStatic, pointer.current.x, pointer.current.y, pointer.current.active);
+        const sensor = tilt.current;
+        sensor.x = smoothHeroTilt(sensor.x, isStatic ? 0 : sensor.targetX, elapsed);
+        sensor.y = smoothHeroTilt(sensor.y, isStatic ? 0 : sensor.targetY, elapsed);
+        root!.dataset.tiltX = sensor.x.toFixed(4); root!.dataset.tiltY = sensor.y.toFixed(4);
+        const stats = api.render(isStatic ? 0 : elapsed, isStatic ? 3 : time, isStatic, pointer.current.x, pointer.current.y, pointer.current.active, sensor.x, sensor.y);
         responding = !isStatic && stats.interactionEnergy > 0;
         root!.dataset.motionState = responding ? "responding" : "settled"; root!.dataset.activeRaf = String(!isStatic);
         root!.dataset.offsetEnergy = stats.interactionEnergy.toFixed(5); root!.dataset.physicsCollisions = String(stats.collisions);
@@ -168,8 +207,19 @@ export function HeroCrossesStage() {
   }, []);
   const activate = useCallback(() => { soundEngine.playClick(); if (!reducedRef.current) { apiRef.current?.impulse(); wakeRef.current(); } }, []);
   const key = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); } }, [activate]);
+  const toggleMotion = useCallback(async () => {
+    if (motionState === "on") { setMotionState("off"); return; }
+    if (!window.isSecureContext || !("DeviceOrientationEvent" in window)) { setMotionState("unavailable"); return; }
+    setMotionState("requesting");
+    try {
+      const orientation = DeviceOrientationEvent as typeof DeviceOrientationEvent & { requestPermission?: () => Promise<"granted" | "denied"> };
+      const permission = orientation.requestPermission ? await orientation.requestPermission() : "granted";
+      setMotionState(permission === "granted" ? "on" : "denied");
+    } catch { setMotionState("denied"); }
+  }, [motionState]);
   const fallback = <StaticSculpturalFallback accentHex={HERO_ACCENT_PALETTE[0]} />;
-  return <div id="home-hero-visual-container" ref={containerRef} role="button" tabIndex={0}
+  return <div className="relative h-full w-full">
+  <div id="home-hero-visual-container" ref={containerRef} role="button" tabIndex={0}
     aria-label="Interactive 3D Jithin connector stage — move pointer to sculpt or activate to pulse the sculpture"
     data-color-index="0" data-cluster-mode="source-balloon-cloud" data-cluster-envelope="native-gravity-contact-drag"
     data-accent-color={HERO_ACCENT_PALETTE[0]} data-webgl-status={status} data-pointer-interactions={hits}
@@ -177,5 +227,12 @@ export function HeroCrossesStage() {
     className="relative h-full w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#141515] select-none focus-visible:outline-2 focus-visible:outline-[#1a2ffb]">
     {status !== "ready" && <div className="absolute inset-0">{fallback}</div>}
     <StageErrorBoundary fallback={fallback}><div ref={mountRef} className="absolute inset-0 h-full w-full" /></StageErrorBoundary>
+  </div>
+  {motionSupported && !reduced && status === "ready" && <button type="button" onClick={toggleMotion} disabled={motionState === "requesting"}
+    aria-pressed={motionState === "on"} aria-label={motionState === "on" ? "Turn off device motion" : "Enable device motion"}
+    className="absolute right-4 bottom-4 rounded-full bg-black/70 px-4 py-3 text-xs font-medium text-white backdrop-blur-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+    {motionState === "on" ? "MOTION ON" : motionState === "requesting" ? "ENABLING MOTION" : motionState === "denied" ? "MOTION BLOCKED" : motionState === "unavailable" ? "MOTION UNAVAILABLE" : "ENABLE MOTION"}
+  </button>}
+  <span className="sr-only" role="status">{motionState === "denied" ? "Motion permission denied. You can still interact with the scene by touch." : motionState === "unavailable" ? "Device motion is unavailable." : motionState === "on" ? "Device motion enabled. Tilt your device to move the view." : ""}</span>
   </div>;
 }
