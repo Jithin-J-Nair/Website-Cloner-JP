@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     // Research scratch and read-only skill examples are not application code.
     "temp/**",
     "skills/**",
+    // Unmodified third-party Three.js r128, required by the supplied scan HTML.
+    "public/sites/jithin/three-r128.min.js",
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",

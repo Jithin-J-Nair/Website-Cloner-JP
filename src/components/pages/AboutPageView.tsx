@@ -79,6 +79,7 @@ function AboutWhoExperience({
 }: AboutWhoStageProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
+  const scanFrameRef = useRef<HTMLIFrameElement | null>(null);
   const heroWordmarkRef = useRef<HTMLDivElement | null>(null);
   const sweepWordmarkRef = useRef<HTMLDivElement | null>(null);
   const scrollPromptRef = useRef<HTMLDivElement | null>(null);
@@ -153,7 +154,7 @@ function AboutWhoExperience({
 
   useEffect(() => {
     memberRef.current = activeMemberIdx;
-    void sourceTeamRef.current?.setMember(activeMemberIdx, reducedMotion);
+    void sourceTeamRef.current?.setMember(activeMemberIdx);
   }, [activeMemberIdx, reducedMotion]);
 
   useEffect(() => {
@@ -178,6 +179,32 @@ function AboutWhoExperience({
       fallback("unavailable");
       return;
     }
+
+    // Keep the uploaded document byte-for-byte in public/. The iframe adapter
+    // changes only dependency routing and page background for composition.
+    let scanDocument: string | null = null, scanMounted = false, scanWanted = false;
+    const scanFrame = scanFrameRef.current;
+    const syncScanFrame = () => {
+      if (!scanFrame || disposed) return;
+      if (scanWanted && scanDocument && !scanMounted) {
+        scanFrame.srcdoc = scanDocument; scanMounted = true;
+      } else if (!scanWanted && scanMounted) {
+        scanFrame.removeAttribute("srcdoc"); scanMounted = false;
+      }
+    };
+    void fetch("/sites/jithin/face-particle-scan.html").then(response => {
+      if (!response.ok) throw new Error("Face scan unavailable");
+      return response.text();
+    }).then(html => {
+      if (disposed) return;
+      const reducedAdapter = reducedMotion ? `<script>
+        { const nativeFrame = window.requestAnimationFrame.bind(window); let drawn = false;
+          window.requestAnimationFrame = cb => { if (drawn) return 0; drawn = true; return nativeFrame(t => cb(t + 7400)); }; }
+        <\/script>` : "";
+      scanDocument = html.replace("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js", "/sites/jithin/three-r128.min.js")
+        .replace("</head>", `<style>html,body{background:transparent!important}</style>${reducedAdapter}</head>`);
+      syncScanFrame();
+    }).catch(() => { if (!disposed) setSourceTeamState("unavailable"); });
 
     const glRenderer = renderer;
     if (!glRenderer.extensions.has("EXT_color_buffer_float")) {
@@ -237,7 +264,7 @@ function AboutWhoExperience({
     sourceTeamRef.current = sourceTeam;
     scene.add(sourceTeam.group);
     const scenePost = track(createAboutScenePost(glRenderer, scene, camera, sceneOverlay, referenceWorld.renderMotion));
-    void sourceTeam.setMember(memberRef.current, reducedMotion);
+    void sourceTeam.setMember(memberRef.current);
 
     // -------------------------------------------------------------------------
     // Scroll & Camera Spline Update Loop
@@ -333,8 +360,7 @@ function AboutWhoExperience({
       // Source portrait and terrain share one camera-aligned stage. Terrain
       // does not rotate with the head and is not disguised as a shirt/torso.
       sourceTeam.update(camera, elapsedSec, tTeamPhase,
-        smoothstep(5.25, 6.125, u) * (1 - tTeamPhase),
-        window.innerWidth, window.innerHeight, glRenderer.getPixelRatio(), reducedMotion);
+        smoothstep(5.25, 6.125, u) * (1 - tTeamPhase), reducedMotion);
 
       // -----------------------------------------------------------------------
       // Synchronized DOM HUD Layers (Zero React 'setState' per frame!)
@@ -419,6 +445,12 @@ function AboutWhoExperience({
       }
 
       // D. Full-Bleed Interactive 'T E A M' Hologram HUD ('about-04-team-hologram', 'u >= 6.45')
+      if (scanFrame) {
+        scanWanted = tTeamPhase > .01;
+        scanFrame.style.opacity = String(tTeamPhase);
+        scanFrame.style.visibility = scanWanted ? "visible" : "hidden";
+        syncScanFrame();
+      }
       if (teamOverlayRef.current) {
         teamOverlayRef.current.style.opacity = String(tTeamPhase);
         teamOverlayRef.current.style.visibility = tTeamPhase > 0.01 ? "visible" : "hidden";
@@ -535,6 +567,7 @@ function AboutWhoExperience({
 
     return () => {
       disposed = true;
+      if (scanFrame) scanFrame.removeAttribute("srcdoc");
       if (requestSceneRenderRef.current === ensureLoop) requestSceneRenderRef.current = null;
       if (sourceTeamRef.current === sourceTeam) sourceTeamRef.current = null;
       unsubscribeChrome();
@@ -570,6 +603,8 @@ function AboutWhoExperience({
     >
       {/* Retained local scroll span: `100vh + 950vw` on desktop, `1225vh` on mobile */}
       <style>{`
+        .about-team-scan-frame { position:absolute; z-index:10; pointer-events:none; border:0; background:transparent; opacity:0; visibility:hidden; left:18%; top:0; width:54%; height:100%; }
+        @media (max-width:819px) { .about-team-scan-frame { left:0; top:20%; width:100%; height:54%; } }
         .about-who-track {
           height: calc(100vh + 950vw);
         }
@@ -609,6 +644,8 @@ function AboutWhoExperience({
       >
         {/* Full-Bleed WebGL Canvas Host */}
         <div ref={canvasHostRef} className="absolute inset-0 h-full w-full" />
+        <iframe ref={scanFrameRef} title="Particle face scan" aria-hidden="true" tabIndex={-1}
+          sandbox="allow-scripts" className="about-team-scan-frame" />
         <div ref={chromaticRingRef} aria-hidden="true" className="about-wide-chromatic-ring" />
 
         {/* Graceful Non-WebGL Atmospheric Fallback */}
