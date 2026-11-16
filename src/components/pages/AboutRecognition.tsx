@@ -85,7 +85,7 @@ export function AboutRecognition() {
       try {
         // Await both even on failure so an in-flight texture cannot leak.
         const [vectorResult, textureResult] = await Promise.allSettled([
-          fetch("/sites/lusion/about/award-title.svg", { signal: abort.signal }).then(response => {
+          fetch("/sites/jithin/recognition-title.svg", { signal: abort.signal }).then(response => {
             if (!response.ok) throw new Error("Recognition vector unavailable"); return response.text();
           }),
           new THREE.TextureLoader().loadAsync("/about/scene/award_gradient.png"),
@@ -140,7 +140,7 @@ export function AboutRecognition() {
       <div className="about-source-monument" aria-hidden="true">
         {/* Vector artwork, not a downloaded commercial font. Also the no-GPU/reduced-motion fallback. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/sites/lusion/about/award-title.svg" alt="" width="1440" height="1250" />
+        <img src="/sites/jithin/recognition-title.svg" alt="" width="1440" height="1250" />
         <div ref={hostRef} className="about-recognition-paint" />
       </div>
       <div id="about-recognition-window" role="region" aria-label="Awards, articles and talks" tabIndex={0}>
