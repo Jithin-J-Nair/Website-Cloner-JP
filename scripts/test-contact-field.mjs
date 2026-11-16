@@ -10,9 +10,9 @@ try {
   const file = `${dir}/field.mjs`;
   fs.writeFileSync(file, ts.transpileModule(fs.readFileSync('src/components/three/ContactParticleField.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText);
   const { createContactParticleField } = await import(pathToFileURL(file));
-  for (const count of [720, 960, 1600, 2400]) {
+  for (const count of [720, 960, 1600, 2400, 2600, 3600, 5600]) {
     const a = createContactParticleField(count), b = createContactParticleField(count);
-    assert.equal(a.group.children.length, 3);
+    assert.equal(a.group.children.length, 4);
     assert.equal(a.group.children.reduce((n, m) => n + m.geometry.instanceCount, 0), count);
     let triangles = 0, disposals = 0;
     for (const [i, mesh] of a.group.children.entries()) {
@@ -22,6 +22,10 @@ try {
       const orientations = mesh.geometry.attributes.aOrientation.array;
       assert.deepEqual(orientations, other.geometry.attributes.aOrientation.array);
       for (let j = 0; j < orientations.length; j += 4) assert.ok(Math.abs(Math.hypot(...orientations.slice(j, j + 4)) - 1) < 1e-6);
+      for (let j = 0; j < orientations.length; j += 4) {
+        assert.ok(Math.abs(orientations[j]) < 1e-7, "flat shapes have no X-axis tilt");
+        assert.ok(Math.abs(orientations[j + 1]) < 1e-7, "flat shapes have no Y-axis tilt");
+      }
       assert.ok(mesh.geometry.attributes.position.array.every(Number.isFinite));
       assert.ok(mesh.geometry.attributes.normal.array.every(Number.isFinite));
       assert.equal(mesh.material.uniforms, a.uniforms);
@@ -29,14 +33,30 @@ try {
       triangles += mesh.geometry.index.count / 3 * mesh.geometry.instanceCount;
       mesh.geometry.addEventListener('dispose', () => disposals++);
     }
-    assert.ok(triangles <= count * 24, 'bounded real extruded geometry');
+    assert.ok(triangles <= count * 24, 'bounded flat geometry across the four shape families');
     assert.match(a.group.children[0].material.vertexShader, /uProgress/);
     assert.match(a.group.children[0].material.vertexShader, /uTextBottom/);
-    assert.match(a.group.children[0].material.vertexShader, /uPointer/);
+    const vertexShader = a.group.children[0].material.vertexShader;
+    assert.match(vertexShader, /uPointer/);
+    assert.match(vertexShader, /fallWidth/, 'incoming stream must occupy a broad, gathering footprint');
+    assert.match(vertexShader, /step\(aSeed\.z,\s*-.70\)/, 'the title-side particle feed must remain narrow');
+    assert.match(vertexShader, /mix\(\.04,\s*\.62,\s*gather\)/, 'the feed must expand into a broad lower mound');
+    assert.match(vertexShader, /pow\(1\.\s*-\s*h,\s*1\.25\)/, 'the upper stream must retain its fine reference silhouette');
+    assert.match(vertexShader, /depthFlow/, 'falling grains must occupy real depth, not a flat ribbon');
+    assert.match(vertexShader, /radial \* influence \* \.72/, 'pointer response must deflect the field in 3D');
+    assert.match(vertexShader, /tangent \* influence \* \.26/, 'pointer response must impart a tangential sweep');
+    assert.doesNotMatch(vertexShader, /sin\(aSeed\.x \* 7\..*\) \* \.12/, 'the former near-zero-width emitter must not return');
     assert.match(a.group.children[0].material.fragmentShader, /vNormal/);
-    a.setTime(2); assert.equal(a.uniforms.uTime.value, 2); a.setTime(NaN); assert.equal(a.uniforms.uTime.value, 0);
-    a.dispose(); a.dispose(); assert.equal(disposals, 3, 'idempotent geometry ownership'); b.dispose();
+    assert.match(fs.readFileSync("src/components/three/ContactParticleField.ts", "utf8"), /const bases = \[circle, square, triangle, plus\]/, "CTA uses circle, square/diamond, triangle and plus/X geometry families");
+    a.setTime(2);
+    assert.equal(a.uniforms.uTime.value, 2);
+    const spin = a.uniforms.uSpin.value.elements;
+    assert.ok(Math.abs(spin[2]) < 1e-7 && Math.abs(spin[5]) < 1e-7, "particle spin never pitches/rolls flat glyphs edge-on");
+    assert.ok(Math.abs(spin[8] - 1) < 1e-7, "particle spin preserves the camera-facing plane");
+    a.setTime(NaN);
+    assert.equal(a.uniforms.uTime.value, 0);
+    a.dispose(); a.dispose(); assert.equal(disposals, 4, 'idempotent geometry ownership'); b.dispose();
   }
-  for (const [input, expected] of [[Infinity, 960], [-1, 120]]) { const field = createContactParticleField(input); assert.equal(field.count, expected); field.dispose(); }
-  console.log('PASS contact field: all quality counts, deterministic finite typed seeds/positions/normals, three instanced meshes, bounded triangles, shared progress/pointer/type contour packet and idempotent disposal. Browser compilation checked separately.');
+  for (const [input, expected] of [[Infinity, 960], [-1, 120], [9000, 5600]]) { const field = createContactParticleField(input); assert.equal(field.count, expected); field.dispose(); }
+  console.log('PASS contact field: all quality counts through 5.6K, face-on shape orientation, deterministic finite typed seeds/positions/normals, four instanced shape families, bounded triangles, shared progress/pointer/type contour packet and idempotent disposal. Browser compilation checked separately.');
 } finally { fs.rmSync(dir, { recursive: true, force: true }); }

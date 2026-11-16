@@ -1,0 +1,17 @@
+/* Header containers: native 20ms forward / reverse stagger. */
+#header-menu #header-menu-links { --open-delay: 0s; --close-delay: .08s; }
+#header-menu #header-menu-newsletter { --open-delay: .02s; --close-delay: .06s; }
+#header-menu #header-menu-talk { --open-delay: .04s; --close-delay: .04s; }
+#header-menu #header-menu-labs { --open-delay: .06s; --close-delay: .02s; }
+#header-menu :is(#header-menu-links, #header-menu-newsletter, #header-menu-talk, #header-menu-labs) {
+  transition: transform .5s var(--close-delay) cubic-bezier(.4,0,.1,1), opacity .5s var(--close-delay) cubic-bezier(.4,0,.1,1);
+}
+#header-menu:not(.--opened) #header-menu-links { transform: translate3d(0,5.5em,0) rotate(3.5deg); opacity: 0; }
+#header-menu:not(.--opened) :is(#header-menu-newsletter, #header-menu-talk, #header-menu-labs) { transform: translate3d(0,7.75em,0) rotate(-3.5deg); opacity: 0; }
+#header-menu.--opened :is(#header-menu-links, #header-menu-newsletter, #header-menu-talk, #header-menu-labs) {
+  transition-delay: var(--open-delay); transform: translateZ(0); opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  #header-menu :is(#header-menu-links, #header-menu-newsletter, #header-menu-talk, #header-menu-labs) { transition: none; }
+  #header-menu:not(.--opened) :is(#header-menu-links, #header-menu-newsletter, #header-menu-talk, #header-menu-labs) { transform: none; }
+}

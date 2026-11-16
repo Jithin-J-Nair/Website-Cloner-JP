@@ -1,0 +1,118 @@
+/**
+ * Original procedural side-profile portrait study for the About team scene.
+ *
+ * This geometry is generated locally and is not derived from, or intended to
+ * reproduce, any named team member's captured likeness or restricted model.
+ */
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+const smoothstep = (start: number, end: number, value: number) => {
+  const t = clamp01((value - start) / (end - start));
+  return t * t * (3 - 2 * t);
+};
+
+export function buildSculpturalPortraitPositions(memberIndex: number, count = 8192): Float32Array {
+  const safeIndex = Number.isFinite(memberIndex) ? Math.abs(Math.floor(memberIndex)) % 7 : 0;
+  const safeCount = Number.isFinite(count) ? Math.max(1, Math.min(32768, Math.floor(count))) : 8192;
+  const out = new Float32Array(safeCount * 3);
+  let seed = (safeIndex * 2654435761 + 1013904223) >>> 0;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+
+  const facing = safeIndex % 2 === 0 ? 1 : -1;
+  const profileCenterX = -0.03 + (safeIndex % 3) * 0.015;
+  const noseProjection = 0.86 + (safeIndex % 3) * 0.015;
+  const yawTurn = ((safeIndex % 3) - 1) * 0.12;
+  // Side-view landmarks run from the chin, over the lips and nose, to the brow
+  // and forehead. Smooth interpolation prevents a polygonal, icon-like edge.
+  const profileFront: Array<[number, number]> = [
+    // chin and jaw rise into a separated upper/lower lip line,
+    // then a deliberately projecting nose tip, brow and sloped forehead.
+    [-0.58, 0.12], [-0.48, 0.25], [-0.36, 0.37], [-0.24, 0.49],
+    [-0.16, 0.58], [-0.10, 0.66], [-0.045, 0.62], [0.015, 0.60],
+    [0.075, 0.69], [0.14, noseProjection], [0.20, 0.69], [0.28, 0.53],
+    [0.42, 0.43], [0.58, 0.35], [0.76, 0.16], [0.92, -0.06],
+  ];
+  const frontEdge = (y: number) => {
+    if (y <= profileFront[0][0]) return profileFront[0][1];
+    for (let i = 1; i < profileFront.length; i++) {
+      const [y1, x1] = profileFront[i];
+      const [y0, x0] = profileFront[i - 1];
+      if (y <= y1) {
+        const t = (y - y0) / (y1 - y0);
+        const eased = t * t * (3 - 2 * t);
+        return x0 + (x1 - x0) * eased;
+      }
+    }
+    return profileFront[profileFront.length - 1][1];
+  };
+
+  let written = 0;
+  let guard = 0;
+  while (written < safeCount && guard < safeCount * 18) {
+    guard++;
+    const u = random() * 2 - 1;
+    const v = random() * 2 - 1;
+    // A smooth elliptical occipital curve meets an authored facial contour.
+    // The back stays rounded while the front carries forehead, nose, lips and chin.
+    const backLevel = (v - 0.18) / 0.76;
+    const backHalfWidth = 0.48 * Math.sqrt(Math.max(0, 1 - backLevel * backLevel));
+    const back = profileCenterX - backHalfWidth;
+    const front = frontEdge(v);
+
+    const inHead = v > -0.58 && v < 0.92 && front > back && u > back && u < front;
+    const inNeck = v > -0.95 && v <= -0.43 && u > -0.2 && u < 0.18;
+    const shoulderReach = 0.52 + smoothstep(-0.72, -1, v) * 0.22;
+    const inShoulders = v <= -0.72 && v >= -1 && Math.abs(u + 0.03) < shoulderReach;
+
+    if (!inHead && !inNeck && !inShoulders) continue;
+
+    let depth = 0;
+    if (inHead) {
+      const center = (back + front) * 0.5;
+      const radius = Math.max(0.001, (front - back) * 0.5);
+      const across = (u - center) / radius;
+      const cranialDepth = Math.sqrt(Math.max(0, 1 - across * across)) * 0.34;
+
+      // Small relief cues make the edge read as a profile without reconstructing
+      // identifiable facial detail: a soft brow, nose bridge, cheek and mouth line.
+      const nose = Math.exp(-Math.pow((u - front + 0.045) / 0.052, 2) - Math.pow((v - 0.14) / 0.14, 2)) * 0.115;
+      const brow = Math.exp(-Math.pow((u - front + 0.17) / 0.07, 2) - Math.pow((v - 0.32) / 0.045, 2)) * 0.025;
+      const cheek = Math.exp(-Math.pow((u - front + 0.2) / 0.14, 2) - Math.pow((v + 0.015) / 0.19, 2)) * 0.055;
+      const mouth = Math.exp(-Math.pow((u - front + 0.065) / 0.048, 2) - Math.pow((v + 0.10) / 0.032, 2)) * 0.045;
+      depth = cranialDepth + nose + cheek - brow + mouth;
+    } else if (inNeck) {
+      depth = Math.sqrt(Math.max(0, 0.052 - Math.pow(u - 0.01, 2))) * 0.9;
+    } else {
+      const shoulder = Math.max(0, 1 - Math.pow((u + 0.03) / shoulderReach, 2));
+      depth = Math.sqrt(shoulder) * 0.28 + 0.025;
+    }
+
+    // Mirror the profile direction between generated variants and give each
+    // sculpt a restrained 3/4 turn. The form stays distinct from a round bust.
+    const px = (u + 0.1) * facing * 2.25;
+    const py = v * 1.6;
+    const pz = (depth + (random() - 0.5) * 0.012) * 1.45;
+    const x = px * Math.cos(yawTurn) + pz * Math.sin(yawTurn);
+    const z = -px * Math.sin(yawTurn) + pz * Math.cos(yawTurn);
+
+    out[written * 3] = x;
+    out[written * 3 + 1] = py;
+    out[written * 3 + 2] = z;
+    written++;
+  }
+
+  // The rejection sampler has generous headroom for the bounded silhouette.
+  // Keep the GPU attribute fully populated if a future shape edit narrows it.
+  if (written < safeCount) {
+    for (let i = written; i < safeCount; i++) {
+      const y = -0.78 + (i / Math.max(1, safeCount - 1)) * 0.24;
+      out[i * 3] = 0;
+      out[i * 3 + 1] = y * 1.6;
+      out[i * 3 + 2] = 0;
+    }
+  }
+
+  return out;
+}

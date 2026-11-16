@@ -53,7 +53,7 @@ export function createScore(ctx: BaseAudioContext): Map<StemName, AudioBuffer> {
  * It is an authored substitute, not a recording of the reference glass effect.
  */
 export function createFracture(ctx: BaseAudioContext): AudioBuffer {
-  const buffer = ctx.createBuffer(2, SCORE_SAMPLE_RATE * 1.4, SCORE_SAMPLE_RATE);
+  const buffer = ctx.createBuffer(2, SCORE_SAMPLE_RATE * 0.95, SCORE_SAMPLE_RATE);
   for (let channel = 0; channel < 2; channel++) {
     const data = buffer.getChannelData(channel);
     let seed = 1827 + channel * 719;
@@ -61,10 +61,10 @@ export function createFracture(ctx: BaseAudioContext): AudioBuffer {
       seed = (Math.imul(seed, 1664525) + 1013904223) | 0;
       const t = i / SCORE_SAMPLE_RATE;
       const attack = Math.min(1, t / 0.003);
-      const tail = Math.max(0, 1 - t / 1.4);
-      const noise = (seed / 2147483648) * Math.exp(-t * 13) * 0.24;
+      const tail = Math.max(0, 1 - t / 0.95);
+      const noise = (seed / 2147483648) * Math.exp(-t * 17) * 0.27;
       let ring = 0;
-      for (const hz of [1137, 1789, 2711, 4219]) ring += Math.sin(TAU * (hz + channel * 13) * t) * Math.exp(-t * 5) * 0.035;
+      for (const hz of [1137, 1789, 2711, 4219]) ring += Math.sin(TAU * (hz + channel * 13) * t) * Math.exp(-t * 7.5) * 0.035;
       data[i] = (noise + ring) * attack * tail;
     }
   }

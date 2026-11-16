@@ -1,0 +1,3 @@
+PASS 22,502 lettering samples: finite/bounded, C0 continuous, reversible, invalid-input safe, opening handoff and nonoverlapping manifesto/narrative.
+PASS wordmark sweep: deterministic, bounded, continuous, reversible and scroll-seek safe. Authored timing is not represented as measured source timing.
+PASS 22,502 camera samples: finite, deterministic, reversible, bounded per-step travel, C1 joins, distinct near/wide framing and retained editorial/team endpoints. Original timing, not recovered source curves.

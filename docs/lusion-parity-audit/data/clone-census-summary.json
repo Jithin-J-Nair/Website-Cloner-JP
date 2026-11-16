@@ -1,0 +1,144 @@
+{
+  "finished": true,
+  "states": 120,
+  "screenshots": 120,
+  "routes": 20,
+  "viewports": [
+    [
+      1920,
+      1080
+    ],
+    [
+      1440,
+      900
+    ],
+    [
+      1366,
+      768
+    ],
+    [
+      1024,
+      1366
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      375,
+      812
+    ]
+  ],
+  "httpStatuses": {
+    "200": 120
+  },
+  "navigationExceptions": [],
+  "consoleOrPageErrors": 0,
+  "warningCount": 0,
+  "badResponseCount": 0,
+  "failedRequestCount": 0,
+  "titleMismatches": [],
+  "horizontalOverflow": [],
+  "internalLinks": [
+    {
+      "path": "/",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/"
+    },
+    {
+      "path": "/about",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/about"
+    },
+    {
+      "path": "/projects",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects"
+    },
+    {
+      "path": "/projects/choo_choo_world",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/choo_choo_world"
+    },
+    {
+      "path": "/projects/ddd_2024",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/ddd_2024"
+    },
+    {
+      "path": "/projects/devin_ai",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/devin_ai"
+    },
+    {
+      "path": "/projects/infinite_passerella",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/infinite_passerella"
+    },
+    {
+      "path": "/projects/lusion_labs",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/lusion_labs"
+    },
+    {
+      "path": "/projects/maxmara_bearings_gifts",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/maxmara_bearings_gifts"
+    },
+    {
+      "path": "/projects/my_little_story_book",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/my_little_story_book"
+    },
+    {
+      "path": "/projects/of_the_oak",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/of_the_oak"
+    },
+    {
+      "path": "/projects/oryzo_ai",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/oryzo_ai"
+    },
+    {
+      "path": "/projects/porsche_dream_machine",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/porsche_dream_machine"
+    },
+    {
+      "path": "/projects/soda_experience",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/soda_experience"
+    },
+    {
+      "path": "/projects/spaace",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/spaace"
+    },
+    {
+      "path": "/projects/spatial_fusion",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/spatial_fusion"
+    },
+    {
+      "path": "/projects/synthetic_human",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/synthetic_human"
+    },
+    {
+      "path": "/projects/the_turn_of_the_screw",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/the_turn_of_the_screw"
+    },
+    {
+      "path": "/projects/worldcoin",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/worldcoin"
+    },
+    {
+      "path": "/projects/zero_tech",
+      "status": 200,
+      "finalURL": "http://127.0.0.1:3000/projects/zero_tech"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "before": {
+    "button": {
+      "x": 15,
+      "y": 778.625,
+      "width": 360,
+      "height": 14.265625,
+      "top": 778.625,
+      "right": 375,
+      "bottom": 792.890625,
+      "left": 15
+    },
+    "portal": {
+      "x": 0,
+      "y": 727.5,
+      "width": 390,
+      "height": 116,
+      "top": 727.5,
+      "right": 390,
+      "bottom": 843.5,
+      "left": 0
+    },
+    "scroll": 93
+  },
+  "after": {
+    "path": "/about",
+    "button": {
+      "x": 15,
+      "y": 871.625,
+      "width": 360,
+      "height": 14.265625,
+      "top": 871.625,
+      "right": 375,
+      "bottom": 885.890625,
+      "left": 15
+    },
+    "portal": {
+      "x": 0,
+      "y": 727.5,
+      "width": 390,
+      "height": 214.390625,
+      "top": 727.5,
+      "right": 390,
+      "bottom": 941.890625,
+      "left": 0
+    },
+    "events": [
+      {
+        "type": "pointerdown",
+        "target": "scroll-nav-next-bar-inner",
+        "x": 195,
+        "y": 785.75
+      },
+      {
+        "type": "pointerup",
+        "target": "scroll-nav-next-bar-inner",
+        "x": 195,
+        "y": 785.75
+      },
+      {
+        "type": "focusin",
+        "target": "scroll-nav-next"
+      },
+      {
+        "type": "click",
+        "target": "scroll-nav-content",
+        "x": 195,
+        "y": 786
+      }
+    ]
+  }
+}

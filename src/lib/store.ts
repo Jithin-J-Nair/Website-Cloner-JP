@@ -42,6 +42,7 @@ export interface VideoOverlayConfig {
   desktopSrc: string;
   mobileSrc: string;
   vimeoId?: string;
+  startWithSound?: boolean;
 }
 
 /**
@@ -78,6 +79,7 @@ interface StudioState {
   videoConfig: VideoOverlayConfig;
   preloaderDone: boolean;
 
+  routeTransitionActive: boolean;
   isTransitioning: boolean;
   transitionLabel: string;
 
@@ -109,7 +111,7 @@ interface StudioState {
 }
 
 const DEFAULT_REEL_CONFIG: VideoOverlayConfig = {
-  title: "Lusion Showreel",
+  title: "Jithin Showreel",
   desktopSrc: "/assets/textures/reel/desktop.mp4",
   mobileSrc: "/assets/textures/reel/mobile.mp4",
   vimeoId: "761102167",
@@ -131,6 +133,7 @@ export const useStudioStore = create<StudioState>((set) => ({
   videoConfig: DEFAULT_REEL_CONFIG,
   preloaderDone: false,
 
+  routeTransitionActive: false,
   isTransitioning: false,
   transitionLabel: "",
 

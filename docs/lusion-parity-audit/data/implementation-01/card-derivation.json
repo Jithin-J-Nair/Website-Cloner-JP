@@ -1,0 +1,9 @@
+{
+  "source": "media-bundle/images/cards/back.png",
+  "sourceSha256": "01bf7f222a6f17f73c4b65b3147da0e8116df9001bf50f6642391a9e2c6a9edb",
+  "output": "public/assets/images/cards/back-ink.png",
+  "outputSha256": "93ea4c50c76d5b5a0794e14bed264cd9cb126e3ea862fabefc0d15c87297a0b1",
+  "width": 628,
+  "height": 876,
+  "treatment": "Original raster linework, white ink alpha from minimum red/green above baked-blue channel level 34; no redrawing or new ornament."
+}

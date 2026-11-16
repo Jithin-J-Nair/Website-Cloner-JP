@@ -1,10 +1,9 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { TransitionLink } from "@/components/studio/TransitionLink";
 import { soundEngine } from "@/lib/audio";
-import { useStudioStore } from "@/lib/store";
 import { getCanonicalProjectTitle } from "@/lib/clean-media-synthesizer";
 import type { LusionProjectCard } from "@/data/reference";
 
@@ -13,142 +12,32 @@ interface FeaturedProjectCardProps {
   index: number;
 }
 
-const SCRAMBLE_GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/+-";
-
-/**
- * Verified Lusion Featured Project Item (`.project-item`)
- *
- * Uses exact `LUSION_HOME.featured.projects` ground-truth metadata:
- *   - Canonical route: `project.href` (`/projects/<slug>`)
- *   - Exact aspect box: `padding-top: 65%`, `border-radius: 15px`
- *   - Restrained scroll-velocity perspective shear (`±2.2°`, settling cleanly to `0°` at rest)
- *   - Interactive pointer depth-parallax shift + brand `colorBg` rim bloom
- *   - One-shot viewport-entry category decode (`ref-04-featured-top`) + masked title slide-up
- *   - Slide-in `.project-item-line-2-icon` arrow + title shift on hover/focus
- *   - Resilient art-directed fallback surface if local inspection WebP is absent
- */
+/** Semantic card and failure surface. The shared Home owner animates native depth maps and type. */
 export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps) {
-  const reducedMotion = useStudioStore((s) => s.reducedMotion);
-  const [hovered, setHovered] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
-  const [inViewport, setInViewport] = useState(false);
-  const [decodedCategories, setDecodedCategories] = useState(project.categoriesText);
-  const cardStageRef = useRef<HTMLDivElement>(null);
-  const imgWrapRef = useRef<HTMLDivElement>(null);
-  const hasDecodedRef = useRef(false);
   const displayTitle = getCanonicalProjectTitle(project.id, project.title);
-
-  useEffect(() => {
-    const el = cardStageRef.current;
-    if (!el) return;
-    let decodeRaf = 0;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry) return;
-        if (entry.isIntersecting) {
-          setInViewport(true);
-          if (!hasDecodedRef.current && !reducedMotion) {
-            hasDecodedRef.current = true;
-            const target = project.categoriesText;
-            const startMs = performance.now();
-            const durMs = 340;
-            const stepDecode = (now: number) => {
-              const p = Math.min(1, (now - startMs) / durMs);
-              if (p >= 1) {
-                setDecodedCategories(target);
-                return;
-              }
-              const lockCount = Math.floor(p * target.length);
-              let out = "";
-              for (let i = 0; i < target.length; i++) {
-                const ch = target[i];
-                if (i < lockCount || ch === " " || ch === "•") {
-                  out += ch;
-                } else {
-                  out += SCRAMBLE_GLYPHS[(i * 7 + Math.floor(now * 0.04)) % SCRAMBLE_GLYPHS.length];
-                }
-              }
-              setDecodedCategories(out);
-              decodeRaf = window.requestAnimationFrame(stepDecode);
-            };
-            decodeRaf = window.requestAnimationFrame(stepDecode);
-          } else {
-            hasDecodedRef.current = true;
-            setDecodedCategories(project.categoriesText);
-          }
-        }
-      },
-      { threshold: 0.12 }
-    );
-    io.observe(el);
-
-    return () => {
-      io.disconnect();
-      if (decodeRaf) window.cancelAnimationFrame(decodeRaf);
-    };
-  }, [project.categoriesText, reducedMotion]);
-
-  const handlePointerLeave = useCallback(() => {
-    setHovered(false);
-    imgWrapRef.current?.style.removeProperty("transform");
-  }, []);
-
-  useEffect(() => {
-    // A live preference change must also clear an already-written imperative transform.
-    if (reducedMotion) imgWrapRef.current?.style.removeProperty("transform");
-  }, [reducedMotion]);
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (reducedMotion || e.pointerType === "touch" || e.buttons !== 0) {
-        handlePointerLeave();
-        return;
-      }
-      if (!imgWrapRef.current) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
-      const nx = Math.max(-1, Math.min(1, ((e.clientX - rect.left) / rect.width - 0.5) * 2));
-      const ny = Math.max(-1, Math.min(1, ((e.clientY - rect.top) / rect.height - 0.5) * 2));
-      imgWrapRef.current.style.transform = `scale(1.045) translate3d(${(-nx * 9).toFixed(1)}px, ${(-ny * 7).toFixed(1)}px, 0)`;
-    },
-    [reducedMotion, handlePointerLeave]
-  );
-
-  const handlePointerEnter = useCallback((event: React.PointerEvent<HTMLAnchorElement>) => {
-    if (event.pointerType === "touch") return;
-    setHovered(true);
-    soundEngine.playHover();
-  }, []);
 
   return (
     <TransitionLink
       href={project.href}
+      aria-label={displayTitle}
       transitionLabel={displayTitle}
       data-id={project.id}
       data-project-slug={project.id}
       data-color-bg={project.colorBg}
       data-color-text={project.colorText}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
-      onPointerCancel={handlePointerLeave}
-      onPointerDown={(event) => { if (event.pointerType === "touch") handlePointerLeave(); }}
-      onFocus={() => setHovered(true)}
-      onBlur={handlePointerLeave}
+      data-categories={project.categoriesText.toUpperCase()}
+      onPointerEnter={event => { if (event.pointerType !== "touch") soundEngine.playHover(); }}
       className={`project-item project-type-website group relative col-span-6 block cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-[#1a2ffb] ${
         index >= 2 ? "min-[813px]:mt-[5em]" : ""
       } ${index >= 1 ? "max-[812px]:mt-[2em]" : ""}`}
     >
       {/* Thumbnail Stage (`.project-item-main`, 65% aspect ratio, 15px border radius) */}
       <div
-        ref={cardStageRef}
-        onPointerMove={handlePointerMove}
         style={{ backgroundColor: project.colorBg, transform: "none" }}
         className="project-item-main relative w-full overflow-hidden rounded-[15px] pt-[65%] shadow-[0_14px_34px_rgba(10,14,28,0.06)] transition-shadow duration-500 will-change-transform group-hover:shadow-[0_24px_54px_rgba(26,47,251,0.14)]"
       >
         <div
-          ref={imgWrapRef}
           className="absolute inset-0 h-full w-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
         >
           {!imgFailed ? (
@@ -165,7 +54,6 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
               loading={index < 4 ? "eager" : "lazy"}
               decoding="async"
               onError={() => setImgFailed(true)}
-              style={{ transform: reducedMotion ? "none" : "scale(1.08)" }}
               className="project-item-image h-full w-full rounded-[15px] object-cover"
             />
           ) : (
@@ -187,29 +75,18 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
           )}
         </div>
 
-        {/* Subtle interactive optical sheen on hover */}
-        <div
-          aria-hidden="true"
-          style={{
-            opacity: hovered ? 0.16 : 0,
-            background: `linear-gradient(135deg, ${project.colorText} 0%, transparent 55%)`,
-          }}
-          className="pointer-events-none absolute inset-0 transition-opacity duration-300"
-        />
       </div>
 
       {/* Metadata Footer (`.project-item-footer`: uppercase bullet categories + title with slide-in arrow on desktop & permanent arrow on mobile) */}
       <div className="project-item-footer relative w-full text-[#000000]">
         <div className="project-item-line-1 mt-[1.5em] mb-[0.85em] font-sans text-[2.5vw] leading-snug tracking-[0.02em] text-black/80 uppercase min-[813px]:text-[0.9vw]">
-          {decodedCategories}
+          {project.categoriesText}
         </div>
 
         <div className="project-item-line-2 relative flex h-[1.15em] items-center overflow-hidden font-sans text-[6.5vw] leading-none font-normal tracking-[-0.02em] text-black min-[813px]:text-[3vw]">
           <span
             aria-hidden="true"
-            className={`project-item-line-2-icon inline-flex h-[0.72em] w-[0.72em] shrink-0 items-center justify-center transition-all duration-300 ease-[cubic-bezier(0.35,0,0,1)] max-[812px]:mr-[0.34em] max-[812px]:ml-0 max-[812px]:translate-x-0 max-[812px]:opacity-100 ${
-              hovered ? "mr-[0.28em] translate-x-0 opacity-100" : "-ml-[0.72em] -translate-x-3 opacity-0"
-            }`}
+            className="project-item-line-2-icon absolute -left-[1em] inline-flex h-[.72em] w-[.72em] items-center justify-center"
           >
             <svg viewBox="0 0 24 24" fill="none" className="h-full w-full">
               <path
@@ -221,12 +98,8 @@ export function FeaturedProjectCard({ project, index }: FeaturedProjectCardProps
               />
             </svg>
           </span>
-          <span
-            className={`project-item-line-2-title project-item-line-2-inner truncate transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              inViewport || reducedMotion ? "translate-y-0 opacity-100" : "translate-y-[65%] opacity-0"
-            }`}
-          >
-            {displayTitle}
+          <span className="project-item-line-2-title project-item-line-2-inner" aria-label={displayTitle}>
+            {[...displayTitle].map((char, i) => <span key={i} className="project-title-slot" aria-hidden="true"><span className="project-title-strip">{Array.from({ length: 4 }, (_, j) => <span key={j}>{char === " " ? "\u00a0" : char}</span>)}</span></span>)}
           </span>
         </div>
       </div>

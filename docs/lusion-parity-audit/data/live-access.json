@@ -1,0 +1,112 @@
+{
+  "checkedAt": "2026-11-07T02:49:47.014Z",
+  "browser": "Chromium via existing repository browser runtime",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "attempts": [
+    {
+      "requestedURL": "https://lusion.co/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "networkFailures": [
+        {
+          "url": "https://lusion.co/",
+          "failure": {
+            "errorText": "net::ERR_CONNECTION_CLOSED"
+          }
+        }
+      ],
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "requestedURL": "https://lusion.co/about",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "networkFailures": [
+        {
+          "url": "https://lusion.co/about",
+          "failure": {
+            "errorText": "net::ERR_CONNECTION_CLOSED"
+          }
+        }
+      ],
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about\nCall log:\n  - navigating to \"https://lusion.co/about\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "requestedURL": "https://lusion.co/projects",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "networkFailures": [
+        {
+          "url": "https://lusion.co/projects",
+          "failure": {
+            "errorText": "net::ERR_CONNECTION_CLOSED"
+          }
+        }
+      ],
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/projects\nCall log:\n  - navigating to \"https://lusion.co/projects\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "requestedURL": "https://lusion.co/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "networkFailures": [
+        {
+          "url": "https://lusion.co/",
+          "failure": {
+            "errorText": "net::ERR_CONNECTION_CLOSED"
+          }
+        }
+      ],
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/\nCall log:\n  - navigating to \"https://lusion.co/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "requestedURL": "https://lusion.co/about",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "networkFailures": [
+        {
+          "url": "https://lusion.co/about",
+          "failure": {
+            "errorText": "net::ERR_CONNECTION_CLOSED"
+          }
+        }
+      ],
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/about\nCall log:\n  - navigating to \"https://lusion.co/about\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "requestedURL": "https://lusion.co/projects",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "networkFailures": [
+        {
+          "url": "https://lusion.co/projects",
+          "failure": {
+            "errorText": "net::ERR_CONNECTION_CLOSED"
+          }
+        }
+      ],
+      "error": "page.goto: net::ERR_CONNECTION_CLOSED at https://lusion.co/projects\nCall log:\n  - navigating to \"https://lusion.co/projects\", waiting until \"domcontentloaded\"\n"
+    }
+  ]
+}

@@ -1,0 +1,2886 @@
+{
+  "scale": "0 missing, 1 far, 2 partial, 3 approximate, 4 close, 5 verified high fidelity. Null = not measured.",
+  "reason": "No current live source capture; no matched visual or motion comparisons.",
+  "routes": [
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/home--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/about--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--oryzo_ai--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--of_the_oak--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--devin_ai--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--porsche_dream_machine--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--synthetic_human--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--ddd_2024--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spaace--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--choo_choo_world--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--zero_tech--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spatial_fusion--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--worldcoin--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--lusion_labs--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--my_little_story_book--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--soda_experience--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--infinite_passerella--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--the_turn_of_the_screw--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--maxmara_bearings_gifts--1920x1080--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/home--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/about--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--oryzo_ai--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--of_the_oak--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--devin_ai--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--porsche_dream_machine--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--synthetic_human--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--ddd_2024--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spaace--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--choo_choo_world--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--zero_tech--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spatial_fusion--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--worldcoin--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--lusion_labs--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--my_little_story_book--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--soda_experience--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--infinite_passerella--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--the_turn_of_the_screw--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--maxmara_bearings_gifts--1440x900--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/home--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/about--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--oryzo_ai--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--of_the_oak--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--devin_ai--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--porsche_dream_machine--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--synthetic_human--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--ddd_2024--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spaace--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--choo_choo_world--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--zero_tech--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spatial_fusion--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--worldcoin--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--lusion_labs--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--my_little_story_book--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--soda_experience--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--infinite_passerella--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--the_turn_of_the_screw--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--maxmara_bearings_gifts--1366x768--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/home--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/about--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--oryzo_ai--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--of_the_oak--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--devin_ai--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--porsche_dream_machine--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--synthetic_human--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--ddd_2024--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spaace--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--choo_choo_world--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--zero_tech--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spatial_fusion--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--worldcoin--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--lusion_labs--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--my_little_story_book--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--soda_experience--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--infinite_passerella--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--the_turn_of_the_screw--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--maxmara_bearings_gifts--1024x1366--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/home--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/about--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--oryzo_ai--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--of_the_oak--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--devin_ai--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--porsche_dream_machine--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--synthetic_human--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--ddd_2024--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spaace--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--choo_choo_world--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--zero_tech--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spatial_fusion--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--worldcoin--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--lusion_labs--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--my_little_story_book--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--soda_experience--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--infinite_passerella--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--the_turn_of_the_screw--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--maxmara_bearings_gifts--390x844--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/home--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/about--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/oryzo_ai",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--oryzo_ai--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--of_the_oak--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/devin_ai",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--devin_ai--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/porsche_dream_machine",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--porsche_dream_machine--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/synthetic_human",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--synthetic_human--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/ddd_2024",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--ddd_2024--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spaace",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spaace--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/choo_choo_world",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--choo_choo_world--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/zero_tech",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--zero_tech--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/spatial_fusion",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--spatial_fusion--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--worldcoin--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/lusion_labs",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--lusion_labs--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/my_little_story_book",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--my_little_story_book--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/soda_experience",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--soda_experience--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/infinite_passerella",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--infinite_passerella--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/the_turn_of_the_screw",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--the_turn_of_the_screw--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    },
+    {
+      "route": "/projects/maxmara_bearings_gifts",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "state": "initial-only",
+      "cloneScreenshot": "evidence/clone-initial/projects--maxmara_bearings_gifts--375x812--initial.jpg",
+      "originalScreenshot": null,
+      "scores": {
+        "layout": null,
+        "typography": null,
+        "color": null,
+        "imagery": null,
+        "3d": null,
+        "motion": null,
+        "parallax": null,
+        "scroll": null,
+        "interaction": null,
+        "responsive": null,
+        "performance": null,
+        "accessibility": null
+      }
+    }
+  ]
+}

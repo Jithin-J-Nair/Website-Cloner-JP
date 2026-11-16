@@ -1,5 +1,6 @@
 /** Shared, allocation-free motion math. Rendering and DOM ownership stay with their components. */
-export const GOAL_CINEMATIC_SECONDS = 22.5;
+// Two complete 10-second music loops at 96 BPM; one bar-aligned 20-second journey.
+export const GOAL_CINEMATIC_SECONDS = 20;
 export const UHD_PIXEL_BUDGET = 3840 * 2160;
 export const clampMotion = (value: number) => Math.max(0, Math.min(1, value));
 
@@ -8,10 +9,10 @@ export function homeRenderDpr(width: number, height: number, deviceDpr: number):
   return Math.min(Math.max(0.25, deviceDpr || 1), 2, Math.sqrt(UHD_PIXEL_BUDGET / Math.max(1, width * height)));
 }
 
-/** Normalized constant-acceleration travel: nonzero entry velocity, increasing fall speed. */
+/** Faster gravity-led fall: stronger entry descent, smooth acceleration, and an exact 0→1 endpoint. */
 export function acceleratedFall(progress: number): number {
   const t = clampMotion(progress);
-  return 0.28 * t + 0.72 * t * t;
+  return 0.65 * t + 0.26 * t * t + 0.09 * t * t * t;
 }
 
 export interface MotionSpring { value: number; velocity: number }
@@ -41,10 +42,11 @@ export function blueFlightDistance(tunnel: number, shatter: number): number {
   return 22 * (0.28 * travel + 0.72 * travel * travel);
 }
 
-/** Software rasterizers are fill-bound: conserve pixels during motion, not static UHD inspection. */
+/** The native 81-neighbour field/FFT is expensive on CPU rasterizers. Bound only
+ * software motion pixels; physical GPUs and static/reduced-motion inspection keep native quality. */
 export function cinematicRenderDpr(width: number, height: number, deviceDpr: number, software: boolean, reduced: boolean): number {
   const native = homeRenderDpr(width, height, deviceDpr);
-  return software && !reduced ? Math.min(native, Math.sqrt(960 * 600 / Math.max(1, width * height))) : native;
+  return software && !reduced ? Math.min(native, Math.sqrt(640 * 400 / Math.max(1, width * height))) : native;
 }
 
 /** Advance only by visible, unpaused elapsed time. Interpolation limits must not slow this clock. */

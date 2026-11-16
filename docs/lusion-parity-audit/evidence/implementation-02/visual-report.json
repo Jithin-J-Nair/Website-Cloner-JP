@@ -1,0 +1,484 @@
+{
+  "baseline": "Local 5051 production checkpoint, not original Lusion",
+  "current": "Working-tree production build",
+  "referenceScope": "Captured manifest/assets/screenshots/recording. No current-live parity assertion.",
+  "policy": "Reduced motion, DPR1, seeded initialization, paused video. Static UI raster gate hides canvas/video identically; unmasked images are review evidence, not a 3D or motion acceptance.",
+  "threshold": {
+    "channelDelta": 24,
+    "maximumStaticChangedFraction": 0.03
+  },
+  "states": [
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "errors": [],
+      "sides": [
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        },
+        {
+          "status": 200,
+          "title": "Lusion - About Us",
+          "overflow": false,
+          "h1": [
+            "Lusion — WE ARE A CREATIVE PRODUCTION STUDIO CRAFTING UNIQUE DIGITAL EXPERIENCES"
+          ],
+          "errors": []
+        }
+      ],
+      "staticUI": {
+        "changedPixels": 0,
+        "changedFraction": 0
+      }
+    }
+  ],
+  "sections": [
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "side": "baseline",
+      "brands": {
+        "images": 0,
+        "uniqueSources": []
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "side": "current",
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ]
+      },
+      "expectedChanges": [
+        "LP-009 verified brand assets",
+        "LP-010 source card linework"
+      ]
+    }
+  ],
+  "failures": [],
+  "finished": true
+}

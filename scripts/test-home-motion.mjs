@@ -4,6 +4,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 import { pathToFileURL } from 'node:url';
+const homeMarkup = fs.readFileSync('src/components/home/HomePageView.tsx','utf8');
+assert.ok(homeMarkup.includes('text-[5vw]') && homeMarkup.includes('min-[813px]:text-[2.25vw]'), 'Japanese hero uses responsive sizes for its three requested lines');
+for (const line of ['アイデアを、確かな技術で形にする。', 'Web・AI・自動化を通じて、', '課題を解決する仕組みをつくる。']) assert.ok(homeMarkup.includes(line), 'requested Japanese hero line is present');
+assert.ok(homeMarkup.includes('min-[813px]:pt-[calc(var(--vh,1vh)*5.3)]'), 'desktop hero title aligns with the reference top edge');
+assert.ok(homeMarkup.includes('min-[813px]:mt-[calc(var(--base-padding-y)*0.9)]'), 'desktop stage top aligns with the reference');
+assert.ok(homeMarkup.includes('min-[813px]:mb-[calc(var(--base-padding-y)*0.05)]'), 'desktop stage bottom aligns with the reference');
+assert.ok(homeMarkup.includes('min-[813px]:pb-[calc(var(--base-padding-y)*0.94)]'), 'desktop section bottom matches the reference viewport');
+assert.ok(homeMarkup.includes('min-[813px]:bottom-0'), 'desktop scroll cue sits on the reference bottom edge');
+assert.ok(homeMarkup.includes('mb-[calc(var(--base-padding-y)*1.35)]'), 'mobile stage bottom aligns with the reference');
 fs.mkdirSync('temp',{recursive:true});
 const dir = fs.mkdtempSync(path.resolve('temp/home-motion-unit-'));
 try {
@@ -11,7 +20,7 @@ try {
   const file = path.join(dir,'motion.mjs');
   fs.writeFileSync(file,output);
   const {advanceCinematicProgress,acceleratedFall,stepMotionSpring,homeRenderDpr,cinematicRenderDpr,blueFlightDistance,UHD_PIXEL_BUDGET,GOAL_CINEMATIC_SECONDS,motionEase} = await import(pathToFileURL(file));
-  assert.ok(GOAL_CINEMATIC_SECONDS<26 && GOAL_CINEMATIC_SECONDS>22);
+  assert.equal(GOAL_CINEMATIC_SECONDS,20,'the guided journey spans exactly two complete score loops');
   for (const dt of [1/120,1/60,1/30,.25,.5,1,2]) {
     let progress=0,elapsed=0;
     while(elapsed<GOAL_CINEMATIC_SECONDS-1e-9) {
@@ -26,6 +35,9 @@ try {
   assert.equal(advanceCinematicProgress(.2,NaN),.2);
   assert.equal(advanceCinematicProgress(0,100),1);
   assert.equal(acceleratedFall(-1),0); assert.equal(acceleratedFall(2),1);
+  assert.ok(acceleratedFall(0.25)>0.17,'astronaut reaches a stronger early descent than the previous curve');
+  assert.ok(acceleratedFall(0.5)>0.39,'astronaut carries more speed through the middle of the fall');
+  assert.ok(Math.abs(acceleratedFall(1)-1)<1e-12,'faster fall retains its exact endpoint');
   let lastVelocity = -Infinity;
   for(let i=1;i<1000;i++) {
     const t=i/1000, epsilon=1e-5;
@@ -59,6 +71,123 @@ try {
   assert.equal(cinematicRenderDpr(3840,2160,2,true,true),1);
   assert.ok(cinematicRenderDpr(1440,900,1,true,false)<1);
   assert.ok(blueFlightDistance(1,.5)>blueFlightDistance(1,0),'corridor keeps moving during glass approach');
+
+  const homePageSource = fs.readFileSync('src/components/home/HomePageView.tsx','utf8');
+  const heroSource = fs.readFileSync('src/components/home/HeroCrossesStage.tsx','utf8');
+  const goalSource = fs.readFileSync('src/components/home/GoalTunnelSection.tsx','utf8');
+  const nativeWorlds = fs.readFileSync('src/components/home/GoalReferenceWorlds.ts','utf8');
+  const nativeShaders = fs.readFileSync('src/components/home/GoalReferenceShaders.ts','utf8');
+  const nativeBloom = fs.readFileSync('src/components/home/GoalReferenceBloomPass.ts','utf8');
+  const smoothSource = fs.readFileSync('src/components/foundation/SmoothScrollProvider.tsx','utf8');
+  assert.ok(!homePageSource.includes('skewY(') && !homePageSource.includes('targetSkew'),
+    'project cards do not shear or glitch with scroll velocity');
+  assert.ok(heroSource.includes('api.software && !pointer.current.active && !responding'),
+    'software idle throttling is disabled while the pointer is actively throwing connectors');
+  assert.ok(heroSource.includes('}, 45)') && heroSource.includes('else wake()'),
+    'software idle uses a bounded yield; hardware and active interaction schedule the next RAF directly');
+  assert.ok(!goalSource.includes('home-goal-monitor-cracks') && !goalSource.includes('crackProgress'),
+    'the synthetic crack overlay is completely removed');
+  assert.ok(!goalSource.includes('lensPass') && !goalSource.includes('ShaderPass'),
+    'the full-screen radial RGB glitch/dispersion pass is removed');
+  // Supersedes tests that required invented thick glass cages, a separate
+  // accretion disc, Snell/GGX shader and a compressed explosion. Those were
+  // implementation assertions, not evidence of reference-video similarity.
+  assert.ok(goalSource.includes('createGoalReferenceWorlds(track)') && !goalSource.includes('buildVortexHypercubeLattice') && !goalSource.includes('buildTunnelGlazing'),
+    'the live owner uses captured architecture, not the old decorative worlds');
+  const nativeEnd=fs.readFileSync('src/components/home/GoalReferenceEnd.ts','utf8');
+  assert.ok(goalSource.includes('createGoalReferenceEnd(track, isMobileInit)')&&!goalSource.includes('buildDiamondsAndPopStickers')&&!goalSource.includes('buildVisorLedMatrix'),
+    'Home end stage must use captured assets, not the removed canvas sticker / synthetic gem / visor approximations');
+  assert.ok(nativeEnd.includes('diamond.buf')&&nativeEnd.includes('stickers_low.png')&&nativeEnd.includes('astronaut/face.png')&&nativeEnd.includes('blendSrcAlpha: THREE.ZeroFactor'),
+    'native illustration alpha is coverage, not a full-plate bloom mask');
+  assert.ok(goalSource.includes('idleSeconds * 60')&&goalSource.includes('visorOrientationLocal')&&goalSource.includes('endWords.forEach'),
+    'the captured idle, sampled head card and individual glyph rolls share the existing animation owner');
+  assert.ok(nativeWorlds.includes('GRID_SIZE: 20') && nativeWorlds.includes('instanceGridIds') && nativeWorlds.includes('a_instanceId'),
+    'encoded grid placement and 16-block corridor instancing are retained');
+  assert.ok(nativeShaders.includes('vec4 b=vec4(2.*a,ada-1.)/(1.+ada)') && nativeShaders.includes('pos=c.xyz/(1.-c.w)'),
+    'the shaft itself performs the stereographic 4D fold');
+  assert.ok(nativeShaders.includes('for(int l=-1;l<=1;l++)') && nativeShaders.includes('for(int i=-1;i<=1;i++)'),
+    'the blue bands use the captured 81-neighbour 4D Voronoi field');
+  assert.ok(nativeShaders.includes('cross(fdx,fdy)') && nativeShaders.includes('normalize(mix(posFrom,posTo,u_frameRatio))') && nativeShaders.includes('u_backgroundTexture'),
+    'glass uses derivative normals, captured rigid endpoints and the live scene buffer');
+  assert.ok(goalSource.includes('depthWrite: false, side: THREE.DoubleSide') && !goalSource.includes('buildGlassShardSideGeometry') && goalSource.includes('material.uniforms.u_fragmentScale.value = glassState.fragmentScale') && nativeWorlds.includes('1 - fit(progress, .75, 1)'),
+    'transparent, non-depth-writing shards have no invented thickness and only shrink during the final quarter');
+  assert.ok(nativeBloom.includes('THREE.UnsignedByteType') && nativeBloom.includes('THREE.FloatType') && nativeBloom.includes('gl_FragColor=vec4(texture2D(u_texture,v_uv).rgb+texture2D(u_bloom'),
+    'clamped scene/bloom-cache and float FFT boundaries feed an opaque final display');
+  assert.ok(nativeBloom.includes('HORIZTONAL: 1') && nativeShaders.includes('u_subtransformSize') && nativeShaders.includes('rotToCenter*vec2(1.0,20.0)'),
+    'native diffraction is convolution of the source kernel, not arbitrary full-screen RGB distortion');
+  assert.ok(goalSource.includes('outputPass.enabled = inEmergencePhase') && goalSource.includes('referenceBloom.enabled = !inEmergencePhase'),
+    'ACES/sRGB emergence and the native unmanaged-color pipeline are not applied twice');
+  assert.ok(goalSource.includes('nativeRatios.white * 79 : 79 + tShatter * 20') && !goalSource.includes('_invertedBasis'),
+    'captured root timing/basis replaces hand-authored Euler spins and depth offsets');
+  assert.ok(smoothSource.includes('duration: 0.92') && smoothSource.includes('smoothWheel: true'),
+    'Lenis uses the tuned smooth-wheel profile');
+
+  const downstreamOutput = ts.transpileModule(fs.readFileSync('src/components/home/GoalDownstreamScenes.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+  const downstreamFile = path.join(dir,'downstream.mjs');
+  fs.writeFileSync(downstreamFile,downstreamOutput);
+  const {createGoalPlaybackPath,createGlassFrameSampler} = await import(pathToFileURL(downstreamFile));
+  const playback = createGoalPlaybackPath({emergenceStart:1000,emergenceSpan:1000,tunnelStart:2000,tunnelSpan:4000,imgOutTop:8000,endTop:10000,endHeight:1000,viewportH:1000});
+  const shardPositions = new Float32Array([
+    0,0,0,  1,0,0,  1.5,0,0,  3,0,0,  4,0,0,
+  ]);
+  const shardOrientations = new Float32Array([
+    0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,0,1,
+  ]);
+  const sampledPosition = new Float32Array(4);
+  const sampledOrientation = new Float32Array(4);
+  const sampleGlass = createGlassFrameSampler(shardPositions,shardOrientations,1,5,sampledPosition,sampledOrientation);
+  for(let key=0;key<5;key++) {
+    sampleGlass(key);
+    assert.ok(Math.abs(sampledPosition[0]-shardPositions[key*3])<1e-6,"glass sampler preserves every captured position keyframe");
+    assert.deepEqual(Array.from(sampledOrientation),[0,0,0,1],"quaternion keyframes remain normalized");
+  }
+  let shardPrevious=-Infinity;
+  for(let i=0;i<=4000;i++) {
+    sampleGlass(i/1000);
+    assert.ok(sampledPosition[0]>=shardPrevious-1e-6,"shape-preserving shard interpolation must not reverse or overshoot a monotone axis");
+    shardPrevious=sampledPosition[0];
+  }
+  const velocityAt=(frame,epsilon)=>{sampleGlass(frame+epsilon);const right=sampledPosition[0];sampleGlass(frame-epsilon);const left=sampledPosition[0];return (right-left)/(2*epsilon);};
+  for(const key of [1,2,3]) assert.ok(Math.abs(velocityAt(key,0.001)-velocityAt(key,0.0005))<0.06,"glass velocity remains locally continuous at a captured frame boundary");
+  assert.ok(shardPrevious<=4.00001,"shape-preserving interpolation cannot overshoot the final authored transform");
+  for(const key of [1,2,3]) {
+    sampleGlass(key);
+    const atKey=sampledPosition[0];
+    sampleGlass(key-0.01);
+    const leftVelocity=(atKey-sampledPosition[0])/0.01;
+    sampleGlass(key+0.01);
+    const rightVelocity=(sampledPosition[0]-atKey)/0.01;
+    assert.ok(Math.abs(leftVelocity-rightVelocity)<0.025,
+      "PCHIP shares a continuous position tangent across adjacent captured-frame segments");
+  }
+
+  // A reversal / plateau must stay within each pair of authored keys without ringing.
+  const reversingPositions = new Float32Array([0,0,0, 1,0,0, 1.5,0,0, 1.2,0,0, 0.5,0,0]);
+  const reversingOutput = new Float32Array(4);
+  const reversingSampler = createGlassFrameSampler(reversingPositions,shardOrientations,1,5,reversingOutput,new Float32Array(4));
+  for(let segment=0;segment<4;segment++) {
+    const low=Math.min(reversingPositions[segment*3],reversingPositions[(segment+1)*3]);
+    const high=Math.max(reversingPositions[segment*3],reversingPositions[(segment+1)*3]);
+    for(let step=0;step<=100;step++) {
+      reversingSampler(segment+step/100);
+      assert.ok(reversingOutput[0]>=low-1e-6 && reversingOutput[0]<=high+1e-6,
+        "PCHIP cannot overshoot a reversing shard's authored segment bounds");
+    }
+  }
+  for(let i=0;i<=100;i++) {
+    reversingSampler(2+i/100);
+    assert.ok(reversingOutput[0]<=1.500001 && reversingOutput[0]>=1.199999,
+      "PCHIP remains shape-preserving through the reversal");
+  }
+
+  let priorY = -Infinity;
+  for(let i=0;i<=1000;i++) {
+    const y=playback(i/1000);
+    assert.ok(y>=priorY-1e-6,'cinematic document path must remain monotone');
+    priorY=y;
+  }
+  const drop = 8000 - 550, span = 10000 - drop;
+  assert.ok(Math.abs((playback(.866)-playback(.83))/span-.42)<1e-6,'glass separation must occupy the compact one-beat segment');
   let previous=-1;
   for(let i=0;i<=200;i++) {
     const phase=i/100;

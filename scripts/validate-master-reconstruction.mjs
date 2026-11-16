@@ -64,7 +64,7 @@ try {
       report.cta = after;
       const samples = after.frameTimes.slice(-Math.min(after.frames - before.frames, 120)).sort((a, b) => a - b);
       report.softwareCadence = { submissionsPerSecond: (after.frames - before.frames) * 1000 / (after.t - before.t), medianRafMs: samples[Math.floor(samples.length * .5)], p95RafMs: samples[Math.floor(samples.length * .95)], physicalGpuTime: 'NOT MEASURED' };
-      assert.equal(after.draws, 3); assert.ok(after.triangles <= after.count * 24);
+      assert.equal(after.draws, 4); assert.ok(after.triangles <= after.count * 24);
       assert.equal(await page.locator('#end-section canvas').evaluate(c => c.getContext('webgl2').getError()), 0);
       if (width !== 390) {
         await page.mouse.move(width * .4, height * .75); await page.waitForTimeout(600);

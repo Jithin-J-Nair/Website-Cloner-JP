@@ -1,0 +1,8 @@
+
+> lusion-studio-reconstruction@1.0.0 test:about-portrait
+> node scripts/test-about-portrait.mjs
+
+PASS: eight original geometry buffers decode; finite positions/attributes; truncation rejected; exact-byte allowlisted delivery, ETag/304/security headers; non-allowlisted paths denied; personal-photo runtime removed.
+PASS: source stage identity/buffer reuse, shader-eased interrupt continuity, stale-response isolation, honest load-failure/recovery, finite-index fallback and all nine owned GPU-resource disposals.
+PASS seven captured heads, contours, corrupt buffers, exact 8192 points, interrupted morph continuity, latest selection, reduced motion and disposal.
+PASS About portrait geometry: deterministic, bounded, finite 3D side-profile silhouettes; distinct mirrored variants; exact point counts and safe input fallbacks.

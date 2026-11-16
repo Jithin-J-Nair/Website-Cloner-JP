@@ -1,262 +1,12 @@
 "use client";
 
 import React, { Component, useCallback, useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
-import { GTAOPass } from "three/examples/jsm/postprocessing/GTAOPass.js";
-import { BokehPass } from "three/examples/jsm/postprocessing/BokehPass.js";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
-import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
-import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
-import { createHollowCrossGeometry } from "@/components/home/HollowCrossGeometry";
-import { loadLusionBuf } from "@/lib/lusion-buf-loader";
-import { homeRenderDpr, stepMotionSpring } from "@/lib/home-motion";
+import { createNativeHeroScene } from "./NativeHeroScene";
 import { soundEngine } from "@/lib/audio";
 import { useStudioStore } from "@/lib/store";
+import { heroTiltFromOrientation, smoothHeroTilt } from "@/lib/home-hero-tilt";
 
-/**
- * Verified Lusion Hero Accent Palette
- * Starts deterministically at index 0 (`#1a22e0` studio royal cobalt) and cycles on click.
- */
-export const HERO_ACCENT_PALETTE = [
-  "#1b24e6",
-  "#ADFF00",
-  "#f6000e",
-  "#7e09f5",
-  "#ffc000",
-] as const;
-
-// Linear input calibrated so post-ACESFilmic + OutputPass sRGB equals ~#13151d (matching reference dark slate!)
-const STUDIO_SCENE_BG_HEX = "#1f222d";
-const STUDIO_CONTAINER_BG_HEX = "#13151d";
-const NEAR_BLACK_HEX = "#040407";
-const OFF_WHITE_HEX = "#e6e7ef";
-// Use stage aspect, not viewport width: tablet stages are too narrow for the
-// edge-framed desktop anchors. Share this boundary across camera/init/resize/tick.
-const PORTRAIT_STAGE_ASPECT = 1.45;
-
-type PieceKind = "blue" | "black" | "white";
-
-interface HeroPieceSpec {
-  id: string;
-  kind: PieceKind;
-  isHero?: boolean;
-  scale: number;
-  anchorDesktop: [number, number, number];
-  anchorMobile: [number, number, number];
-  euler: [number, number, number];
-  driftPhase: number;
-  driftAmp: [number, number, number];
-  rotAmp: [number, number, number];
-  roughness: number;
-  clearcoatRoughness: number;
-}
-
-/**
- * Original connector arrangement informed by reference/side-by-side/01.
- * Desktop pieces frame an open centre instead of forming a central product pile.
- * These are authored rest poses, not recovered source physics or camera values.
- * Mobile retains its separate portrait anchors; pointer springs, colour cycling,
- * rendering ownership and disposal remain unchanged.
- */
-const HERO_PIECES: ReadonlyArray<HeroPieceSpec> = [
-  {
-    id: "hero-blue-center",
-    kind: "blue",
-    isHero: true,
-    scale: 1.03,
-    anchorDesktop: [3.35, -0.65, 0.35],
-    anchorMobile: [0.06, -0.02, 0.45],
-    euler: [0.34, 0.46, 0.52],
-    driftPhase: 0.0,
-    driftAmp: [0.04, 0.05, 0.025],
-    rotAmp: [0.03, 0.04, 0.028],
-    roughness: 0.36,
-    clearcoatRoughness: 0.028,
-  },
-  {
-    id: "fg-white-left",
-    kind: "white",
-    scale: 1.06,
-    anchorDesktop: [-5.15, 2.7, 0.98],
-    anchorMobile: [-0.96, -0.34, 0.95],
-    euler: [0.44, 0.56, -0.62],
-    driftPhase: 1.15,
-    driftAmp: [0.045, 0.055, 0.03],
-    rotAmp: [0.035, 0.045, 0.03],
-    roughness: 0.33,
-    clearcoatRoughness: 0.022,
-  },
-  {
-    id: "fg-black-right",
-    kind: "black",
-    scale: 1.08,
-    anchorDesktop: [-2.45, -2.1, 1.06],
-    anchorMobile: [0.92, -0.42, 1.08],
-    euler: [0.3, -0.46, 0.72],
-    driftPhase: 2.3,
-    driftAmp: [0.045, 0.05, 0.03],
-    rotAmp: [0.04, 0.038, 0.035],
-    roughness: 0.38,
-    clearcoatRoughness: 0.02,
-  },
-  {
-    id: "fg-black-bottom",
-    kind: "black",
-    scale: 1.1,
-    anchorDesktop: [-1.5, -3.05, 1.48],
-    anchorMobile: [-0.82, -2.02, 1.38],
-    euler: [-0.36, 0.32, 0.24],
-    driftPhase: 3.4,
-    driftAmp: [0.04, 0.04, 0.03],
-    rotAmp: [0.03, 0.04, 0.028],
-    roughness: 0.38,
-    clearcoatRoughness: 0.02,
-  },
-  {
-    id: "top-white-center",
-    kind: "white",
-    scale: 1.04,
-    anchorDesktop: [0.22, 4.3, 0.24],
-    anchorMobile: [0.58, 2.06, 0.42],
-    euler: [0.64, -0.35, 0.58],
-    driftPhase: 4.1,
-    driftAmp: [0.05, 0.04, 0.03],
-    rotAmp: [0.035, 0.032, 0.035],
-    roughness: 0.36,
-    clearcoatRoughness: 0.032,
-  },
-  {
-    id: "upper-white-right",
-    kind: "white",
-    scale: 1.05,
-    anchorDesktop: [6.3, 3.4, -0.16],
-    anchorMobile: [1.18, 0.9, -0.12],
-    euler: [-0.38, -0.52, 0.68],
-    driftPhase: 5.05,
-    driftAmp: [0.045, 0.05, 0.03],
-    rotAmp: [0.035, 0.04, 0.032],
-    roughness: 0.35,
-    clearcoatRoughness: 0.03,
-  },
-  {
-    id: "top-blue-left",
-    kind: "blue",
-    scale: 1.06,
-    anchorDesktop: [-4.15, 0.85, 0.7],
-    anchorMobile: [-0.76, 2.16, -0.55],
-    euler: [0.18, 0.28, 0.08],
-    driftPhase: 0.75,
-    driftAmp: [0.045, 0.045, 0.035],
-    rotAmp: [0.032, 0.038, 0.028],
-    roughness: 0.36,
-    clearcoatRoughness: 0.032,
-  },
-  {
-    id: "bottom-blue-right",
-    kind: "blue",
-    scale: 1.06,
-    anchorDesktop: [1.15, -2.0, 0.35],
-    anchorMobile: [0.34, -1.78, 0.52],
-    euler: [-0.46, 0.38, -0.54],
-    driftPhase: 1.9,
-    driftAmp: [0.045, 0.04, 0.03],
-    rotAmp: [0.035, 0.032, 0.035],
-    roughness: 0.35,
-    clearcoatRoughness: 0.03,
-  },
-  {
-    id: "bottom-white-left-crop",
-    kind: "white",
-    scale: 1.08,
-    anchorDesktop: [-5.8, -3.2, 0.56],
-    anchorMobile: [-0.18, -2.62, -0.25],
-    euler: [0.32, 0.44, -0.35],
-    driftPhase: 2.85,
-    driftAmp: [0.04, 0.045, 0.028],
-    rotAmp: [0.032, 0.038, 0.03],
-    roughness: 0.35,
-    clearcoatRoughness: 0.03,
-  },
-  {
-    id: "bg-white-left",
-    kind: "white",
-    scale: 1.02,
-    anchorDesktop: [-6.2, -0.24, -0.76],
-    anchorMobile: [-1.12, -1.28, -0.62],
-    euler: [-0.52, 0.62, 0.42],
-    driftPhase: 3.95,
-    driftAmp: [0.05, 0.045, 0.035],
-    rotAmp: [0.035, 0.035, 0.028],
-    roughness: 0.37,
-    clearcoatRoughness: 0.034,
-  },
-  {
-    id: "bg-black-right",
-    kind: "black",
-    scale: 1.04,
-    anchorDesktop: [-4.5, -2.1, -0.92],
-    anchorMobile: [0.42, 0.72, -0.92],
-    euler: [0.48, -0.58, 0.36],
-    driftPhase: 5.65,
-    driftAmp: [0.045, 0.05, 0.035],
-    rotAmp: [0.035, 0.04, 0.032],
-    roughness: 0.38,
-    clearcoatRoughness: 0.022,
-  },
-];
-
-/**
- * Generates the HDR PMREM Studio Strip-Light Environment Map (`target.texture`).
- *
- * Uses the exact 4 narrow softbox strip lights against `#050508` with temporary
- * `NoToneMapping` so HDR radiance (`k = 6..12`) bakes cleanly into the PMREM target,
- * creating crisp thin white clearcoat streaks on blue (`#1a22e0`) and near-black (`#07070a`)
- * pieces while keeping unlit shadow undersides genuinely dark.
- */
-function makeStudioEnv(renderer: THREE.WebGLRenderer): THREE.WebGLRenderTarget {
-  const s = new THREE.Scene();
-  s.background = new THREE.Color(0x050508);
-  const geos: THREE.BufferGeometry[] = [];
-  const mats: THREE.Material[] = [];
-
-  const strip = (w: number, h: number, pos: [number, number, number], k: number) => {
-    const g = new THREE.PlaneGeometry(w, h);
-    const m = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(1, 1, 1).multiplyScalar(k),
-      side: THREE.DoubleSide,
-      toneMapped: false,
-    });
-    const mesh = new THREE.Mesh(g, m);
-    mesh.position.set(...pos);
-    mesh.lookAt(0, 0, 0);
-    s.add(mesh);
-    geos.push(g);
-    mats.push(m);
-  };
-
-  // All softbox strips positioned strictly forward/above (z > 0) so grazing silhouette
-  // reflections face the dark #040407 studio void (zero soap-bubble wireframe outlines!)
-  strip(0.32, 12.5, [-6.4, 2.4, 4.8], 16); // left tall primary softbox strip
-  strip(0.32, 12.0, [6.4, 3.2, 4.4], 13);  // right tall secondary softbox strip
-  strip(10.5, 0.44, [0.0, 6.8, 3.8], 9);   // overhead bar softbox strip
-  strip(0.28, 9.0, [-2.6, 5.2, 5.8], 11);  // upper-left key specular catchlight strip
-
-  const prevToneMapping = renderer.toneMapping;
-  renderer.toneMapping = THREE.NoToneMapping;
-
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  pmrem.compileEquirectangularShader();
-  const target = pmrem.fromScene(s, 0.015);
-  pmrem.dispose();
-
-  renderer.toneMapping = prevToneMapping;
-
-  geos.forEach((g) => g.dispose());
-  mats.forEach((m) => m.dispose());
-  return target;
-}
+export const HERO_ACCENT_PALETTE = ["#061dfb"] as const;
 
 class StageErrorBoundary extends Component<
   { fallback: React.ReactNode; children: React.ReactNode },
@@ -320,645 +70,169 @@ function StaticSculpturalFallback({ accentHex }: { accentHex: string }) {
   );
 }
 
+
+/** Native material/physics scene; one lifecycle/clock owner, no second scroll writer. */
 export function HeroCrossesStage() {
-  const reducedMotion = useStudioStore((s) => s.reducedMotion);
-  const preloaderDone = useStudioStore((s) => s.preloaderDone);
-  const [colorIdx, setColorIdx] = useState(0);
-  const [webglSupported, setWebglSupported] = useState(true);
-  const [shaderStatus, setShaderStatus] = useState<"booting" | "ready" | "error">("booting");
-  const [pointerHits, setPointerHits] = useState(0);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mountRef = useRef<HTMLDivElement>(null);
-  const blueMaterialsRef = useRef<THREE.MeshPhysicalMaterial[]>([]);
-  const impulseVelRef = useRef<Array<{ pos: THREE.Vector3; rot: THREE.Vector3 }>>([]);
-  const wakeSceneRef = useRef<() => void>(() => {});
-  const reducedMotionRef = useRef(reducedMotion);
-  const preloaderDoneRef = useRef(preloaderDone);
-
+  const reduced = useStudioStore(s => s.reducedMotion);
+  const reducedRef = useRef(reduced);
+  const containerRef = useRef<HTMLDivElement>(null), mountRef = useRef<HTMLDivElement>(null);
+  const apiRef = useRef<ReturnType<typeof createNativeHeroScene> | null>(null);
+  const wakeRef = useRef<() => void>(() => {}), resizeRef = useRef<() => void>(() => {});
+  const pointer = useRef({ x: 0, y: 0, active: false });
+  const reported = useRef(false);
+  const tilt = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
+  const [motionState, setMotionState] = useState<"off" | "requesting" | "on" | "denied" | "unavailable">("off");
+  const [motionSupported, setMotionSupported] = useState(false);
+  const [status, setStatus] = useState<"booting" | "ready" | "fallback">("booting");
+  const [hits, setHits] = useState(0);
+  const [mobile, setMobile] = useState<boolean | null>(null);
   useEffect(() => {
-    reducedMotionRef.current = reducedMotion;
-    wakeSceneRef.current();
-  }, [reducedMotion]);
-
+    const query = matchMedia("(max-width:812px)");
+    const coarse = matchMedia("(pointer: coarse)");
+    const update = () => { setMobile(query.matches); setMotionSupported(query.matches && coarse.matches && window.isSecureContext && "DeviceOrientationEvent" in window); };
+    update(); query.addEventListener("change", update); coarse.addEventListener("change", update);
+    return () => { query.removeEventListener("change", update); coarse.removeEventListener("change", update); };
+  }, []);
   useEffect(() => {
-    preloaderDoneRef.current = preloaderDone;
-    wakeSceneRef.current();
-  }, [preloaderDone]);
-
-  const pointerNdcRef = useRef<{ x: number; y: number; active: boolean }>({
-    x: 0,
-    y: 0,
-    active: false,
-  });
-  const pointerReportedRef = useRef(false);
-
-  const accentHex = HERO_ACCENT_PALETTE[colorIdx % HERO_ACCENT_PALETTE.length];
-
-  // Update blue physical materials cleanly when user clicks to cycle Lusion accent palette
-  useEffect(() => {
-    const col = new THREE.Color(accentHex);
-    for (const mat of blueMaterialsRef.current) {
-      mat.color.copy(col);
-    }
-    wakeSceneRef.current();
-  }, [accentHex]);
-
-  // Single imperative Three.js studio scene + single EffectComposer + single RAF loop
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("forceWebglFallback") === "1") {
-        queueMicrotask(() => setWebglSupported(false));
-        return;
-      }
-    } catch {
-      // Ignore URL query parse errors
-    }
-
-    const host = mountRef.current;
-    const container = containerRef.current;
-    if (!host || !container) return;
-
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        antialias: false, // Multisampled HalfFloat renderTarget handles anti-aliasing in EffectComposer
-        alpha: false,
-        powerPreference: "high-performance",
-        stencil: false,
-      });
-    } catch {
-      queueMicrotask(() => setWebglSupported(false));
+    if (!mobile || reduced || motionState !== "on") {
+      tilt.current = { x: 0, y: 0, targetX: 0, targetY: 0 };
       return;
     }
-
-    const initialW = Math.max(1, container.clientWidth);
-    const initialH = Math.max(1, container.clientHeight);
-    const initialDpr = homeRenderDpr(initialW,initialH,window.devicePixelRatio || 1);
-
-    renderer.setPixelRatio(initialDpr);
-    renderer.setSize(initialW, initialH, false);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.02;
-    renderer.shadowMap.enabled = true;
-    // In three@0.186+, PCFSoftShadowMap deprecated cleanly into PCFShadowMap + shadow.radius
-    renderer.shadowMap.type = THREE.PCFShadowMap;
-    renderer.setClearColor(STUDIO_CONTAINER_BG_HEX, 1);
-
-    const glCtx = renderer.getContext();
-    const dbgExt = glCtx.getExtension("WEBGL_debug_renderer_info");
-    const rendererLabel = [
-      glCtx.getParameter(glCtx.RENDERER),
-      dbgExt ? glCtx.getParameter(dbgExt.UNMASKED_RENDERER_WEBGL) : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-    const isSoftwareRenderer = /swiftshader|llvmpipe|software|subzero|basic render/i.test(
-      rendererLabel
-    );
-    renderer.domElement.style.width = "100%";
-    renderer.domElement.style.height = "100%";
-    renderer.domElement.style.display = "block";
-    host.appendChild(renderer.domElement);
-
-    const onContextLost = (ev: Event) => {
-      ev.preventDefault();
-      setWebglSupported(false);
+    let baseline: { beta: number; gamma: number; angle: number } | null = null;
+    let received = false;
+    const timeout = window.setTimeout(() => {
+      const box = containerRef.current?.getBoundingClientRect(), s = useStudioStore.getState();
+      if (!received && !document.hidden && s.preloaderDone && !s.menuOpen && !s.reelOpen && !s.isTransitioning && box && box.bottom > 0 && box.top < innerHeight) setMotionState("unavailable");
+    }, 6000);
+    const reset = () => { baseline = null; tilt.current.targetX = 0; tilt.current.targetY = 0; wakeRef.current(); };
+    const onOrientation = (event: DeviceOrientationEvent) => {
+      const box = containerRef.current?.getBoundingClientRect(), s = useStudioStore.getState();
+      if (!box || box.bottom <= 0 || box.top >= innerHeight || document.hidden || s.menuOpen || s.reelOpen || s.isTransitioning || !s.preloaderDone) { reset(); return; }
+      if (event.beta == null || event.gamma == null || !Number.isFinite(event.beta) || !Number.isFinite(event.gamma)) return;
+      received = true;
+      const angle = screen.orientation?.angle ?? 0;
+      if (!baseline || baseline.angle !== angle) { baseline = { beta: event.beta, gamma: event.gamma, angle }; return; }
+      const target = heroTiltFromOrientation(event.beta, event.gamma, baseline.beta, baseline.gamma, angle);
+      tilt.current.targetX = target.x; tilt.current.targetY = target.y; wakeRef.current();
     };
-    renderer.domElement.addEventListener("webglcontextlost", onContextLost);
-
-    // Scene + Studio Strip-Light PMREM Environment (NO flat AmbientLight / HemisphereLight)
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(STUDIO_SCENE_BG_HEX);
-
-    const envTarget = makeStudioEnv(renderer);
-    scene.environment = envTarget.texture;
-    scene.environmentIntensity = 1.2;
-
-    // Perspective Camera (FOV 32 matching telephoto studio lens compression)
-    const camera = new THREE.PerspectiveCamera(32, initialW / initialH, 0.5, 32);
-    const updateCameraFraming = (w: number, h: number) => {
-      const aspect = w / Math.max(1, h);
-      camera.aspect = aspect;
-      if (aspect < PORTRAIT_STAGE_ASPECT) {
-        camera.fov = 33;
-        camera.position.set(0.06, -0.08, 8.2);
-        camera.lookAt(-0.04, -0.16, 0);
-      } else {
-        camera.fov = 32;
-        camera.position.set(0.24, 0.04, 8.15);
-        camera.lookAt(0.14, -0.02, 0);
-      }
-      camera.updateProjectionMatrix();
+    const onScroll = () => { const box = containerRef.current?.getBoundingClientRect(); if (!box || box.bottom <= 0 || box.top >= innerHeight) reset(); };
+    window.addEventListener("deviceorientation", onOrientation);
+    document.addEventListener("visibilitychange", reset);
+    window.addEventListener("orientationchange", reset);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const unsubscribe = useStudioStore.subscribe((s, previous) => { if (s.menuOpen !== previous.menuOpen || s.reelOpen !== previous.reelOpen || s.isTransitioning !== previous.isTransitioning) reset(); });
+    return () => { clearTimeout(timeout); window.removeEventListener("deviceorientation", onOrientation); document.removeEventListener("visibilitychange", reset); window.removeEventListener("orientationchange", reset); window.removeEventListener("scroll", onScroll); unsubscribe(); reset(); };
+  }, [mobile, motionState, reduced]);
+  useEffect(() => { reducedRef.current = reduced; if (reduced) { pointer.current.active = false; reported.current = false; } resizeRef.current(); wakeRef.current(); }, [reduced]);
+  useEffect(() => {
+    const host = mountRef.current, root = containerRef.current;
+    if (!host || !root || mobile === null) return;
+    if (new URLSearchParams(location.search).get("forceWebglFallback") === "1") { queueMicrotask(() => setStatus("fallback")); return; }
+    const canvas = document.createElement("canvas"); canvas.setAttribute("aria-hidden", "true"); canvas.id = "home-native-hero-canvas";
+    canvas.style.cssText = "display:block;width:100%;height:100%;opacity:0"; host.append(canvas);
+    let disposed = false, lost = false, visible = true, dirty = true, raf = 0, timer = 0, last = 0, time = 0, frames = 0;
+    let api: ReturnType<typeof createNativeHeroScene>;
+    const blocked = () => { const s = useStudioStore.getState(); return s.menuOpen || s.reelOpen || s.isTransitioning; };
+    const cancel = () => {
+      cancelAnimationFrame(raf); clearTimeout(timer); raf = timer = 0; last = 0;
+      root.dataset.activeRaf = "false"; root.dataset.physicsActive = "false";
     };
-    updateCameraFraming(initialW, initialH);
-
-    // Single Studio Directional Key Light (~[4, 6, 5], intensity ~1.5, shadow 2048, radius 6)
-    const keyLight = new THREE.DirectionalLight(0xf6f8ff, 1.55);
-    keyLight.position.set(4.2, 6.2, 5.0);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.set(isSoftwareRenderer ? 1024 : 2048, isSoftwareRenderer ? 1024 : 2048);
-    keyLight.shadow.radius = 6;
-    keyLight.shadow.camera.near = 1.0;
-    keyLight.shadow.camera.far = 22.0;
-    keyLight.shadow.camera.left = -6.8;
-    keyLight.shadow.camera.right = 6.8;
-    keyLight.shadow.camera.top = 5.6;
-    keyLight.shadow.camera.bottom = -5.6;
-    keyLight.shadow.bias = -0.0005;
-    keyLight.shadow.normalBias = 0.022;
-    keyLight.shadow.camera.updateProjectionMatrix();
-    scene.add(keyLight);
-
-    // Shared Polar-Radial + Analytical-Fillet Hollow Cross Geometry
-    const isMobileInit = initialW < 680;
-    const crossGeometry = createHollowCrossGeometry(isMobileInit ? 48 : 64);
-
-    // Satin plastic: broad highlights rather than the previous sharp, blown-out strips.
-    const disposableMaterials: THREE.MeshPhysicalMaterial[] = [];
-    const blueMats: THREE.MeshPhysicalMaterial[] = [];
-
-    const meshes: THREE.Mesh[] = [];
-    const impulseStates: Array<{ pos: THREE.Vector3; rot: THREE.Vector3 }> = [];
-    let heroMesh: THREE.Mesh | null = null;
-
-    const initAspect = initialW / Math.max(1, initialH);
-
-    for (const spec of HERO_PIECES) {
-      const baseHex =
-        spec.kind === "blue"
-          ? HERO_ACCENT_PALETTE[0]
-          : spec.kind === "black"
-            ? NEAR_BLACK_HEX
-            : OFF_WHITE_HEX;
-
-      const mat = new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color(baseHex),
-        roughness: Math.max(0.46, spec.roughness),
-        metalness: 0.0,
-        clearcoat: 0.25,
-        clearcoatRoughness: Math.max(0.22, spec.clearcoatRoughness),
-        envMapIntensity: spec.kind === "black" ? 0.65 : spec.kind === "blue" ? 0.8 : 0.7,
-        ior: 1.52,
-      });
-      disposableMaterials.push(mat);
-      if (spec.kind === "blue") blueMats.push(mat);
-
-      const mesh = new THREE.Mesh(crossGeometry, mat);
-      const anchor = initAspect < PORTRAIT_STAGE_ASPECT ? spec.anchorMobile : spec.anchorDesktop;
-      mesh.position.set(anchor[0], anchor[1], anchor[2]);
-      mesh.rotation.set(spec.euler[0], spec.euler[1], spec.euler[2]);
-      mesh.scale.setScalar(initAspect < PORTRAIT_STAGE_ASPECT ? spec.scale * 0.72 : spec.scale);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-
-      meshes.push(mesh);
-      impulseStates.push({ pos: new THREE.Vector3(), rot: new THREE.Vector3() });
-      if (spec.isHero) heroMesh = mesh;
+    const wake = () => { if (!disposed && !lost && visible && !document.hidden && !blocked() && !raf && !timer) raf = requestAnimationFrame(frame); };
+    const resize = () => { dirty = true; wake(); };
+    const fallback = () => { lost = true; cancel(); canvas.style.opacity = "0"; setStatus("fallback"); };
+    pointer.current.active = false; reported.current = false;
+    queueMicrotask(() => { if (!disposed) setStatus("booting"); });
+    try { api = createNativeHeroScene(canvas, mobile, wake); }
+    catch { canvas.remove(); queueMicrotask(() => setStatus("fallback")); return; }
+    apiRef.current = api; wakeRef.current = wake; resizeRef.current = resize;
+    function frame(now: number) {
+      let responding = false;
+      raf = 0; if (disposed || lost || document.hidden || blocked()) { last = 0; return; }
+      const box = root!.getBoundingClientRect(); visible = box.bottom > 0 && box.top < innerHeight && box.right > 0 && box.left < innerWidth;
+      if (!visible) { last = 0; return; }
+      const s = useStudioStore.getState(), elapsed = last ? Math.max(0, (now - last) / 1000) : 0; last = now;
+      if (s.preloaderDone && !reducedRef.current) time += elapsed;
+      if (dirty) { api.resize(Math.max(1, box.width), Math.max(1, box.height), innerHeight, reducedRef.current); dirty = false; }
+      const isStatic = reducedRef.current || !s.preloaderDone;
+      const start = performance.now();
+      try {
+        const sensor = tilt.current;
+        sensor.x = smoothHeroTilt(sensor.x, isStatic ? 0 : sensor.targetX, elapsed);
+        sensor.y = smoothHeroTilt(sensor.y, isStatic ? 0 : sensor.targetY, elapsed);
+        root!.dataset.tiltX = sensor.x.toFixed(4); root!.dataset.tiltY = sensor.y.toFixed(4);
+        const stats = api.render(isStatic ? 0 : elapsed, isStatic ? 3 : time, isStatic, pointer.current.x, pointer.current.y, pointer.current.active, sensor.x, sensor.y);
+        responding = !isStatic && stats.interactionEnergy > 0;
+        root!.dataset.motionState = responding ? "responding" : "settled"; root!.dataset.activeRaf = String(!isStatic);
+        root!.dataset.offsetEnergy = stats.interactionEnergy.toFixed(5); root!.dataset.physicsCollisions = String(stats.collisions);
+        root!.dataset.pointerDisplacement = api.physics.pointerDisplacement.toFixed(5);
+        root!.dataset.pointerInfluencedPieces = String(stats.influencedPieces); root!.dataset.kineticEnergy = stats.kineticEnergy.toFixed(5);
+        root!.dataset.maxTravel = stats.maxTravel.toFixed(4); root!.dataset.meanRadius = stats.meanRadius.toFixed(4);
+        root!.dataset.physicsActive = String(!isStatic); root!.dataset.clusterPieces = String(api.physics.bodies.length);
+        root!.dataset.renderCount = String(++frames); root!.dataset.renderPixels = `${canvas.width}x${canvas.height}`;
+        root!.dataset.drawCalls = String(api.renderer.info.render.calls); root!.dataset.frameCpuMs = (performance.now() - start).toFixed(2);
+        root!.dataset.nativeTime = time.toFixed(4); root!.dataset.materialModel = "native-matcap-neighbour";
+        if (stats.influencedPieces > 0 && !reported.current) { reported.current = true; setHits(h => h + 1); }
+        if (canvas.dataset.nativeSettled === "true") { canvas.style.opacity = "1"; setStatus("ready"); }
+      } catch { fallback(); return; }
+      if (!isStatic) {
+        // Software rasterizers retain the same shader/neighbor count, with bounded
+        // motion pixels and a yielding clock. No physical-GPU/FPS claim is implied.
+        if (api.software && !pointer.current.active && !responding) timer = window.setTimeout(() => { timer = 0; wake(); }, 45);
+        else wake();
+      } else last = 0;
     }
-
-    // Prefer the actual captured Lusion cross mesh; keep the procedural mesh only as a
-    // resilient fallback if the bundled asset cannot be fetched or decoded.
-    let loadedCrossGeometry: THREE.BufferGeometry | null = null;
-    let sceneDisposed = false;
-    void loadLusionBuf("/assets/models/home/cross.buf")
-      .then(({ geometry: referenceGeometry }) => {
-        if (sceneDisposed) return;
-        loadedCrossGeometry = referenceGeometry.clone();
-        for (const mesh of meshes) mesh.geometry = loadedCrossGeometry;
-        crossGeometry.dispose();
-        wakeSceneRef.current();
-      })
-      .catch(() => {
-        // The already-rendering procedural geometry remains available as a fallback.
-      });
-
-    blueMaterialsRef.current = blueMats;
-    impulseVelRef.current = impulseStates;
-
-    // Single Multisampled HalfFloat EffectComposer:
-    // Order: RenderPass -> GTAOPass -> BokehPass -> UnrealBloomPass -> OutputPass
-    // (Hardware WebGL2 GPUs use samples: 4 MSAA HalfFloat renderTarget; software SwiftShader
-    // avoids its known RGBA16F MSAA blit bug via samples: 0 + SMAAPass.)
-    const bufW = Math.max(2, Math.floor(initialW * initialDpr));
-    const bufH = Math.max(2, Math.floor(initialH * initialDpr));
-    const msaaSamples =
-      !isSoftwareRenderer && renderer.capabilities.isWebGL2
-        ? Math.min(4, renderer.capabilities.maxSamples)
-        : 0;
-
-    const composerTarget = new THREE.WebGLRenderTarget(bufW, bufH, {
-      type: THREE.HalfFloatType,
-      samples: msaaSamples,
-      minFilter: THREE.LinearFilter,
-      magFilter: THREE.LinearFilter,
-    });
-
-    const composer = new EffectComposer(renderer, composerTarget);
-    composer.setPixelRatio(initialDpr);
-    composer.setSize(initialW, initialH);
-
-    const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
-
-    const gtaoPass = new GTAOPass(scene, camera, bufW, bufH);
-    gtaoPass.output = GTAOPass.OUTPUT.Default;
-    gtaoPass.blendIntensity = 0.72;
-    gtaoPass.updateGtaoMaterial({
-      radius: 0.38,
-      distanceExponent: 1.65,
-      thickness: 0.75,
-      scale: 1.05,
-      samples: 16,
-      distanceFallOff: 1.0,
-      screenSpaceRadius: false,
-    });
-    // High lumaPhi smooths out the 4x4 magic-square AO sample pattern across flat porcelain
-    // barrels and inner bores while depthPhi & normalPhi keep geometric creases razor-sharp
-    gtaoPass.updatePdMaterial({
-      lumaPhi: 28,
-      depthPhi: 2,
-      normalPhi: 3.5,
-      radius: 5,
-      rings: 2,
-      samples: 16,
-    });
-    composer.addPass(gtaoPass);
-
-    const bokehPass = new BokehPass(scene, camera, {
-      focus: 7.8,
-      aperture: 0.00022,
-      maxblur: 0.0045,
-    });
-    composer.addPass(bokehPass);
-
-    // Threshold above 1.0 ensures diffuse off-white porcelain never blooms across silhouettes,
-    // restricting subtle optical halation strictly to HDR clearcoat softbox reflections
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(initialW, initialH), 0.14, 0.48, 1.35);
-    composer.addPass(bloomPass);
-
-    const outputPass = new OutputPass();
-    composer.addPass(outputPass);
-
-    let smaaPass: SMAAPass | null = null;
-    if (msaaSamples === 0 && !isSoftwareRenderer) {
-      smaaPass = new SMAAPass();
-      composer.addPass(smaaPass);
-    }
-    if (isSoftwareRenderer) {
-      // Avoid multi-pass full-screen depth/AO convolution freeze (9.9s/frame) on software rasterizers;
-      // hardware GPUs retain 100% full GTAO + Bokeh DOF + HDR Bloom + MSAA/SMAA quality.
-      gtaoPass.enabled = false;
-      bokehPass.enabled = false;
-      bloomPass.enabled = false;
-    }
-
-    // Dynamic Resize Handler (updates camera, renderer, composer, GTAO, Bokeh aspect, and Bloom)
-    const handleResize = () => {
-      const w = Math.max(1, container.clientWidth);
-      const h = Math.max(1, container.clientHeight);
-      const dpr = homeRenderDpr(w,h,window.devicePixelRatio || 1);
-
-      updateCameraFraming(w, h);
-      renderer.setPixelRatio(dpr);
-      renderer.setSize(w, h, false);
-      composer.setPixelRatio(dpr);
-      composer.setSize(w, h);
-      gtaoPass.setSize(Math.floor(w * dpr), Math.floor(h * dpr));
-      bloomPass.setSize(w, h);
-      smaaPass?.setSize(Math.floor(w * dpr), Math.floor(h * dpr));
-
-      const bokehUniforms = bokehPass.uniforms as Record<string, THREE.IUniform>;
-      if (bokehUniforms.aspect) bokehUniforms.aspect.value = camera.aspect;
-      if (bokehUniforms.nearClip) bokehUniforms.nearClip.value = camera.near;
-      if (bokehUniforms.farClip) bokehUniforms.farClip.value = camera.far;
-
-      const isPortrait = w / Math.max(1, h) < PORTRAIT_STAGE_ASPECT;
-      meshes.forEach((m, idx) => {
-        const spec = HERO_PIECES[idx];
-        const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
-        m.position.set(anchor[0], anchor[1], anchor[2]);
-        m.scale.setScalar(isPortrait ? spec.scale * 0.72 : spec.scale);
-      });
-      needsRender = true;
-      wakeSceneRef.current();
-    };
-
-    const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(container);
-
-    let inView = true;
-    let documentVisible = !document.hidden;
-    let rafId = 0;
-    let yieldTimerId = 0;
-
-    const visibilityObserver = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]) {
-          const nextInView = entries[0].isIntersecting;
-          inView = nextInView;
-          if (nextInView && !rafId) {
-            prevTime = performance.now();
-            needsRender = true;
-            rafId = window.requestAnimationFrame(renderFrame);
-          }
-        }
-      },
-      { threshold: 0 }
-    );
-    visibilityObserver.observe(container);
-
-    // Pre-allocated math scratch objects (zero per-frame heap allocations)
-    const heroViewPos = new THREE.Vector3();
-    const targetPos = new THREE.Vector3();
-    const targetQuat = new THREE.Quaternion();
-    const targetEuler = new THREE.Euler();
-    const pointerSprings = meshes.map(() => Array.from({length:6},() => ({value:0,velocity:0})));
-    const pointerRay = new THREE.Raycaster();
-    const pointerNdc = new THREE.Vector2();
-    const pointerPlane = new THREE.Plane();
-    const planeNormal = new THREE.Vector3();
-    const anchorPosition = new THREE.Vector3();
-    const pointerWorld = new THREE.Vector3();
-    const pointerDelta = new THREE.Vector3();
-
-    let prevTime = performance.now();
-
-    let renderCount = 0;
-    let shaderVerified = false;
-    let staticRendered = false;
-    let needsRender = true;
-
-    const scheduleNext = (frameCostMs: number) => {
-      if (isSoftwareRenderer && frameCostMs > 40) {
-        yieldTimerId = window.setTimeout(() => {
-          yieldTimerId = 0;
-          rafId = window.requestAnimationFrame(renderFrame);
-        }, 220);
-      } else {
-        rafId = window.requestAnimationFrame(renderFrame);
-      }
-    };
-
-    const renderFrame = (now: number) => {
-      rafId = 0;
-      if (!documentVisible || sceneDisposed) return;
-      const frameStart = performance.now();
-      const rawDt = Math.max(0.0005, (now - prevTime) * 0.001);
-      prevTime = now;
-      const dt = Math.min(rawDt, 0.05);
-
-      // Pause RAF completely when scrolled off-screen after preloader settles (0% off-screen CPU/GPU!)
-      if (!inView && preloaderDoneRef.current && staticRendered && !needsRender) {
-        return;
-      }
-
-      // Keep frame 0 painted behind #preloader while letting the preloader fade smoothly at 60fps
-      if (!preloaderDoneRef.current && staticRendered && !needsRender) {
-        rafId = window.requestAnimationFrame(renderFrame);
-        return;
-      }
-      needsRender = false;
-
-      const isReduced = reducedMotionRef.current;
-
-      // Exponential smoothing equivalent to ~0.05 lerp at 60fps, strictly delta-time invariant
-      const alpha = 1 - Math.exp(-3.1 * dt);
-      const decay = Math.exp(-2.6 * dt);
-      const isPortrait = camera.aspect < PORTRAIT_STAGE_ASPECT;
-
-      let moving = false;
-      const ptr = pointerNdcRef.current;
-      if (ptr.active && !isReduced) {
-        pointerNdc.set(ptr.x,ptr.y);
-        pointerRay.setFromCamera(pointerNdc,camera);
-        camera.getWorldDirection(planeNormal);
-      }
-
-      for (let i = 0; i < meshes.length; i++) {
-        const spec = HERO_PIECES[i];
-        const mesh = meshes[i];
-        const imp = impulseStates[i];
-        if (isReduced) { imp.pos.set(0, 0, 0); imp.rot.set(0, 0, 0); }
-        const anchor = isPortrait ? spec.anchorMobile : spec.anchorDesktop;
-
-        let pushX = 0, pushY = 0, pushZ = 0;
-        if (ptr.active && !isReduced) {
-          anchorPosition.set(anchor[0],anchor[1],anchor[2]);
-          pointerPlane.setFromNormalAndCoplanarPoint(planeNormal,anchorPosition);
-          if (pointerRay.ray.intersectPlane(pointerPlane,pointerWorld)) {
-            pointerDelta.copy(anchorPosition).sub(pointerWorld);
-            const distance = pointerDelta.length();
-            const radius = 1.85 * spec.scale;
-            if (distance < radius) {
-              if (distance < 0.001) pointerDelta.set(0.6,0.4,0);
-              pointerDelta.normalize().multiplyScalar(Math.pow(1-distance/radius,2)*0.82);
-              pushX = pointerDelta.x;
-              pushY = pointerDelta.y;
-              pushZ = -0.12*Math.pow(1-distance/radius,2);
-              if (!pointerReportedRef.current) {
-                pointerReportedRef.current = true;
-                setPointerHits((c) => c+1);
-              }
-            }
-          }
-        }
-        const springs = pointerSprings[i];
-        for (let axis = 0; axis < 6; axis++) {
-          const target = axis === 0 ? pushX : axis === 1 ? pushY : axis === 2 ? pushZ : axis === 3 ? -pushY*0.5 : axis === 4 ? pushX*0.55 : pushX*0.18;
-          if (isReduced) { springs[axis].value = springs[axis].velocity = 0; }
-          else stepMotionSpring(springs[axis],target,dt);
-          moving ||= Math.abs(springs[axis].value-target)>0.0001 || Math.abs(springs[axis].velocity)>0.0001;
-        }
-        targetPos.set(anchor[0]+springs[0].value+imp.pos.x,anchor[1]+springs[1].value+imp.pos.y,anchor[2]+springs[2].value+imp.pos.z);
-        targetEuler.set(spec.euler[0]+springs[3].value+imp.rot.x,spec.euler[1]+springs[4].value+imp.rot.y,spec.euler[2]+springs[5].value+imp.rot.z);
-        targetQuat.setFromEuler(targetEuler);
-
-        if (!isReduced && (mesh.position.distanceToSquared(targetPos)>0.00000001 || mesh.quaternion.angleTo(targetQuat)>0.0001)) moving = true;
-        if (isReduced) {
-          // Paint the exact neutral pose before the reduced-motion renderer goes to sleep.
-          mesh.position.copy(targetPos);
-          mesh.quaternion.copy(targetQuat);
-        } else {
-          mesh.position.lerp(targetPos, alpha);
-          mesh.quaternion.slerp(targetQuat, alpha);
-        }
-        if (!moving && !ptr.active) { mesh.position.copy(targetPos); mesh.quaternion.copy(targetQuat); }
-
-        imp.pos.multiplyScalar(decay);
-        imp.rot.multiplyScalar(decay);
-        if (imp.pos.lengthSq()<0.00000001) imp.pos.set(0,0,0);
-        if (imp.rot.lengthSq()<0.00000001) imp.rot.set(0,0,0);
-        moving ||= imp.pos.lengthSq()>0 || imp.rot.lengthSq()>0;
-      }
-
-      // Dynamic view-space DOF focus locked every frame onto the royal-blue hero connector
-      if (heroMesh) {
-        scene.updateMatrixWorld();
-        camera.updateMatrixWorld();
-        camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
-        heroViewPos.copy(heroMesh.position).applyMatrix4(camera.matrixWorldInverse);
-        (bokehPass.uniforms as Record<string, THREE.IUniform>).focus.value = -heroViewPos.z;
-      }
-
-      renderer.info.autoReset = false;
-      renderer.info.reset();
-      composer.render(dt);
-      container.dataset.motionState = moving ? "responding" : "settled";
-      container.dataset.activeRaf = moving ? "true" : "false";
-      container.dataset.renderPixels = `${renderer.domElement.width}x${renderer.domElement.height}`;
-      container.dataset.offsetEnergy = pointerSprings.reduce((sum,axes) => sum+axes.reduce((total,axis) => total+Math.abs(axis.value),0),0).toFixed(5);
-      const elapsedFrameMs = performance.now() - frameStart;
-      container.dataset.renderCount = String(++renderCount);
-      container.dataset.frameCpuMs = elapsedFrameMs.toFixed(2);
-      container.dataset.drawCalls = String(renderer.info.render.calls);
-      // Automatic adaptive post-processing fallback if software rasterization / disabled GPU
-      // exceeds 140ms on initial frame (keeps real hardware GPUs at 100% full GTAO + Bokeh + Bloom)
-      if (!staticRendered && elapsedFrameMs > 140) {
-        gtaoPass.enabled = false;
-        bokehPass.enabled = false;
-        bloomPass.enabled = false;
-        if (smaaPass) smaaPass.enabled = false;
-      }
-      staticRendered = true;
-      needsRender = false;
-
-      if (!shaderVerified) {
-        const programs = (
-          renderer.info as unknown as { programs?: Array<{ diagnostics?: { runnable?: boolean } }> }
-        ).programs;
-        if (programs && programs.length > 0) {
-          const ok = programs.every((p) => p.diagnostics?.runnable !== false);
-          shaderVerified = true;
-          setShaderStatus(ok ? "ready" : "error");
-        }
-      }
-
-      // True zero-loop accessibility under `prefers-reduced-motion: reduce` once static frame is painted
-      if (isReduced || !moving) return;
-
-      scheduleNext(elapsedFrameMs);
-    };
-
-    const wakeScene = () => {
-      needsRender = true;
-      if (!rafId && !yieldTimerId && !sceneDisposed && documentVisible) {
-        prevTime = performance.now();
-        rafId = window.requestAnimationFrame(renderFrame);
-      }
-    };
-    wakeSceneRef.current = wakeScene;
-    const onVisibility = () => {
-      documentVisible = !document.hidden;
-      if (documentVisible) wakeScene();
-    };
-    document.addEventListener("visibilitychange",onVisibility);
-
-    // Render immediate deterministic frame 0 so screenshots never catch an unrendered frame
-    renderFrame(performance.now());
-
+    const onVisibility = () => { if (document.hidden) cancel(); else wake(); };
+    const onLost = (event: Event) => { event.preventDefault(); fallback(); };
+    const onRestored = () => { if (!disposed) { lost = false; dirty = true; wake(); } };
+    const onScroll = () => { const box = root.getBoundingClientRect(); const next = box.bottom > 0 && box.top < innerHeight; if (!next) { visible = false; cancel(); } else { visible = true; wake(); } };
+    const off = useStudioStore.subscribe((s, previous) => { if (blocked()) { pointer.current.active = false; reported.current = false; cancel(); } else if (s.menuOpen !== previous.menuOpen || s.reelOpen !== previous.reelOpen || s.isTransitioning !== previous.isTransitioning || s.preloaderDone !== previous.preloaderDone) wake(); });
+    const observer = new ResizeObserver(resize); observer.observe(root);
+    const intersection = new IntersectionObserver(entries => { visible = entries.some(e => e.isIntersecting); if (visible) wake(); else cancel(); }); intersection.observe(root);
+    document.addEventListener("visibilitychange", onVisibility); window.addEventListener("scroll", onScroll, { passive: true }); window.addEventListener("resize", resize);
+    canvas.addEventListener("webglcontextlost", onLost); canvas.addEventListener("webglcontextrestored", onRestored);
+    wake();
     return () => {
-      sceneDisposed = true;
-      wakeSceneRef.current = () => {};
-      document.removeEventListener("visibilitychange",onVisibility);
-      window.cancelAnimationFrame(rafId);
-      window.clearTimeout(yieldTimerId);
-      resizeObserver.disconnect();
-      visibilityObserver.disconnect();
-      renderer.domElement.removeEventListener("webglcontextlost", onContextLost);
-
-      crossGeometry.dispose();
-      loadedCrossGeometry?.dispose();
-      for (const m of disposableMaterials) m.dispose();
-      envTarget.dispose();
-
-      gtaoPass.dispose();
-      bokehPass.dispose();
-      bloomPass.dispose();
-      outputPass.dispose();
-      smaaPass?.dispose();
-      composerTarget.dispose();
-      composer.dispose();
-
-      renderer.dispose();
-      if (renderer.domElement.parentNode === host) {
-        host.removeChild(renderer.domElement);
-      }
-      blueMaterialsRef.current = [];
-      impulseVelRef.current = [];
+      disposed = true; cancel(); off(); observer.disconnect(); intersection.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", resize);
+      canvas.removeEventListener("webglcontextlost", onLost); canvas.removeEventListener("webglcontextrestored", onRestored);
+      api.dispose(); canvas.remove(); apiRef.current = null; wakeRef.current = () => {}; resizeRef.current = () => {};
     };
+  }, [mobile]);
+  const leave = useCallback(() => { pointer.current.active = false; reported.current = false; wakeRef.current(); }, []);
+  const move = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "touch" || reducedRef.current) return;
+    const r = containerRef.current?.getBoundingClientRect(); if (!r) return;
+    pointer.current.x = (e.clientX - r.left) / r.width * 2 - 1; pointer.current.y = 1 - (e.clientY - r.top) / r.height * 2;
+    pointer.current.active = true; wakeRef.current();
   }, []);
-
-  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    pointerNdcRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    pointerNdcRef.current.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-    pointerNdcRef.current.active = e.pointerType !== "touch";
-    wakeSceneRef.current();
-  }, []);
-
-  const handlePointerLeave = useCallback(() => {
-    pointerNdcRef.current.active = false;
-    wakeSceneRef.current();
-  }, []);
-
-  const handleStageClick = useCallback(() => {
-    soundEngine.playClick();
-    setColorIdx((prev) => (prev + 1) % HERO_ACCENT_PALETTE.length);
-    if (reducedMotionRef.current) return;
-    impulseVelRef.current.forEach((imp, idx) => {
-      const angle = idx * 1.9;
-      imp.pos.set(Math.cos(angle) * 0.42, Math.sin(angle) * 0.36, Math.sin(idx) * 0.25);
-      imp.rot.set(
-        (Math.sin(idx * 2.1) - 0.15) * 0.55,
-        (Math.cos(idx * 1.4) + 0.15) * 0.55,
-        Math.sin(idx * 0.9) * 0.45
-      );
-    });
-    wakeSceneRef.current();
-  }, []);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handleStageClick();
-      }
-    },
-    [handleStageClick]
-  );
-
-  const fallbackNode = <StaticSculpturalFallback accentHex={accentHex} />;
-
-  return (
-    <div
-      id="home-hero-visual-container"
-      ref={containerRef}
-      role="button"
-      tabIndex={0}
-      aria-label="Interactive 3D Lusion connector stage — move pointer to sculpt or activate to cycle studio palette"
-      data-color-index={colorIdx}
-      data-accent-color={accentHex}
-      data-webgl-status={webglSupported ? shaderStatus : "fallback"}
-      data-pointer-interactions={pointerHits}
-      onClick={handleStageClick}
-      onKeyDown={handleKeyDown}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-      onPointerCancel={handlePointerLeave}
-      className="relative h-full w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#13151d] select-none focus-visible:outline-2 focus-visible:outline-[#1a2ffb]"
-    >
-      {webglSupported ? (
-        <StageErrorBoundary fallback={fallbackNode}>
-          <div ref={mountRef} className="h-full w-full" />
-        </StageErrorBoundary>
-      ) : (
-        fallbackNode
-      )}
-    </div>
-  );
+  const activate = useCallback(() => { soundEngine.playClick(); if (!reducedRef.current) { apiRef.current?.impulse(); wakeRef.current(); } }, []);
+  const key = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); } }, [activate]);
+  const toggleMotion = useCallback(async () => {
+    if (motionState === "on") { setMotionState("off"); return; }
+    if (!window.isSecureContext || !("DeviceOrientationEvent" in window)) { setMotionState("unavailable"); return; }
+    setMotionState("requesting");
+    try {
+      const orientation = DeviceOrientationEvent as typeof DeviceOrientationEvent & { requestPermission?: () => Promise<"granted" | "denied"> };
+      const permission = orientation.requestPermission ? await orientation.requestPermission() : "granted";
+      setMotionState(permission === "granted" ? "on" : "denied");
+    } catch { setMotionState("denied"); }
+  }, [motionState]);
+  const fallback = <StaticSculpturalFallback accentHex={HERO_ACCENT_PALETTE[0]} />;
+  return <div className="relative h-full w-full">
+  <div id="home-hero-visual-container" ref={containerRef} role="button" tabIndex={0}
+    aria-label="Interactive 3D Jithin connector stage — move pointer to sculpt or activate to pulse the sculpture"
+    data-color-index="0" data-cluster-mode="source-balloon-cloud" data-cluster-envelope="native-gravity-contact-drag"
+    data-accent-color={HERO_ACCENT_PALETTE[0]} data-webgl-status={status} data-pointer-interactions={hits}
+    onClick={activate} onKeyDown={key} onPointerMove={move} onPointerLeave={leave} onMouseLeave={leave} onPointerCancel={leave}
+    className="relative h-full w-full cursor-pointer overflow-hidden rounded-[var(--global-border-radius)] bg-[#141515] select-none focus-visible:outline-2 focus-visible:outline-[#1a2ffb]">
+    {status !== "ready" && <div className="absolute inset-0">{fallback}</div>}
+    <StageErrorBoundary fallback={fallback}><div ref={mountRef} className="absolute inset-0 h-full w-full" /></StageErrorBoundary>
+  </div>
+  {motionSupported && !reduced && status === "ready" && <button type="button" onClick={toggleMotion} disabled={motionState === "requesting"}
+    aria-pressed={motionState === "on"} aria-label={motionState === "on" ? "Turn off device motion" : "Enable device motion"}
+    className="absolute right-4 bottom-4 rounded-full bg-black/70 px-4 py-3 text-xs font-medium text-white backdrop-blur-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+    {motionState === "on" ? "MOTION ON" : motionState === "requesting" ? "ENABLING MOTION" : motionState === "denied" ? "MOTION BLOCKED" : motionState === "unavailable" ? "MOTION UNAVAILABLE" : "ENABLE MOTION"}
+  </button>}
+  <span className="sr-only" role="status">{motionState === "denied" ? "Motion permission denied. You can still interact with the scene by touch." : motionState === "unavailable" ? "Device motion is unavailable." : motionState === "on" ? "Device motion enabled. Tilt your device to move the view." : ""}</span>
+  </div>;
 }

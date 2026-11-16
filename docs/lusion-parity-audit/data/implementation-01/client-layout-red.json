@@ -1,0 +1,39 @@
+{
+  "scope": "Mobile three-across captured-reference geometry; reduced-motion content visibility; desktop loop continuity.",
+  "states": [
+    {
+      "width": 390,
+      "normal": {
+        "width": 390,
+        "tileWidth": 72,
+        "headingFont": 33.15,
+        "loopPairs": [
+          [
+            360,
+            360
+          ],
+          [
+            360,
+            360
+          ],
+          [
+            360,
+            360
+          ]
+        ],
+        "staticItemsWithinRows": false,
+        "duplicateDisplays": [
+          "flex",
+          "flex",
+          "flex"
+        ],
+        "animation": [
+          "about-client-marquee",
+          "about-client-marquee",
+          "about-client-marquee"
+        ]
+      }
+    }
+  ],
+  "error": "Mobile mark tile 72px must be one third of 390px, not squeezed desktop columns"
+}

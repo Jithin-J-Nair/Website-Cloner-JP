@@ -1,0 +1,6 @@
+PASS captured content and full SSR gallery order: /projects/oryzo_ai
+Traceback (most recent call last):
+  File "/home/user/Website-Cloner-JP/docs/lusion-parity-audit/harness/verify-project-content.py", line 73, in <module>
+    assert page.media == expected, (project['route'], page.media, expected)
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('/projects/of_the_oak', [('video', 0), ('image', 1), ('image', 2), ('image', 3), ('image', 4), ('image', 5), ('image', 6)], [('video', 0), ('image', 1), ('image', 2), ('image', 3), ('text', 4), ('image', 5), ('image', 6)])

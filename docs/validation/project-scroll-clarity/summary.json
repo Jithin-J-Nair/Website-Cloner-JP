@@ -1,0 +1,294 @@
+{
+  "build": "6xmQgQMijkAfWzQ5gJRNF",
+  "identity": {
+    "html": 22,
+    "assets": 26,
+    "allMatch": true
+  },
+  "calibrationBefore": {
+    "base": "http://127.0.0.1:3003",
+    "baseline": true,
+    "scope": "Synthetic raster calibration intercepted in this browser only, not reference artwork or physical GPU performance. Actual case shader uniform sampled during deterministic scroll steps.",
+    "rasters": [
+      {
+        "dpr": 1,
+        "size": {
+          "width": 1440,
+          "height": 900,
+          "cssWidth": 1440,
+          "cssHeight": 900
+        },
+        "rmse": 30.795849936855667,
+        "crop": {
+          "left": 244,
+          "top": 195,
+          "width": 500,
+          "height": 300
+        }
+      },
+      {
+        "dpr": 2,
+        "size": {
+          "width": 1496,
+          "height": 935,
+          "cssWidth": 1440,
+          "cssHeight": 900
+        },
+        "rmse": 53.44665028480893,
+        "crop": {
+          "left": 488,
+          "top": 390,
+          "width": 1000,
+          "height": 600
+        }
+      }
+    ],
+    "motion": [
+      {
+        "scroll": 0,
+        "strength": 0
+      },
+      {
+        "scroll": 12,
+        "strength": 0.005054422164271945
+      },
+      {
+        "scroll": 24,
+        "strength": 0.008120084174033964
+      },
+      {
+        "scroll": 36,
+        "strength": 0.00997950217527088
+      },
+      {
+        "scroll": 48,
+        "strength": 0.011107296202242652
+      },
+      {
+        "scroll": 60,
+        "strength": 0.01179133785744181
+      },
+      {
+        "scroll": 72,
+        "strength": 0.012206230093840675
+      },
+      {
+        "scroll": 84,
+        "strength": 0.012457874955693329
+      },
+      {
+        "scroll": 96,
+        "strength": 0.012610505279766114
+      },
+      {
+        "scroll": 108,
+        "strength": 0.012703080250918132
+      },
+      {
+        "scroll": 120,
+        "strength": 0.012759229809243844
+      },
+      {
+        "scroll": 132,
+        "strength": 0.012793286237897711
+      },
+      {
+        "scroll": 144,
+        "strength": 0.012813942506036598
+      },
+      {
+        "scroll": 144,
+        "strength": 0.007772049001706133
+      },
+      {
+        "scroll": 144,
+        "strength": 0.004713986008323735
+      },
+      {
+        "scroll": 144,
+        "strength": 0.002859177043504718
+      },
+      {
+        "scroll": 144,
+        "strength": 0.0017341785384321336
+      },
+      {
+        "scroll": 144,
+        "strength": 0.0010518324529747323
+      },
+      {
+        "scroll": 144,
+        "strength": 0.0006379686316099218
+      },
+      {
+        "scroll": 144,
+        "strength": 0.0003869475350063319
+      },
+      {
+        "scroll": 144,
+        "strength": 0.0002346955436815678
+      },
+      {
+        "scroll": 144,
+        "strength": 0.0001423500429407965
+      },
+      {
+        "scroll": 144,
+        "strength": 0.00008633966545500299
+      },
+      {
+        "scroll": 144,
+        "strength": 0.00005236765424779103
+      }
+    ],
+    "errors": [],
+    "passed": false
+  },
+  "calibrationAfter": {
+    "base": "http://127.0.0.1:3003",
+    "baseline": false,
+    "realMedia": false,
+    "scope": "Synthetic raster calibration intercepted in this browser only, not reference artwork or physical GPU performance. Actual case shader uniform sampled during deterministic scroll steps.",
+    "rasters": [
+      {
+        "dpr": 1,
+        "size": {
+          "width": 1440,
+          "height": 900,
+          "cssWidth": 1440,
+          "cssHeight": 900
+        },
+        "glError": 0,
+        "rmse": 30.795849936855667,
+        "crop": {
+          "left": 244,
+          "top": 195,
+          "width": 500,
+          "height": 300
+        }
+      },
+      {
+        "dpr": 2,
+        "size": {
+          "width": 2880,
+          "height": 1800,
+          "cssWidth": 1440,
+          "cssHeight": 900
+        },
+        "glError": 0,
+        "rmse": 31.8891913768077,
+        "crop": {
+          "left": 488,
+          "top": 390,
+          "width": 1000,
+          "height": 600
+        }
+      }
+    ],
+    "motion": [
+      {
+        "scroll": 0,
+        "strength": 0
+      },
+      {
+        "scroll": 12,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 24,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 36,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 48,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 60,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 72,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 84,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 96,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 108,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 120,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 132,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 144,
+        "strength": 0.008333333333333333
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      },
+      {
+        "scroll": 144,
+        "strength": 0
+      }
+    ],
+    "errors": [],
+    "passed": true
+  },
+  "inventory": {
+    "observations": 44,
+    "uncaughtErrors": 0,
+    "overflows": 0
+  }
+}

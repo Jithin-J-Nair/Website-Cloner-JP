@@ -1,0 +1,5 @@
+
+> lusion-studio-reconstruction@1.0.0 test:project-preview
+> node scripts/test-project-preview-browser.mjs
+
+PASS responsive desktop/mobile source selection, real playback, live reduced motion, keyboard modal pause/resume and offscreen pause.

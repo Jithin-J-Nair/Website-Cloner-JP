@@ -1,0 +1,71 @@
+[
+  {
+    "asset": "edan",
+    "status": 200,
+    "bytes": 82280,
+    "revalidated": 304
+  },
+  {
+    "asset": "ffi",
+    "status": 200,
+    "bytes": 82280,
+    "revalidated": 304
+  },
+  {
+    "asset": "pierre",
+    "status": 200,
+    "bytes": 82464,
+    "revalidated": 304
+  },
+  {
+    "asset": "yannic",
+    "status": 200,
+    "bytes": 82468,
+    "revalidated": 304
+  },
+  {
+    "asset": "paul",
+    "status": 200,
+    "bytes": 82280,
+    "revalidated": 304
+  },
+  {
+    "asset": "andrii",
+    "status": 200,
+    "bytes": 131308,
+    "revalidated": 304
+  },
+  {
+    "asset": "sunny",
+    "status": 200,
+    "bytes": 82280,
+    "revalidated": 304
+  },
+  {
+    "asset": "contours",
+    "status": 200,
+    "bytes": 71276,
+    "revalidated": 304
+  },
+  {
+    "url": "/about-media/jithin-portrait.ply",
+    "status": 404
+  },
+  {
+    "url": "/about/scene/team.json",
+    "status": 404
+  },
+  {
+    "url": "/about/scene/person.buf",
+    "status": 404
+  },
+  {
+    "url": "/assets/team/edan.buf",
+    "status": 200,
+    "note": "Existing global resolver behavior, unchanged by repair"
+  },
+  {
+    "url": "/assets/fonts/Aeonik-Regular.woff2",
+    "status": 403
+  }
+]

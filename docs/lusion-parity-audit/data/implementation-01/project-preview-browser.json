@@ -1,0 +1,51 @@
+{
+  "errors": [],
+  "states": [
+    {
+      "name": "desktop-playing",
+      "source": "/assets/projects/of_the_oak/video0.mp4",
+      "selected": "/assets/projects/of_the_oak/video0.mp4",
+      "paused": false,
+      "readyState": 4,
+      "muted": true,
+      "preload": "none"
+    },
+    {
+      "name": "reduced-motion-paused",
+      "source": "/assets/projects/of_the_oak/video0.mp4",
+      "selected": "/assets/projects/of_the_oak/video0.mp4",
+      "paused": true,
+      "readyState": 4,
+      "muted": true,
+      "preload": "none"
+    },
+    {
+      "name": "mobile-playing",
+      "source": "/assets/projects/of_the_oak/mobile_video0.mp4",
+      "selected": "/assets/projects/of_the_oak/mobile_video0.mp4",
+      "paused": false,
+      "readyState": 4,
+      "muted": true,
+      "preload": "none"
+    },
+    {
+      "name": "modal-pauses-preview",
+      "source": "/assets/projects/of_the_oak/mobile_video0.mp4",
+      "selected": "/assets/projects/of_the_oak/mobile_video0.mp4",
+      "paused": true,
+      "readyState": 4,
+      "muted": true,
+      "preload": "none"
+    },
+    {
+      "name": "offscreen-paused",
+      "source": "/assets/projects/of_the_oak/mobile_video0.mp4",
+      "selected": "/assets/projects/of_the_oak/mobile_video0.mp4",
+      "paused": true,
+      "readyState": 4,
+      "muted": true,
+      "preload": "none"
+    }
+  ],
+  "passed": true
+}

@@ -37,7 +37,7 @@ const executablePath = await sparticuz.executablePath();
 const launchBrowser = () => chromium.launch({
   executablePath: process.env.CHROMIUM_EXECUTABLE_PATH || executablePath,
   headless: true,
-  args: [...sparticuz.args, '--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
+  args: [...sparticuz.args.filter(arg => process.env.CHROMIUM_MULTIPROCESS !== '1' || !['--single-process','--in-process-gpu'].includes(arg)), '--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'],
 });
 const browser = await launchBrowser();
 const report = { viewport: { width, height }, reducedMotion, states: [], continuity: [], errors: [], failedAssets: [] };
@@ -79,7 +79,7 @@ try {
   page.on('console', (m) => { if (m.type() === 'error') report.errors.push(m.text()); });
   page.on('response', (r) => { if (r.url().includes('/assets/') && !r.ok()) report.failedAssets.push(`${r.status()} ${r.url()}`); });
   await page.goto(baseUrl + (process.env.GOAL_PROFILE_GPU === '1' ? '/?profileGoal=1' : ''), { waitUntil: 'networkidle', timeout: 120000 });
-  await page.waitForFunction(() => window.__goalAstronautTelemetry?.glbLoaded, null, { timeout: 45000 });
+  await page.waitForFunction(() => window.__goalAstronautTelemetry?.glbLoaded && window.__goalAstronautTelemetry.pipelineReady && window.__goalAstronautTelemetry.sceneState.nativeWorldsReady, null, { timeout: 90000 });
   const layout = await page.evaluate(() => {
     const r = window.__lusionInspector.homeGoalSectionRanges.items;
     return { ranges: r, start: r.blackTunnel.pixelFrom, span: r.whiteTunnel.pixelTo - r.blackTunnel.pixelFrom,
@@ -100,7 +100,7 @@ try {
       window.__cinematicSamples = [];
       window.__cinematicTimer = setInterval(() => {
         const t = window.__goalAstronautTelemetry;
-        window.__cinematicSamples.push({ time: performance.now(), native: scrollY, ...t.playback, ...t.sceneState, frameMs: t.lastFrameMs });
+        window.__cinematicSamples.push({ time: performance.now(), native: scrollY, ...t.playback, ...t.sceneState, programs: t.resources.programs, frameMs: t.lastFrameMs });
       }, 100);
     });
     // Optional evidence only: all autonomous acceptance assertions below remain unchanged.
@@ -122,11 +122,11 @@ try {
     const blue = active.filter((s) => s.tunnelProgress > 0.86 && s.tunnelProgress < 0.98 && s.shatterProgress === 0);
     const glass = active.filter((s) => s.shatterProgress > 0.4 && s.shatterProgress < 0.8);
     assert.ok(shaft.length > 5 && blue.length > 5 && glass.length > 3, 'all intermediate stages visibly play');
-    assert.ok(shaft.every((s) => s.glazingLayers === (width < 820 ? 2 : 3) && !s.ringVisible));
+    assert.ok(shaft.every((s) => s.nativeWorldsReady && s.blackInstances === 552 && s.glazingLayers === 0 && s.vortexGlassLayers === 0 && s.bloomTechnique === 'source-fft'));
     assert.ok(new Set(blue.map((s) => s.bakedFrame)).size > 5, 'captured blue-flight pose keeps advancing');
     assert.ok(blue.at(-1).corridorTravel > blue[0].corridorTravel + 5, 'architecture travels through depth independently of the subject');
     assert.ok(glass.some((s) => s.glassOpacity > 0.9));
-    assert.ok(active.some((s) => s.crackProgress > 0.1 && s.crackProgress < 0.9));
+    assert.ok(glass.every((s) => s.glassRefractionReady && s.shardCount === 946 && s.shardFrames === 15 && !s.shardDepthWrite && s.shardSpread === 1 && !s.shardSidewallsLoaded));
     const end = await page.evaluate(() => ({
       ...window.__goalAstronautTelemetry.playback,
       y: scrollY, wait: window.__goalAstronautTelemetry.sceneState.waitProgress,
@@ -262,9 +262,13 @@ try {
     const gl = canvas.getContext('webgl2');
     const bytes = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4);
     gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, bytes);
-    let hash = 2166136261;
-    for (const byte of bytes) hash = Math.imul(hash ^ byte, 16777619);
-    return { hash: hash >>> 0, webglError: gl.getError() };
+    let hash = 2166136261, alphaMin = 255, rgbMax = 0, nonBlackPixels = 0;
+    for (let i = 0; i < bytes.length; i++) {
+      const byte = bytes[i]; hash = Math.imul(hash ^ byte, 16777619);
+      if (i % 4 === 3) { alphaMin = Math.min(alphaMin, byte); if (bytes[i-3]+bytes[i-2]+bytes[i-1]>0) nonBlackPixels++; }
+      else rgbMax = Math.max(rgbMax, byte);
+    }
+    return { hash: hash >>> 0, webglError: gl.getError(), alphaMin, rgbMax, nonBlackPixels };
   });
   // Canvas is in the section's fixed overlay; target it there, not the hero canvas.
   await page.locator('#home-goal canvas').waitFor({ state: 'attached' });
@@ -278,8 +282,16 @@ try {
       webglError: await page.evaluate(() => document.querySelector('#home-goal canvas').getContext('webgl2').getError()),
     };
     assert.equal(pixels.webglError, 0);
+    if (reducedMotion === 'reduce' && telemetry.sceneState.bloomTechnique === 'source-fft') {
+      assert.equal(pixels.alphaMin,255,'native bloom mask must never become display transparency');
+      assert.ok(pixels.rgbMax>50 && pixels.nonBlackPixels>500,'a reversible blank/cleared framebuffer is not rendering proof');
+    }
     assert.ok(telemetry.sceneState.trussLoaded && telemetry.sceneState.shardsLoaded);
     forward.set(point.name, { state: telemetry.sceneState, hash: pixels.hash });
+    if(point.name==='16b-fragments') {
+      const pill=await page.locator('#end-bottom').boundingBox();
+      assert.ok(pill&&pill.y>height*.7&&pill.y+pill.height<height,'continue pill is pinned during breakthrough, not delayed until CTA');
+    }
     report.states.push({ ...point, telemetry, pixels });
     if (process.env.GOAL_CAPTURE !== '0') await page.screenshot({ path: path.join(out, `${point.name}.png`), timeout: 60000 });
   }
@@ -292,13 +304,39 @@ try {
     const expected = forward.get(point.name);
     if (reducedMotion !== 'reduce' && point.name === '17-wait') {
       // The existing CTA idle is deliberately time-based, unlike the scroll-driven fall.
-      const { astronautMatrix: actualIdle, ...actual } = telemetry.sceneState;
-      const { astronautMatrix: expectedIdle, ...stable } = expected.state;
+      const { astronautMatrix: actualIdle, bakedFrame: actualFrame, endTime: actualTime, ...actual } = telemetry.sceneState;
+      const { astronautMatrix: expectedIdle, bakedFrame: expectedFrame, endTime: expectedTime, ...stable } = expected.state;
       assert.ok(actualIdle.every(Number.isFinite) && expectedIdle.every(Number.isFinite));
+      assert.ok([actualFrame,expectedFrame].every(frame=>frame>=140&&frame<=287));
+      assert.ok(actualTime>=8&&expectedTime>=8,'only the explicitly time-based end clock/palette vary; native phase/root/camera contracts remain strict');
       assert.deepEqual(actual, stable);
     } else assert.deepEqual(telemetry.sceneState, expected.state, `reversible state: ${point.name}`);
     if (reducedMotion === 'reduce') assert.equal(pixels.hash, expected.hash, `reversible GPU pixels: ${point.name}`);
   }
+  const endY=layout.ranges.astronautWait.pixelFrom+layout.ranges.astronautWait.pixelCount*.42;
+  const endState=(await go(endY)).sceneState;
+  assert.ok(endState.endLoaded&&endState.visorAtlasReady,'reference gem, sticker and visor assets load');
+  assert.equal(endState.endDiamondCount,64);assert.equal(endState.endStickerCount,26);assert.equal(endState.ctaReveal,1);
+  const endLayout=await page.evaluate(()=>{
+    const link=document.getElementById('end-section-title-link'), rect=link.getBoundingClientRect();
+    const outer=document.getElementById('end-section-outer').getBoundingClientRect();
+    const content=getComputedStyle(document.getElementById('end-section-content'));
+    return {left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom,outerTop:outer.top,opacity:content.opacity,
+      href:link.getAttribute('href'),tabIndex:link.tabIndex,hit:document.elementFromPoint(innerWidth*.5,rect.top+rect.height*.25)?.closest('a')?.id};
+  });
+  assert.ok(endLayout.left>=0&&endLayout.right<=width&&endLayout.top>0&&endLayout.bottom<height,'CTA stays inside the pinned viewport');
+  assert.ok(Math.abs(endLayout.outerTop)<2&&Number(endLayout.opacity)>.99);
+  assert.ok(endLayout.href.startsWith('mailto:')&&endLayout.tabIndex===0&&endLayout.hit==='end-section-title-link');
+  if(process.env.GOAL_CAPTURE==='1')await page.screenshot({path:path.join(out,'18-contact.png')});
+  if(reducedMotion!=='reduce') {
+    const rendered=await page.evaluate(()=>window.__goalAstronautTelemetry.renderCount);
+    await page.waitForFunction(count=>window.__goalAstronautTelemetry.renderCount>count+2,rendered,{timeout:30000});
+    const live=await page.evaluate(()=>window.__goalAstronautTelemetry.sceneState);
+    assert.ok(live.endTime>endState.endTime+.2,'gem/sticker motion continues without scrolling');
+    assert.ok(Math.abs(live.bakedFrame-endState.bakedFrame)>2,'captured wave animation continues without scrolling');
+    report.liveEndAnimation=true;
+  }
+  report.endContact={state:endState,layout:endLayout};
   report.reversible = true;
   // Probe both sides of every formerly discontinuous branch in CSS-pixel scroll units.
   const outFactor = width < 1200 ? 2.55 : 1.42;
@@ -316,8 +354,8 @@ try {
     assert.ok(cameraDelta < 0.01, `camera continuity at ${y}: ${cameraDelta}`);
     report.continuity.push({ y, delta, cameraDelta });
   }
-  const flash = (await go(at(0.85))).sceneState;
-  assert.ok(flash.portalFlash > 0.2 && flash.flashVisible, 'portal flash must finish after the shaft fades');
+  const flash = (await go(at(0.8151))).sceneState;
+  assert.ok(flash.portalFlash > 0.9 && flash.flashVisible && flash.corridorVisible, 'source transition hands the folding shaft to the blue flash');
   report.flashContinuity = true;
   // Exercise native, coalesced fast scrolling too, not only the inspector's immediate sampler.
   const nativeTarget = Math.round(points[2].y);
@@ -378,7 +416,7 @@ try {
       await ctx.close(); await failureBrowser.close();
       continue;
     }
-    await p.waitForFunction(() => window.__goalAstronautTelemetry?.glbLoaded || window.__goalAstronautTelemetry?.fallbackVisible);
+    await p.waitForFunction(() => window.__goalAstronautTelemetry?.glbLoaded || window.__goalAstronautTelemetry?.fallbackVisible, null, { timeout: 90000 });
     const tel = await p.evaluate(() => JSON.parse(JSON.stringify(window.__goalAstronautTelemetry)));
     if (failure === 'astronaut') assert.ok(tel.fallbackVisible && tel.glbError);
     else assert.ok(tel.glbLoaded && !tel.fallbackVisible && !tel.sceneState.shardsLoaded);

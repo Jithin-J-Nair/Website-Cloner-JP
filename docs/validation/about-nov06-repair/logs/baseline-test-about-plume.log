@@ -1,0 +1,62 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: only a sparse population scatters beyond the core
+    at file:///home/user/Website-Cloner-JP/scripts/test-about-plume.mjs:29:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '\n' +
+    'attribute vec4 aSeed;\n' +
+    'uniform float uTime, uCompact, uMobile, uPointerStrength, uOpacity, uPixelRatio;\n' +
+    'uniform vec3 uPointer;\n' +
+    '\n' +
+    'varying vec2 vDisc; varying vec3 vCenterEye; varying float vRadius, vSeed, vCore;\n' +
+    '\n' +
+    'vec3 plume(vec4 seed) {\n' +
+    '  // A continuous, multi-strand spiral volume: broad and turbulent at the opening,\n' +
+    '  // tightening into the vertical suspended column as the camera retreats.\n' +
+    '  float h = (seed.z / 3.14159265 - .5) * mix(5.15, 5.65, uCompact);\n' +
+    '  float phase = seed.y + h * 1.82 + uTime * (.24 + .12 * (1. - seed.x));\n' +
+    '  float envelope = .72 + .52 * cos(h * 1.12 + .35) + .18 * sin(h * 2.4 - uTime * .2);\n' +
+    '  float radius = pow(seed.x, .72) * max(.22, envelope);\n' +
+    '  float arm = sin(phase * 2.0 + h * .55 + uTime * .12);\n' +
+    '  float x = cos(phase) * radius * 1.42 + sin(phase * .47 + h) * .34 + arm * .16;\n' +
+    '  float z = sin(phase) * radius * 1.12 + cos(phase * .62 - h) * .28;\n' +
+    '  float turbulence = sin(phase * 3. + h * 2.1 + uTime * .32) * .12;\n' +
+    '  vec3 p = vec3(x, h + turbulence, z);\n' +
+    '  p += sin(p.yzx * 3.1 + seed.w * 6.28 + uTime * .34) * .065;\n' +
+    '  // Sparse pearl/bokeh outliers break the silhouette into suspended particles.\n' +
+    '  float fringe = smoothstep(.958, .999, seed.w);\n' +
+    '  p += vec3(cos(seed.y * 1.3) * 4.2, sin(seed.y * 2.1) * 2.1, sin(seed.y) * 2.9) * fringe;\n' +
+    '  // Opening cloud has a lateral, comet-like spread; the later wide shot reads as\n' +
+    '  // a narrower overhead shaft against the valley.\n' +
+    '  p.x *= mix(1.9, 1.42, uCompact);\n' +
+    '  p.z *= mix(1.7, 1.28, uCompact);\n' +
+    '  p.y *= mix(.92, 1.08, uCompact);\n' +
+    '  p += vec3(-.35, 8.4, 0.);\n' +
+    '  vec3 away = p - uPointer;\n' +
+    '  float distanceToPointer = length(away);\n' +
+    '  p += away / max(.01, distanceToPointer) * pow(max(0., 1. - distanceToPointer / 2.4), 2.) * uPointerStrength * .62;\n' +
+    '  return p;\n' +
+    '}\n' +
+    'void main() {\n' +
+    '  // Most beads stay small and pearl-like; only the far-tail seeds become\n' +
+    '  // foreground bokeh, and the same tail is displaced beyond the coherent cloud.\n' +
+    '  float bokeh = smoothstep(.997, .9998, aSeed.w);\n' +
+    '  float pearlRadius = .012 + .022 * pow(aSeed.w, 3.2);\n' +
+    '  float bokehRadius = .17 + .16 * pow(aSeed.x, 1.6);\n' +
+    '  vRadius = mix(pearlRadius, bokehRadius, bokeh);\n' +
+    '  vCenterEye = (modelViewMatrix * vec4(plume(aSeed), 1.)).xyz;\n' +
+    '  vDisc = position.xy;\n' +
+    '  vec4 eye = vec4(vCenterEye + vec3(position.xy * vRadius, 0.), 1.);\n' +
+    '  vSeed = aSeed.w;\n' +
+    '  vCore = exp(-pow((aSeed.z - 1.6) * 3., 2.)) * (1. - smoothstep(.15, .55, aSeed.x));\n' +
+    '  gl_Position = projectionMatrix * eye;\n' +
+    '}',
+  expected: /smoothstep\(\.965, \.998, seed\.w\)/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v22.22.3

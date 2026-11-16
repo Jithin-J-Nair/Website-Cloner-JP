@@ -1,0 +1,34 @@
+[
+  {
+    "command": "npm run lint",
+    "exitCode": 1,
+    "seconds": 106.06,
+    "log": "lint.log",
+    "baseline": "5051f5b2a5fc479679f7d238f3d81e647e1beecf",
+    "runtime": "QA uses existing isolated production snapshot at same commit on port 3000"
+  },
+  {
+    "command": "npm run typecheck",
+    "exitCode": 2,
+    "seconds": 11.53,
+    "log": "typecheck.log",
+    "baseline": "5051f5b2a5fc479679f7d238f3d81e647e1beecf",
+    "runtime": "QA uses existing isolated production snapshot at same commit on port 3000"
+  },
+  {
+    "command": "npm run test:motion",
+    "exitCode": 0,
+    "seconds": 0.94,
+    "log": "test-motion.log",
+    "baseline": "5051f5b2a5fc479679f7d238f3d81e647e1beecf",
+    "runtime": "QA uses existing isolated production snapshot at same commit on port 3000"
+  },
+  {
+    "command": "npm run qa",
+    "exitCode": 0,
+    "seconds": 0.7,
+    "log": "qa.log",
+    "baseline": "5051f5b2a5fc479679f7d238f3d81e647e1beecf",
+    "runtime": "QA uses existing isolated production snapshot at same commit on port 3000"
+  }
+]

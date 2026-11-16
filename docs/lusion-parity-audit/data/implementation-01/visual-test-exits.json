@@ -1,0 +1,14 @@
+[
+  {
+    "command": "node scripts/test-project-preview-browser.mjs",
+    "exitCode": 0,
+    "seconds": 5.18,
+    "log": "project-preview-browser.log"
+  },
+  {
+    "command": "node docs/lusion-parity-audit/harness/validate-captured-visuals.mjs",
+    "exitCode": 0,
+    "seconds": 473.74,
+    "log": "paired-visual.log"
+  }
+]

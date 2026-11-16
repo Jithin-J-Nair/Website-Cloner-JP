@@ -1,0 +1,583 @@
+{
+  "scope": "Captured-reference About artwork/recognition restoration. Marquee phase held only for stills. Native CDP viewport captures avoid oversized-element capture viewport resizing, retain the 30-second deadline, and do not mask canvas/video. Normal app clocks/camera/card scroll remain unchanged.",
+  "states": [
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ],
+        "decoded": true,
+        "cocaLabel": "Coca-Cola European Partners",
+        "decorativeCopies": 3,
+        "tileWidth": 345.59375,
+        "setWidths": [
+          1728,
+          1728,
+          1728,
+          1728,
+          1728,
+          1728
+        ]
+      },
+      "worldBeforeRecognition": {
+        "frames": 5,
+        "u": 0,
+        "time": 0.9874000000003725,
+        "pointer": [
+          0,
+          0
+        ],
+        "pointerActive": 0,
+        "pending": false,
+        "state": "ready",
+        "explorer": "ready",
+        "explorerScale": 1.33,
+        "teamYaw": 0,
+        "teamPitch": 0,
+        "teamAsset": "edan",
+        "teamReady": true,
+        "teamMorph": 1,
+        "teamMember": "Edan Kwan",
+        "count": 1800,
+        "portraitPoints": 8192,
+        "streakCount": 0,
+        "qualityTier": "high",
+        "reducedMotion": false,
+        "frameTimes": [
+          51.80000000074506,
+          184.3999999994412,
+          35.700000000186265,
+          60.90000000037253,
+          654.5999999996275
+        ],
+        "draws": 3,
+        "triangles": 3602,
+        "memory": {
+          "geometries": 3,
+          "textures": 0
+        },
+        "width": 1011,
+        "height": 569,
+        "camera": [
+          0,
+          8.15,
+          6.9
+        ]
+      },
+      "recognition": {
+        "marks": 3,
+        "rosette": 8,
+        "talkDots": 9,
+        "rule": "\"\""
+      },
+      "cards": {
+        "cards": 4,
+        "backImages": 4,
+        "layout": "cinematic"
+      },
+      "overflow": false
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ],
+        "decoded": true,
+        "cocaLabel": "Coca-Cola European Partners",
+        "decorativeCopies": 3,
+        "tileWidth": 259.1875,
+        "setWidths": [
+          1296,
+          1296,
+          1296,
+          1296,
+          1296,
+          1296
+        ]
+      },
+      "worldBeforeRecognition": {
+        "frames": 6,
+        "u": 0,
+        "time": 1.0472999999998138,
+        "pointer": [
+          0,
+          0
+        ],
+        "pointerActive": 0,
+        "pending": false,
+        "state": "ready",
+        "explorer": "ready",
+        "explorerScale": 1.33,
+        "teamYaw": 0,
+        "teamPitch": 0,
+        "teamAsset": "edan",
+        "teamReady": true,
+        "teamMorph": 1,
+        "teamMember": "Edan Kwan",
+        "count": 1800,
+        "portraitPoints": 8192,
+        "streakCount": 0,
+        "qualityTier": "high",
+        "reducedMotion": false,
+        "frameTimes": [
+          85.79999999981374,
+          255.29999999981374,
+          592.2000000001863,
+          70,
+          28.90000000037253,
+          15.099999999627471
+        ],
+        "draws": 3,
+        "triangles": 3602,
+        "memory": {
+          "geometries": 3,
+          "textures": 0
+        },
+        "width": 960,
+        "height": 600,
+        "camera": [
+          0,
+          8.15,
+          6.9
+        ]
+      },
+      "recognition": {
+        "marks": 3,
+        "rosette": 8,
+        "talkDots": 9,
+        "rule": "\"\""
+      },
+      "cards": {
+        "cards": 4,
+        "backImages": 4,
+        "layout": "cinematic"
+      },
+      "overflow": false
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ],
+        "decoded": true,
+        "cocaLabel": "Coca-Cola European Partners",
+        "decorativeCopies": 3,
+        "tileWidth": 245.875,
+        "setWidths": [
+          1229.40625,
+          1229.40625,
+          1229.40625,
+          1229.40625,
+          1229.40625,
+          1229.40625
+        ]
+      },
+      "worldBeforeRecognition": {
+        "frames": 8,
+        "u": 0,
+        "time": 0.7449000000003725,
+        "pointer": [
+          0,
+          0
+        ],
+        "pointerActive": 0,
+        "pending": false,
+        "state": "ready",
+        "explorer": "ready",
+        "explorerScale": 1.33,
+        "teamYaw": 0,
+        "teamPitch": 0,
+        "teamAsset": "edan",
+        "teamReady": true,
+        "teamMorph": 1,
+        "teamMember": "Edan Kwan",
+        "count": 1800,
+        "portraitPoints": 8192,
+        "streakCount": 0,
+        "qualityTier": "high",
+        "reducedMotion": false,
+        "frameTimes": [
+          42,
+          224.40000000037253,
+          340.3999999994412,
+          23.700000000186265,
+          74.90000000037253,
+          25.700000000186265,
+          5.599999999627471,
+          8.200000000186265
+        ],
+        "draws": 3,
+        "triangles": 3602,
+        "memory": {
+          "geometries": 3,
+          "textures": 0
+        },
+        "width": 1012,
+        "height": 569,
+        "camera": [
+          0,
+          8.15,
+          6.9
+        ]
+      },
+      "recognition": {
+        "marks": 3,
+        "rosette": 8,
+        "talkDots": 9,
+        "rule": "\"\""
+      },
+      "cards": {
+        "cards": 4,
+        "backImages": 4,
+        "layout": "cinematic"
+      },
+      "overflow": false
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ],
+        "decoded": true,
+        "cocaLabel": "Coca-Cola European Partners",
+        "decorativeCopies": 3,
+        "tileWidth": 184.3125,
+        "setWidths": [
+          921.625,
+          921.625,
+          921.625,
+          921.625,
+          921.625,
+          921.625
+        ]
+      },
+      "worldBeforeRecognition": {
+        "frames": 7,
+        "u": 0,
+        "time": 1.0882000000001861,
+        "pointer": [
+          0,
+          0
+        ],
+        "pointerActive": 0,
+        "pending": false,
+        "state": "ready",
+        "explorer": "ready",
+        "explorerScale": 1.33,
+        "teamYaw": 0,
+        "teamPitch": 0,
+        "teamAsset": "edan",
+        "teamReady": true,
+        "teamMorph": 1,
+        "teamMember": "Edan Kwan",
+        "count": 1800,
+        "portraitPoints": 8192,
+        "streakCount": 0,
+        "qualityTier": "high",
+        "reducedMotion": false,
+        "frameTimes": [
+          52.299999999813735,
+          205.40000000037253,
+          24.299999999813735,
+          50.200000000186265,
+          710.0999999996275,
+          34.700000000186265,
+          11.200000000186265
+        ],
+        "draws": 3,
+        "triangles": 3602,
+        "memory": {
+          "geometries": 3,
+          "textures": 0
+        },
+        "width": 657,
+        "height": 876,
+        "camera": [
+          0,
+          8.15,
+          6.9
+        ]
+      },
+      "recognition": {
+        "marks": 3,
+        "rosette": 8,
+        "talkDots": 9,
+        "rule": "\"\""
+      },
+      "cards": {
+        "cards": 4,
+        "backImages": 4,
+        "layout": "cinematic"
+      },
+      "overflow": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ],
+        "decoded": true,
+        "cocaLabel": "Coca-Cola European Partners",
+        "decorativeCopies": 3,
+        "tileWidth": 130,
+        "setWidths": [
+          650,
+          650,
+          780,
+          780,
+          650,
+          650
+        ]
+      },
+      "worldBeforeRecognition": {
+        "frames": 5,
+        "u": 0,
+        "time": 0.33179999999981374,
+        "pointer": [
+          0,
+          0
+        ],
+        "pointerActive": 0,
+        "pending": false,
+        "state": "ready",
+        "explorer": "ready",
+        "explorerScale": 1,
+        "teamYaw": 0,
+        "teamPitch": 0,
+        "teamAsset": "edan",
+        "teamReady": true,
+        "teamMorph": 1,
+        "teamMember": "Edan Kwan",
+        "count": 1800,
+        "portraitPoints": 8192,
+        "streakCount": 0,
+        "qualityTier": "high",
+        "reducedMotion": false,
+        "frameTimes": [
+          36.40000000037253,
+          194.59999999962747,
+          41.700000000186265,
+          33,
+          26.09999999962747
+        ],
+        "draws": 3,
+        "triangles": 3602,
+        "memory": {
+          "geometries": 3,
+          "textures": 0
+        },
+        "width": 390,
+        "height": 844,
+        "camera": [
+          0,
+          8.15,
+          8.6
+        ]
+      },
+      "recognition": {
+        "marks": 3,
+        "rosette": 8,
+        "talkDots": 9,
+        "rule": "\"\""
+      },
+      "cards": {
+        "cards": 4,
+        "backImages": 4,
+        "layout": "reading"
+      },
+      "overflow": false
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ],
+        "decoded": true,
+        "cocaLabel": "Coca-Cola European Partners",
+        "decorativeCopies": 3,
+        "tileWidth": 125,
+        "setWidths": [
+          625,
+          625,
+          750,
+          750,
+          625,
+          625
+        ]
+      },
+      "worldBeforeRecognition": {
+        "frames": 5,
+        "u": 0,
+        "time": 0.3235999999996275,
+        "pointer": [
+          0,
+          0
+        ],
+        "pointerActive": 0,
+        "pending": false,
+        "state": "ready",
+        "explorer": "ready",
+        "explorerScale": 1,
+        "teamYaw": 0,
+        "teamPitch": 0,
+        "teamAsset": "edan",
+        "teamReady": true,
+        "teamMorph": 1,
+        "teamMember": "Edan Kwan",
+        "count": 1800,
+        "portraitPoints": 8192,
+        "streakCount": 0,
+        "qualityTier": "high",
+        "reducedMotion": false,
+        "frameTimes": [
+          36.700000000186265,
+          160.5,
+          55.39999999944121,
+          38,
+          33
+        ],
+        "draws": 3,
+        "triangles": 3602,
+        "memory": {
+          "geometries": 3,
+          "textures": 0
+        },
+        "width": 375,
+        "height": 812,
+        "camera": [
+          0,
+          8.15,
+          8.6
+        ]
+      },
+      "recognition": {
+        "marks": 3,
+        "rosette": 8,
+        "talkDots": 9,
+        "rule": "\"\""
+      },
+      "cards": {
+        "cards": 4,
+        "backImages": 4,
+        "layout": "reading"
+      },
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

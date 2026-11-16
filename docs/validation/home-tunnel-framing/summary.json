@@ -1,0 +1,120 @@
+{
+  "build": "eVMxYxj-7MeL2vwLW0AY3",
+  "process": "website-df3e8db7",
+  "port": 3003,
+  "scope": "Authored phase/rendering checks, not reference pixel equality or physical-device performance.",
+  "nativePhaseValidation": {
+    "passed": true,
+    "observations": 68,
+    "errors": []
+  },
+  "reducedFullSequence": {
+    "1440": {
+      "states": 11,
+      "reversible": true,
+      "continuityHandoffs": 4,
+      "errors": [],
+      "failedAssets": [],
+      "cleanup": {
+        "activeGpuQueries": 0,
+        "retained": 0,
+        "goalCanvas": false,
+        "staleGoalRanges": false
+      },
+      "astronautFailure": {
+        "loaded": false,
+        "fallback": true
+      },
+      "glassFailure": {
+        "loaded": true,
+        "fallback": false
+      },
+      "webglFailure": {
+        "fallback": true
+      }
+    },
+    "390": {
+      "states": 11,
+      "reversible": true,
+      "continuityHandoffs": 4,
+      "errors": [],
+      "failedAssets": [],
+      "cleanup": {
+        "activeGpuQueries": 0,
+        "retained": 0,
+        "goalCanvas": false,
+        "staleGoalRanges": false
+      },
+      "astronautFailure": {
+        "loaded": false,
+        "fallback": true
+      },
+      "glassFailure": {
+        "loaded": true,
+        "fallback": false
+      },
+      "webglFailure": {
+        "fallback": true
+      }
+    }
+  },
+  "autonomousNormal": {
+    "passed": false,
+    "failedAssertion": "all intermediate stages visibly play",
+    "configuration": "final build, default single-process Chromium/SwiftShader",
+    "playingPolls": 206,
+    "uniqueRenderedProgressSamples": 10,
+    "uniqueBluePoses": 1,
+    "elapsedWallSeconds": 22.947,
+    "uncaughtErrors": [],
+    "failedAssets": [],
+    "earlierCandidateAttempts": [
+      {
+        "configuration": "multiprocess",
+        "failedAssertion": "captured blue-flight pose keeps advancing",
+        "playingPolls": 206,
+        "uniqueRenderedProgressSamples": 15,
+        "uniqueBluePoses": 1,
+        "elapsedWallSeconds": 24.235
+      },
+      {
+        "configuration": "single-process",
+        "failedAssertion": "all intermediate stages visibly play",
+        "playingPolls": 209,
+        "uniqueRenderedProgressSamples": 13,
+        "uniqueBluePoses": 1,
+        "elapsedWallSeconds": 23.433
+      }
+    ]
+  },
+  "beforeAfterRootProjection": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "tunnelRatio": 0.9,
+      "beforeRootY": 709.6005179970059,
+      "afterRootY": 443.1749645150321
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "tunnelRatio": 0.9,
+      "beforeRootY": 618.9995453382545,
+      "afterRootY": 418.74216773904647
+    }
+  ],
+  "canonicalInventory": {
+    "observations": 44,
+    "uncaughtErrors": 0,
+    "horizontalOverflows": 0
+  },
+  "productionIdentity": {
+    "htmlMatched": 22,
+    "assetsMatched": 26
+  },
+  "actualAtlasGalleryRegression": true
+}

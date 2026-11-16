@@ -1,0 +1,254 @@
+
+> lusion-studio-reconstruction@1.0.0 test:about-portrait
+> node scripts/test-about-portrait.mjs
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: desktop medium/high portrait tiers are 16K/24K
+    at file:///home/user/Website-Cloner-JP/scripts/test-about-portrait.mjs:61:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '"use client";\n' +
+    '\n' +
+    'import React, { useEffect, useRef, useState } from "react";\n' +
+    'import * as THREE from "three";\n' +
+    'import { AboutExpertiseCards } from "@/components/pages/AboutExpertiseCards";\n' +
+    'import { LUSION_ABOUT } from "@/data/reference";\n' +
+    'import { aboutScenePose, aboutWordmarkSweepPose, aboutLetteringPose } from "@/lib/about-scene-motion";\n' +
+    'import { createAboutPlume } from "@/components/three/AboutPlume";\n' +
+    'import { createAboutExplorer } from "@/components/three/AboutExplorer";\n' +
+    'import { upgradeAboutExplorer } from "@/components/three/AboutLicensedExplorer";\n' +
+    'import { createAboutTerrainMaterial, createAboutGroundClasts, attachAboutGroundFlow, terrainHeightAt } from "@/components/three/AboutTerrain";\n' +
+    'import { cinematicRenderDpr } from "@/lib/home-motion";\n' +
+    'import { useStudioStore } from "@/lib/store";\n' +
+    'import { soundEngine } from "@/lib/audio";\n' +
+    'import { AboutContactSection } from "@/components/pages/AboutContactSection";\n' +
+    'import { AboutRecognition } from "@/components/pages/AboutRecognition";\n' +
+    'import { AboutPageStyles } from "@/components/pages/AboutPageStyles";\n' +
+    'import { createAboutSourceTeam } from "@/components/three/AboutSourceTeam";\n' +
+    'import { createAboutWordmarkSweep } from "@/components/three/AboutWordmarkSweep";\n' +
+    'import { StudioFooter } from "@/components/sections/StudioFooter";\n' +
+    '\n' +
+    'declare global {\n' +
+    '  interface Window {\n' +
+    '    __enableAboutProbe?: boolean;\n' +
+    '    __aboutProbe?: () => { frames: number; u: number; time: number; pointer: number[]; pointerActive: number; pending: boolean; state?: string; explorer?: string; explorerScale?: number; teamAsset?: string; teamReady?: boolean; teamMorph?: number; count: number; portraitPoints: number; streakCount: number; qualityTier: string; reducedMotion: boolean; frameTimes: number[]; draws: number; triangles: number; memory: { geometries: number; textures: number }; width: number; height: number; camera: number[] };\n' +
+    '  }\n' +
+    '}\n' +
+    '\n' +
+    'const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);\n' +
+    'const lerp = (a: number, b: number, t: number) => a + (b - a) * t;\n' +
+    'const smoothstep = (e0: number, e1: number, x: number) => {\n' +
+    '  const t = clamp01((x - e0) / Math.max(1e-5, e1 - e0));\n' +
+    '  return t * t * (3 - 2 * t);\n' +
+    '};\n' +
+    '\n' +
+    '/** Native Three.js sticky world. Retains local legacy scroll coordinates for\n' +
+    ' * camera/DOM choreography; original shader filament flow and sculptural studies.\n' +
+    ' * Historical captures support the layout; current live fidelity is unverified.\n' +
+    ' */\n' +
+    '/** Original 4×5 block-pixel initials for the seven-member studio roster. */\n' +
+    'const PIXEL_FONT: Record<string, string[]> = {\n' +
+    '  A: [".##.", "#..#", "####", "#..#", "#..#"],\n' +
+    '  E: ["####", "#...", "###.", "#...", "####"],\n' +
+    '  F: ["####", "#...", "###.", "#...", "#..."],\n' +
+    '  P: ["###.", "#..#", "###.", "#...", "#..."],\n' +
+    '  S: [".###", "#...", ".##.", "...#", "###."],\n' +
+    '  Y: ["#..#", "#..#", ".##.", ".##.", ".##."],\n' +
+    '};\n' +
+    '\n' +
+    'function PixelGlyph({ char, className }: { char: string; className?: string }) {\n' +
+    '  const rows = PIXEL_FONT[(char || "A").toUpperCase()] ?? PIXEL_FONT.A;\n' +
+    '  return (\n' +
+    '    <svg\n' +
+    '      viewBox="0 0 4 5"\n' +
+    '      aria-hidden="true"\n' +
+    '      shapeRendering="crispEdges"\n' +
+    '      className={className}\n' +
+    '    >\n' +
+    '      {rows.flatMap((row, y) =>\n' +
+    '        row.split("").map((cell, x) =>\n' +
+    '          cell === "#" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#fff" /> : null\n' +
+    '        )\n' +
+    '      )}\n' +
+    '    </svg>\n' +
+    '  );\n' +
+    '}\n' +
+    '\n' +
+    'interface AboutWhoStageProps {\n' +
+    '  activeMemberIdx: number;\n' +
+    '  onStepMember: (delta: number) => void;\n' +
+    '  onSelectMember: (index: number) => void;\n' +
+    '  reducedMotion: boolean;\n' +
+    '}\n' +
+    '\n' +
+    'function AboutWhoExperience({\n' +
+    '  activeMemberIdx,\n' +
+    '  onStepMember,\n' +
+    '  onSelectMember,\n' +
+    '  reducedMotion,\n' +
+    '}: AboutWhoStageProps) {\n' +
+    '  const sectionRef = useRef<HTMLElement | null>(null);\n' +
+    '  const canvasHostRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const heroWordmarkRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const sweepWordmarkRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const scrollPromptRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const chromaticRingRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const manifestoOverlayRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const narrativeOverlayRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const narrativeWordRefs = useRef<(HTMLSpanElement | null)[]>([]);\n' +
+    '  const teamOverlayRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const teamCursorRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const sourceTeamRef = useRef<ReturnType<typeof createAboutSourceTeam> | null>(null);\n' +
+    '  const [sourceTeamState, setSourceTeamState] = useState("loading");\n' +
+    '  const fallbackPosterRef = useRef<HTMLDivElement | null>(null);\n' +
+    '  const touchStartYRef = useRef<number | null>(null);\n' +
+    '  const touchStartXRef = useRef<number | null>(null);\n' +
+    '\n' +
+    '  const requestSceneRenderRef = useRef<(() => void) | null>(null);\n' +
+    '\n' +
+    '  const [sceneGeneration, setSceneGeneration] = useState(0);\n' +
+    '  const contextRecoveryRef = useRef<{ u: number; time: number } | null>(null);\n' +
+    '  const memberRef = useRef(activeMemberIdx);\n' +
+    '  const team = LUSION_ABOUT.who.team;\n' +
+    '  const activeMember = team[activeMemberIdx] ?? team[0];\n' +
+    '  const narrativeWords = (words: string[], offset: number, italicCount = 0) =>\n' +
+    '    words.map((word, index) => (\n' +
+    '      <React.Fragment key={offset + index}>\n' +
+    '        {index > 0 ? " " : null}\n' +
+    '        <span\n' +
+    '          ref={el => { narrativeWordRefs.current[offset + index] = el; }}\n' +
+    '          className={`about-narrative-word${index < italicCount ? " is-italic" : ""}`}\n' +
+    '        >\n' +
+    '          {word}\n' +
+    '        </span>\n' +
+    '      </React.Fragment>\n' +
+    '    ));\n' +
+    '  \n' +
+    '\n' +
+    '\n' +
+    '  useEffect(() => {\n' +
+    '    if (reducedMotion) return;\n' +
+    '    let timeoutId = 0;\n' +
+    '    const clearAdvance = () => {\n' +
+    '      if (timeoutId) window.clearTimeout(timeoutId);\n' +
+    '      timeoutId = 0;\n' +
+    '    };\n' +
+    '    const evaluateTeamStage = () => {\n' +
+    '      if (document.hidden || teamOverlayRef.current?.dataset.teamActive !== "true") {\n' +
+    '        clearAdvance();\n' +
+    '        return;\n' +
+    '      }\n' +
+    '      if (!timeoutId) {\n' +
+    '        timeoutId = window.setTimeout(() => {\n' +
+    '          timeoutId = 0;\n' +
+    '          if (!document.hidden && teamOverlayRef.current?.dataset.teamActive === "true") {\n' +
+    '            onStepMember(1);\n' +
+    '          }\n' +
+    '        }, 4800);\n' +
+    '      }\n' +
+    '    };\n' +
+    '    const pollId = window.setInterval(evaluateTeamStage, 160);\n' +
+    '    const onVisibility = () => {\n' +
+    '      clearAdvance();\n' +
+    '      if (!document.hidden) evaluateTeamStage();\n' +
+    '    };\n' +
+    '    document.addEventListener("visibilitychange", onVisibility);\n' +
+    '    evaluateTeamStage();\n' +
+    '    return () => {\n' +
+    '      window.clearInterval(pollId);\n' +
+    '      document.removeEventListener("visibilitychange", onVisibility);\n' +
+    '      clearAdvance();\n' +
+    '    };\n' +
+    '  }, [activeMemberIdx, onStepMember, reducedMotion]);\n' +
+    '\n' +
+    '  useEffect(() => {\n' +
+    '    memberRef.current = activeMemberIdx;\n' +
+    '    void sourceTeamRef.current?.setMember(activeMemberIdx, reducedMotion);\n' +
+    '  }, [activeMemberIdx, reducedMotion]);\n' +
+    '\n' +
+    '  useEffect(() => {\n' +
+    '    const sectionEl = sectionRef.current;\n' +
+    '    const hostEl = canvasHostRef.current;\n' +
+    '    if (!sectionEl || !hostEl) return;\n' +
+    '\n' +
+    '    let contextLost = false, disposed = false;\n' +
+    '    const fallback = (reason: string) => {\n' +
+    '      sectionEl.dataset.sceneState = reason;\n' +
+    '      if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "flex";\n' +
+    '    };\n' +
+    '    sectionEl.dataset.sceneState = "initializing";\n' +
+    '    let renderer: THREE.WebGLRenderer | null = null;\n' +
+    '    try {\n' +
+    '      renderer = new THREE.WebGLRenderer({\n' +
+    '        antialias: true,\n' +
+    '        alpha: false,\n' +
+    '        powerPreference: "high-performance",\n' +
+    '      });\n' +
+    '    } catch {\n' +
+    '      fallback("unavailable");\n' +
+    '      return;\n' +
+    '    }\n' +
+    '\n' +
+    '    const glRenderer = renderer;\n' +
+    '    if (fallbackPosterRef.current) fallbackPosterRef.current.style.display = "none";\n' +
+    '    sectionEl.dataset.sceneState = "ready";\n' +
+    '    const ctx = glRenderer.getContext(), debug = ctx.getExtension("WEBGL_debug_renderer_info");\n' +
+    '    const software = debug ? /swiftshader|llvmpipe|software/i.test(String(ctx.getParameter(debug.UNMASKED_RENDERER_WEBGL))) : false;\n' +
+    '    const tier = useStudioStore.getState().qualityTier;\n' +
+    '    const count = reducedMotion ? 900 : software || window.innerWidth < 820 || tier === "low" ? 1800 : tier === "medium" ? 3200 : 4800;\n' +
+    '    glRenderer.setClearColor(0x000302, 1);\n' +
+    '    glRenderer.outputColorSpace = THREE.SRGBColorSpace;\n' +
+    '    glRenderer.toneMapping = THREE.ACESFilmicToneMapping;\n' +
+    '    glRenderer.toneMappingExposure = 1.05;\n' +
+    '    glRenderer.domElement.style.width = "100%";\n' +
+    '    glRenderer.domElement.style.height = "100%";\n' +
+    '    glRenderer.domElement.style.display = "block";\n' +
+    '    hostEl.appendChild(glRenderer.domElement);\n' +
+    '\n' +
+    '    const disposables: Array<{ dispose: () => void }> = [];\n' +
+    '    const track = <T extends { dispose: () => void }>(item: T): T => {\n' +
+    '      disposables.push(item);\n' +
+    '      return item;\n' +
+    '    };\n' +
+    '\n' +
+    '    const scene = new THREE.Scene();\n' +
+    '    scene.fog = new THREE.FogExp2(0x0d0c0f, 0.016);\n' +
+    '\n' +
+    '    const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 220);\n' +
+    '\n' +
+    "    // Moody monochrome lunar lighting matching 'about-01' & 'about-02'\n" +
+    '    const ambient = new THREE.AmbientLight(0xd4d9dd, .85);\n' +
+    '    scene.add(ambient);\n' +
+    '\n' +
+    '    const overheadBeamLight = new THREE.SpotLight(0xf1f5f9, 48, 52, Math.PI * 0.22, 0.85, 1.3);\n' +
+    '    overheadBeamLight.position.set(0, 24, 1.5);\n' +
+    '    overheadBeamLight.target.position.set(0, 0, 2.5);\n' +
+    '    scene.add(overheadBeamLight);\n' +
+    '    scene.add(overheadBeamLight.target);\n' +
+    '\n' +
+    '    const coolRimLight = new THREE.DirectionalLight(0xe5edf1, 2.5);\n' +
+    '    coolRimLight.position.set(-8, 14, 10);\n' +
+    '    scene.add(coolRimLight);\n' +
+    '\n' +
+    '    // -------------------------------------------------------------------------\n' +
+    '    // 1. Original GPU filament field: instanced grains and seeded fine silver dust\n' +
+    '    // -------------------------------------------------------------------------\n' +
+    '    const plume = track(createAboutPlume(count));\n' +
+    '    const sphereStorm = plume.group, stormMat = plume.material;\n' +
+    '    // GPU-displaced points have a CPU sorting centre at the origin. Render the\n' +
+    '    // transparent background first, not over the fine plume after its draw.\n' +
+    '    sphereStorm.renderOrder = 1;\n' +
+    '    scene.add(sphereStorm);\n' +
+    '\n' +
+    "    // Soft Volumetric Core Haze & Vertical God-Ray Shaft ('about-01' & 'about-02'!)\n" +
+    '    const godRayMat = track(\n' +
+    '      new TH'... 62677 more characters,
+  expected: /tier === "medium" \? 16384 : 24576/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v22.22.3

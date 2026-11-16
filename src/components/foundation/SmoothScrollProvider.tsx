@@ -14,10 +14,10 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   const menuOpen = useStudioStore((s) => s.menuOpen);
+  const isTransitioning = useStudioStore((s) => s.isTransitioning || s.routeTransitionActive);
   const reelOpen = useStudioStore((s) => s.reelOpen);
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const setReducedMotion = useStudioStore((s) => s.setReducedMotion);
-  const setTransition = useStudioStore((s) => s.setTransition);
 
   // Sync OS prefers-reduced-motion preference live
   useEffect(() => {
@@ -47,11 +47,11 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     }
 
     const lenis = new Lenis({
-      duration: 1.05,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 0.92,
+      easing: (t) => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3.2),
       smoothWheel: true,
       syncTouch: false,
-      touchMultiplier: 1.4,
+      touchMultiplier: 1.25,
     });
     lenisRef.current = lenis;
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
@@ -101,14 +101,14 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     const lenis = lenisRef.current;
     if (!lenis) return;
-    if (menuOpen || reelOpen) {
+    if (menuOpen || reelOpen || isTransitioning) {
       lenis.stop();
     } else {
       lenis.start();
     }
-  }, [menuOpen, reelOpen, reducedMotion]);
+  }, [menuOpen, reelOpen, isTransitioning, reducedMotion]);
 
-  // Reset scroll position and lift transition curtain cleanly upon route commit
+  // Reset document/Lenis position on route commit. The shell owns the aperture.
   useEffect(() => {
     // Preserve explicit fragment intent (including /contact -> /#footer-section).
     // An unconditional zero reset raced the browser's anchor jump and left the
@@ -132,11 +132,10 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
 
     const timer = window.setTimeout(() => {
       ScrollTrigger.refresh();
-      setTransition(false, "");
     }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [pathname, setTransition]);
+  }, [pathname]);
 
   return <>{children}</>;
 }

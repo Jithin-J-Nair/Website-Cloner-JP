@@ -1,0 +1,76 @@
+"use client";
+
+import React from "react";
+import { LUSION_HOME } from "@/data/reference";
+import { ProceduralReelStream } from "@/components/studio/ProceduralReelStream";
+import { TransitionLink } from "@/components/studio/TransitionLink";
+import { soundEngine } from "@/lib/audio";
+import "./home-editorial.css";
+
+interface HomeReelSectionProps {
+  videoSrc: string;
+  videoFailed: boolean;
+  onVideoError: () => void;
+  onOpenReel: () => void;
+}
+
+const japaneseDescription = [
+  "デザイン、モーション、3D、開発を融合し、",
+  "視覚的な魅力と技術的な完成度を兼ね備えた",
+  "デジタル体験を生み出しています。",
+  "見る人を惹きつけ、思わず操作したくなる体験を追求しています。",
+];
+
+// Japanese has no word spaces. Animate individual glyphs, while keeping
+// punctuation attached to the preceding glyph at natural line breaks.
+function reelDescriptionUnits(line: string) {
+  return Array.from(line).reduce<string[]>((parts, char) => {
+    if (parts.length && ((char === "、" || char === "。") || (/^[A-Za-z0-9]$/.test(char) && /^[A-Za-z0-9]+$/.test(parts[parts.length - 1])))) parts[parts.length - 1] += char;
+    else parts.push(char);
+    return parts;
+  }, []);
+}
+
+export function HomeReelSection({ videoSrc, videoFailed, onVideoError, onOpenReel }: HomeReelSectionProps) {
+  return <section id="home-reel" className="section home-reel-section">
+    <h2 id="home-reel-title" aria-label={LUSION_HOME.reel.eyebrowFull}>
+      <span id="home-reel-title-inner" aria-hidden="true">
+        {[LUSION_HOME.reel.eyebrowLine1, LUSION_HOME.reel.eyebrowLine2].map((line, i) =>
+          <span key={line} id={i === 0 ? "home-reel-title-line-1" : undefined} className="reel-title-line">
+            {line.split(" ").map((word, j) => <React.Fragment key={word}><span data-reel-word>{word}</span>{j < line.split(" ").length - 1 ? " " : ""}</React.Fragment>)}
+          </span>)}
+      </span>
+    </h2>
+    <div id="home-reel-content">
+      <p id="home-reel-desc" lang="ja" aria-label={japaneseDescription.join(" ")}>
+        {japaneseDescription.map((line, index) => (
+          <span className={index === 3 ? "reel-description-line reel-description-closing" : "reel-description-line"} aria-hidden="true" key={line}>
+            {reelDescriptionUnits(line).map((unit, i) => <span data-reel-desc-word key={i}>{unit}</span>)}
+          </span>
+        ))}
+      </p>
+      <TransitionLink id="home-reel-cta" href={LUSION_HOME.reel.ctaHref} transitionLabel="Our Approach" onMouseEnter={() => soundEngine.playHover()}>
+        <span className="reel-cta-dot" aria-hidden="true" /><span className="reel-cta-text">{LUSION_HOME.reel.ctaLabel}</span><span className="reel-cta-arrow" aria-hidden="true">→</span>
+      </TransitionLink>
+    </div>
+    <div id="home-reel-thumb-wrapper" aria-hidden="true"><div id="home-reel-thumb" /></div>
+    <div id="home-reel-container"><div id="home-reel-container-inner"><div id="home-reel-video-container">
+      <div id="home-reel-video-fallback" aria-hidden="true">
+        {!videoFailed ? <video id="home-reel-video" src={videoSrc} muted loop playsInline preload="auto" onError={onVideoError} /> : <ProceduralReelStream variant="thumb" />}
+      </div>
+      <div id="home-reel-video-container-decoration" aria-hidden="true">
+        {["top", "bottom"].map(side => <div key={side} id={`home-reel-video-container-${side}`} className="reel-decoration-rail">
+          <div className="reel-crosses">{Array.from({ length: 5 }, (_, i) => <span key={i} className="reel-cross">+</span>)}</div>
+          <div className="reel-marquee">{Array.from({ length: 8 }, (_, i) => <span key={i}>▶▶▶ PLAY REEL&nbsp;&nbsp;</span>)}</div>
+        </div>)}
+      </div>
+      <div id="home-reel-video-placeholder" onClick={onOpenReel}>
+        <button type="button" id="home-reel-video-watch-btn" aria-label="Play Showreel" onMouseEnter={() => soundEngine.playHover()} onClick={event => { event.stopPropagation(); onOpenReel(); }}>
+          <span id="home-reel-video-watch-btn-base" /><span id="home-reel-video-watch-btn-background" />
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6L19.2 12 8 5.2z" /></svg>
+        </button>
+        <button type="button" id="home-reel-sound-btn" aria-label="Enable reel sound" aria-pressed="false" onClick={event => event.stopPropagation()}>Sound on</button>
+      </div>
+    </div></div></div>
+  </section>;
+}

@@ -296,12 +296,13 @@ export function createGoalPlaybackPath(m: {
 }): (progress: number) => number {
   const drop = m.imgOutTop - m.viewportH * 0.55;
   const span = m.endTop - drop;
-  const times = [0, 0.16, 0.23, 0.47, 0.61, 0.78, 0.83, 0.89, 0.95, 1];
+  const times = [0, 0.16, 0.23, 0.47, 0.61, 0.78, 0.83, 0.866, 0.91, 0.95, 1];
   const positions = [
     m.emergenceStart + m.emergenceSpan * 0.308, m.tunnelStart,
     m.tunnelStart + m.tunnelSpan * 0.135, m.tunnelStart + m.tunnelSpan * 0.66,
     m.tunnelStart + m.tunnelSpan * 0.85, drop,
-    drop + span * 0.30, drop + span * 0.72, m.endTop, m.endTop + m.endHeight * 0.42,
+    drop + span * 0.30, drop + span * 0.72, drop + span * 0.94,
+    m.endTop, m.endTop + m.endHeight * 0.42,
   ];
   const slopes = times.slice(1).map((t, i) => (positions[i + 1] - positions[i]) / (t - times[i]));
   const tangents = positions.map((_, i) => {
@@ -324,7 +325,13 @@ export function createGoalPlaybackPath(m: {
   };
 }
 
-/** Frame-major captured debris transforms. Reuse outputs and quaternion scratch on every scroll sample. */
+/**
+ * Frame-major captured rigid-body debris transforms. Positions use frame-global,
+ * shape-preserving PCHIP tangents shared by adjacent cubic-Hermite segments; each axis
+ * remains monotone between its captured keys, including at direction reversals.
+ * Orientations retain quaternion slerp. The authored rigid-body key poses never change.
+ * Tangents are precomputed once; output buffers and quaternion scratch are reused on scroll.
+ */
 export function createGlassFrameSampler(
   positions: ArrayLike<number>,
   orientations: ArrayLike<number>,
@@ -335,20 +342,82 @@ export function createGlassFrameSampler(
 ): (frame: number) => void {
   const q0 = new THREE.Quaternion();
   const q1 = new THREE.Quaternion();
+  const sample = (frameIndex: number, piece: number, axis: number) =>
+    positions[(frameIndex * pieceCount + piece) * 3 + axis] ?? 0;
+  const tangentIndex = (frameIndex: number, piece: number, axis: number) =>
+    (frameIndex * pieceCount + piece) * 3 + axis;
+  const tangents = new Float32Array(frameCount * pieceCount * 3);
+
+  const endpointTangent = (firstDelta: number, nextDelta: number) => {
+    let tangent = (3 * firstDelta - nextDelta) * 0.5;
+    if (tangent * firstDelta <= 0) return 0;
+    if (firstDelta * nextDelta < 0 && Math.abs(tangent) > 3 * Math.abs(firstDelta)) {
+      tangent = 3 * firstDelta;
+    }
+    return tangent;
+  };
+
+  // Uniformly spaced captured frames: the PCHIP interior derivative is the
+  // harmonic mean of adjacent secants, or zero at a plateau / direction change.
+  for (let piece = 0; piece < pieceCount; piece++) {
+    for (let axis = 0; axis < 3; axis++) {
+      if (frameCount < 2) continue;
+      const first = sample(0, piece, axis);
+      const second = sample(1, piece, axis);
+      const firstDelta = second - first;
+      if (frameCount === 2) {
+        tangents[tangentIndex(0, piece, axis)] = firstDelta;
+        tangents[tangentIndex(1, piece, axis)] = firstDelta;
+        continue;
+      }
+
+      const thirdDelta = sample(2, piece, axis) - second;
+      tangents[tangentIndex(0, piece, axis)] = endpointTangent(firstDelta, thirdDelta);
+      for (let frame = 1; frame < frameCount - 1; frame++) {
+        const previous = sample(frame, piece, axis) - sample(frame - 1, piece, axis);
+        const next = sample(frame + 1, piece, axis) - sample(frame, piece, axis);
+        tangents[tangentIndex(frame, piece, axis)] = previous * next <= 0
+          ? 0
+          : (2 * previous * next) / (previous + next);
+      }
+      const lastDelta = sample(frameCount - 1, piece, axis) - sample(frameCount - 2, piece, axis);
+      const beforeLastDelta = sample(frameCount - 2, piece, axis) - sample(frameCount - 3, piece, axis);
+      tangents[tangentIndex(frameCount - 1, piece, axis)] = endpointTangent(lastDelta, beforeLastDelta);
+    }
+  }
+
   return (frame: number) => {
+    if (pieceCount <= 0 || frameCount <= 0) return;
     const f = THREE.MathUtils.clamp(frame, 0, frameCount - 1);
     const from = Math.floor(f);
     const to = Math.min(frameCount - 1, from + 1);
     const alpha = f - from;
+    const alpha2 = alpha * alpha;
+    const alpha3 = alpha2 * alpha;
+    const h00 = 2 * alpha3 - 3 * alpha2 + 1;
+    const h10 = alpha3 - 2 * alpha2 + alpha;
+    const h01 = -2 * alpha3 + 3 * alpha2;
+    const h11 = alpha3 - alpha2;
+
     for (let piece = 0; piece < pieceCount; piece++) {
       const a = from * pieceCount + piece;
       const b = to * pieceCount + piece;
-      for (let c = 0; c < 3; c++) {
-        outputPositions[piece * 4 + c] = THREE.MathUtils.lerp(positions[a * 3 + c], positions[b * 3 + c], alpha);
+      for (let axis = 0; axis < 3; axis++) {
+        const p0 = sample(from, piece, axis);
+        const p1 = sample(to, piece, axis);
+        if (from === to) {
+          outputPositions[piece * 4 + axis] = p0;
+          continue;
+        }
+        const m0 = tangents[tangentIndex(from, piece, axis)];
+        const m1 = tangents[tangentIndex(to, piece, axis)];
+        outputPositions[piece * 4 + axis] =
+          h00 * p0 + h10 * m0 + h01 * p1 + h11 * m1;
       }
+      outputPositions[piece * 4 + 3] = 1;
       q0.fromArray(orientations, a * 4).normalize();
       q1.fromArray(orientations, b * 4).normalize();
-      q0.slerp(q1, alpha).toArray(outputOrientations, piece * 4);
+      q0.slerp(q1, alpha).normalize().toArray(outputOrientations, piece * 4);
     }
   };
 }
@@ -469,6 +538,302 @@ export function buildTunnelGlazing(
     }
   } };
 }
+
+export function buildGlassShardSideGeometry(
+  source: THREE.BufferGeometry,
+  halfThickness: number
+): THREE.BufferGeometry {
+  const position = source.getAttribute("position");
+  const normal = source.getAttribute("normal");
+  const piece = source.getAttribute("piece") ?? source.getAttribute("aPiece");
+  if (!position || !normal || !piece) {
+    throw new Error("Glass shard geometry is missing position, normal, or piece attributes.");
+  }
+
+  type Vertex = { point: THREE.Vector3; normal: THREE.Vector3; x: number; y: number };
+  const pointKey = (p: THREE.Vector3) =>
+    [Math.round(p.x * 100000), Math.round(p.y * 100000), Math.round(p.z * 100000)].join(",");
+  const shards = new Map<number, Map<string, Vertex>>();
+
+  // Collect unique vertices per captured shard. The source buffer can be indexed,
+  // non-indexed, or duplicated for front/back faces, so do not rely on edge-use count.
+  for (let i = 0; i < position.count; i++) {
+    const pieceId = Math.round(piece.getX(i));
+    let vertices = shards.get(pieceId);
+    if (!vertices) {
+      vertices = new Map<string, Vertex>();
+      shards.set(pieceId, vertices);
+    }
+    const point = new THREE.Vector3(position.getX(i), position.getY(i), position.getZ(i));
+    const key = pointKey(point);
+    if (!vertices.has(key)) {
+      vertices.set(key, {
+        point,
+        normal: new THREE.Vector3(normal.getX(i), normal.getY(i), normal.getZ(i)),
+        x: 0,
+        y: 0,
+      });
+    } else {
+      vertices.get(key)!.normal.add(new THREE.Vector3(normal.getX(i), normal.getY(i), normal.getZ(i)));
+    }
+  }
+
+  const positions: number[] = [];
+  const normals: number[] = [];
+  const pieces: number[] = [];
+  const axis = new THREE.Vector3();
+  const planeNormal = new THREE.Vector3();
+  const basisU = new THREE.Vector3();
+  const basisV = new THREE.Vector3();
+  const tangent = new THREE.Vector3();
+  const sideNormal = new THREE.Vector3();
+  const frontA = new THREE.Vector3();
+  const frontB = new THREE.Vector3();
+  const backA = new THREE.Vector3();
+  const backB = new THREE.Vector3();
+
+  const pushTriangle = (
+    p0: THREE.Vector3,
+    p1: THREE.Vector3,
+    p2: THREE.Vector3,
+    n: THREE.Vector3,
+    pieceId: number
+  ) => {
+    for (const p of [p0, p1, p2]) {
+      positions.push(p.x, p.y, p.z);
+      normals.push(n.x, n.y, n.z);
+      pieces.push(pieceId);
+    }
+  };
+  const cross2 = (o: Vertex, a: Vertex, b: Vertex) =>
+    (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+
+  for (const [pieceId, vertexMap] of shards) {
+    const vertices = [...vertexMap.values()];
+    if (vertices.length < 3) continue;
+
+    planeNormal.set(0, 0, 0);
+    for (const vertex of vertices) planeNormal.add(vertex.normal);
+    if (planeNormal.lengthSq() < 1e-8) continue;
+    planeNormal.normalize();
+
+    // Construct an oriented 2D basis on this shard's dominant plane.
+    axis.set(Math.abs(planeNormal.z) < 0.88 ? 0 : 0, Math.abs(planeNormal.z) < 0.88 ? 0 : 1, Math.abs(planeNormal.z) < 0.88 ? 1 : 0);
+    basisU.crossVectors(axis, planeNormal);
+    if (basisU.lengthSq() < 1e-8) continue;
+    basisU.normalize();
+    basisV.crossVectors(planeNormal, basisU).normalize();
+
+    for (const vertex of vertices) {
+      vertex.x = vertex.point.dot(basisU);
+      vertex.y = vertex.point.dot(basisV);
+    }
+    vertices.sort((a, b) => a.x - b.x || a.y - b.y);
+
+    // Monotone-chain hull removes triangulation duplicates and produces the true
+    // outside contour of each rigid shard before it is extruded into a thin plate.
+    const lower: Vertex[] = [];
+    for (const vertex of vertices) {
+      while (lower.length >= 2 && cross2(lower[lower.length - 2], lower[lower.length - 1], vertex) <= 1e-8) lower.pop();
+      lower.push(vertex);
+    }
+    const upper: Vertex[] = [];
+    for (let i = vertices.length - 1; i >= 0; i--) {
+      const vertex = vertices[i];
+      while (upper.length >= 2 && cross2(upper[upper.length - 2], upper[upper.length - 1], vertex) <= 1e-8) upper.pop();
+      upper.push(vertex);
+    }
+    const hull = lower.slice(0, -1).concat(upper.slice(0, -1));
+    if (hull.length < 3) continue;
+
+    for (let i = 0; i < hull.length; i++) {
+      const a = hull[i].point;
+      const b = hull[(i + 1) % hull.length].point;
+      tangent.subVectors(b, a);
+      if (tangent.lengthSq() < 1e-10) continue;
+      tangent.normalize();
+      sideNormal.crossVectors(tangent, planeNormal);
+      if (sideNormal.lengthSq() < 1e-8) continue;
+      sideNormal.normalize();
+
+      frontA.copy(a).addScaledVector(planeNormal, halfThickness);
+      frontB.copy(b).addScaledVector(planeNormal, halfThickness);
+      backA.copy(a).addScaledVector(planeNormal, -halfThickness);
+      backB.copy(b).addScaledVector(planeNormal, -halfThickness);
+      pushTriangle(frontA, frontB, backB, sideNormal, pieceId);
+      pushTriangle(frontA, backB, backA, sideNormal, pieceId);
+    }
+  }
+
+  const result = new THREE.BufferGeometry();
+  result.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  result.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+  result.setAttribute("aPiece", new THREE.Float32BufferAttribute(pieces, 1));
+  result.computeBoundingSphere();
+  result.userData.shardCount = shards.size;
+  result.userData.sidewallTriangleCount = Math.floor(positions.length / 9);
+  return result;
+}
+
+/**
+ * A glass hypercube tunnel: each layer is a perspective projection of a 4D
+ * tesseract (16 vertices / 32 edges), rotated in XW, YW and ZW planes.
+ * It is an open crystalline lattice around the astronaut, not an opaque white cube.
+ */
+export function buildVortexHypercubeLattice(
+  track: <T extends { dispose: () => void }>(item: T) => T,
+  environment: THREE.CubeTexture,
+  isMobile: boolean
+): {
+  group: THREE.Group;
+  update: (progress: number, intensity: number, reducedMotion: boolean) => void;
+  layers: number;
+  edges: number;
+} {
+  const group = new THREE.Group();
+  const layers = isMobile ? 3 : 4;
+  const edgesPerLayer = 32;
+  const nodesPerLayer = 16;
+  const cylinder = track(new THREE.CylinderGeometry(1, 1, 1, 8, 1, false));
+  const nodeGeometry = track(new THREE.IcosahedronGeometry(1, 1));
+  const material = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color("#a4dfff"),
+    metalness: 0.035,
+    roughness: 0.052,
+    transmission: 0.91,
+    thickness: 0.42,
+    ior: 1.47,
+    attenuationColor: new THREE.Color("#9bcfff"),
+    attenuationDistance: 4.8,
+    clearcoat: 1,
+    clearcoatRoughness: 0.026,
+    iridescence: 0.56,
+    iridescenceIOR: 1.31,
+    iridescenceThicknessRange: [170, 430],
+    envMap: environment,
+    envMapIntensity: 2.85,
+    vertexColors: true,
+    transparent: true,
+     opacity: 0.62,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  }));
+
+  const edgeMesh = new THREE.InstancedMesh(cylinder, material, layers * edgesPerLayer);
+  edgeMesh.name = "GlassHypercubeEdges";
+  edgeMesh.frustumCulled = false;
+  edgeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  edgeMesh.renderOrder = 4;
+  const nodeMesh = new THREE.InstancedMesh(nodeGeometry, material, layers * nodesPerLayer);
+  nodeMesh.name = "GlassHypercubeVertices";
+  nodeMesh.frustumCulled = false;
+  nodeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  nodeMesh.renderOrder = 5;
+  group.add(edgeMesh, nodeMesh);
+
+  const edgePairs: Array<[number, number]> = [];
+  for (let a = 0; a < 16; a++) {
+    for (let axis = 0; axis < 4; axis++) {
+      const b = a ^ (1 << axis);
+      if (a < b) edgePairs.push([a, b]);
+    }
+  }
+  if (edgePairs.length !== edgesPerLayer) throw new Error("Tesseract graph must contain exactly 32 edges.");
+
+  const projected = Array.from({ length: nodesPerLayer }, () => new THREE.Vector3());
+  const four = new Float64Array(4);
+  const rotatePlane = (v: Float64Array, a: number, b: number, angle: number) => {
+    const c = Math.cos(angle), s = Math.sin(angle);
+    const av = v[a], bv = v[b];
+    v[a] = av * c - bv * s;
+    v[b] = av * s + bv * c;
+  };
+  const direction = new THREE.Vector3();
+  const midpoint = new THREE.Vector3();
+  const scale = new THREE.Vector3();
+  const quaternion = new THREE.Quaternion();
+  const matrix = new THREE.Matrix4();
+  const identity = new THREE.Quaternion();
+  const axisY = new THREE.Vector3(0, 1, 0);
+  const colors = [
+    new THREE.Color("#76e8ff"),
+    new THREE.Color("#8dbdff"),
+    new THREE.Color("#d39dff"),
+    new THREE.Color("#ff9edb"),
+  ];
+
+  for (let layer = 0; layer < layers; layer++) {
+    const color = colors[layer % colors.length];
+    for (let i = 0; i < edgesPerLayer; i++) edgeMesh.setColorAt(layer * edgesPerLayer + i, color);
+    for (let i = 0; i < nodesPerLayer; i++) {
+      nodeMesh.setColorAt(layer * nodesPerLayer + i, color.clone().multiplyScalar(1.12));
+    }
+  }
+
+  group.visible = false;
+  return {
+    group,
+    layers,
+    edges: layers * edgesPerLayer,
+    update: (progress, intensity, reducedMotion) => {
+      const p = THREE.MathUtils.clamp(progress, 0, 1);
+      const glow = THREE.MathUtils.clamp(intensity, 0, 1);
+      group.visible = glow > 0.012 && p > 0.34 && p < 0.855;
+      material.opacity = 0.34 + glow * 0.54;
+      material.roughness = 0.034 + (1 - glow) * 0.035;
+
+      const orbit = (p - 0.40) / 0.40;
+      const d4 = 3.55;
+      for (let layer = 0; layer < layers; layer++) {
+        const layerT = layers > 1 ? layer / (layers - 1) : 0;
+        const angle = reducedMotion ? 0 : orbit * Math.PI * 2.15;
+        const aXW = angle * (1.0 + layer * 0.075) + layer * 0.41;
+        const aYW = -angle * 0.69 + layer * 0.53;
+        const aZW = angle * 0.47 - layer * 0.37;
+        const aXY = angle * 0.22 + layer * 0.61;
+        const radius = 1.32 - layerT * 0.52;
+        const zCenter = -4.25 - layer * 2.05 + Math.sin(orbit * Math.PI * 2 + layer) * 0.18 * glow;
+
+        for (let vertex = 0; vertex < nodesPerLayer; vertex++) {
+          for (let axis = 0; axis < 4; axis++) four[axis] = (vertex & (1 << axis)) ? 1 : -1;
+          rotatePlane(four, 0, 3, aXW);
+          rotatePlane(four, 1, 3, aYW);
+          rotatePlane(four, 2, 3, aZW);
+          rotatePlane(four, 0, 1, aXY);
+          const perspective = d4 / Math.max(1.55, d4 - four[3] * 0.62);
+          const x = four[0] * perspective * radius;
+          const y = four[1] * perspective * radius;
+          const z = zCenter + four[2] * perspective * radius * 0.86;
+          projected[vertex].set(x, y, z);
+          scale.setScalar(0.043 * (1 - layerT * 0.16));
+          matrix.compose(projected[vertex], identity, scale);
+          nodeMesh.setMatrixAt(layer * nodesPerLayer + vertex, matrix);
+        }
+
+        for (let edge = 0; edge < edgesPerLayer; edge++) {
+          const [from, to] = edgePairs[edge];
+          const start = projected[from];
+          const end = projected[to];
+          direction.subVectors(end, start);
+          const length = Math.max(0.0001, direction.length());
+          direction.multiplyScalar(1 / length);
+          midpoint.addVectors(start, end).multiplyScalar(0.5);
+          quaternion.setFromUnitVectors(axisY, direction);
+          const tubeRadius = 0.020 * (1 - layerT * 0.17);
+          scale.set(tubeRadius, length, tubeRadius);
+          matrix.compose(midpoint, quaternion, scale);
+          edgeMesh.setMatrixAt(layer * edgesPerLayer + edge, matrix);
+        }
+      }
+      edgeMesh.instanceMatrix.needsUpdate = true;
+      nodeMesh.instanceMatrix.needsUpdate = true;
+      if (edgeMesh.instanceColor) edgeMesh.instanceColor.needsUpdate = true;
+      if (nodeMesh.instanceColor) nodeMesh.instanceColor.needsUpdate = true;
+    },
+  };
+}
+
+
 
 /** Captured inner/outer lattice, greeble PBR and a depth-dependent helical deformation.
  * Both LOD placement sets are part of the source asset, not decorative random cubes.
@@ -595,20 +960,26 @@ export function buildArchitecturalTrussTunnel(
           vec3 base = mix(vec3(0.19), texture2D(uBase, vUv).rgb * 1.55, vDetail);
           float roughness = mix(0.32, clamp(arm.g * 0.45, 0.16, 0.40), vDetail);
           float metal = mix(0.85, max(arm.b, 0.72), vDetail);
+          // Lusion's captured shaft has three distinct lighting acts:
+          // cool cyan/steel entry, warm red frames, then emerald before the pink/blue vortex.
           float warm = smoothstep(0.24, 0.36, uPhase);
-          float pink = smoothstep(0.49, 0.59, uPhase);
+          float emerald = smoothstep(0.39, 0.55, uPhase);
+          float pink = smoothstep(0.65, 0.80, uPhase);
           vec3 primary = mix(vec3(0.72, 0.9, 1.0), vec3(1.0, 0.10, 0.055), warm);
-          primary = mix(primary, vec3(1.0, 0.075, 0.40), pink);
-          vec3 secondary = mix(vec3(0.14, 0.85, 1.0), vec3(0.18, 0.72, 1.0), pink);
+          primary = mix(primary, vec3(0.42, 1.0, 0.12), emerald);
+          primary = mix(primary, vec3(0.94, 0.13, 0.62), pink);
+          vec3 secondary = mix(vec3(0.14, 0.85, 1.0), vec3(0.30, 1.0, 0.26), emerald);
+          secondary = mix(secondary, vec3(0.18, 0.72, 1.0), pink);
           // Shaft-mounted strips: lighting follows depth, never random per-frame glint flashes.
           vec3 L1 = normalize(vec3(-2.0, 2.1, 2.5) - vWorldPos * vec3(1.0, 1.0, 0.18));
           vec3 L2 = normalize(vec3(2.2, -1.5, 0.0) - vWorldPos * vec3(1.0, 1.0, 0.12));
-          vec3 col = lightBRDF(N,V,L1,primary*3.5,base,roughness,metal);
-          col += lightBRDF(N,V,L2,secondary*2.5,base,roughness,metal);
+          vec3 col = lightBRDF(N,V,L1,primary*mix(3.5,2.6,pink),base,roughness,metal);
+          col += lightBRDF(N,V,L2,secondary*2.2,base,roughness,metal);
           vec3 reflected = textureCube(uEnvironment, reflect(-V, N)).rgb;
           float luminance = dot(reflected, vec3(0.2126,0.7152,0.0722));
           float fresnel = pow(1.0 - max(dot(N,V),0.0),5.0);
-          col += (vec3(luminance)*0.75 + reflected*0.25) * mix(vec3(0.82,0.92,1.0),primary,pink*0.65) * (0.025+fresnel*0.22);
+          float reflectionTint = max(emerald, pink * 0.65);
+          col += (vec3(luminance)*0.75 + reflected*0.25) * mix(vec3(0.82,0.92,1.0),primary,reflectionTint) * (0.025+fresnel*0.22);
           col += base * 0.025;
           col *= mix(0.16,1.0,vDetail);
           col *= mix(0.28,1.0,clamp(vAo * mix(1.0,arm.r,vDetail),0.0,1.0));
@@ -631,27 +1002,57 @@ export function buildArchitecturalTrussTunnel(
         uIntensity: { value: 0.0 }
       },
       vertexShader: [
+        "uniform float uMode;",
         "varying vec2 vUv;",
-        "void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }"
+        "varying vec3 vLocalPosition;",
+        "void main() {",
+        "  vUv = uv;",
+        "  vLocalPosition = position;",
+        "  vec3 p = position;",
+        "  float radius = length(position.xy);",
+        "  float twist = uMode * 0.68 * smoothstep(0.0, 3.7, radius) + radius * 0.045;",
+        "  float cs = cos(twist);",
+        "  float sn = sin(twist);",
+        "  p.xy = mat2(cs, -sn, sn, cs) * p.xy;",
+        "  p.z -= exp(-radius * 0.72) * (0.42 + uMode * 0.62);",
+        "  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);",
+        "}"
       ].join("\n"),
       fragmentShader: [
         "varying vec2 vUv;",
+        "varying vec3 vLocalPosition;",
         "uniform float uMode;",
         "uniform float uIntensity;",
         "void main() {",
         "  vec2 p = vUv * 2.0 - 1.0;",
         "  float r = length(p);",
-        "  float core = exp(-r * 6.0) * 1.5 + exp(-r * 18.0) * 2.0;",
-        "  vec3 cE = vec3(0.28, 0.85, 1.0);",
-        "  vec3 cP = vec3(1.0, 0.4, 0.9);",
-        "  vec3 col = mix(cE, cP, uMode) * core;",
-        "  gl_FragColor = vec4(col * uIntensity, clamp(core * uIntensity, 0.0, 1.0));",
+        "  float theta = atan(p.y, p.x);",
+        "  float phaseA = theta * 4.0 - r * 22.0 - uMode * 7.2;",
+        "  float phaseB = theta * 8.0 + r * 31.0 + uMode * 11.0;",
+        "  float spiralA = 0.5 + 0.5 * cos(phaseA);",
+        "  float spiralB = 0.5 + 0.5 * cos(phaseB);",
+        "  float arms = pow(spiralA, 9.0) * exp(-r * 1.55);",
+        "  float filaments = pow(spiralB, 17.0) * exp(-r * 2.15) * 0.42;",
+        "  float ringRadius = 0.50 + 0.028 * sin(theta * 4.0 - uMode * 5.0);",
+        "  float accretion = exp(-pow((r - ringRadius) / 0.075, 2.0));",
+        "  float photonRing = exp(-pow((r - 0.235) / 0.034, 2.0));",
+        "  float sheath = exp(-pow((r - 0.70) / 0.16, 2.0));",
+        "  float core = exp(-r * 4.1) * 0.68 + exp(-r * 14.0) * 1.08;",
+        "  float eventHorizon = 1.0 - smoothstep(0.075, 0.20, r);",
+        "  vec3 cCyan = vec3(0.16, 0.76, 1.0);",
+        "  vec3 cPink = vec3(1.0, 0.22, 0.66);",
+        "  float spectralShift = clamp(uMode + 0.12 * sin(phaseA + phaseB * 0.08), 0.0, 1.0);",
+        "  vec3 col = mix(cCyan, cPink, spectralShift);",
+        "  float energy = core + arms * 0.78 + filaments + accretion * 0.46 + photonRing * 0.30 + sheath * 0.13;",
+        "  col *= energy * (1.0 - eventHorizon * 0.46);",
+        "  col += vec3(0.38, 0.72, 1.0) * accretion * 0.24;",
+        "  gl_FragColor = vec4(col * uIntensity, clamp((core + arms * 0.34 + accretion * 0.42 + photonRing * 0.22) * uIntensity, 0.0, 1.0));",
         "}"
       ].join("\n")
     })
   );
 
-  const corePlane = new THREE.Mesh(track(new THREE.PlaneGeometry(8, 8)), vortexCoreMat);
+  const corePlane = new THREE.Mesh(track(new THREE.PlaneGeometry(9.2, 9.2, 64, 64)), vortexCoreMat);
   corePlane.position.z = -12.0;
   corePlane.renderOrder = 2;
   group.add(corePlane);

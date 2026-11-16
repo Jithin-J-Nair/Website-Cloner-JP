@@ -1,0 +1,67 @@
+{
+  "state": {
+    "y": 20639,
+    "world": {
+      "frames": 7,
+      "u": 0,
+      "time": 1.0975000000000001,
+      "pointer": [
+        0,
+        0
+      ],
+      "pointerActive": 0,
+      "pending": false,
+      "state": "ready",
+      "explorer": "loading",
+      "explorerScale": 1.33,
+      "teamYaw": 0,
+      "teamPitch": 0,
+      "teamAsset": "edan",
+      "teamReady": true,
+      "teamMorph": 1,
+      "teamMember": "Edan Kwan",
+      "count": 1800,
+      "portraitPoints": 8192,
+      "streakCount": 0,
+      "qualityTier": "high",
+      "reducedMotion": false,
+      "frameTimes": [
+        42.299999999813735,
+        183.79999999981374,
+        46.700000000186265,
+        754,
+        18.59999999962747,
+        29.700000000186265,
+        22.40000000037253
+      ],
+      "draws": 3,
+      "triangles": 3602,
+      "memory": {
+        "geometries": 3,
+        "textures": 0
+      },
+      "width": 1011,
+      "height": 569,
+      "camera": [
+        0,
+        8.15,
+        6.9
+      ]
+    },
+    "root": {
+      "x": 0,
+      "y": 0,
+      "width": 1920,
+      "height": 2211.15625,
+      "top": 0,
+      "right": 1920,
+      "bottom": 2211.15625,
+      "left": 0
+    },
+    "marks": 3
+  },
+  "rawCapture": {
+    "passed": true,
+    "ms": 948
+  }
+}

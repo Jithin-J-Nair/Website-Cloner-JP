@@ -1,0 +1,14 @@
+
+> lusion-studio-reconstruction@1.0.0 typecheck
+> tsc --noEmit
+
+temp/ecc-study-b38be6a7/source/skills/remotion-video-creation/rules/assets/charts-bar-chart.tsx(1,24): error TS2307: Cannot find module '@remotion/google-fonts/Inter' or its corresponding type declarations.
+temp/ecc-study-b38be6a7/source/skills/remotion-video-creation/rules/assets/charts-bar-chart.tsx(2,69): error TS2307: Cannot find module 'remotion' or its corresponding type declarations.
+temp/ecc-study-b38be6a7/source/skills/remotion-video-creation/rules/assets/text-animations-typewriter.tsx(6,8): error TS2307: Cannot find module 'remotion' or its corresponding type declarations.
+temp/ecc-study-b38be6a7/source/skills/remotion-video-creation/rules/assets/text-animations-word-highlight.tsx(1,24): error TS2307: Cannot find module '@remotion/google-fonts/Inter' or its corresponding type declarations.
+temp/ecc-study-b38be6a7/source/skills/remotion-video-creation/rules/assets/text-animations-word-highlight.tsx(8,8): error TS2307: Cannot find module 'remotion' or its corresponding type declarations.
+temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/charts-bar-chart.tsx(1,24): error TS2307: Cannot find module '@remotion/google-fonts/Inter' or its corresponding type declarations.
+temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/charts-bar-chart.tsx(2,69): error TS2307: Cannot find module 'remotion' or its corresponding type declarations.
+temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/text-animations-typewriter.tsx(6,8): error TS2307: Cannot find module 'remotion' or its corresponding type declarations.
+temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/text-animations-word-highlight.tsx(1,24): error TS2307: Cannot find module '@remotion/google-fonts/Inter' or its corresponding type declarations.
+temp/lusion-parity/master/skills/remotion-video-creation/rules/assets/text-animations-word-highlight.tsx(8,8): error TS2307: Cannot find module 'remotion' or its corresponding type declarations.

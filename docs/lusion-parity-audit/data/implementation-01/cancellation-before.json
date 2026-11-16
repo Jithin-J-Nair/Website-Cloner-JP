@@ -1,0 +1,924 @@
+{
+  "events": [
+    {
+      "type": "pointerout",
+      "target": "home-hero",
+      "pointerType": "mouse",
+      "bubbles": true,
+      "time": 12013.899999999441
+    },
+    {
+      "type": "pointermove",
+      "target": "",
+      "pointerType": "mouse",
+      "bubbles": true,
+      "time": 12014.5
+    },
+    {
+      "type": "pointermove",
+      "target": "",
+      "pointerType": "mouse",
+      "bubbles": true,
+      "time": 12030.599999999627
+    },
+    {
+      "type": "pointermove",
+      "target": "",
+      "pointerType": "mouse",
+      "bubbles": true,
+      "time": 12050.5
+    },
+    {
+      "type": "pointermove",
+      "target": "",
+      "pointerType": "mouse",
+      "bubbles": true,
+      "time": 12078.399999999441
+    },
+    {
+      "type": "pointermove",
+      "target": "",
+      "pointerType": "mouse",
+      "bubbles": true,
+      "time": 12089.899999999441
+    },
+    {
+      "type": "pointercancel",
+      "target": "home-hero-visual-container",
+      "pointerType": "mouse",
+      "bubbles": true,
+      "time": 12136.799999999814
+    }
+  ],
+  "samples": [
+    {
+      "time": 11985,
+      "energy": "0.00000",
+      "frames": "5",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "4.20"
+    },
+    {
+      "time": 12046.699999999255,
+      "energy": "0.05761",
+      "frames": "6",
+      "influenced": "4",
+      "state": "responding",
+      "cpu": "15.90"
+    },
+    {
+      "time": 12059.899999999441,
+      "energy": "0.16435",
+      "frames": "7",
+      "influenced": "8",
+      "state": "responding",
+      "cpu": "9.00"
+    },
+    {
+      "time": 12087.599999999627,
+      "energy": "0.24661",
+      "frames": "8",
+      "influenced": "8",
+      "state": "responding",
+      "cpu": "8.80"
+    },
+    {
+      "time": 12098,
+      "energy": "0.38389",
+      "frames": "9",
+      "influenced": "17",
+      "state": "responding",
+      "cpu": "7.60"
+    },
+    {
+      "time": 12107.699999999255,
+      "energy": "0.51331",
+      "frames": "10",
+      "influenced": "17",
+      "state": "responding",
+      "cpu": "1.50"
+    },
+    {
+      "time": 12126.5,
+      "energy": "0.63271",
+      "frames": "11",
+      "influenced": "17",
+      "state": "responding",
+      "cpu": "4.70"
+    },
+    {
+      "time": 12133.5,
+      "energy": "0.74044",
+      "frames": "12",
+      "influenced": "17",
+      "state": "responding",
+      "cpu": "2.70"
+    },
+    {
+      "time": 12148.599999999627,
+      "energy": "0.71140",
+      "frames": "13",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.40"
+    },
+    {
+      "time": 12165.5,
+      "energy": "0.68351",
+      "frames": "14",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.50"
+    },
+    {
+      "time": 12183,
+      "energy": "0.65671",
+      "frames": "15",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.30"
+    },
+    {
+      "time": 12198.5,
+      "energy": "0.63096",
+      "frames": "16",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.00"
+    },
+    {
+      "time": 12215.199999999255,
+      "energy": "0.60622",
+      "frames": "17",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.20"
+    },
+    {
+      "time": 12232.599999999627,
+      "energy": "0.58245",
+      "frames": "18",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.10"
+    },
+    {
+      "time": 12248.5,
+      "energy": "0.55961",
+      "frames": "19",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.00"
+    },
+    {
+      "time": 12265.399999999441,
+      "energy": "0.53767",
+      "frames": "20",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.10"
+    },
+    {
+      "time": 12281.899999999441,
+      "energy": "0.51659",
+      "frames": "21",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.10"
+    },
+    {
+      "time": 12298.5,
+      "energy": "0.49633",
+      "frames": "22",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.00"
+    },
+    {
+      "time": 12315.099999999627,
+      "energy": "0.47687",
+      "frames": "23",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.30"
+    },
+    {
+      "time": 12336.099999999627,
+      "energy": "0.45817",
+      "frames": "24",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.10"
+    },
+    {
+      "time": 12349,
+      "energy": "0.44021",
+      "frames": "25",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.40"
+    },
+    {
+      "time": 12365.699999999255,
+      "energy": "0.42294",
+      "frames": "26",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "0.80"
+    },
+    {
+      "time": 12381.899999999441,
+      "energy": "0.40636",
+      "frames": "27",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "0.90"
+    },
+    {
+      "time": 12398.199999999255,
+      "energy": "0.39043",
+      "frames": "28",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "0.70"
+    },
+    {
+      "time": 12414.599999999627,
+      "energy": "0.37512",
+      "frames": "29",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "0.90"
+    },
+    {
+      "time": 14162,
+      "energy": "0.33270",
+      "frames": "30",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.80"
+    },
+    {
+      "time": 15303.5,
+      "energy": "0.29508",
+      "frames": "31",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.60"
+    },
+    {
+      "time": 15528.199999999255,
+      "energy": "0.26171",
+      "frames": "32",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.70"
+    },
+    {
+      "time": 16744.199999999255,
+      "energy": "0.23212",
+      "frames": "33",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.90"
+    },
+    {
+      "time": 18022.599999999627,
+      "energy": "0.20587",
+      "frames": "34",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.80"
+    },
+    {
+      "time": 19160.699999999255,
+      "energy": "0.18259",
+      "frames": "35",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.90"
+    },
+    {
+      "time": 20309.799999999814,
+      "energy": "0.16194",
+      "frames": "36",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.90"
+    },
+    {
+      "time": 21428.099999999627,
+      "energy": "0.14363",
+      "frames": "37",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.00"
+    },
+    {
+      "time": 22572.89999999944,
+      "energy": "0.12739",
+      "frames": "38",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.60"
+    },
+    {
+      "time": 23723.89999999944,
+      "energy": "0.11298",
+      "frames": "39",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.70"
+    },
+    {
+      "time": 24897.699999999255,
+      "energy": "0.10021",
+      "frames": "40",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.80"
+    },
+    {
+      "time": 26033.39999999944,
+      "energy": "0.08888",
+      "frames": "41",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.80"
+    },
+    {
+      "time": 27170.5,
+      "energy": "0.07883",
+      "frames": "42",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.80"
+    },
+    {
+      "time": 28331.599999999627,
+      "energy": "0.06991",
+      "frames": "43",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.70"
+    },
+    {
+      "time": 29461.699999999255,
+      "energy": "0.06201",
+      "frames": "44",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.80"
+    },
+    {
+      "time": 30672,
+      "energy": "0.05499",
+      "frames": "45",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "6.80"
+    },
+    {
+      "time": 31754.799999999814,
+      "energy": "0.04878",
+      "frames": "46",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.90"
+    },
+    {
+      "time": 32889.09999999963,
+      "energy": "0.04326",
+      "frames": "47",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.50"
+    },
+    {
+      "time": 34008.199999999255,
+      "energy": "0.03837",
+      "frames": "48",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "1.90"
+    },
+    {
+      "time": 35132,
+      "energy": "0.03403",
+      "frames": "49",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.30"
+    },
+    {
+      "time": 36316.59999999963,
+      "energy": "0.03018",
+      "frames": "50",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.00"
+    },
+    {
+      "time": 37523.199999999255,
+      "energy": "0.02677",
+      "frames": "51",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.10"
+    },
+    {
+      "time": 39841,
+      "energy": "0.02374",
+      "frames": "52",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.70"
+    },
+    {
+      "time": 41011.299999999814,
+      "energy": "0.02106",
+      "frames": "53",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.70"
+    },
+    {
+      "time": 42193,
+      "energy": "0.01868",
+      "frames": "54",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.60"
+    },
+    {
+      "time": 43294.09999999963,
+      "energy": "0.01656",
+      "frames": "55",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.70"
+    },
+    {
+      "time": 44417.09999999963,
+      "energy": "0.01469",
+      "frames": "56",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "4.40"
+    },
+    {
+      "time": 45551.699999999255,
+      "energy": "0.01303",
+      "frames": "57",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.60"
+    },
+    {
+      "time": 46671.89999999944,
+      "energy": "0.01156",
+      "frames": "58",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.60"
+    },
+    {
+      "time": 47777.699999999255,
+      "energy": "0.01025",
+      "frames": "59",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.90"
+    },
+    {
+      "time": 48912,
+      "energy": "0.00909",
+      "frames": "60",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.60"
+    },
+    {
+      "time": 50012.799999999814,
+      "energy": "0.00806",
+      "frames": "61",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.00"
+    },
+    {
+      "time": 51110.299999999814,
+      "energy": "0.00715",
+      "frames": "62",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.20"
+    },
+    {
+      "time": 52168.199999999255,
+      "energy": "0.00634",
+      "frames": "63",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.40"
+    },
+    {
+      "time": 53224.59999999963,
+      "energy": "0.00563",
+      "frames": "64",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.50"
+    },
+    {
+      "time": 54279.59999999963,
+      "energy": "0.00499",
+      "frames": "65",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.60"
+    },
+    {
+      "time": 55335.699999999255,
+      "energy": "0.00442",
+      "frames": "66",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.40"
+    },
+    {
+      "time": 56380.09999999963,
+      "energy": "0.00392",
+      "frames": "67",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.70"
+    },
+    {
+      "time": 57431.39999999944,
+      "energy": "0.00348",
+      "frames": "68",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.60"
+    },
+    {
+      "time": 58482,
+      "energy": "0.00309",
+      "frames": "69",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.70"
+    },
+    {
+      "time": 59514,
+      "energy": "0.00274",
+      "frames": "70",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.60"
+    },
+    {
+      "time": 60563,
+      "energy": "0.00243",
+      "frames": "71",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.10"
+    },
+    {
+      "time": 61667,
+      "energy": "0.00215",
+      "frames": "72",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.30"
+    },
+    {
+      "time": 62684.799999999814,
+      "energy": "0.00191",
+      "frames": "73",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.70"
+    },
+    {
+      "time": 63697.799999999814,
+      "energy": "0.00169",
+      "frames": "74",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.50"
+    },
+    {
+      "time": 64764.09999999963,
+      "energy": "0.00150",
+      "frames": "75",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "4.10"
+    },
+    {
+      "time": 65814.59999999963,
+      "energy": "0.00133",
+      "frames": "76",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.50"
+    },
+    {
+      "time": 66861.29999999981,
+      "energy": "0.00118",
+      "frames": "77",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "2.80"
+    },
+    {
+      "time": 67925.19999999925,
+      "energy": "0.00105",
+      "frames": "78",
+      "influenced": "0",
+      "state": "responding",
+      "cpu": "3.30"
+    },
+    {
+      "time": 70100.69999999925,
+      "energy": "0.00093",
+      "frames": "79",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.70"
+    },
+    {
+      "time": 71180.69999999925,
+      "energy": "0.00082",
+      "frames": "80",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.70"
+    },
+    {
+      "time": 72247.5,
+      "energy": "0.00073",
+      "frames": "81",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.80"
+    },
+    {
+      "time": 73302.09999999963,
+      "energy": "0.00065",
+      "frames": "82",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.80"
+    },
+    {
+      "time": 74360.69999999925,
+      "energy": "0.00058",
+      "frames": "83",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.80"
+    },
+    {
+      "time": 75441.59999999963,
+      "energy": "0.00051",
+      "frames": "84",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.80"
+    },
+    {
+      "time": 76507.59999999963,
+      "energy": "0.00045",
+      "frames": "85",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.90"
+    },
+    {
+      "time": 77572.79999999981,
+      "energy": "0.00040",
+      "frames": "86",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.70"
+    },
+    {
+      "time": 78604.29999999981,
+      "energy": "0.00036",
+      "frames": "87",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.60"
+    },
+    {
+      "time": 79659,
+      "energy": "0.00032",
+      "frames": "88",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.80"
+    },
+    {
+      "time": 80695.59999999963,
+      "energy": "0.00028",
+      "frames": "89",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "4.80"
+    },
+    {
+      "time": 81760.69999999925,
+      "energy": "0.00025",
+      "frames": "90",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.00"
+    },
+    {
+      "time": 82812.79999999981,
+      "energy": "0.00022",
+      "frames": "91",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.80"
+    },
+    {
+      "time": 83910.69999999925,
+      "energy": "0.00020",
+      "frames": "92",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.90"
+    },
+    {
+      "time": 85015.09999999963,
+      "energy": "0.00017",
+      "frames": "93",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.30"
+    },
+    {
+      "time": 86114.19999999925,
+      "energy": "0.00015",
+      "frames": "94",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.00"
+    },
+    {
+      "time": 87188.59999999963,
+      "energy": "0.00014",
+      "frames": "95",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "2.80"
+    },
+    {
+      "time": 88255.19999999925,
+      "energy": "0.00012",
+      "frames": "96",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.40"
+    },
+    {
+      "time": 89361.09999999963,
+      "energy": "0.00011",
+      "frames": "97",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.40"
+    },
+    {
+      "time": 90428.09999999963,
+      "energy": "0.00010",
+      "frames": "98",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.40"
+    },
+    {
+      "time": 91500.89999999944,
+      "energy": "0.00008",
+      "frames": "99",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.50"
+    },
+    {
+      "time": 93332.39999999944,
+      "energy": "0.00007",
+      "frames": "100",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.10"
+    },
+    {
+      "time": 94610.39999999944,
+      "energy": "0.00007",
+      "frames": "101",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "5.10"
+    },
+    {
+      "time": 95666.79999999981,
+      "energy": "0.00006",
+      "frames": "102",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.00"
+    },
+    {
+      "time": 96809.39999999944,
+      "energy": "0.00005",
+      "frames": "103",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.30"
+    },
+    {
+      "time": 97902,
+      "energy": "0.00005",
+      "frames": "104",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.10"
+    },
+    {
+      "time": 99038.59999999963,
+      "energy": "0.00004",
+      "frames": "105",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.00"
+    },
+    {
+      "time": 100179.59999999963,
+      "energy": "0.00004",
+      "frames": "106",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.30"
+    },
+    {
+      "time": 101304.39999999944,
+      "energy": "0.00003",
+      "frames": "107",
+      "influenced": "0",
+      "state": "settled",
+      "cpu": "3.40"
+    }
+  ],
+  "before": {
+    "colorIndex": "0",
+    "clusterMode": "free-body-cloud",
+    "clusterEnvelope": "soft-central-return",
+    "accentColor": "#1b24e6",
+    "webglStatus": "ready",
+    "pointerInteractions": "1",
+    "motionState": "responding",
+    "activeRaf": "true",
+    "renderPixels": "1296x615",
+    "offsetEnergy": "0.63271",
+    "pointerInfluencedPieces": "17",
+    "clusterPieces": "23",
+    "physicsCollisions": "155",
+    "physicsActive": "true",
+    "kineticEnergy": "41.07448",
+    "maxTravel": "2.2735",
+    "meanRadius": "1.8620",
+    "renderCount": "11",
+    "frameCpuMs": "4.70",
+    "drawCalls": "47"
+  },
+  "error": "page.waitForFunction: Timeout 90000ms exceeded.",
+  "after": {
+    "colorIndex": "0",
+    "clusterMode": "free-body-cloud",
+    "clusterEnvelope": "soft-central-return",
+    "accentColor": "#1b24e6",
+    "webglStatus": "ready",
+    "pointerInteractions": "1",
+    "motionState": "settled",
+    "activeRaf": "false",
+    "renderPixels": "1296x615",
+    "offsetEnergy": "0.00003",
+    "pointerInfluencedPieces": "0",
+    "clusterPieces": "23",
+    "physicsCollisions": "2238",
+    "physicsActive": "true",
+    "kineticEnergy": "0.49559",
+    "maxTravel": "1.8522",
+    "meanRadius": "1.7130",
+    "renderCount": "107",
+    "frameCpuMs": "3.40",
+    "drawCalls": "47"
+  }
+}

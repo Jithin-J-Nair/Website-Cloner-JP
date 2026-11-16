@@ -1,0 +1,22 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "reduced": false,
+  "touch": false,
+  "errors": [],
+  "failedAssets": [],
+  "states": [],
+  "viewportMetrics": {
+    "width": 1440,
+    "height": 900,
+    "visualWidth": 1440,
+    "visualHeight": 900
+  },
+  "smoothScroll": {
+    "active": true,
+    "duration": 0.92,
+    "smoothWheel": true
+  }
+}

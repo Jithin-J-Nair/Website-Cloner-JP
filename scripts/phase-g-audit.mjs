@@ -46,12 +46,12 @@ export const VIEWPORTS = [
 export const INTERMEDIATE_VIEWPORT = { name: "1024x768", width: 1024, height: 768, isMobile: false };
 
 /**
- * Complete 36-state specification covering ALL 22 canonical routes + full scroll & interactive states:
+ * Complete 37-state specification covering ALL 20 current canonical routes + full scroll & interactive states:
  *   - 11 Homepage states (`/`, top -> reel -> featured -> goal intro -> astronaut closeup -> mid shatter -> astronaut float -> end CTA -> footer portal -> menu -> modal)
  *   - 4 About states (`/about`, hero 3D terrain -> team 8192-particle portrait -> clients & awards -> area of expertise)
  *   - 2 Projects archive states (`/projects`, top header + cards -> mid-archive scroll)
- *   - 19 Project detail routes (`/projects/<slug>`, every single case study!)
- * Total = 36 states x 2 primary viewports (`1440x900` + `390x844`) = 72 paired captures (+ 4 intermediate `1024x768` states = 76 total!)
+ *   - 17 Project detail routes (`/projects/<slug>`, every current case study!)
+ * Total = 37 states x 2 primary viewports (`1440x900` + `390x844`) = 74 paired captures (+ 4 intermediate `1024x768` states = 78 total!)
  */
 export const STATES = [
   // --- Homepage (`/`) complete scroll + interactive sequence ---
@@ -80,7 +80,7 @@ export const STATES = [
   { id: "11a-projects-archive-top", route: "/projects", seek: { mode: "top" } },
   { id: "11b-projects-archive-mid", route: "/projects", seek: { mode: "pageRatio", ratio: 0.42 } },
 
-  // --- All 19 Project Case-Study Detail Pages (`/projects/<slug>`) ---
+  // --- All 17 Current Project Case-Study Detail Pages (`/projects/<slug>`) ---
   ...PROJECT_SLUGS.map((slug, idx) => ({
     id: `12-${String(idx + 1).padStart(2, "0")}-project-${slug}`,
     route: `/projects/${slug}`,
@@ -417,7 +417,7 @@ const launchBrowser = () =>
   });
 
 if (MODE === "capture-reference") {
-  console.log(`=== Phase G Step 2 & 3: Capturing Fresh Live-Engine Reference across ALL 22 Routes (${serverHandle.baseUrl}) ===`);
+  console.log(`=== Phase G Step 2 & 3: Capturing Fresh Live-Engine Reference across ALL 20 Routes (${serverHandle.baseUrl}) ===`);
   const jsonlPath = path.join(PHASE_G_ROOT, "reference-metadata.jsonl");
   const existingMetaByKey = new Map();
   if (fs.existsSync(jsonlPath)) {
@@ -448,7 +448,7 @@ if (MODE === "capture-reference") {
       }
     }
 
-    // Group remaining states by `(vp, route)` and run 4 parallel Chromium route workers so all 22 routes finish in ~60s!
+    // Group remaining states by `(vp, route)` and run 4 parallel Chromium route workers so all 20 routes finish in ~60s!
     const routeGroups = [];
     for (const vp of [...VIEWPORTS, INTERMEDIATE_VIEWPORT]) {
       const statesForVp = (vp.name === "1024x768" ? INTERMEDIATE_STATES : STATES).filter(
@@ -834,7 +834,7 @@ try {
   const outJson = path.join(PHASE_G_ROOT, `metrics-${RUN_LABEL}.json`);
   fs.writeFileSync(outJson, JSON.stringify(summary, null, 2));
   console.log(
-    `\n=== PHASE G SUMMARY [${RUN_LABEL}] (${results.length} states across ALL 22 routes): Mean MAE=${summary.meanMae} | Mean PSNR=${summary.meanPsnr} dB | Mean SSIM=${summary.meanSsim} ===`
+    `\n=== PHASE G SUMMARY [${RUN_LABEL}] (${results.length} states across ALL 20 routes): Mean MAE=${summary.meanMae} | Mean PSNR=${summary.meanPsnr} dB | Mean SSIM=${summary.meanSsim} ===`
   );
   console.log(
     `    Desktop 1440x900: MAE=${byVp["1440x900"].meanMae} (SSIM=${byVp["1440x900"].meanSsim}) | Mobile 390x844: MAE=${byVp["390x844"].meanMae} (SSIM=${byVp["390x844"].meanSsim}) | Tablet 1024x768: MAE=${byVp["1024x768"].meanMae}`

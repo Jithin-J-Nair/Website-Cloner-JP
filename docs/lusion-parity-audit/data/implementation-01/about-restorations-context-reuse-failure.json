@@ -1,0 +1,93 @@
+{
+  "scope": "Captured-reference About artwork/recognition restoration. Marquee phase held only for stills. Native CDP viewport captures avoid oversized-element capture viewport resizing, retain the 30-second deadline, and do not mask canvas/video. Normal app clocks/camera/card scroll remain unchanged.",
+  "states": [
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "brands": {
+        "images": 32,
+        "uniqueSources": [
+          "/assets/images/logo/@logo--cocacola.svg",
+          "/assets/images/logo/@logo--maxmara.svg",
+          "/assets/images/logo/@logo--calvin-klein.svg",
+          "/assets/images/logo/@logo--porsche.svg",
+          "/assets/images/logo/@logo--wallpaper.svg",
+          "/assets/images/logo/@logo--hyundai.svg",
+          "/assets/images/logo/@logo--google.svg",
+          "/assets/images/logo/@logo--apple.svg",
+          "/assets/images/logo/@logo--webby-awards.svg",
+          "/assets/images/logo/@logo--stanford.svg",
+          "/assets/images/logo/@logo--sony.svg",
+          "/assets/images/logo/@logo--awwwards.svg",
+          "/assets/images/logo/@logo--nvidia.svg",
+          "/assets/images/logo/@logo--akqa.svg",
+          "/assets/images/logo/@logo--nexus-studios.svg"
+        ],
+        "decoded": true,
+        "cocaLabel": "Coca-Cola European Partners",
+        "decorativeCopies": 3
+      },
+      "worldBeforeRecognition": {
+        "frames": 6,
+        "u": 0,
+        "time": 0.9277999999998138,
+        "pointer": [
+          0,
+          0
+        ],
+        "pointerActive": 0,
+        "pending": false,
+        "state": "ready",
+        "explorer": "ready",
+        "explorerScale": 1.33,
+        "teamYaw": 0,
+        "teamPitch": 0,
+        "teamAsset": "edan",
+        "teamReady": true,
+        "teamMorph": 1,
+        "teamMember": "Edan Kwan",
+        "count": 1800,
+        "portraitPoints": 8192,
+        "streakCount": 0,
+        "qualityTier": "high",
+        "reducedMotion": false,
+        "frameTimes": [
+          40.799999999813735,
+          199.40000000037253,
+          98,
+          530,
+          44.799999999813735,
+          14.799999999813735
+        ],
+        "draws": 3,
+        "triangles": 3602,
+        "memory": {
+          "geometries": 3,
+          "textures": 0
+        },
+        "width": 1011,
+        "height": 569,
+        "camera": [
+          0,
+          8.15,
+          6.9
+        ]
+      },
+      "recognition": {
+        "marks": 3,
+        "rosette": 8,
+        "talkDots": 9,
+        "rule": "\"\""
+      },
+      "cards": {
+        "cards": 4,
+        "backImages": 4,
+        "layout": "cinematic"
+      },
+      "overflow": false
+    }
+  ],
+  "errors": []
+}

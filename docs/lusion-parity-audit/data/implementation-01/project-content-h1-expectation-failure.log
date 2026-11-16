@@ -1,0 +1,8 @@
+PASS captured content and full SSR gallery order: /projects/oryzo_ai
+PASS captured content and full SSR gallery order: /projects/of_the_oak
+PASS captured content and full SSR gallery order: /projects/devin_ai
+Traceback (most recent call last):
+  File "/home/user/Website-Cloner-JP/docs/lusion-parity-audit/harness/verify-project-content.py", line 63, in <module>
+    assert page.texts['h1'] == [project['title']]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

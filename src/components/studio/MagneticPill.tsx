@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStudioStore } from "@/lib/store";
+import { navigateStudioRoute, shouldTransitionAnchor } from "@/lib/route-navigation";
 import { soundEngine } from "@/lib/audio";
 
 export type PillVariant = "cobalt" | "dark" | "light" | "glass" | "outline";
@@ -65,7 +66,6 @@ export function MagneticPill({
   const reducedMotion = useStudioStore((s) => s.reducedMotion);
   const setCursor = useStudioStore((s) => s.setCursor);
   const resetCursor = useStudioStore((s) => s.resetCursor);
-  const setTransition = useStudioStore((s) => s.setTransition);
   const setMenuOpen = useStudioStore((s) => s.setMenuOpen);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -97,18 +97,7 @@ export function MagneticPill({
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onClick) onClick(e);
     resetCursor();
-    if (
-      !href ||
-      e.metaKey ||
-      e.ctrlKey ||
-      e.shiftKey ||
-      e.altKey ||
-      href.startsWith("mailto:") ||
-      href.startsWith("http") ||
-      href.startsWith("#")
-    ) {
-      return;
-    }
+    if (!href || !shouldTransitionAnchor(e, e.currentTarget)) return;
     if (href === pathname) {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
@@ -118,21 +107,7 @@ export function MagneticPill({
     soundEngine.playChime(523.25, 0.08);
     setMenuOpen(false);
 
-    if (reducedMotion) {
-      router.push(href);
-      return;
-    }
-
-    const label =
-      transitionLabel ||
-      (href === "/"
-        ? "HOME"
-        : href.replace(/^\//, "").replace(/\//g, " // ").replace(/-/g, " ").toUpperCase());
-
-    setTransition(true, label);
-    window.setTimeout(() => {
-      router.push(href);
-    }, 260);
+    navigateStudioRoute(href, router, transitionLabel || children);
   };
 
   const innerContent = (

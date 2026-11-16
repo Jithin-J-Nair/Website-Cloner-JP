@@ -12,6 +12,9 @@ try {
     compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
   }).outputText);
   const { terrainHeightAt, createAboutTerrainMaterial } = await import(pathToFileURL(`${dir}/terrain.mjs`));
+  assert.match(source, /ridgeC \* \.32/, 'flank mesh keeps high-frequency fractured relief');
+  assert.match(source, /micro = .*\.17 \* flankMask/, 'microrelief remains visible on the crater flanks');
+  assert.match(source, /amplitude = \.036/, 'screen-space rock relief has enough amplitude to read at desktop scale');
   let min = Infinity, max = -Infinity;
   for (let z = -48; z <= 48; z += .5) {
     for (let x = -48; x <= 48; x += .5) {
@@ -32,6 +35,18 @@ try {
   assert.match(a.fragmentShader, /dFdx\(relief\)/);
   assert.match(a.fragmentShader, /#include <tonemapping_fragment>/);
   assert.match(a.fragmentShader, /#include <colorspace_fragment>/);
+  assert.match(source, /vec3 sand = vec3\(\.32, \.35, \.36\)/, 'regolith keeps a grey base under a localized light pool');
+  assert.match(source, /p\.x < 0\. \? 1\.22 : \.78/, 'left and right flanks retain the measured light/dark split');
+  const about = fs.readFileSync('src/components/pages/AboutPageView.tsx', 'utf8');
+  // Retain the procedural module's standalone regression coverage, but assert
+  // it is no longer the scene shown to users. Active source-world tests exercise
+  // the real terrain, rig, spline and animation rather than this retired field.
+  assert.doesNotMatch(about, /terrainHeightAt|createAboutTerrainMaterial|createAboutGroundClasts/);
+  assert.match(about, /createAboutReferenceWorld/);
+  const world = fs.readFileSync('src/components/three/AboutReferenceWorld.ts', 'utf8');
+  assert.match(world, /model\("terrain"\)/);
+  assert.match(world, /terrain_shadow_light_height\.webp/);
+  assert.match(world, /landscape\.rotation\.y = Math\.PI/, 'preserve handedness and the native camera’s screen-right');
   let disposed = 0;
   a.addEventListener('dispose', () => disposed++);
   b.addEventListener('dispose', () => disposed++);

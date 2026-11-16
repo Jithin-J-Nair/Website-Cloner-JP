@@ -1,0 +1,38 @@
+[
+  {
+    "command": "node scripts/test-validation-boundaries.mjs",
+    "exitCode": 0,
+    "seconds": 1.5,
+    "log": "after-boundaries.log"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "seconds": 17.27,
+    "log": "after-lint.log"
+  },
+  {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "seconds": 8.13,
+    "log": "after-typecheck.log"
+  },
+  {
+    "command": "npm run test:motion",
+    "exitCode": 0,
+    "seconds": 0.89,
+    "log": "after-test-motion.log"
+  },
+  {
+    "command": "npm run qa",
+    "exitCode": 0,
+    "seconds": 0.49,
+    "log": "after-qa.log"
+  },
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "seconds": 14.18,
+    "log": "after-build.log"
+  }
+]

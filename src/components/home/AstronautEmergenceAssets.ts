@@ -31,10 +31,11 @@ export interface LoadedAstronautRig {
   visorMaterial: THREE.MeshPhysicalMaterial | null;
   visorEarthUniform: { value: number };
   visorAnchorLocal: THREE.Vector3;
+  visorOrientationLocal?: THREE.Quaternion;
   drawCalls: number;
   triangles: number;
   /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
-  sampleBakedPose?: (frame: number, influence: number) => void;
+  sampleBakedPose?: (frame: number, influence: number, blendFrame?: number, blendWeight?: number) => void;
   sampleCapturedRoot?: (stage: "in" | "out", frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void;
 }
 
@@ -650,8 +651,9 @@ export function createCapturedPoseSampler(
   animation: ParsedBufData,
   bones: THREE.Bone[],
   skeleton: THREE.Skeleton,
-  visorAnchorLocal: THREE.Vector3
-): (frame: number, influence: number) => void {
+  visorAnchorLocal: THREE.Vector3,
+  visorOrientationLocal?: THREE.Quaternion
+): (frame: number, influence: number, blendFrame?: number, blendWeight?: number) => void {
   const boneCount = bones.length;
   const frameCount = animation.header.vertexCount / boneCount;
   if (boneCount !== 53 || frameCount !== 288) throw new Error("Unexpected captured astronaut animation layout");
@@ -662,28 +664,42 @@ export function createCapturedPoseSampler(
   const identity = new THREE.Quaternion();
   const sourceVisorAnchor = new THREE.Vector3(0, 1.685, 0.132);
   let previousFrame = -1;
-  let previousInfluence = -1;
-  return (frame: number, influence: number) => {
+  let previousInfluence = -1, previousBlend = -1, previousBlendWeight = -1;
+  const qb0 = new THREE.Quaternion(), qb1 = new THREE.Quaternion();
+  return (frame: number, influence: number, blendFrame = frame, blendWeight = 0) => {
     const f = THREE.MathUtils.clamp(frame, 0, frameCount - 1);
     const weight = THREE.MathUtils.clamp(influence, 0, 1);
-    if (f === previousFrame && weight === previousInfluence) return;
+    blendWeight = THREE.MathUtils.clamp(blendWeight, 0, 1);
+    if (f === previousFrame && weight === previousInfluence && blendFrame === previousBlend && blendWeight === previousBlendWeight) return;
+    previousBlend = blendFrame; previousBlendWeight = blendWeight;
     previousFrame = f;
     previousInfluence = weight;
     const from = Math.floor(f);
     const to = Math.min(frameCount - 1, from + 1);
     const alpha = f - from;
+    const bf = THREE.MathUtils.clamp(blendFrame, 0, frameCount - 1), ba = Math.floor(bf), bb = Math.min(frameCount - 1, ba + 1), bt = bf - ba;
     for (let i = 0; i < boneCount; i++) {
       const a = from * boneCount + i;
       const b = to * boneCount + i;
       q0.fromArray(orientations, a * 4).normalize();
       q1.fromArray(orientations, b * 4).normalize();
       q0.slerp(q1, alpha);
+      if (blendWeight > 0) {
+        qb0.fromArray(orientations, (ba * boneCount + i) * 4).normalize(); qb1.fromArray(orientations, (bb * boneCount + i) * 4).normalize();
+        qb0.slerp(qb1, bt); q0.slerp(qb0, blendWeight);
+      }
       bones[i].quaternion.slerpQuaternions(identity, q0, weight);
       bones[i].position.set(
         THREE.MathUtils.lerp(translations[a * 3], translations[b * 3], alpha) * weight,
         (THREE.MathUtils.lerp(translations[a * 3 + 1], translations[b * 3 + 1], alpha) + 0.9) * weight,
         THREE.MathUtils.lerp(translations[a * 3 + 2], translations[b * 3 + 2], alpha) * weight
       );
+      if (blendWeight > 0) {
+        for (let axis = 0; axis < 3; axis++) {
+          const value = (THREE.MathUtils.lerp(translations[(ba * boneCount + i) * 3 + axis], translations[(bb * boneCount + i) * 3 + axis], bt) + (axis === 1 ? .9 : 0)) * weight;
+          bones[i].position.setComponent(axis, THREE.MathUtils.lerp(bones[i].position.getComponent(axis), value, blendWeight));
+        }
+      }
       bones[i].updateMatrix();
       // These are already model-space deformation matrices, not a hierarchy of joint locals.
       bones[i].matrixWorld.copy(bones[i].matrix);
@@ -691,6 +707,7 @@ export function createCapturedPoseSampler(
     skeleton.update();
     visorAnchorLocal.copy(sourceVisorAnchor).applyMatrix4(bones[0].matrix);
     visorAnchorLocal.y -= 0.9;
+    visorOrientationLocal?.copy(bones[0].quaternion);
   };
 }
 
@@ -844,14 +861,15 @@ export async function loadLusionAstronautParts(
       modelRoot.add(mesh);
     });
     const visorAnchorLocal = new THREE.Vector3(-0.076, 0.80, 0.132);
-    const sampleBakedPose = createCapturedPoseSampler(animation, bones, skeleton, visorAnchorLocal);
+    const visorOrientationLocal = new THREE.Quaternion();
+    const sampleBakedPose = createCapturedPoseSampler(animation, bones, skeleton, visorAnchorLocal, visorOrientationLocal);
     // Keep the source bind silhouette until the downstream timeline explicitly samples it.
     sampleBakedPose(0, 0);
     // Skeleton.update reads matrixWorld; do not let parent transforms enter the baked palette.
     for (const bone of bones) bone.matrixWorldAutoUpdate = false;
     return {
       root, modelRoot, bones: {}, restQuats: {}, materials: partMaterials,
-      visorMaterial, visorEarthUniform, visorAnchorLocal, drawCalls: 4, triangles, sampleBakedPose, sampleCapturedRoot,
+      visorMaterial, visorEarthUniform, visorAnchorLocal, visorOrientationLocal, drawCalls: 4, triangles, sampleBakedPose, sampleCapturedRoot,
     };
   };
   const primary = buildCapturedRig();

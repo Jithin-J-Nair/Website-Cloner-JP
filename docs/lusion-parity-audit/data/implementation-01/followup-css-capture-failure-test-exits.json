@@ -1,0 +1,8 @@
+[
+  {
+    "command": "node docs/lusion-parity-audit/harness/capture-about-restorations.mjs",
+    "exitCode": 1,
+    "seconds": 37.85,
+    "log": "about-restorations-css-capture-failure.log"
+  }
+]

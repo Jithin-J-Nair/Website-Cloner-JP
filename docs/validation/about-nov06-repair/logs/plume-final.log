@@ -1,0 +1,1 @@
+PASS original deterministic finite multiscale instancing, shared GPU field packet, all quality counts, disposal events, no restricted portrait fetch, recovery/cancel cleanup and uncapped frame telemetry. Browser shader compilation/interaction is tested separately.

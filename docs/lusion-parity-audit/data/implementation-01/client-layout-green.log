@@ -1,0 +1,7 @@
+
+> lusion-studio-reconstruction@1.0.0 test:about-clients
+> node scripts/test-about-client-layout.mjs
+
+PASS client layout 390px, normal → reduced → normal
+PASS client layout 375px, normal → reduced → normal
+PASS client layout 1440px, normal → reduced → normal

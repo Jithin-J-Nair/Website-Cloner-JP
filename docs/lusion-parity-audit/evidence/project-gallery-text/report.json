@@ -1,0 +1,63 @@
+{
+  "scope": "Captured text/order/em sizing and visible browser render, not matched-source typography/spacing acceptance.",
+  "states": [
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "text": "We built a robust Houdini to WebGL pipeline that compresses complex 3D tree, branch, and node structures into a custom web format, reducing the download size to just 3.5 MB while leveraging WebGL instancing for fast delivery.",
+      "style": {
+        "font": 24,
+        "parentFont": 16,
+        "width": 744.015625
+      },
+      "screenshot": "of_the_oak--1440x900.jpg"
+    },
+    {
+      "route": "/projects/of_the_oak",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "text": "We built a robust Houdini to WebGL pipeline that compresses complex 3D tree, branch, and node structures into a custom web format, reducing the download size to just 3.5 MB while leveraging WebGL instancing for fast delivery.",
+      "style": {
+        "font": 24,
+        "parentFont": 16,
+        "width": 360
+      },
+      "screenshot": "of_the_oak--390x844.jpg"
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "text": "All dot positions are procedrually generated and animated in real-time. We used the index breakpoints to reduce the data needed to store the country data and the dot positions. This allowed us to store the data in a single image file, which is then decoded and rendered on the fly.",
+      "style": {
+        "font": 24,
+        "parentFont": 16,
+        "width": 744.015625
+      },
+      "screenshot": "worldcoin--1440x900.jpg"
+    },
+    {
+      "route": "/projects/worldcoin",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "text": "All dot positions are procedrually generated and animated in real-time. We used the index breakpoints to reduce the data needed to store the country data and the dot positions. This allowed us to store the data in a single image file, which is then decoded and rendered on the fly.",
+      "style": {
+        "font": 24,
+        "parentFont": 16,
+        "width": 360
+      },
+      "screenshot": "worldcoin--390x844.jpg"
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

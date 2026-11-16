@@ -1,0 +1,285 @@
+{
+  "scope": "Mobile three-across captured-reference geometry; reduced-motion content visibility; desktop loop continuity.",
+  "states": [
+    {
+      "width": 390,
+      "normal": {
+        "width": 390,
+        "tileWidth": 130,
+        "headingFont": 51.87,
+        "loopPairs": [
+          [
+            650,
+            650
+          ],
+          [
+            780,
+            780
+          ],
+          [
+            650,
+            650
+          ]
+        ],
+        "staticItemsWithinRows": false,
+        "duplicateDisplays": [
+          "flex",
+          "flex",
+          "flex"
+        ],
+        "animation": [
+          "about-client-marquee",
+          "about-client-marquee",
+          "about-client-marquee"
+        ]
+      },
+      "reduced": {
+        "width": 390,
+        "tileWidth": 130,
+        "headingFont": 51.87,
+        "loopPairs": [
+          [
+            390,
+            0
+          ],
+          [
+            390,
+            0
+          ],
+          [
+            390,
+            0
+          ]
+        ],
+        "staticItemsWithinRows": true,
+        "duplicateDisplays": [
+          "none",
+          "none",
+          "none"
+        ],
+        "animation": [
+          "none",
+          "none",
+          "none"
+        ]
+      },
+      "restored": {
+        "width": 390,
+        "tileWidth": 130,
+        "headingFont": 51.87,
+        "loopPairs": [
+          [
+            650,
+            650
+          ],
+          [
+            780,
+            780
+          ],
+          [
+            650,
+            650
+          ]
+        ],
+        "staticItemsWithinRows": false,
+        "duplicateDisplays": [
+          "flex",
+          "flex",
+          "flex"
+        ],
+        "animation": [
+          "about-client-marquee",
+          "about-client-marquee",
+          "about-client-marquee"
+        ]
+      }
+    },
+    {
+      "width": 375,
+      "normal": {
+        "width": 375,
+        "tileWidth": 125,
+        "headingFont": 49.875,
+        "loopPairs": [
+          [
+            625,
+            625
+          ],
+          [
+            750,
+            750
+          ],
+          [
+            625,
+            625
+          ]
+        ],
+        "staticItemsWithinRows": false,
+        "duplicateDisplays": [
+          "flex",
+          "flex",
+          "flex"
+        ],
+        "animation": [
+          "about-client-marquee",
+          "about-client-marquee",
+          "about-client-marquee"
+        ]
+      },
+      "reduced": {
+        "width": 375,
+        "tileWidth": 125,
+        "headingFont": 49.875,
+        "loopPairs": [
+          [
+            375,
+            0
+          ],
+          [
+            375,
+            0
+          ],
+          [
+            375,
+            0
+          ]
+        ],
+        "staticItemsWithinRows": true,
+        "duplicateDisplays": [
+          "none",
+          "none",
+          "none"
+        ],
+        "animation": [
+          "none",
+          "none",
+          "none"
+        ]
+      },
+      "restored": {
+        "width": 375,
+        "tileWidth": 125,
+        "headingFont": 49.875,
+        "loopPairs": [
+          [
+            625,
+            625
+          ],
+          [
+            750,
+            750
+          ],
+          [
+            625,
+            625
+          ]
+        ],
+        "staticItemsWithinRows": false,
+        "duplicateDisplays": [
+          "flex",
+          "flex",
+          "flex"
+        ],
+        "animation": [
+          "about-client-marquee",
+          "about-client-marquee",
+          "about-client-marquee"
+        ]
+      }
+    },
+    {
+      "width": 1440,
+      "normal": {
+        "width": 1440,
+        "tileWidth": 259.1875,
+        "headingFont": 51.12,
+        "loopPairs": [
+          [
+            1296,
+            1296
+          ],
+          [
+            1296,
+            1296
+          ],
+          [
+            1296,
+            1296
+          ]
+        ],
+        "staticItemsWithinRows": false,
+        "duplicateDisplays": [
+          "flex",
+          "flex",
+          "flex"
+        ],
+        "animation": [
+          "about-client-marquee",
+          "about-client-marquee",
+          "about-client-marquee"
+        ]
+      },
+      "reduced": {
+        "width": 1440,
+        "tileWidth": 259.1875,
+        "headingFont": 51.12,
+        "loopPairs": [
+          [
+            1296,
+            0
+          ],
+          [
+            1296,
+            0
+          ],
+          [
+            1296,
+            0
+          ]
+        ],
+        "staticItemsWithinRows": true,
+        "duplicateDisplays": [
+          "none",
+          "none",
+          "none"
+        ],
+        "animation": [
+          "none",
+          "none",
+          "none"
+        ]
+      },
+      "restored": {
+        "width": 1440,
+        "tileWidth": 259.1875,
+        "headingFont": 51.12,
+        "loopPairs": [
+          [
+            1296,
+            1296
+          ],
+          [
+            1296,
+            1296
+          ],
+          [
+            1296,
+            1296
+          ]
+        ],
+        "staticItemsWithinRows": false,
+        "duplicateDisplays": [
+          "flex",
+          "flex",
+          "flex"
+        ],
+        "animation": [
+          "about-client-marquee",
+          "about-client-marquee",
+          "about-client-marquee"
+        ]
+      }
+    }
+  ],
+  "passed": true
+}

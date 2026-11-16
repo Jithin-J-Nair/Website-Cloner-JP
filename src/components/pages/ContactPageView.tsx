@@ -345,12 +345,12 @@ export function ContactPageView() {
                       href={`mailto:${channel.addr}`}
                       className="font-display text-lg font-medium text-[#0a0c12] hover:text-[#2434ff]"
                     >
-                      {channel.addr}
+                      Email this channel
                     </a>
                     <button
                       type="button"
                       onClick={() => handleCopy(channel.key, channel.addr)}
-                      aria-label={`Copy ${channel.addr}`}
+                      aria-label={`Copy email for ${channel.title}`}
                       className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-black/10 bg-[#eef0f6] text-[#0a0c12] transition hover:bg-[#2434ff] hover:text-white"
                     >
                       {copiedKey === channel.key ? (

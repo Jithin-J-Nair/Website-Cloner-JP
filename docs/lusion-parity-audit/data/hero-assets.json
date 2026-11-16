@@ -1,0 +1,16 @@
+[
+  {
+    "path": "/assets/models/home/cross.buf",
+    "status": 200,
+    "bytes": 282676,
+    "contentType": "application/octet-stream",
+    "sha256": "948be63d94e36ee324ebfedfe9ede698f3142b1d1ee4d7ddf1b9039e9accdecc"
+  },
+  {
+    "path": "/assets/models/home/cross_ld.buf",
+    "status": 200,
+    "bytes": 123984,
+    "contentType": "application/octet-stream",
+    "sha256": "844075336e90b920aaafce20c2d5bdb225ff7b489b86a5ce662287458922df93"
+  }
+]

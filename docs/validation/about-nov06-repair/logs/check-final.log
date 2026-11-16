@@ -1,0 +1,66 @@
+
+> lusion-studio-reconstruction@1.0.0 check
+> npm run lint && npm run typecheck && npm run build
+
+
+> lusion-studio-reconstruction@1.0.0 lint
+> eslint
+
+
+/home/user/Website-Cloner-JP/src/components/pages/LusionProjectDetailView.tsx
+  85:3  warning  'highlight' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/user/Website-Cloner-JP/src/components/sections/StudioFooter.tsx
+  174:7  warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+
+✖ 2 problems (0 errors, 2 warnings)
+
+
+> lusion-studio-reconstruction@1.0.0 typecheck
+> tsc --noEmit
+
+
+> lusion-studio-reconstruction@1.0.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 43ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1457ms
+  Running TypeScript ...
+  Finished TypeScript in 9.6s ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/27) ...
+  Generating static pages using 1 worker (6/27)
+  Generating static pages using 1 worker (13/27)
+  Generating static pages using 1 worker (20/27)
+✓ Generating static pages using 1 worker (27/27) in 942ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ƒ /assets/[...path]
+├ ○ /contact
+├ ○ /design-system
+├ ○ /icon.svg
+├ ○ /labs
+├ ○ /projects
+├   /projects/[slug]
+│ ├ ● /projects/oryzo_ai
+│ ├ ● /projects/of_the_oak
+│ ├ ● /projects/devin_ai
+│ └ ● [+14 more paths]
+├ ○ /work
+└ ƒ /work/[slug]
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> lusion-studio-reconstruction@1.0.0 postbuild
+> cp -r public .next/standalone/ && cp -r media-bundle .next/standalone/ && cp -r .next/static .next/standalone/.next/

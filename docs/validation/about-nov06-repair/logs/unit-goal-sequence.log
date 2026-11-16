@@ -1,0 +1,6 @@
+PASS: monotone cinematic activation/end, clamping, 30,000 samples and continuous beat velocity
+PASS: four encoded girder faces decode to the captured low-detail cross-section; source immutable
+PASS: decoded TBN handedness and captured 96-inner / 456-outer placement budget
+PASS: two 100-frame root curves clamp/interpolate/reverse; DQ replaces position/normal/tangent skin chunks
+PASS: authentic 53-bone weights, frame-major interpolation, normalized quaternions, identity emergence and reversible poses
+PASS: 946-piece / 15-frame glass, correct frame-major indexing, unit rotations, forward/backward determinism

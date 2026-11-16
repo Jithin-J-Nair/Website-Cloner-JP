@@ -1,0 +1,453 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "reduced": false,
+  "touch": false,
+  "errors": [],
+  "failedAssets": [],
+  "states": [],
+  "viewportMetrics": {
+    "width": 1440,
+    "height": 900,
+    "visualWidth": 1440,
+    "visualHeight": 900
+  },
+  "smoothScroll": {
+    "active": true,
+    "duration": 0.92,
+    "smoothWheel": true
+  },
+  "hero": {
+    "initial": {
+      "colorIndex": "0",
+      "clusterMode": "free-body-cloud",
+      "clusterEnvelope": "soft-central-return",
+      "accentColor": "#1b24e6",
+      "webglStatus": "ready",
+      "pointerInteractions": "0",
+      "motionState": "settled",
+      "activeRaf": "false",
+      "renderPixels": "1296x615",
+      "offsetEnergy": "0.00000",
+      "pointerInfluencedPieces": "0",
+      "clusterPieces": "23",
+      "physicsCollisions": "258",
+      "physicsActive": "true",
+      "kineticEnergy": "1.24694",
+      "maxTravel": "2.2750",
+      "meanRadius": "1.8472",
+      "renderCount": "5",
+      "frameCpuMs": "3.00",
+      "drawCalls": "47"
+    },
+    "hovered": {
+      "colorIndex": "0",
+      "clusterMode": "free-body-cloud",
+      "clusterEnvelope": "soft-central-return",
+      "accentColor": "#1b24e6",
+      "webglStatus": "ready",
+      "pointerInteractions": "1",
+      "motionState": "responding",
+      "activeRaf": "true",
+      "renderPixels": "1296x615",
+      "offsetEnergy": "0.80375",
+      "pointerInfluencedPieces": "4",
+      "clusterPieces": "23",
+      "physicsCollisions": "174",
+      "physicsActive": "true",
+      "kineticEnergy": "436.77138",
+      "maxTravel": "5.1389",
+      "meanRadius": "3.7624",
+      "renderCount": "46",
+      "frameCpuMs": "1.50",
+      "drawCalls": "43"
+    },
+    "settled": {
+      "colorIndex": "0",
+      "clusterMode": "free-body-cloud",
+      "clusterEnvelope": "soft-central-return",
+      "accentColor": "#1b24e6",
+      "webglStatus": "ready",
+      "pointerInteractions": "1",
+      "motionState": "settled",
+      "activeRaf": "false",
+      "renderPixels": "1296x615",
+      "offsetEnergy": "0.00000",
+      "pointerInfluencedPieces": "0",
+      "clusterPieces": "23",
+      "physicsCollisions": "439",
+      "physicsActive": "true",
+      "kineticEnergy": "102.39286",
+      "maxTravel": "3.2707",
+      "meanRadius": "2.0333",
+      "renderCount": "89",
+      "frameCpuMs": "2.20",
+      "drawCalls": "47"
+    },
+    "returned": {
+      "colorIndex": "0",
+      "clusterMode": "free-body-cloud",
+      "clusterEnvelope": "soft-central-return",
+      "accentColor": "#1b24e6",
+      "webglStatus": "ready",
+      "pointerInteractions": "1",
+      "motionState": "settled",
+      "activeRaf": "false",
+      "renderPixels": "1296x615",
+      "offsetEnergy": "0.00000",
+      "pointerInfluencedPieces": "0",
+      "clusterPieces": "23",
+      "physicsCollisions": "439",
+      "physicsActive": "true",
+      "kineticEnergy": "102.39286",
+      "maxTravel": "3.2707",
+      "meanRadius": "2.0333",
+      "renderCount": "89",
+      "frameCpuMs": "2.20",
+      "drawCalls": "47"
+    },
+    "idle": {
+      "colorIndex": "0",
+      "clusterMode": "free-body-cloud",
+      "clusterEnvelope": "soft-central-return",
+      "accentColor": "#1b24e6",
+      "webglStatus": "ready",
+      "pointerInteractions": "1",
+      "motionState": "settled",
+      "activeRaf": "false",
+      "renderPixels": "1296x615",
+      "offsetEnergy": "0.00000",
+      "pointerInfluencedPieces": "0",
+      "clusterPieces": "23",
+      "physicsCollisions": "463",
+      "physicsActive": "true",
+      "kineticEnergy": "94.72620",
+      "maxTravel": "2.9937",
+      "meanRadius": "2.0012",
+      "renderCount": "91",
+      "frameCpuMs": "4.50",
+      "drawCalls": "47"
+    },
+    "rapidCancel": true,
+    "idleFrames": 2
+  },
+  "ribbon": {
+    "forward": [
+      "1",
+      "0.0022"
+    ],
+    "reversed": "1"
+  },
+  "reel": [
+    {
+      "transform": "matrix(0.8609, 0, 0, 0.8609, 0, 51.67)",
+      "radius": "35.9px"
+    },
+    {
+      "transform": "matrix(0.94351, 0, 0, 0.94351, 0, 20.98)",
+      "radius": "26.46px"
+    },
+    {
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "radius": "20px"
+    }
+  ],
+  "reelReverse": true,
+  "reelBackground": {
+    "paused": false,
+    "readyState": 4
+  },
+  "featured": [
+    {
+      "heading": "matrix(1, 0, 0, 1, 0, 32.7283)",
+      "cards": [
+        {
+          "stage": "translate3d(0px, 44px, 0px) scale(0.97)",
+          "image": "translate3d(0px, 13.62px, 0px) scale(1.08)"
+        },
+        {
+          "stage": "translate3d(0px, 44px, 0px) scale(0.97)",
+          "image": "translate3d(0px, 13.62px, 0px) scale(1.08)"
+        }
+      ]
+    },
+    {
+      "heading": "matrix(1, 0, 0, 1, 0, 0)",
+      "cards": [
+        {
+          "stage": "translate3d(0px, 4.68px, 0px) scale(0.99681)",
+          "image": "translate3d(0px, 6.41px, 0px) scale(1.08)"
+        },
+        {
+          "stage": "translate3d(0px, 4.68px, 0px) scale(0.99681)",
+          "image": "translate3d(0px, 6.41px, 0px) scale(1.08)"
+        }
+      ]
+    },
+    {
+      "heading": "matrix(1, 0, 0, 1, 0, 0)",
+      "cards": [
+        {
+          "stage": "translate3d(0px, 0px, 0px) scale(1)",
+          "image": "translate3d(0px, -0.8px, 0px) scale(1.08)"
+        },
+        {
+          "stage": "translate3d(0px, 0px, 0px) scale(1)",
+          "image": "translate3d(0px, -0.8px, 0px) scale(1.08)"
+        }
+      ]
+    }
+  ],
+  "featuredReverse": true,
+  "solar": {
+    "telemetry": {
+      "glbLoaded": true,
+      "glbError": null,
+      "qualityTier": "desktop",
+      "renderWidth": 960,
+      "renderHeight": 600,
+      "pixelRatio": 0.6666666666666666,
+      "textureMaxDim": 2048,
+      "drawCalls": 6,
+      "triangles": 13241,
+      "lastFrameMs": 0.6,
+      "renderCount": 37,
+      "resources": {
+        "geometries": 14,
+        "textures": 15,
+        "programs": 10
+      },
+      "gpuTiming": {
+        "enabled": false,
+        "lastMs": null,
+        "phase": "",
+        "samples": 0,
+        "disjoints": 0
+      },
+      "solar": {
+        "x": -0.5050504782232217,
+        "y": 1.4629090851279385,
+        "facing": 0.5504423172697274,
+        "visibility": 0.375723309062193,
+        "occlusion": 1,
+        "focalScale": 0.9992829697541855
+      },
+      "emergenceProgress": 0.8,
+      "portalStencilActive": false,
+      "fallbackVisible": false,
+      "sceneState": {
+        "tunnelProgress": 0,
+        "shatterProgress": 0,
+        "waitProgress": 0,
+        "bakedFrame": 0,
+        "astronautMatrix": [
+          0.1888640530136683,
+          0.06124493546748504,
+          -0.9123260421479619,
+          0,
+          0.0075173553061138616,
+          0.9314483371902587,
+          0.0640848214262506,
+          0,
+          0.91434853238302,
+          -0.020308442766898197,
+          0.18791941970943737,
+          0,
+          0.056568749999999994,
+          -0.5806386708693763,
+          0.9362337962962964,
+          1
+        ],
+        "cameraMatrix": [
+          0.9999999049825212,
+          -4.235164736271502e-22,
+          0.0004359299811591291,
+          0,
+          0.000003391604670858775,
+          0.9999697341030888,
+          -0.007780158500635453,
+          0,
+          -0.0004359167873472588,
+          0.007780159239886568,
+          0.9999696390884858,
+          0,
+          -0.0014399998735398329,
+          -0.013584806504186461,
+          3.3032821759259257,
+          1
+        ],
+        "trussLoaded": true,
+        "shardsLoaded": true,
+        "portalFlash": 0,
+        "flashVisible": false,
+        "corridorTravel": 0,
+        "glazingLayers": 0,
+        "glassOpacity": 0,
+        "glassThickness": 0,
+        "glassRefractionReady": false,
+        "shardDepthWrite": true,
+        "shardSpread": 1.2,
+        "shardSidewallsLoaded": true,
+        "shardSidewallTriangles": 11450,
+        "shardCount": 946,
+        "shardFrames": 15,
+        "vortexIntensity": 0,
+        "vortexGlassVisible": false,
+        "vortexGlassLayers": 4,
+        "vortexGlassEdges": 128,
+        "ringVisible": true
+      },
+      "playback": {
+        "state": "completed",
+        "progress": 0,
+        "virtualScroll": 10018,
+        "activation": 7892.5599999999995,
+        "end": 40245.44,
+        "runs": 0
+      }
+    },
+    "canvasSize": [
+      960,
+      600
+    ],
+    "drawingBuffer": [
+      960,
+      600
+    ],
+    "webglError": 0
+  },
+  "offscreenVideosPaused": true,
+  "solarCameraResponse": {
+    "first": {
+      "x": -0.5050504782232217,
+      "y": 1.4629090851279385,
+      "facing": 0.5504423172697274,
+      "visibility": 0.375723309062193,
+      "occlusion": 1,
+      "focalScale": 0.9992829697541855
+    },
+    "other": {
+      "x": -0.6410197317100388,
+      "y": 1.5933142869620496,
+      "facing": 0.5129804390563162,
+      "visibility": 0.28301428206562684,
+      "occlusion": 1,
+      "focalScale": 1.0136034090628185
+    }
+  },
+  "downstream": {
+    "vortex": {
+      "tunnelProgress": 0.5799855573714416,
+      "shatterProgress": 0,
+      "bakedFrame": 52.204028290282906,
+      "corridorTravel": 0,
+      "glassOpacity": 0,
+      "glassThickness": 0,
+      "glassRefractionReady": false,
+      "shardDepthWrite": true,
+      "shardCount": 946,
+      "shardFrames": 15,
+      "vortexIntensity": 0.409009460983892,
+      "shardSpread": 1.2,
+      "shardSidewallsLoaded": true,
+      "shardSidewallTriangles": 11450,
+      "vortexGlassVisible": true,
+      "vortexGlassLayers": 4,
+      "vortexGlassEdges": 128,
+      "trussLoaded": true,
+      "shardsLoaded": true,
+      "webglError": 0
+    },
+    "blueCorridor": {
+      "tunnelProgress": 0.9000038006917259,
+      "shatterProgress": 0,
+      "bakedFrame": 81.00861008610086,
+      "corridorTravel": 6.174567304595574,
+      "glassOpacity": 0,
+      "glassThickness": 0,
+      "glassRefractionReady": false,
+      "shardDepthWrite": true,
+      "shardCount": 946,
+      "shardFrames": 15,
+      "vortexIntensity": 0.9782431209112163,
+      "shardSpread": 1.2,
+      "shardSidewallsLoaded": true,
+      "shardSidewallTriangles": 11450,
+      "vortexGlassVisible": false,
+      "vortexGlassLayers": 4,
+      "vortexGlassEdges": 128,
+      "trussLoaded": true,
+      "shardsLoaded": true,
+      "webglError": 0
+    },
+    "impactApproach": {
+      "tunnelProgress": 1,
+      "shatterProgress": 0.16016597510373445,
+      "bakedFrame": 95.01302608418567,
+      "corridorTravel": 23.477968833605487,
+      "glassOpacity": 0,
+      "glassThickness": 0,
+      "glassRefractionReady": false,
+      "shardDepthWrite": true,
+      "shardCount": 946,
+      "shardFrames": 15,
+      "vortexIntensity": 0.9782431209112163,
+      "shardSpread": 1.2,
+      "shardSidewallsLoaded": true,
+      "shardSidewallTriangles": 11450,
+      "vortexGlassVisible": false,
+      "vortexGlassLayers": 4,
+      "vortexGlassEdges": 128,
+      "trussLoaded": true,
+      "shardsLoaded": true,
+      "webglError": 0
+    },
+    "shatter": {
+      "tunnelProgress": 1,
+      "shatterProgress": 0.2850622406639004,
+      "bakedFrame": 105.54266261669528,
+      "corridorTravel": 24.662962007557724,
+      "glassOpacity": 1,
+      "glassThickness": 0.035,
+      "glassRefractionReady": true,
+      "shardDepthWrite": true,
+      "shardCount": 946,
+      "shardFrames": 15,
+      "vortexIntensity": 0.9782431209112163,
+      "shardSpread": 1.2,
+      "shardSidewallsLoaded": true,
+      "shardSidewallTriangles": 11450,
+      "vortexGlassVisible": false,
+      "vortexGlassLayers": 4,
+      "vortexGlassEdges": 128,
+      "trussLoaded": true,
+      "shardsLoaded": true,
+      "webglError": 0
+    },
+    "postShatter": {
+      "tunnelProgress": 1,
+      "shatterProgress": 0.9,
+      "bakedFrame": 139,
+      "corridorTravel": 30.912471039999993,
+      "glassOpacity": 0,
+      "glassThickness": 0,
+      "glassRefractionReady": false,
+      "shardDepthWrite": true,
+      "shardCount": 946,
+      "shardFrames": 15,
+      "vortexIntensity": 0.9782431209112163,
+      "shardSpread": 1.2,
+      "shardSidewallsLoaded": true,
+      "shardSidewallTriangles": 11450,
+      "vortexGlassVisible": false,
+      "vortexGlassLayers": 4,
+      "vortexGlassEdges": 128,
+      "trussLoaded": true,
+      "shardsLoaded": true,
+      "webglError": 0
+    }
+  },
+  "modalChecked": true
+}
