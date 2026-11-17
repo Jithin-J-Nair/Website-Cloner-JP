@@ -1537,7 +1537,12 @@ export function GoalTunnelSection() {
         const bakedFrame = tShatter < .5 ? loopFrame : idleFrame;
         const transitionFrame = lerp(90, 139, clamp01((tOutPull + tShatter - .9) / 1.1) ** 4);
         const transitionWeight = clamp01(tShatter / .1) * (1 - clamp01((tShatter - .9) / .1));
-        mainAstro.sampleBakedPose?.(bakedFrame, inEmergencePhase ? smoothstep(.78, 1, uEmergence) : 1, transitionFrame, transitionWeight);
+        // During the landing, the captured full-body blend pulls the hands
+        // together. Keep the arms on the earlier open landing gesture, then
+        // return smoothly to the unmodified standing animation.
+        const landingArmWeight = smoothstep(.55, .65, tShatter) * (1 - smoothstep(.99, 1, tShatter));
+        const landingArmFrame = lerp(lerp(105, 115, smoothstep(.55, .88, tShatter)), 140, smoothstep(.88, .98, tShatter));
+        mainAstro.sampleBakedPose?.(bakedFrame, inEmergencePhase ? smoothstep(.78, 1, uEmergence) : 1, transitionFrame, transitionWeight, landingArmFrame, landingArmWeight);
         if (window.__goalAstronautTelemetry) {
           window.__goalAstronautTelemetry.sceneState.bakedFrame = bakedFrame;
         }
