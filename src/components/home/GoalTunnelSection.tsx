@@ -14,6 +14,7 @@ import { GoalReferenceOverlayPass } from "./GoalReferenceOverlayPass";
 import { glassVertex, glassFragment } from "./GoalReferenceShaders";
 import { solarAcceptance, solarFocalScale, solarOcclusion } from "@/lib/solar-optics";
 import { createGpuFrameTimer } from "@/lib/gpu-frame-timer";
+import { heroTiltFromOrientation, smoothHeroTilt } from "@/lib/home-hero-tilt";
 import { LUSION_HOME } from "@/data/reference";
 import { useStudioStore } from "@/lib/store";
 import { soundEngine } from "@/lib/audio";
@@ -209,6 +210,8 @@ export function GoalTunnelSection() {
   const playbackControlsRef = useRef<HTMLDivElement | null>(null);
   const pausePlaybackRef = useRef<HTMLButtonElement | null>(null);
   const skipPlaybackRef = useRef<HTMLButtonElement | null>(null);
+  const tiltButtonRef = useRef<HTMLButtonElement | null>(null);
+  const tiltStatusRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     const goalEl = goalRef.current;
@@ -706,8 +709,22 @@ export function GoalTunnelSection() {
     let rafId = 0;
     const startClock = performance.now();
 
+    // Desktop camera is authored and centered. Only an explicitly enabled,
+    // coarse-pointer mobile device can supply relative orientation to this view.
     const pointerTarget = { x: 0, y: 0 };
     const pointerSmooth = { x: 0, y: 0 };
+    const tiltButton = tiltButtonRef.current, tiltStatus = tiltStatusRef.current;
+    const coarsePointer = window.matchMedia("(pointer: coarse)");
+    let tiltEnabled = false, tiltVisible = false;
+    let tiltBaseline: { beta: number; gamma: number; angle: number } | null = null;
+    const clearTilt = () => { tiltBaseline = null; pointerTarget.x = pointerTarget.y = 0; };
+    const tiltSupported = () => window.innerWidth < 820 && coarsePointer.matches && window.isSecureContext && "DeviceOrientationEvent" in window && !reducedMotion;
+    const setTiltControl = (visible: boolean) => {
+      const next = visible && tiltSupported();
+      if (tiltVisible && !next) clearTilt();
+      tiltVisible = next;
+      if (tiltButton) tiltButton.hidden = !next;
+    };
 
     window.__goalAstronautTelemetry = {
       pipelineReady, glbLoaded: false,
@@ -1021,6 +1038,7 @@ export function GoalTunnelSection() {
 
       // If GLB load explicitly errored, keep graceful fallback poster visible cleanly
       if (window.__goalAstronautTelemetry?.fallbackVisible) {
+        setTiltControl(false);
         return;
       }
 
@@ -1031,6 +1049,7 @@ export function GoalTunnelSection() {
       // Stay active cleanly until `#footer-section` (`z-[32]`) completely covers the viewport!
       const activeEnd = m.endTop + m.endHeight + H * 1.05;
 
+      setTiltControl(sy >= m.emergenceStart && sy < m.endTop && !blockedByChrome() && docVisible);
       if (sy < activeStart || sy > activeEnd) {
         audioJourney.update(IDLE_JOURNEY);
         overlayEl.style.visibility = "hidden";
@@ -1118,8 +1137,8 @@ export function GoalTunnelSection() {
       const kf = evaluateEmergenceChoreography(uEmergence);
       const inEmergencePhase = sy <= m.emergenceEnd + 1;
 
-      const pxParallax = reducedMotion ? 0 : pointerSmooth.x;
-      const pyParallax = reducedMotion ? 0 : pointerSmooth.y;
+      const pxParallax = reducedMotion || !tiltSupported() ? 0 : pointerSmooth.x;
+      const pyParallax = reducedMotion || !tiltSupported() ? 0 : pointerSmooth.y;
 
       // -----------------------------------------------------------------------
       // A. Camera + True 3D Tablet Bezel + GPU Stencil Portal (`Frames 01 -> 04`)
@@ -1898,8 +1917,8 @@ export function GoalTunnelSection() {
       }
 
       if (playbackState !== "paused") {
-        pointerSmooth.x += (pointerTarget.x - pointerSmooth.x) * (1-Math.exp(-4.7*deltaSeconds));
-        pointerSmooth.y += (pointerTarget.y - pointerSmooth.y) * (1-Math.exp(-4.7*deltaSeconds));
+        pointerSmooth.x = smoothHeroTilt(pointerSmooth.x, pointerTarget.x, deltaSeconds);
+        pointerSmooth.y = smoothHeroTilt(pointerSmooth.y, pointerTarget.y, deltaSeconds);
       }
 
       renderSceneAtScroll(smoothScrollY, (performance.now() - startClock) * 0.001);
@@ -1921,6 +1940,7 @@ export function GoalTunnelSection() {
     // boundary so menu/modal time can never be charged on resume.
     const unsubscribeChrome = useStudioStore.subscribe((state, previous) => {
       if (state.menuOpen !== previous.menuOpen || state.reelOpen !== previous.reelOpen || state.isTransitioning !== previous.isTransitioning) {
+        clearTilt();
         frameClock = performance.now();
         ensureLoop();
       }
@@ -1928,6 +1948,7 @@ export function GoalTunnelSection() {
     const onContextLost = (event: Event) => {
       event.preventDefault();
       contextLost = true;
+      clearTilt(); setTiltControl(false);
       releasePlayback(false);
       audioJourney.release();
       if (rafId) window.cancelAnimationFrame(rafId);
@@ -1952,16 +1973,40 @@ export function GoalTunnelSection() {
       ensureLoop();
     };
 
-    const onPointerMove = (ev: PointerEvent) => {
-      const w = Math.max(1, window.innerWidth);
-      const h = Math.max(1, window.innerHeight);
-      pointerTarget.x = Math.max(-1, Math.min(1, (ev.clientX / w) * 2 - 1));
-      pointerTarget.y = Math.max(-1, Math.min(1, 1 - (ev.clientY / h) * 2));
-      ensureLoop();
+    const updateTiltButton = (state: "off" | "on" | "requesting" | "denied" | "unavailable") => {
+      if (!tiltButton) return;
+      tiltButton.textContent = state === "on" ? "MOTION ON" : state === "requesting" ? "ENABLING MOTION" : state === "denied" ? "MOTION BLOCKED" : state === "unavailable" ? "MOTION UNAVAILABLE" : "ENABLE MOTION";
+      tiltButton.disabled = state === "requesting";
+      tiltButton.setAttribute("aria-pressed", String(state === "on"));
+      tiltButton.setAttribute("aria-label", state === "on" ? "Turn off cinematic device motion" : "Enable cinematic device motion");
+      if (tiltStatus) tiltStatus.textContent = state === "on" ? "Cinematic device motion enabled." : state === "denied" ? "Device motion permission denied." : state === "unavailable" ? "Device motion is unavailable." : "";
     };
+    const onTiltToggle = async () => {
+      if (tiltEnabled) { tiltEnabled = false; clearTilt(); updateTiltButton("off"); ensureLoop(); return; }
+      if (!tiltSupported()) { updateTiltButton("unavailable"); return; }
+      updateTiltButton("requesting");
+      try {
+        const sensor = DeviceOrientationEvent as typeof DeviceOrientationEvent & { requestPermission?: () => Promise<"granted" | "denied"> };
+        const permission = sensor.requestPermission ? await sensor.requestPermission() : "granted";
+        if (unmounted) return;
+        tiltEnabled = permission === "granted" && tiltSupported();
+        clearTilt(); updateTiltButton(tiltEnabled ? "on" : "denied"); ensureLoop();
+      } catch { if (!unmounted) { tiltEnabled = false; clearTilt(); updateTiltButton("denied"); } }
+    };
+    const onOrientation = (event: DeviceOrientationEvent) => {
+      if (!tiltEnabled || !tiltVisible || !tiltSupported() || document.hidden || blockedByChrome()) { clearTilt(); return; }
+      if (event.beta == null || event.gamma == null || !Number.isFinite(event.beta) || !Number.isFinite(event.gamma)) return;
+      const angle = screen.orientation?.angle ?? 0;
+      if (!tiltBaseline || tiltBaseline.angle !== angle) { tiltBaseline = { beta: event.beta, gamma: event.gamma, angle }; return; }
+      const tilt = heroTiltFromOrientation(event.beta, event.gamma, tiltBaseline.beta, tiltBaseline.gamma, angle);
+      pointerTarget.x = tilt.x; pointerTarget.y = -tilt.y; ensureLoop();
+    };
+    const onTiltReset = () => { clearTilt(); ensureLoop(); };
 
     const onResize = () => {
       if (contextLost || window.__goalAstronautTelemetry?.fallbackVisible) return;
+      clearTilt();
+      if (!tiltSupported()) { pointerSmooth.x = pointerSmooth.y = 0; setTiltControl(false); }
       measure();
       if (playing() && playbackPath) {
         targetScrollY = smoothScrollY = playbackPath(playbackProgress);
@@ -1973,6 +2018,7 @@ export function GoalTunnelSection() {
 
     const onVisibility = () => {
       docVisible = document.visibilityState === "visible";
+      clearTilt(); if (!docVisible) setTiltControl(false);
       frameClock = performance.now(); // Do not charge hidden-tab time to the cinematic.
       ensureLoop();
     };
@@ -2017,6 +2063,7 @@ export function GoalTunnelSection() {
     const onMotionChange = () => {
       reducedMotion = motionQuery.matches;
       if (reducedMotion) {
+        tiltEnabled = false; clearTilt(); updateTiltButton("off");
         pointerTarget.x = pointerTarget.y = pointerSmooth.x = pointerSmooth.y = 0;
         releasePlayback(true);
       }
@@ -2040,7 +2087,9 @@ export function GoalTunnelSection() {
     measure();
     ro.observe(goalEl);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    tiltButton?.addEventListener("click", onTiltToggle);
+    window.addEventListener("deviceorientation", onOrientation);
+    window.addEventListener("orientationchange", onTiltReset);
     window.addEventListener("resize", onResize, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     ensureLoop();
@@ -2066,7 +2115,9 @@ export function GoalTunnelSection() {
       if (rafId) window.cancelAnimationFrame(rafId);
       ro.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("pointermove", onPointerMove);
+      tiltButton?.removeEventListener("click", onTiltToggle);
+      window.removeEventListener("deviceorientation", onOrientation);
+      window.removeEventListener("orientationchange", onTiltReset);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
 
@@ -2109,6 +2160,9 @@ export function GoalTunnelSection() {
         <button ref={pausePlaybackRef} type="button" aria-label="Pause cinematic" className="min-h-11 min-w-16 rounded-full px-3 focus-visible:outline-2 focus-visible:outline-cyan-200">Pause</button>
         <button ref={skipPlaybackRef} type="button" aria-label="Skip cinematic" className="min-h-11 min-w-16 rounded-full px-3 focus-visible:outline-2 focus-visible:outline-cyan-200">Skip</button>
       </div>
+      <button ref={tiltButtonRef} type="button" hidden aria-pressed="false" aria-label="Enable cinematic device motion"
+        className="fixed bottom-6 left-5 z-[45] min-h-11 rounded-full border border-white/20 bg-[#080d29]/85 px-4 text-xs text-white backdrop-blur-md focus-visible:outline-2 focus-visible:outline-cyan-200">ENABLE MOTION</button>
+      <span ref={tiltStatusRef} className="sr-only" role="status" />
       {/* =======================================================================
           Part A: Editorial Context Band + Left Tablet Portal Anchor (`#home-goal-image-in`)
           ======================================================================= */}
