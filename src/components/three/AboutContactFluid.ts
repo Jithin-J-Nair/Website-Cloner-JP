@@ -176,8 +176,10 @@ export class AboutContactFluid {
     px = clamp(Number.isFinite(px) ? px : .5, 0, 1) * this.width;
     py = clamp(Number.isFinite(py) ? py : .5, 0, 1) * this.height;
     const previousX = this.hasPointer ? this.pointerX : px, previousY = this.hasPointer ? this.pointerY : py;
-    const pointerVX = pointerActive && this.hasPointer ? (px - previousX) / duration : 0;
-    const pointerVY = pointerActive && this.hasPointer ? (py - previousY) / duration : 0;
+    // Limit impulses from a missed pointer event or a long frame. Unbounded
+    // cursor velocity otherwise throws grains across the tank in a single step.
+    const pointerVX = pointerActive && this.hasPointer ? clamp((px - previousX) / duration, -3, 3) : 0;
+    const pointerVY = pointerActive && this.hasPointer ? clamp((py - previousY) / duration, -3, 3) : 0;
     this.hasPointer = pointerActive; this.pointerX = px; this.pointerY = py;
     this.pouring = held && pointerActive;
     if (this.pouring) { this.emitterX = px; this.emitterY = py; this.hasPoured = true; }
@@ -186,9 +188,11 @@ export class AboutContactFluid {
     for (let step = 0; step < substeps; step++) {
       this.credit += 2000 * dt;
       for (let k = 0; k < this.count && this.credit >= 1; k++) if (!this.active[k]) {
-        const t = this.random();
-        this.x[k] = this.emitterX + (this.pouring ? (previousX - px) * t : 0) + (this.random() - .5) * .01;
-        this.y[k] = this.emitterY + (this.pouring ? (previousY - py) * t : 0) + (this.random() - .5) * .01;
+        // Spread births along the current substep of the pointer's path, not
+        // the entire frame on every substep. This keeps a moving pour continuous.
+        const t = (step + this.random()) / substeps;
+        this.x[k] = (this.pouring ? previousX + (px - previousX) * t : this.emitterX) + (this.random() - .5) * .01;
+        this.y[k] = (this.pouring ? previousY + (py - previousY) * t : this.emitterY) + (this.random() - .5) * .01;
         this.vx[k] = 0; this.vy[k] = (2 + this.random() ** 2 * 3) * this.gravity * .1;
         this.outX[k] = this.x[k]; this.outY[k] = this.y[k]; this.active[k] = 1; this.angle[k] = this.random() * Math.PI * 2;
         this.spin[k] = 0; this.credit--; this.emitted++;
@@ -223,12 +227,15 @@ export class AboutContactFluid {
         const speed = Math.hypot(this.vx[k], this.vy[k]);
         this.spin[k] *= Math.exp(-4 * dt);
         if (speed > 1e-5) this.spin[k] += speed * Math.atan2(Math.sin(Math.atan2(this.vy[k], this.vx[k]) + Math.PI * .5), Math.cos(Math.atan2(this.vy[k], this.vx[k]) + Math.PI * .5));
+        this.spin[k] = clamp(this.spin[k], -10, 10);
         this.angle[k] += this.spin[k] * dt;
       }
       this.transferToGrid(); this.project(); this.transferToParticles();
+      // The same half-step response at 60 Hz, expressed in seconds so that
+      // 120 Hz displays and dropped frames do not change the apparent flow.
+      const blend = 1 - Math.exp(-Math.LN2 * 60 * dt);
       for (let k = 0; k < this.count; k++) if (this.active[k]) {
-        // Native half-step output smoothing, without changing physical state.
-        this.outX[k] += (this.x[k] - this.outX[k]) * .5; this.outY[k] += (this.y[k] - this.outY[k]) * .5;
+        this.outX[k] += (this.x[k] - this.outX[k]) * blend; this.outY[k] += (this.y[k] - this.outY[k]) * blend;
       }
       this.steps++;
     }

@@ -33,6 +33,15 @@ try {
     assert.ok(f.x.slice(0,33).every(x=>Math.abs(x-f.width*.5)<.2),'initial stream is centered');
     for(let i=0;i<300;i++){f.update(1/60,.5,.5,false,false);if(i%60===0)check();}
     assert.equal(f.active.reduce((a,b)=>a+b,0),f.count);
+    // Rendering interpolation must be time-based, not an extra half-step per
+    // display frame: half of a 60 Hz step has the corresponding exponential blend.
+    const previousOutput=f.outY.slice();
+    f.update(1/120,.5,.5,false,false);
+    const blend=1-Math.pow(.5,.5);
+    for(let k=0;k<f.count;k++) {
+      assert.ok(Math.abs(f.outY[k]-(previousOutput[k]+(f.y[k]-previousOutput[k])*blend))<1e-5,'time-based display smoothing');
+      assert.ok(Math.abs(f.spin[k])<=10.00001,'bounded rotation');
+    }
     const before=f.emitted;
     for(let i=0;i<20;i++)f.update(1/60,.3,.7,true,false);
     assert.equal(f.emitted,before,'hover is an obstacle, not an emitter');assert.equal(f.drained,0);
