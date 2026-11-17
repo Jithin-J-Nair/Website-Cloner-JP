@@ -2,7 +2,7 @@ import { registerProjectListSource } from "@/lib/project-transition";
 import * as THREE from "three";
 import { LUSION_PROJECTS_ARCHIVE } from "@/data/reference";
 import { homeRenderDpr } from "@/lib/home-motion";
-import { editorialClamp as clamp, editorialFit as fit, editorialEase as ease, editorialExpoOut as expoOut, editorialExpoInOut as expoInOut, createEditorialSpring, stepEditorialSpring } from "@/lib/home-editorial-motion";
+import { editorialClamp as clamp, editorialFit as fit, editorialEase as ease, editorialExpoInOut as expoInOut, createEditorialSpring, stepEditorialSpring } from "@/lib/home-editorial-motion";
 import { editorialProjectVertex, editorialProjectFragment } from "@/components/home/HomeEditorialShaders";
 import { useStudioStore } from "@/lib/store";
 
@@ -50,12 +50,15 @@ export function createProjectsArchiveMotion(root: HTMLElement, reduced: boolean)
     void loadTexture("/assets/textures/LDR_RGB1_0.png").then(texture=>{texture.minFilter=texture.magFilter=THREE.NearestFilter;texture.generateMipmaps=false;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;noiseUniforms.u_blueNoiseTexture.value=texture;texture.needsUpdate=true;schedule();}).catch(()=>{});
     dirty=true;
   };
+  // Keep the rounded card mask locked to its DOM hit area. The image can
+  // still ripple and respond to hover inside that boundary while scrolling.
+  const alignedProjectFragment = editorialProjectFragment.replace("getRoundedCornerMask(baseUv,", "getRoundedCornerMask(v_uv,");
   const loadCard = (c:typeof cardStates[number]) => {
     if(c.loading || c.failed || !renderer || failed)return;c.loading=true;
     const project=LUSION_PROJECTS_ARCHIVE.projects[c.index];
     void Promise.all([loadTexture(project.thumbnail),loadTexture(project.depthMap)]).then(([image,depth])=>{
       if(disposed)return;
-      c.mesh=new THREE.Mesh(plane(),material(editorialProjectVertex,editorialProjectFragment,{
+      c.mesh=new THREE.Mesh(plane(),material(editorialProjectVertex,alignedProjectFragment,{
         u_domXY:{value:new THREE.Vector2()},u_domWH:{value:new THREE.Vector2()},u_rotation:{value:0},u_padding:{value:new THREE.Vector2(c.index%2?0:1000,c.index%2?1000:0)},u_texture:{value:image},u_depthTexture:{value:depth},u_textureSize:{value:new THREE.Vector2(project.thumbnailWidth,project.thumbnailHeight)},u_colorBg:{value:new THREE.Color(project.colorBg)},u_showRatio:{value:0},u_activeRatio:{value:0},u_shiftXY:{value:new THREE.Vector2()},u_focusPos:{value:new THREE.Vector3(0,0,-1)},u_time:{value:0},u_zoomRatio:{value:1},u_dofRangeOffset:{value:0},u_saturation:{value:0},u_brightness:{value:0},u_borderRatio:{value:0},u_rippleStrength:{value:0},u_resolution:{value:new THREE.Vector2()},u_globalRadius:{value:12},
       },{PARALLAX_SAMPLES:12,BLUR_SAMPLES:6}));c.mesh.frustumCulled=false;c.mesh.renderOrder=3;scene.add(c.mesh);schedule();
     }).catch(()=>{if(disposed)return;c.failed=true;c.stage.dataset.depthFailed="true";schedule();});
@@ -103,14 +106,14 @@ export function createProjectsArchiveMotion(root: HTMLElement, reduced: boolean)
       if(!c.mesh)continue;
       c.mesh.visible=on&&!blocked()&&!failed;
       if(!c.mesh.visible)continue;
-      const u=c.mesh.material.uniforms, progress=reduced?1:expoOut(fit(c.time,0,1.5)),entrance=reduced?1:expoOut(fit(c.time,0,2));
-      (u.u_domXY.value as THREE.Vector2).set(r.left+(1-entrance)*((c.index%2)-.5)*-vw*.1,r.top-y);(u.u_domWH.value as THREE.Vector2).set(r.width,r.height);
+      const u=c.mesh.material.uniforms;
+      (u.u_domXY.value as THREE.Vector2).set(r.left,r.top-y);(u.u_domWH.value as THREE.Vector2).set(r.width,r.height);
       const burst=hovered? (1-fit(c.hover,0,.3))*r.height*.75 : 0;
       const tx=hovered?-(pointerX-r.left-r.width*.5+Math.cos(now*.02)*burst)/r.width*r.height:0,ty=hovered?(pointerY-(r.top-y)-r.height*.5-Math.sin(now*.03)*burst):0;
       if(reduced){for(const s of [c.focusX,c.focusY,c.focusZ,c.zoom]){s.velocity=0;}c.focusX.value=0;c.focusY.value=0;c.focusZ.value=-1;c.zoom.value=0;}
       else{stepEditorialSpring(c.focusX,tx,dt,1,.6,2);stepEditorialSpring(c.focusY,ty,dt,1,.6,2);stepEditorialSpring(c.focusZ,hovered?.5:-1,dt,1,.6,2);stepEditorialSpring(c.zoom,hovered?1:0,dt,2.2,.7,3);}
-      (u.u_shiftXY.value as THREE.Vector2).set(reduced?0:c.shiftX,reduced?0:c.shiftY);(u.u_focusPos.value as THREE.Vector3).set(c.focusX.value,c.focusY.value,c.focusZ.value);u.u_globalRadius.value=borderRadius;u.u_zoomRatio.value=c.zoom.value;u.u_dofRangeOffset.value=-.5*c.dof;u.u_showRatio.value=progress;u.u_rippleStrength.value=reduced?0:Math.min(.15,scrollStrength*.5);(u.u_resolution.value as THREE.Vector2).set(vw*(renderer?.getPixelRatio()||1),vh*(renderer?.getPixelRatio()||1));
-      u.u_rotation.value=reduced?0:(1-entrance)*((c.index%2)-.5)*.1;
+      (u.u_shiftXY.value as THREE.Vector2).set(reduced?0:c.shiftX,reduced?0:c.shiftY);(u.u_focusPos.value as THREE.Vector3).set(c.focusX.value,c.focusY.value,c.focusZ.value);u.u_globalRadius.value=borderRadius;u.u_zoomRatio.value=c.zoom.value;u.u_dofRangeOffset.value=-.5*c.dof;u.u_showRatio.value=1;u.u_rippleStrength.value=reduced?0:Math.min(.15,scrollStrength*.5);(u.u_resolution.value as THREE.Vector2).set(vw*(renderer?.getPixelRatio()||1),vh*(renderer?.getPixelRatio()||1));
+      u.u_rotation.value=0;
       c.stage.dataset.depthReady="true";c.stage.dataset.focus=`${c.focusX.value.toFixed(3)},${c.focusY.value.toFixed(3)},${c.zoom.value.toFixed(4)}`;drawn++;
     }
     if(renderer&&!failed&&active&&!blocked()&&canvas.style.visibility!=="hidden"){try{renderer.render(scene,camera);frames++;root.dataset.editorialWebgl="ready";}catch{failed=true;resetFallback();root.dataset.editorialWebgl="fallback";}}

@@ -258,6 +258,23 @@ try {
     const weights = part.attributes.boneWeights;
     for (let i = 0; i < weights.length; i += 2) assert.ok(Math.abs(weights[i] + weights[i + 1] - 1) < 0.001);
   }
+  // Landing correction must affect the arms only, remain reversible, and not
+  // leak into adjacent idle frames or confuse the sampler's memoized inputs.
+  sample(140, 1, 123, 1, 115, 0);
+  const uncorrected = bones.map(b => b.matrix.elements.slice());
+  sample(140, 1, 123, 1, 115, 1);
+  const corrected = bones.map(b => b.matrix.elements.slice());
+  for (const i of [0,1,2,3,4,5,6,7,8,13,49,50,51,52]) assert.deepEqual(corrected[i], uncorrected[i], `non-arm bone ${i} unchanged`);
+  for (const i of [11,12,16,17,20,36]) {
+    assert.notDeepEqual(corrected[i], uncorrected[i], `arm/finger bone ${i} responds`);
+    assert.ok(corrected[i].every(Number.isFinite));
+    assert.ok(Math.abs(bones[i].quaternion.length()-1)<1e-6);
+  }
+  sample(140, 1, 123, 1, 115, 0);
+  assert.deepEqual(bones.map(b => b.matrix.elements.slice()), uncorrected, 'correction unwinds without a pose jump');
+  sample(140, 1, 123, 1, 115, 1);
+  assert.deepEqual(bones.map(b => b.matrix.elements.slice()), corrected, 'arm correction is deterministic in reverse');
+  console.log('PASS: landing arm correction preserves torso/legs, normalized finger transforms, reversible zero-weight handoff');
   console.log('PASS: authentic 53-bone weights, frame-major interpolation, normalized quaternions, identity emergence and reversible poses');
 
   const glass = load('broken_glass');

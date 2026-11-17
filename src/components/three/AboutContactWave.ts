@@ -25,7 +25,7 @@ export function createAboutContactWave(requestedCount = 5600) {
     vertexShader: `attribute vec4 aParticle;uniform vec2 uTank;uniform float uRadius;
       void main(){float s=sin(aParticle.z),c=cos(aParticle.z);
         vec2 p=aParticle.xy/uTank*2.-1.;
-        p+=mat2(c,-s,s,c)*position.xy*uRadius*4.*aParticle.w/uTank;
+        p+=mat2(c,-s,s,c)*position.xy*uRadius*4.2*aParticle.w/uTank;
         gl_Position=vec4(p,0.,1.);}`,
     fragmentShader: `void main(){gl_FragColor=vec4(1.);}`,
   });
@@ -63,7 +63,7 @@ export function createAboutContactWave(requestedCount = 5600) {
       fluid.update(dt, pointer.x, pointer.y, pointer.z > .5, uniforms.uHeld.value > .5);
       for (let k = 0; k < fluid.count; k++) {
         const a = attributes[k % 4], index = Math.floor(k / 4);
-        a.setXYZW(index, fluid.outX[k], fluid.outY[k], fluid.angle[k], 1 + Math.min(1, Math.abs(fluid.spin[k]) * .01));
+        a.setXYZW(index, fluid.outX[k], fluid.outY[k], fluid.angle[k], 1 + Math.min(.35, Math.abs(fluid.spin[k]) * .01));
       }
       attributes.forEach(a => { a.needsUpdate = true; });
     },

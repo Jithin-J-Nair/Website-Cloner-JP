@@ -35,7 +35,7 @@ export interface LoadedAstronautRig {
   drawCalls: number;
   triangles: number;
   /** Captured, frame-major deformation transforms; absent on the legacy GLB rig. */
-  sampleBakedPose?: (frame: number, influence: number, blendFrame?: number, blendWeight?: number) => void;
+  sampleBakedPose?: (frame: number, influence: number, blendFrame?: number, blendWeight?: number, armFrame?: number, armWeight?: number) => void;
   sampleCapturedRoot?: (stage: "in" | "out", frame: number, position: THREE.Vector3, orientation: THREE.Quaternion) => void;
 }
 
@@ -653,7 +653,7 @@ export function createCapturedPoseSampler(
   skeleton: THREE.Skeleton,
   visorAnchorLocal: THREE.Vector3,
   visorOrientationLocal?: THREE.Quaternion
-): (frame: number, influence: number, blendFrame?: number, blendWeight?: number) => void {
+): (frame: number, influence: number, blendFrame?: number, blendWeight?: number, armFrame?: number, armWeight?: number) => void {
   const boneCount = bones.length;
   const frameCount = animation.header.vertexCount / boneCount;
   if (boneCount !== 53 || frameCount !== 288) throw new Error("Unexpected captured astronaut animation layout");
@@ -666,11 +666,22 @@ export function createCapturedPoseSampler(
   let previousFrame = -1;
   let previousInfluence = -1, previousBlend = -1, previousBlendWeight = -1;
   const qb0 = new THREE.Quaternion(), qb1 = new THREE.Quaternion();
-  return (frame: number, influence: number, blendFrame = frame, blendWeight = 0) => {
+  const targetRotation = new THREE.Quaternion(), targetNextRotation = new THREE.Quaternion();
+  const targetPosition = new THREE.Vector3(), unitScale = new THREE.Vector3(1, 1, 1), decomposedScale = new THREE.Vector3();
+  const targetMatrix = new THREE.Matrix4(), correction = new THREE.Matrix4(), corrected = new THREE.Matrix4();
+  const arms: ReadonlyArray<readonly [number, readonly number[]]> = [
+    [2, [9, 10, 11, 12, ...Array.from({ length: 15 }, (_, i) => i + 19)]],
+    [6, [14, 15, 16, 17, ...Array.from({ length: 15 }, (_, i) => i + 34)]],
+  ];
+  let previousArmFrame = -1, previousArmWeight = -1;
+  return (frame: number, influence: number, blendFrame = frame, blendWeight = 0, armFrame = frame, armWeight = 0) => {
     const f = THREE.MathUtils.clamp(frame, 0, frameCount - 1);
     const weight = THREE.MathUtils.clamp(influence, 0, 1);
     blendWeight = THREE.MathUtils.clamp(blendWeight, 0, 1);
-    if (f === previousFrame && weight === previousInfluence && blendFrame === previousBlend && blendWeight === previousBlendWeight) return;
+    armFrame = THREE.MathUtils.clamp(armFrame, 0, frameCount - 1);
+    armWeight = THREE.MathUtils.clamp(armWeight, 0, 1);
+    if (f === previousFrame && weight === previousInfluence && blendFrame === previousBlend && blendWeight === previousBlendWeight && armFrame === previousArmFrame && armWeight === previousArmWeight) return;
+    previousArmFrame = armFrame; previousArmWeight = armWeight;
     previousBlend = blendFrame; previousBlendWeight = blendWeight;
     previousFrame = f;
     previousInfluence = weight;
@@ -703,6 +714,37 @@ export function createCapturedPoseSampler(
       bones[i].updateMatrix();
       // These are already model-space deformation matrices, not a hierarchy of joint locals.
       bones[i].matrixWorld.copy(bones[i].matrix);
+    }
+    if (armWeight > 0) {
+      // Captured transforms are model-space, not hierarchical. Rebase the
+      // alternative arm pose onto each current shoulder before blending, so
+      // the glove and sleeve stay attached while the torso and legs are untouched.
+      const af = Math.floor(armFrame), an = Math.min(frameCount - 1, af + 1), at = armFrame - af;
+      const sampleArmMatrix = (index: number) => {
+        const a = af * boneCount + index, b = an * boneCount + index;
+        targetRotation.fromArray(orientations, a * 4).normalize();
+        targetNextRotation.fromArray(orientations, b * 4).normalize();
+        targetRotation.slerp(targetNextRotation, at);
+        targetNextRotation.copy(targetRotation);
+        targetRotation.slerpQuaternions(identity, targetNextRotation, weight);
+        targetPosition.set(
+          THREE.MathUtils.lerp(translations[a * 3], translations[b * 3], at) * weight,
+          (THREE.MathUtils.lerp(translations[a * 3 + 1], translations[b * 3 + 1], at) + .9) * weight,
+          THREE.MathUtils.lerp(translations[a * 3 + 2], translations[b * 3 + 2], at) * weight
+        );
+        targetMatrix.compose(targetPosition, targetRotation, unitScale);
+      };
+      for (const [shoulder, indices] of arms) {
+        sampleArmMatrix(shoulder);
+        correction.copy(bones[shoulder].matrix).multiply(targetMatrix.invert());
+        for (const i of indices) {
+          sampleArmMatrix(i); corrected.multiplyMatrices(correction, targetMatrix);
+          corrected.decompose(targetPosition, targetRotation, decomposedScale);
+          bones[i].position.lerp(targetPosition, armWeight);
+          bones[i].quaternion.slerp(targetRotation, armWeight);
+          bones[i].updateMatrix(); bones[i].matrixWorld.copy(bones[i].matrix);
+        }
+      }
     }
     skeleton.update();
     visorAnchorLocal.copy(sourceVisorAnchor).applyMatrix4(bones[0].matrix);
