@@ -64,7 +64,22 @@ const archiveProjects = currentLiveProjects.archiveOrder.map((id) => {
 const featuredProjects = currentLiveProjects.featuredOrder.map((id) => {
   const project = cardsById.get(id);
   if (!project) throw new Error(`Missing current Lusion featured card: ${id}`);
-  return project;
+  // Home's first featured card uses the supplied image; the archive and
+  // project detail keep their existing assets and all motion remains shared.
+  return id === "oryzo_ai"
+    ? {
+      ...project,
+      title: "Prompt Forge",
+      categoriesText: "RESEARCH • STRATEGY • DESIGN • CODE • AUTOMATION",
+      categories: ["Research", "Strategy", "Design", "Code", "Automation"],
+      thumbnail: "/sites/jithin/promptforge-featured.png",
+      thumbnailWidth: 1280,
+      thumbnailHeight: 832,
+      depthMap: "/sites/jithin/promptforge-depth.png",
+      depthMapWidth: 1280,
+      depthMapHeight: 832
+    }
+    : project;
 });
 
 const projectDetails = currentLiveProjects.archiveOrder.map((id, index) => {
